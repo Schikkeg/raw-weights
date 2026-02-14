@@ -3,370 +3,699 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RawWeights | Engineering the Probabilistic Web</title>
-<meta name="description" content="A Principal Architect's log on integrating AI into modern web systems. Dissecting fundamentals, evaluating tools, and architecting the future.">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <title>Atomic GPT Playground</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
-        .grid { display: grid; grid-template-columns: 350px 1fr; gap: 20px; max-width: 1200px; margin: auto; }
-        
-        /* Card Styling */
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        h3 { margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 1.1em; color: #2d3436; }
-        
-        /* Inputs */
-        input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-weight: bold; margin-bottom: 5px; }
-        input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        select { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
-        
-        /* Buttons */
-        button { cursor: pointer; border: none; padding: 10px; border-radius: 6px; font-weight: 600; width: 100%; transition: 0.2s; margin-top: 5px; }
-        .btn-green { background: #00b894; color: white; }
-        .btn-blue { background: #0984e3; color: white; }
-        .btn-yellow { background: #fdcb6e; color: #333; }
-        .btn-red { background: #ff7675; color: white; font-size: 0.8em; width: auto; padding: 2px 8px; float: right; }
+        :root {
+            --primary: #2563eb;
+            --secondary: #475569;
+            --success: #16a34a;
+            --bg: #f8fafc;
+            --panel-bg: #ffffff;
+            --text: #1e293b;
+        }
 
-        /* Sliders */
-        input[type="range"] { width: 100%; cursor: pointer; margin: 10px 0; }
-        .highlight { color: #0984e3; font-weight: bold; }
-        
-        /* Table */
-        table { width: 100%; font-size: 0.85em; border-collapse: collapse; margin-top: 10px; }
-        td, th { padding: 6px; border-bottom: 1px solid #eee; text-align: left; }
-        
-        /* Snapshot List */
-        ul { list-style: none; padding: 0; margin-top: 10px; font-size: 0.85em; }
-        li { padding: 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-        /* --- EDUCATION SECTION STYLES --- */
-        .edu-container { max-width: 1200px; margin: 40px auto; border-top: 2px solid #dfe6e9; padding-top: 20px; }
-        .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .concept-card { background: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid #6c5ce7; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .concept-card h4 { margin-top: 0; color: #6c5ce7; font-size: 1.1em; }
-        .concept-card p { font-size: 0.9em; line-height: 1.6; color: #636e72; }
-        .formula-box { background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center; font-family: monospace; font-weight: bold; color: #2d3436; margin: 10px 0; border: 1px dashed #ccc; }
-        .variable { font-weight: bold; color: #0984e3; }
+        /* Navigation */
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        h3 { margin-top: 0; color: var(--secondary); font-size: 1.1rem; }
+
+        /* Inputs & Controls */
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: monospace;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        textarea { height: 120px; resize: vertical; }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:active { transform: translateY(1px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+
+        /* Logger */
+        #log {
+            background: #0f172a;
+            color: #4ade80;
+            padding: 1rem;
+            border-radius: 8px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+        }
+
+        .status-text { font-size: 0.9rem; color: var(--secondary); margin-left: auto; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Modals */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; top: 0; 
+            width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%; 
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .close-modal:hover { color: black; }
+
+        .modal-body h4 { color: var(--primary); margin-bottom: 0.5rem; }
+        .modal-body p { margin-bottom: 1rem; font-size: 0.95rem; }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            .nav-links { width: 100%; justify-content: space-between; margin-top: 1rem; }
+            .nav-btn { flex: 1; text-align: center; }
+            .btn-group button { flex: 1; }
+            .status-text { width: 100%; text-align: left; margin-top: 0.5rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="grid">
-    <div class="sidebar">
-        
-        <div class="card" style="border-left: 5px solid #6c5ce7;">
-            <h3>1. Define Use Case</h3>
-            <label style="font-size:0.8em; color:#666;">Input (X-Axis):</label>
-            <input type="text" id="labelX" value="Ad Spend ($)" oninput="updateLabels()">
-            
-            <label style="font-size:0.8em; color:#666;">Output (Y-Axis):</label>
-            <input type="text" id="labelY" value="Revenue ($)" oninput="updateLabels()">
-        </div>
-
-        <div class="card">
-            <h3>2. Data Points</h3>
-            <div style="display:flex; gap:5px;">
-                <input type="number" id="newX" placeholder="X Value">
-                <input type="number" id="newY" placeholder="Y Value">
-            </div>
-            <button class="btn-green" onclick="addData()">+ Add Data Point</button>
-            
-            <div style="max-height: 150px; overflow-y: auto; margin-top:10px;">
-                <table id="dataTable">
-                    <thead><tr><th id="thX">X</th><th id="thY">Y</th></tr></thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-            <button onclick="data=[]; updateUI();" style="background:#eee; color:#555; margin-top:10px; font-size:0.8em;">Clear Data</button>
-        </div>
-
-        <div class="card">
-            <h3>3. The Formula</h3>
-            <label><strong>Solver Method:</strong></label>
-            <select id="solverMethod">
-                <option value="math">Exact Math (Linear Regression)</option>
-                <option value="gd">Gradient Descent (AI Learning)</option>
-            </select>
-            <button class="btn-blue" onclick="runSolver()">Run Solver</button>
-
-            <div style="background:#2d3436; color:#fab1a0; padding:10px; border-radius:4px; margin:15px 0; text-align:center; font-family:monospace;" id="formulaDisplay">
-                y = 0x + 0
-            </div>
-
-            <label>Slope (Weight): <span id="valM" class="highlight">0</span></label>
-            <input type="range" id="slideM" min="0" max="10" step="0.1" value="0" oninput="manualTune()">
-
-            <label>Bias (Intercept): <span id="valB" class="highlight">0</span></label>
-            <input type="range" id="slideB" min="-500" max="2000" step="10" value="0" oninput="manualTune()">
-
-            <button class="btn-yellow" onclick="saveSnapshot()">📸 Save Comparison Line</button>
-            <ul id="savedList"></ul>
-        </div>
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/srt.html"><button >Simple Regression Tool</button></a>
     </div>
+</nav>
 
-    <div class="main">
-        <div class="card">
-            <canvas id="mainChart"></canvas>
+<div class="container">
+<div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: #1e293b;"> Atomic GPT Playground</h1>
+        <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
+            Train a real <strong>Neural Network</strong> entirely in your browser. 
+            <br>
+            This is a "glass box" educational tool based on <a href="https://github.com/karpathy/makemore" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: bold;">Andrej Karpathy's</a> <em>makemore</em> repository. It demonstrates how Large Language Models (LLMs) learn patterns from data—no Python or GPU required.
+        </p>
+    </div>
+    <div class="grid">
+<div class="panel">
+    <div class="nav-links">
+        <button class="nav-btn" onclick="openModal('modalSimple')">How it Works (Simple)</button>
+        <button class="nav-btn" onclick="openModal('modalTech')">How it Works (Technical)</button>
+    </div>
+</div>        
+        <div class="panel">
+            <h3>1. Training Data</h3>
+            <textarea id="inputData" placeholder="Paste names or text here...">
+emma
+olivia
+ava
+isabella
+sophia
+charlotte
+mia
+amelia
+harper
+evelyn
+abigail
+emily
+ella
+elizabeth
+camila
+luna
+sofia
+avery
+mila
+aria</textarea>
+            <div class="btn-group">
+                <button id="trainBtn" class="btn-primary" onclick="startTraining()">Start Training</button>
+                <span id="trainStatus" class="status-text">State: Idle</span>
+            </div>
         </div>
 
-        <div class="card" style="background:#e3fcef; border-left: 5px solid #00b894;">
-            <h3>4. Future Prediction</h3>
-            <p>
-                If <strong class="lblX">Ad Spend</strong> = 
-                <input type="number" id="predX" value="1000" oninput="updatePrediction()" style="width:100px; display:inline-block;">, 
-                <br>
-                Then <strong class="lblY">Revenue</strong> = <strong style="font-size:1.4em;" id="predY">0.00</strong>
-            </p>
+        <div class="panel">
+            <h3>2. Save / Load Model</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Save your trained "brain" to your browser so you don't have to retrain later.</p>
+            <div class="btn-group">
+                <button class="btn-success" onclick="saveToBrowser()">💾 Save Locally</button>
+                <button class="btn-secondary" onclick="loadFromBrowser()">📂 Load Saved</button>
+                <button class="btn-danger" onclick="clearBrowserStorage()">🗑️ Clear</button>
+                <span id="storageStatus" class="status-text"></span>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>3. Generate Text</h3>
+            <label style="font-size: 0.9rem; font-weight: bold; display:block; margin-bottom:0.5rem;">Start with (Optional):</label>
+            <input type="text" id="promptInput" placeholder="e.g. 'M' or 'Al'">
+            <div class="btn-group">
+                <button class="btn-primary" onclick="runInference()">✨ Generate</button>
+            </div>
+        </div>
+
+        <div id="log">Logs will appear here...</div>
+    </div>
+</div>
+
+<footer>
+    <p>Based on the "minGPT" and "makemore" work by <strong><a href="https://www.linkedin.com/in/andrej-karpathy-9a650716/">Andrej Karpathy</a></strong>.</p>
+    <p>
+        <a href="https://github.com/karpathy/makemore" target="_blank">View Original Repo</a> • 
+        <a href="https://karpathy.ai/" target="_blank">Karpathy.ai</a>
+    </p>
+    <p style="font-size: 0.8rem; margin-top: 1rem; color: #94a3b8;">
+        This playground is a simplified educational tool to demonstrate the core algorithm of a Transformer.
+    </p>
+</footer>
+
+<div id="modalSimple" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModals()">&times;</span>
+        <h2>How it Works (Simple)</h2>
+        <div class="modal-body">
+            <p>Think of this AI as a <strong>Robot Student</strong> learning to write names.</p>
+            
+            <h4>1. The "Future-Blind" Reader</h4>
+            <p>The robot reads names one letter at a time. It covers the rest of the word with its hand. It sees "E" and tries to guess what comes next. It cannot cheat and look ahead.</p>
+
+            <h4>2. The Voting Booth (Logits)</h4>
+            <p>Inside its brain, the robot doesn't just guess one letter. It holds a vote for every possible letter (A-Z). "M" might get 50 votes, while "Z" gets -10 votes.</p>
+
+            <h4>3. The Teacher (Loss)</h4>
+            <p>We reveal the actual next letter. If the robot guessed wrong, we give it a score (Loss). A high score means "You did bad."</p>
+
+            <h4>4. The Smart Hiker (Adam Optimizer)</h4>
+            <p>The robot wants to get its error score to zero (the bottom of the valley). It uses a math trick called "Adam" to find the fastest path down the hill, adjusting its brain so it doesn't make the same mistake twice.</p>
+            
+            <h4>5. Showtime (Inference)</h4>
+            <p>Once trained, we take away the answer key. We give it a starting letter, and it uses its trained intuition to dream up new names entirely on its own!</p>
         </div>
     </div>
 </div>
 
-<div class="edu-container">
-    <h2 style="text-align:center; color:#2d3436; margin-bottom:30px;">🧠 How the Machine Learns (The Concepts)</h2>
-    
-    <div class="concept-grid">
-        
-        <div class="concept-card">
-            <h4>1. The Hypothesis</h4>
-            <p>This is the model's guess. We assume the relationship between Input (X) and Output (Y) is a straight line.</p>
-            <div class="formula-box">y = mx + b</div>
-            <p>
-                • <span class="variable">m (Slope):</span> The Weight. How much Y changes for every 1 unit of X.<br>
-                • <span class="variable">b (Bias):</span> The Intercept. Where the line starts if X is 0.
-            </p>
-        </div>
+<div id="modalTech" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModals()">&times;</span>
+        <h2>How it Works (Technical)</h2>
+        <div class="modal-body">
+            <p>This is a pure JavaScript implementation of a <strong>Decoder-Only Transformer</strong>.</p>
 
-        <div class="concept-card" style="border-left-color: #e17055;">
-            <h4 style="color:#e17055;">2. The Cost Function (Loss)</h4>
-            <p>How does the AI know if the line is wrong? It measures the distance between the line and the dots.</p>
-            
-            <div class="formula-box">Error = Average(Difference²)</div>
-            <p>If the error is high, the model is bad. The AI's only goal is to make this number <strong>Zero</strong>.</p>
-        </div>
+            <h4>1. Tokenization & Embeddings</h4>
+            <p>Input text is converted to integer IDs. We learn two embedding matrices: <code>wte</code> (Token Embeddings) for identity and <code>wpe</code> (Position Embeddings) for order. These are added together.</p>
 
-        <div class="concept-card" style="border-left-color: #00b894;">
-            <h4 style="color:#00b894;">3. Gradient Descent</h4>
-            <p>This is how the AI "learns." Imagine being on a mountain (High Error) blindfolded, trying to walk down to the valley (Low Error).</p>
-            
-            <p>The math calculates the steepness (Gradient) at your feet to figure out which direction is "Down."</p>
-        </div>
+            <h4>2. Self-Attention</h4>
+            <p>The core mechanism. Queries (Q), Keys (K), and Values (V) are computed. We calculate <code>softmax(Q @ K.T)</code> to create an attention map, which determines how much the model should focus on past tokens to predict the current one.</p>
 
-        <div class="concept-card" style="border-left-color: #0984e3;">
-            <h4 style="color:#0984e3;">4. Learning Rate</h4>
-            <p>When walking down that mountain, how big are your steps?</p>
-            <div class="formula-box">New_Weight = Old_Weight - (Step_Size * Gradient)</div>
-            <p>
-                • <strong>Too Big:</strong> You jump over the valley (Overshoot).<br>
-                • <strong>Too Small:</strong> You take forever to get there.
-            </p>
-        </div>
+            <h4>3. MLP & Residuals</h4>
+            <p>The attention output passes through a Feed-Forward Network (MLP) with ReLU activation. We use LayerNorm (RMSNorm here) and Residual connections (adding input to output) to stabilize deep learning.</p>
 
+            <h4>4. Autograd Engine</h4>
+            <p>We implemented a custom <code>Value</code> class that builds a dynamic computation graph. Calling <code>.backward()</code> performs topological sort and reverse-mode automatic differentiation to compute gradients.</p>
+
+            <h4>5. Optimization</h4>
+            <p>We use <strong>Adam</strong> (Adaptive Moment Estimation), which tracks first (momentum) and second (variance) moments of gradients to update weights efficiently.</p>
+        </div>
     </div>
 </div>
 
 <script>
-    // --- STATE ---
-    let data = [[100, 350], [250, 900], [500, 1800], [750, 2400]];
-    let savedLines = []; 
-    let m = 0, b = 0;
-    let chart;
+function openModal(id) { document.getElementById(id).style.display = "block"; }
+function closeModals() { 
+    document.getElementById('modalSimple').style.display = "none";
+    document.getElementById('modalTech').style.display = "none";
+}
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) closeModals();
+}
 
-    // --- INIT ---
-    window.onload = function() {
-        // Run initial math
-        const res = ss.linearRegression(data);
-        m = res.m; b = res.b;
-        updateUI();
-    };
+let G_uchars = [];     
+let G_state_dict = {}; 
+let G_vocab_size = 0;
+let G_block_size = 12; 
+let G_n_layer = 1;
+let G_n_head = 4;
+let G_n_embd = 16;
+let G_head_dim = 4;
+let G_is_trained = false;
 
-    // --- LABELS & RENAMING ---
-    function updateLabels() {
-        const xName = document.getElementById('labelX').value;
-        const yName = document.getElementById('labelY').value;
+const logger = document.getElementById('log');
+function log(msg) {
+    logger.textContent += msg + "\n";
+    logger.scrollTop = logger.scrollHeight;
+}
 
-        // Update Headers
-        document.getElementById('thX').innerText = xName;
-        document.getElementById('thY').innerText = yName;
-
-        // Update Prediction Text
-        document.querySelectorAll('.lblX').forEach(el => el.innerText = xName);
-        document.querySelectorAll('.lblY').forEach(el => el.innerText = yName);
-
-        // Update Inputs placeholders
-        document.getElementById('newX').placeholder = xName;
-        document.getElementById('newY').placeholder = yName;
-
-        updateChart();
+window.onload = function() {
+    if(localStorage.getItem('atomic_gpt_model')) {
+        document.getElementById('storageStatus').innerText = "✅ Found saved model";
+        document.getElementById('storageStatus').style.color = "var(--success)";
     }
+};
 
-    // --- DATA HANDLING ---
-    function addData() {
-        const x = parseFloat(document.getElementById('newX').value);
-        const y = parseFloat(document.getElementById('newY').value);
-        if(!isNaN(x) && !isNaN(y)) {
-            data.push([x, y]);
-            // Auto-calc if in Math mode
-            if(document.getElementById('solverMethod').value === 'math') {
-                const res = ss.linearRegression(data);
-                m = res.m; b = res.b;
+class SeededRandom {
+    constructor(seed) {
+        this.m = 0x80000000; this.a = 1103515245; this.c = 12345;
+        this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
+    }
+    nextFloat() {
+        this.state = (this.a * this.state + this.c) % this.m;
+        return this.state / (this.m - 1);
+    }
+    gauss(mean, std) {
+        let u = 0, v = 0;
+        while(u === 0) u = this.nextFloat();
+        while(v === 0) v = this.nextFloat();
+        return (Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)) * std + mean;
+    }
+    choice(options, weights) {
+        let sum = weights.reduce((a, b) => a + b, 0);
+        let r = this.nextFloat() * sum;
+        for (let i = 0; i < options.length; i++) {
+            r -= weights[i];
+            if (r < 0) return options[i];
+        }
+        return options[options.length - 1];
+    }
+    shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(this.nextFloat() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+}
+const rng = new SeededRandom(42);
+
+class Value {
+    constructor(data, children = [], local_grads = []) {
+        this.data = data;
+        this.grad = 0;
+        this._children = children;
+        this._local_grads = local_grads;
+    }
+    add(other) {
+        other = other instanceof Value ? other : new Value(other);
+        return new Value(this.data + other.data, [this, other], [1, 1]);
+    }
+    mul(other) {
+        other = other instanceof Value ? other : new Value(other);
+        return new Value(this.data * other.data, [this, other], [other.data, this.data]);
+    }
+    pow(other) {
+        return new Value(Math.pow(this.data, other), [this], [other * Math.pow(this.data, other - 1)]);
+    }
+    log() { return new Value(Math.log(this.data), [this], [1 / this.data]); }
+    exp() { return new Value(Math.exp(this.data), [this], [Math.exp(this.data)]); }
+    relu() { return new Value(Math.max(0, this.data), [this], [this.data > 0 ? 1 : 0]); }
+    neg() { return this.mul(-1); }
+    sub(other) { return this.add(other instanceof Value ? other.neg() : new Value(-other)); }
+    div(other) { return this.mul(other instanceof Value ? other.pow(-1) : new Value(other).pow(-1)); }
+    
+    backward() {
+        let topo = [], visited = new Set();
+        const build_topo = (v) => {
+            if (!visited.has(v)) {
+                visited.add(v);
+                for (let child of v._children) build_topo(child);
+                topo.push(v);
             }
-            updateUI();
-            document.getElementById('newX').value = '';
-            document.getElementById('newY').value = '';
+        };
+        build_topo(this);
+        this.grad = 1;
+        for (let i = topo.length - 1; i >= 0; i--) {
+            const v = topo[i];
+            for (let j = 0; j < v._children.length; j++) {
+                v._children[j].grad += v._local_grads[j] * v.grad;
+            }
         }
     }
+}
 
-    // --- SOLVER LOGIC ---
-    function runSolver() {
-        if(data.length < 2) return alert("Need at least 2 points.");
+function linear(x, w) {
+    return w.map(wo => {
+        let sum = new Value(0);
+        for(let i=0; i<wo.length; i++) sum = sum.add(wo[i].mul(x[i]));
+        return sum;
+    });
+}
+function softmax(logits) {
+    const max_val = logits.reduce((max, val) => val.data > max ? val.data : max, -Infinity);
+    const exps = logits.map(val => val.sub(max_val).exp());
+    let total = new Value(0);
+    exps.forEach(e => total = total.add(e));
+    return exps.map(e => e.div(total));
+}
+function rmsnorm(x) {
+    let ms = new Value(0);
+    x.forEach(xi => ms = ms.add(xi.mul(xi)));
+    ms = ms.div(x.length);
+    const scale = ms.add(1e-5).pow(-0.5);
+    return x.map(xi => xi.mul(scale));
+}
+
+function gpt(token_id, pos_id, keys, values, state_dict) {
+    const tok_emb = state_dict['wte'][token_id];
+    const pos_emb = state_dict['wpe'][pos_id];
+    let x = tok_emb.map((t, i) => t.add(pos_emb[i]));
+    x = rmsnorm(x);
+
+    for (let li = 0; li < G_n_layer; li++) {
+        const x_residual_attn = x;
+        x = rmsnorm(x);
+        const q = linear(x, state_dict[`layer${li}.attn_wq`]);
+        const k = linear(x, state_dict[`layer${li}.attn_wk`]);
+        const v = linear(x, state_dict[`layer${li}.attn_wv`]);
         
-        if(document.getElementById('solverMethod').value === 'math') {
-            const res = ss.linearRegression(data);
-            m = res.m; b = res.b;
-            updateUI();
-        } else {
-            // Gradient Descent Animation
-            m = 0; b = 0;
-            animateGD();
-        }
-    }
+        keys[li].push(k);
+        values[li].push(v);
 
-    function animateGD() {
-        let iter = 0;
-        const lr = 0.000001; 
-        
-        function step() {
-            if(iter > 100) return;
-            
-            let dM = 0; let dB = 0;
-            const n = data.length;
+        let x_attn = [];
+        for (let h = 0; h < G_n_head; h++) {
+            const hs = h * G_head_dim;
+            const q_h = q.slice(hs, hs + G_head_dim);
+            const k_h = keys[li].map(ki => ki.slice(hs, hs + G_head_dim));
+            const v_h = values[li].map(vi => vi.slice(hs, hs + G_head_dim));
 
-            for(let i=0; i<n; i++) {
-                let x = data[i][0];
-                let y = data[i][1];
-                let guess = (m * x) + b;
-                let error = y - guess;
-                dM += -2 * x * error;
-                dB += -2 * error;
-            }
-
-            m -= (dM / n) * lr;
-            b -= (dB / n) * (lr * 1000); 
-
-            iter++;
-            updateUI();
-            requestAnimationFrame(step);
-        }
-        step();
-    }
-
-    // --- MANUAL & SNAPSHOTS ---
-    function manualTune() {
-        m = parseFloat(document.getElementById('slideM').value);
-        b = parseFloat(document.getElementById('slideB').value);
-        updateUI();
-    }
-
-    function saveSnapshot() {
-        savedLines.push({ m, b, color: `hsl(${Math.random()*360}, 70%, 50%)` });
-        updateUI();
-    }
-
-    function deleteSnapshot(idx) {
-        savedLines.splice(idx, 1);
-        updateUI();
-    }
-
-    // --- UPDATE UI ---
-    function updateUI() {
-        // Sliders
-        document.getElementById('slideM').value = m;
-        document.getElementById('slideB').value = b;
-        document.getElementById('valM').innerText = m.toFixed(2);
-        document.getElementById('valB').innerText = b.toFixed(2);
-        
-        // Formula
-        const xName = document.getElementById('labelX').value;
-        const yName = document.getElementById('labelY').value;
-        document.getElementById('formulaDisplay').innerText = `${yName} = (${m.toFixed(2)} * ${xName}) + ${b.toFixed(2)}`;
-
-        // Table
-        document.getElementById('tableBody').innerHTML = data.map(d => `<tr><td>${d[0]}</td><td>${d[1]}</td></tr>`).join('');
-
-        // Saved List
-        document.getElementById('savedList').innerHTML = savedLines.map((l, i) => `
-            <li style="color:${l.color}">
-                <strong>Snap ${i+1}:</strong> m:${l.m.toFixed(1)} b:${l.b.toFixed(0)}
-                <button class="btn-red" onclick="deleteSnapshot(${i})">X</button>
-            </li>
-        `).join('');
-
-        updatePrediction();
-        updateChart();
-    }
-
-    function updatePrediction() {
-        const x = parseFloat(document.getElementById('predX').value) || 0;
-        document.getElementById('predY').innerText = (m * x + b).toLocaleString(undefined, {maximumFractionDigits:2});
-    }
-
-    // --- CHART ENGINE ---
-    function updateChart() {
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        const xName = document.getElementById('labelX').value;
-        const yName = document.getElementById('labelY').value;
-        
-        const maxX = data.length > 0 ? Math.max(...data.map(d => d[0])) * 1.2 : 1000;
-
-        const datasets = [
-            // 1. Actual Data
-            {
-                label: 'Actual Data',
-                data: data.map(d => ({x: d[0], y: d[1]})),
-                backgroundColor: '#0984e3',
-                type: 'scatter',
-                pointRadius: 6
-            },
-            // 2. Active Line
-            {
-                label: 'Active Formula',
-                data: [{x:0, y:b}, {x:maxX, y:(m*maxX)+b}],
-                borderColor: '#2d3436',
-                type: 'line',
-                pointRadius: 0,
-                borderWidth: 3,
-                fill: false
-            }
-        ];
-
-        // 3. Saved Lines
-        savedLines.forEach((l, i) => {
-            datasets.push({
-                label: `Snap ${i+1}`,
-                data: [{x:0, y:l.b}, {x:maxX, y:(l.m*maxX)+l.b}],
-                borderColor: l.color,
-                borderDash: [5,5],
-                type: 'line',
-                pointRadius: 0,
-                fill: false
+            const attn_logits = k_h.map(k_vec => {
+                let dot = new Value(0);
+                for(let j=0; j<G_head_dim; j++) dot = dot.add(q_h[j].mul(k_vec[j]));
+                return dot.div(Math.sqrt(G_head_dim));
             });
-        });
 
-        if(chart) chart.destroy();
-        chart = new Chart(ctx, {
-            data: { datasets },
-            options: {
-                animation: false,
-                scales: {
-                    x: { type: 'linear', title: {display:true, text: xName} },
-                    y: { title: {display:true, text: yName} }
-                }
+            const attn_weights = softmax(attn_logits);
+            const head_out = [];
+            for(let j=0; j<G_head_dim; j++) {
+                let acc = new Value(0);
+                for(let t=0; t<v_h.length; t++) acc = acc.add(attn_weights[t].mul(v_h[t][j]));
+                head_out.push(acc);
             }
-        });
+            x_attn.push(...head_out);
+        }
+
+        x = linear(x_attn, state_dict[`layer${li}.attn_wo`]);
+        x = x.map((xi, i) => xi.add(x_residual_attn[i]));
+
+        const x_residual_mlp = x;
+        x = rmsnorm(x);
+        x = linear(x, state_dict[`layer${li}.mlp_fc1`]);
+        x = x.map(xi => xi.relu());
+        x = linear(x, state_dict[`layer${li}.mlp_fc2`]);
+        x = x.map((xi, i) => xi.add(x_residual_mlp[i]));
+    }
+    return linear(x, state_dict['lm_head']);
+}
+
+async function startTraining() {
+    const rawText = document.getElementById('inputData').value;
+    const docs = rawText.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (docs.length === 0) return log("Error: No data.");
+
+    logger.textContent = "Initializing...\n";
+    document.getElementById('trainBtn').disabled = true;
+    document.getElementById('trainStatus').innerText = "Running...";
+
+    G_uchars = [...new Set(docs.join(''))].sort();
+    const BOS = G_uchars.length;
+    G_vocab_size = G_uchars.length + 1;
+    log(`Vocab: ${G_uchars.join('')} (Size: ${G_vocab_size})`);
+
+    const createMatrix = (nout, nin) => Array.from({ length: nout }, () => Array.from({ length: nin }, () => new Value(rng.gauss(0, 0.08))));
+    G_head_dim = Math.floor(G_n_embd / G_n_head);
+
+    G_state_dict = {
+        'wte': createMatrix(G_vocab_size, G_n_embd),
+        'wpe': createMatrix(G_block_size, G_n_embd),
+        'lm_head': createMatrix(G_vocab_size, G_n_embd)
+    };
+    for (let i = 0; i < G_n_layer; i++) {
+        G_state_dict[`layer${i}.attn_wq`] = createMatrix(G_n_embd, G_n_embd);
+        G_state_dict[`layer${i}.attn_wk`] = createMatrix(G_n_embd, G_n_embd);
+        G_state_dict[`layer${i}.attn_wv`] = createMatrix(G_n_embd, G_n_embd);
+        G_state_dict[`layer${i}.attn_wo`] = createMatrix(G_n_embd, G_n_embd);
+        G_state_dict[`layer${i}.mlp_fc1`] = createMatrix(4 * G_n_embd, G_n_embd);
+        G_state_dict[`layer${i}.mlp_fc2`] = createMatrix(G_n_embd, 4 * G_n_embd);
     }
 
-    // Initial label set
-    updateLabels();
+    const params = [];
+    Object.values(G_state_dict).forEach(mat => mat.forEach(row => row.forEach(p => params.push(p))));
+    
+    let m = new Float64Array(params.length).fill(0);
+    let v = new Float64Array(params.length).fill(0);
+    const learning_rate = 0.01;
+    const beta1 = 0.85, beta2 = 0.99, eps_adam = 1e-8;
+    const num_steps = 100;
+
+    log("Training started (100 steps)...");
+
+    for (let step = 0; step < num_steps; step++) {
+        if (step % 5 === 0) await new Promise(r => setTimeout(r, 0)); 
+
+        const doc = docs[step % docs.length];
+        const tokens = [BOS, ...doc.split('').map(c => G_uchars.indexOf(c)), BOS];
+        const n = Math.min(G_block_size, tokens.length - 1);
+
+        let keys = Array.from({length: G_n_layer}, () => []);
+        let values = Array.from({length: G_n_layer}, () => []);
+        let losses = [];
+
+        for (let pos_id = 0; pos_id < n; pos_id++) {
+            const token_id = tokens[pos_id];
+            const target_id = tokens[pos_id + 1];
+            const logits = gpt(token_id, pos_id, keys, values, G_state_dict);
+            const probs = softmax(logits);
+            losses.push(probs[target_id].log().neg());
+        }
+
+        let loss = new Value(0);
+        losses.forEach(l => loss = loss.add(l));
+        loss = loss.mul(1/n);
+
+        params.forEach(p => p.grad = 0);
+        loss.backward();
+
+        const lr_t = learning_rate * (1 - step / num_steps);
+        for (let i = 0; i < params.length; i++) {
+            const p = params[i];
+            m[i] = beta1 * m[i] + (1 - beta1) * p.grad;
+            v[i] = beta2 * v[i] + (1 - beta2) * (p.grad * p.grad);
+            const m_hat = m[i] / (1 - Math.pow(beta1, step + 1));
+            const v_hat = v[i] / (1 - Math.pow(beta2, step + 1));
+            p.data -= lr_t * m_hat / (Math.sqrt(v_hat) + eps_adam);
+        }
+
+        if (step % 20 === 0 || step === num_steps - 1) {
+            log(`Step ${step+1}/${num_steps} | Loss: ${loss.data.toFixed(4)}`);
+        }
+    }
+
+    G_is_trained = true;
+    document.getElementById('trainBtn').disabled = false;
+    document.getElementById('trainStatus').innerText = "Complete";
+    document.getElementById('trainStatus').style.color = "var(--success)";
+    log("Training Complete.");
+}
+
+function saveToBrowser() {
+    if (!G_is_trained) return alert("Train a model first!");
+    const serializedDict = {};
+    for (const [key, matrix] of Object.entries(G_state_dict)) {
+        serializedDict[key] = matrix.map(row => row.map(val => val.data));
+    }
+    const bundle = { state_dict: serializedDict, uchars: G_uchars, vocab_size: G_vocab_size };
+
+    try {
+        localStorage.setItem('atomic_gpt_model', JSON.stringify(bundle));
+        log("Saved to LocalStorage!");
+        document.getElementById('storageStatus').innerText = "✅ Saved";
+        document.getElementById('storageStatus').style.color = "var(--success)";
+    } catch (e) {
+        alert("Storage full or error: " + e);
+    }
+}
+
+function loadFromBrowser() {
+    const jsonStr = localStorage.getItem('atomic_gpt_model');
+    if (!jsonStr) return alert("No saved model found.");
+
+    try {
+        const bundle = JSON.parse(jsonStr);
+        G_uchars = bundle.uchars;
+        G_vocab_size = bundle.vocab_size;
+        G_state_dict = {};
+        for (const [key, rawMatrix] of Object.entries(bundle.state_dict)) {
+            G_state_dict[key] = rawMatrix.map(row => row.map(d => new Value(d)));
+        }
+        G_is_trained = true;
+        log(`Model Loaded! Vocab: ${G_vocab_size}`);
+        document.getElementById('storageStatus').innerText = "✅ Loaded";
+        document.getElementById('storageStatus').style.color = "var(--success)";
+    } catch (err) {
+        log("Error loading: " + err);
+    }
+}
+
+function clearBrowserStorage() {
+    localStorage.removeItem('atomic_gpt_model');
+    log("Deleted saved model.");
+    document.getElementById('storageStatus').innerText = "🗑️ Deleted";
+    document.getElementById('storageStatus').style.color = "var(--secondary)";
+}
+
+function runInference() {
+    if (!G_is_trained) return log("Please Train or Load a model first.");
+
+    const promptText = document.getElementById('promptInput').value.trim();
+    const BOS = G_uchars.length;
+    let keys = Array.from({length: G_n_layer}, () => []);
+    let values = Array.from({length: G_n_layer}, () => []);
+    
+    let inputTokens = [];
+    if (promptText.length > 0) {
+        inputTokens = promptText.split('').map(c => G_uchars.indexOf(c)).filter(i => i !== -1);
+    }
+    
+    let currentToken = BOS;
+    let generatedText = promptText; 
+    let pos_id = 0;
+    
+    if (inputTokens.length > 0) {
+        gpt(BOS, pos_id, keys, values, G_state_dict);
+        pos_id++;
+        for (let i = 0; i < inputTokens.length - 1; i++) {
+            gpt(inputTokens[i], pos_id, keys, values, G_state_dict);
+            pos_id++;
+        }
+        currentToken = inputTokens[inputTokens.length - 1];
+    }
+
+    const temperature = 0.6;
+    for (; pos_id < G_block_size; pos_id++) {
+        const logits = gpt(currentToken, pos_id, keys, values, G_state_dict);
+        const adjusted = logits.map(l => l.div(temperature));
+        const probs = softmax(adjusted);
+        const weights = probs.map(p => p.data);
+        const nextToken = rng.choice(Array.from({length: G_vocab_size}, (_, i) => i), weights);
+
+        if (nextToken === BOS) break; 
+        const char = G_uchars[nextToken];
+        generatedText += char;
+        currentToken = nextToken;
+    }
+    log(`Generated: ${generatedText}`);
+}
 </script>
 </body>
 </html>

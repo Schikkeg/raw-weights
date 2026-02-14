@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RawWeights | Engineering the Probabilistic Web</title>
+<meta name="description" content="A Principal Architect's log on integrating AI into modern web systems. Dissecting fundamentals, evaluating tools, and architecting the future.">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
+        /* Navigation */
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+                .grid { display: grid; grid-template-columns: 350px 1fr; gap: 20px; max-width: 1200px; margin: auto; }
+        
+        /* Card Styling */
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h3 { margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 1.1em; color: #2d3436; }
+        
+        /* Inputs */
+        input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-weight: bold; margin-bottom: 5px; }
+        input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        select { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        
+        /* Buttons */
+        button { cursor: pointer; border: none; padding: 10px; border-radius: 6px; font-weight: 600; width: 100%; transition: 0.2s; margin-top: 5px; }
+        .btn-green { background: #00b894; color: white; }
+        .btn-blue { background: #0984e3; color: white; }
+        .btn-yellow { background: #fdcb6e; color: #333; }
+        .btn-red { background: #ff7675; color: white; font-size: 0.8em; width: auto; padding: 2px 8px; float: right; }
+
+        /* Sliders */
+        input[type="range"] { width: 100%; cursor: pointer; margin: 10px 0; }
+        .highlight { color: #0984e3; font-weight: bold; }
+        
+        /* Table */
+        table { width: 100%; font-size: 0.85em; border-collapse: collapse; margin-top: 10px; }
+        td, th { padding: 6px; border-bottom: 1px solid #eee; text-align: left; }
+        
+        /* Snapshot List */
+        ul { list-style: none; padding: 0; margin-top: 10px; font-size: 0.85em; }
+        li { padding: 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- EDUCATION SECTION STYLES --- */
+        .edu-container { max-width: 1200px; margin: 40px auto; border-top: 2px solid #dfe6e9; padding-top: 20px; }
+        .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .concept-card { background: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid #6c5ce7; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .concept-card h4 { margin-top: 0; color: #6c5ce7; font-size: 1.1em; }
+        .concept-card p { font-size: 0.9em; line-height: 1.6; color: #636e72; }
+        .formula-box { background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center; font-family: monospace; font-weight: bold; color: #2d3436; margin: 10px 0; border: 1px dashed #ccc; }
+        .variable { font-weight: bold; color: #0984e3; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/srt.html"><button >Simple Regression Tool</button></a>
+    </div>
+</nav>
+<div class="grid">
+    <div class="sidebar">
+        
+        <div class="card" style="border-left: 5px solid #6c5ce7;">
+            <h3>1. Define Use Case</h3>
+            <label style="font-size:0.8em; color:#666;">Input (X-Axis):</label>
+            <input type="text" id="labelX" value="Ad Spend ($)" oninput="updateLabels()">
+            
+            <label style="font-size:0.8em; color:#666;">Output (Y-Axis):</label>
+            <input type="text" id="labelY" value="Revenue ($)" oninput="updateLabels()">
+        </div>
+
+        <div class="card">
+            <h3>2. Data Points</h3>
+            <div style="display:flex; gap:5px;">
+                <input type="number" id="newX" placeholder="X Value">
+                <input type="number" id="newY" placeholder="Y Value">
+            </div>
+            <button class="btn-green" onclick="addData()">+ Add Data Point</button>
+            
+            <div style="max-height: 150px; overflow-y: auto; margin-top:10px;">
+                <table id="dataTable">
+                    <thead><tr><th id="thX">X</th><th id="thY">Y</th></tr></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <button onclick="data=[]; updateUI();" style="background:#eee; color:#555; margin-top:10px; font-size:0.8em;">Clear Data</button>
+        </div>
+
+        <div class="card">
+            <h3>3. The Formula</h3>
+            <label><strong>Solver Method:</strong></label>
+            <select id="solverMethod">
+                <option value="math">Exact Math (Linear Regression)</option>
+                <option value="gd">Gradient Descent (AI Learning)</option>
+            </select>
+            <button class="btn-blue" onclick="runSolver()">Run Solver</button>
+
+            <div style="background:#2d3436; color:#fab1a0; padding:10px; border-radius:4px; margin:15px 0; text-align:center; font-family:monospace;" id="formulaDisplay">
+                y = 0x + 0
+            </div>
+
+            <label>Slope (Weight): <span id="valM" class="highlight">0</span></label>
+            <input type="range" id="slideM" min="0" max="10" step="0.1" value="0" oninput="manualTune()">
+
+            <label>Bias (Intercept): <span id="valB" class="highlight">0</span></label>
+            <input type="range" id="slideB" min="-500" max="2000" step="10" value="0" oninput="manualTune()">
+
+            <button class="btn-yellow" onclick="saveSnapshot()">📸 Save Comparison Line</button>
+            <ul id="savedList"></ul>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <canvas id="mainChart"></canvas>
+        </div>
+
+        <div class="card" style="background:#e3fcef; border-left: 5px solid #00b894;">
+            <h3>4. Future Prediction</h3>
+            <p>
+                If <strong class="lblX">Ad Spend</strong> = 
+                <input type="number" id="predX" value="1000" oninput="updatePrediction()" style="width:100px; display:inline-block;">, 
+                <br>
+                Then <strong class="lblY">Revenue</strong> = <strong style="font-size:1.4em;" id="predY">0.00</strong>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="edu-container">
+    <h2 style="text-align:center; color:#2d3436; margin-bottom:30px;">🧠 How the Machine Learns (The Concepts)</h2>
+    
+    <div class="concept-grid">
+        
+        <div class="concept-card">
+            <h4>1. The Hypothesis</h4>
+            <p>This is the model's guess. We assume the relationship between Input (X) and Output (Y) is a straight line.</p>
+            <div class="formula-box">y = mx + b</div>
+            <p>
+                • <span class="variable">m (Slope):</span> The Weight. How much Y changes for every 1 unit of X.<br>
+                • <span class="variable">b (Bias):</span> The Intercept. Where the line starts if X is 0.
+            </p>
+        </div>
+
+        <div class="concept-card" style="border-left-color: #e17055;">
+            <h4 style="color:#e17055;">2. The Cost Function (Loss)</h4>
+            <p>How does the AI know if the line is wrong? It measures the distance between the line and the dots.</p>
+            
+            <div class="formula-box">Error = Average(Difference²)</div>
+            <p>If the error is high, the model is bad. The AI's only goal is to make this number <strong>Zero</strong>.</p>
+        </div>
+
+        <div class="concept-card" style="border-left-color: #00b894;">
+            <h4 style="color:#00b894;">3. Gradient Descent</h4>
+            <p>This is how the AI "learns." Imagine being on a mountain (High Error) blindfolded, trying to walk down to the valley (Low Error).</p>
+            
+            <p>The math calculates the steepness (Gradient) at your feet to figure out which direction is "Down."</p>
+        </div>
+
+        <div class="concept-card" style="border-left-color: #0984e3;">
+            <h4 style="color:#0984e3;">4. Learning Rate</h4>
+            <p>When walking down that mountain, how big are your steps?</p>
+            <div class="formula-box">New_Weight = Old_Weight - (Step_Size * Gradient)</div>
+            <p>
+                • <strong>Too Big:</strong> You jump over the valley (Overshoot).<br>
+                • <strong>Too Small:</strong> You take forever to get there.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // --- STATE ---
+    let data = [[100, 350], [250, 900], [500, 1800], [750, 2400]];
+    let savedLines = []; 
+    let m = 0, b = 0;
+    let chart;
+
+    // --- INIT ---
+    window.onload = function() {
+        // Run initial math
+        const res = ss.linearRegression(data);
+        m = res.m; b = res.b;
+        updateUI();
+    };
+
+    // --- LABELS & RENAMING ---
+    function updateLabels() {
+        const xName = document.getElementById('labelX').value;
+        const yName = document.getElementById('labelY').value;
+
+        // Update Headers
+        document.getElementById('thX').innerText = xName;
+        document.getElementById('thY').innerText = yName;
+
+        // Update Prediction Text
+        document.querySelectorAll('.lblX').forEach(el => el.innerText = xName);
+        document.querySelectorAll('.lblY').forEach(el => el.innerText = yName);
+
+        // Update Inputs placeholders
+        document.getElementById('newX').placeholder = xName;
+        document.getElementById('newY').placeholder = yName;
+
+        updateChart();
+    }
+
+    // --- DATA HANDLING ---
+    function addData() {
+        const x = parseFloat(document.getElementById('newX').value);
+        const y = parseFloat(document.getElementById('newY').value);
+        if(!isNaN(x) && !isNaN(y)) {
+            data.push([x, y]);
+            // Auto-calc if in Math mode
+            if(document.getElementById('solverMethod').value === 'math') {
+                const res = ss.linearRegression(data);
+                m = res.m; b = res.b;
+            }
+            updateUI();
+            document.getElementById('newX').value = '';
+            document.getElementById('newY').value = '';
+        }
+    }
+
+    // --- SOLVER LOGIC ---
+    function runSolver() {
+        if(data.length < 2) return alert("Need at least 2 points.");
+        
+        if(document.getElementById('solverMethod').value === 'math') {
+            const res = ss.linearRegression(data);
+            m = res.m; b = res.b;
+            updateUI();
+        } else {
+            // Gradient Descent Animation
+            m = 0; b = 0;
+            animateGD();
+        }
+    }
+
+    function animateGD() {
+        let iter = 0;
+        const lr = 0.000001; 
+        
+        function step() {
+            if(iter > 100) return;
+            
+            let dM = 0; let dB = 0;
+            const n = data.length;
+
+            for(let i=0; i<n; i++) {
+                let x = data[i][0];
+                let y = data[i][1];
+                let guess = (m * x) + b;
+                let error = y - guess;
+                dM += -2 * x * error;
+                dB += -2 * error;
+            }
+
+            m -= (dM / n) * lr;
+            b -= (dB / n) * (lr * 1000); 
+
+            iter++;
+            updateUI();
+            requestAnimationFrame(step);
+        }
+        step();
+    }
+
+    // --- MANUAL & SNAPSHOTS ---
+    function manualTune() {
+        m = parseFloat(document.getElementById('slideM').value);
+        b = parseFloat(document.getElementById('slideB').value);
+        updateUI();
+    }
+
+    function saveSnapshot() {
+        savedLines.push({ m, b, color: `hsl(${Math.random()*360}, 70%, 50%)` });
+        updateUI();
+    }
+
+    function deleteSnapshot(idx) {
+        savedLines.splice(idx, 1);
+        updateUI();
+    }
+
+    // --- UPDATE UI ---
+    function updateUI() {
+        // Sliders
+        document.getElementById('slideM').value = m;
+        document.getElementById('slideB').value = b;
+        document.getElementById('valM').innerText = m.toFixed(2);
+        document.getElementById('valB').innerText = b.toFixed(2);
+        
+        // Formula
+        const xName = document.getElementById('labelX').value;
+        const yName = document.getElementById('labelY').value;
+        document.getElementById('formulaDisplay').innerText = `${yName} = (${m.toFixed(2)} * ${xName}) + ${b.toFixed(2)}`;
+
+        // Table
+        document.getElementById('tableBody').innerHTML = data.map(d => `<tr><td>${d[0]}</td><td>${d[1]}</td></tr>`).join('');
+
+        // Saved List
+        document.getElementById('savedList').innerHTML = savedLines.map((l, i) => `
+            <li style="color:${l.color}">
+                <strong>Snap ${i+1}:</strong> m:${l.m.toFixed(1)} b:${l.b.toFixed(0)}
+                <button class="btn-red" onclick="deleteSnapshot(${i})">X</button>
+            </li>
+        `).join('');
+
+        updatePrediction();
+        updateChart();
+    }
+
+    function updatePrediction() {
+        const x = parseFloat(document.getElementById('predX').value) || 0;
+        document.getElementById('predY').innerText = (m * x + b).toLocaleString(undefined, {maximumFractionDigits:2});
+    }
+
+    // --- CHART ENGINE ---
+    function updateChart() {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        const xName = document.getElementById('labelX').value;
+        const yName = document.getElementById('labelY').value;
+        
+        const maxX = data.length > 0 ? Math.max(...data.map(d => d[0])) * 1.2 : 1000;
+
+        const datasets = [
+            // 1. Actual Data
+            {
+                label: 'Actual Data',
+                data: data.map(d => ({x: d[0], y: d[1]})),
+                backgroundColor: '#0984e3',
+                type: 'scatter',
+                pointRadius: 6
+            },
+            // 2. Active Line
+            {
+                label: 'Active Formula',
+                data: [{x:0, y:b}, {x:maxX, y:(m*maxX)+b}],
+                borderColor: '#2d3436',
+                type: 'line',
+                pointRadius: 0,
+                borderWidth: 3,
+                fill: false
+            }
+        ];
+
+        // 3. Saved Lines
+        savedLines.forEach((l, i) => {
+            datasets.push({
+                label: `Snap ${i+1}`,
+                data: [{x:0, y:l.b}, {x:maxX, y:(l.m*maxX)+l.b}],
+                borderColor: l.color,
+                borderDash: [5,5],
+                type: 'line',
+                pointRadius: 0,
+                fill: false
+            });
+        });
+
+        if(chart) chart.destroy();
+        chart = new Chart(ctx, {
+            data: { datasets },
+            options: {
+                animation: false,
+                scales: {
+                    x: { type: 'linear', title: {display:true, text: xName} },
+                    y: { title: {display:true, text: yName} }
+                }
+            }
+        });
+    }
+
+    // Initial label set
+    updateLabels();
+</script>
+</body>
+</html>
