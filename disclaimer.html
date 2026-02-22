@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disclaimer | RawWeights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            600: '#0077b5',
+                            900: '#0e1111',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="font-bold text-xl tracking-tight text-gray-900"><a href="/" >RawWeights</a></div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
+                <a href="/" class="hover:text-brand-600 transition">Home</a>
+                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
+		        <a href="/tools/master_ml_hub.html">ML Playground</a>
+                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-3xl mx-auto px-6 py-16 w-full">
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+            
+            <header class="mb-8 border-b border-gray-100 pb-8">
+                <h1 class="text-3xl md:text-4xl font-bold font-serif text-gray-900 leading-tight mb-4">
+                    Disclaimer
+                </h1>
+                <p class="text-gray-500 text-sm">Last updated: February 2026</p>
+            </header>
+
+            <div class="prose prose-lg max-w-none font-serif text-gray-700 leading-loose">
+                <p class="mb-6">
+                    The information provided on this website is for general informational and educational purposes only. By using this site, you agree to the following terms:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-4 mb-8">
+                    <li>
+                        <strong class="font-sans text-gray-900">Educational Purposes Only:</strong> The content on this blog is intended to share technical insights, learnings, and tutorials. It is not intended to serve as a substitute for professional, financial, or legal advice.
+                    </li>
+                    <li>
+                        <strong class="font-sans text-gray-900">Based on Personal Experience:</strong> The articles and tutorials published here reflect my personal experiences, opinions, and knowledge gathered from various online resources, documentation, and real-world practice. What works for my specific tech stack or organization may not work for yours.
+                    </li>
+                    <li>
+                        <strong class="font-sans text-gray-900">No Guarantees of Accuracy:</strong> The technology landscape evolves rapidly. While I strive to keep the information up-to-date and correct, I make no representations or warranties of any kind regarding the completeness, accuracy, reliability, or suitability of the information, code snippets, or related graphics contained on the website.
+                    </li>
+                    <li>
+                        <strong class="font-sans text-gray-900">Use at Your Own Risk:</strong> Any action you take upon the information you find on this website is strictly at your own risk. I will not be liable for any losses, bugs, downtime, or damages in connection with the use of our website or the code provided. Always test code in a safe environment before deploying to production.
+                    </li>
+                    <li>
+                        <strong class="font-sans text-gray-900">External Links:</strong> Through this website, you are able to link to other websites which are not under my control. The inclusion of any links does not necessarily imply a recommendation or endorse the views expressed within them.
+                    </li>
+                </ul>
+
+                <p>
+                    If you have any questions about this disclaimer or the content on this site, please feel free to reach out to me via LinkedIn or Twitter.
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
