@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizing AI: An Interactive Journey from RNNs to Transformers | RawWeights</title>
+    <meta name="description" content="Explore the evolution of sequence models. Understand the math and mechanics behind modern AI—from RNNs to Transformers—with 13 hands-on interactive visualizers.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            600: '#0077b5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="font-bold text-xl tracking-tight text-gray-900"><a href="/" >RawWeights</a></div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
+                <a href="/" class="hover:text-brand-600 transition">Home</a>
+                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
+                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
+                <a href="/tools/master_sequence_hub.html" class="hover:text-brand-600 transition">Attention Journey</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
+        
+        <main class="w-full lg:w-2/3 mx-auto">
+    <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+        <header class="mb-10">
+            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+                <span class="px-2 py-1 bg-blue-50 text-brand-600 rounded font-semibold">Machine Learning</span>
+                <span>&bull;</span>
+                <span>7 min read</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-bold font-serif text-gray-900 leading-tight mb-6">
+                Looking Under the Hood: A Visual Journey from RNNs to Transformers
+            </h1>
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=AI_Dev" alt="Avatar">
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-bold text-gray-900">Engineering & Architecture</p>
+                    <p class="text-xs text-gray-500">Mar 01, 2026</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="prose prose-lg max-w-none font-serif text-gray-700 leading-loose">
+				<figure class="my-10">
+                        <div class="aspect-video w-full overflow-hidden rounded-xl shadow-md bg-gray-100 border border-gray-200">
+                            <video class="w-full h-full object-cover" controls preload="metadata" poster="/images/vital.jpg">
+                                <source src="/images/videos/visualrnn.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <figcaption class="text-center text-sm text-gray-500 mt-3 font-sans">
+                            Step inside the neural network and watch exactly how AI evolved from struggling to read word-by-word, to processing entire worlds all at once.
+                        </figcaption>
+                    </figure>
+            <p class="mb-6">
+                We all drive cars, but very few of us truly understand the internal combustion engine. We just use the interface—the steering wheel and pedals—and trust that the machine works.
+            </p>
+            <p class="mb-6">
+                Right now, we are treating Artificial Intelligence the exact same way. Machine Learning is the complex engine, and modern AI tools are just the interface. With the explosion of new LLMs, many of us feel confused about which models to use or how to improve our prompting. We often feel that studying the underlying math is disconnected from our daily work.
+            </p>
+            <p class="mb-6">
+                But understanding the <em>evolution</em> of these models—like knowing if an RNN is obsolete, or how a Transformer saves processing costs—is a superpower. Once you visualize the math and interconnections, the "magic" becomes understandable engineering. Writing better prompts and reducing AI bias gets significantly easier.
+            </p>
+            <p class="mb-6">
+                Inspired by the excellent teachings of experts like Ava Amini, I have created a fully interactive, visual guide to sequence models. 
+            </p>
+
+            <h3 class="text-2xl font-sans font-bold text-gray-900 mt-8 mb-4">The Interactive Tools</h3>
+            <p class="mb-6">
+                Instead of just reading math formulas, I built 13 interactive widgets you can play with to see exactly how data moves through these networks. Click any link below to jump straight to that tool in the master guide:
+            </p>
+
+            <ul class="space-y-4 mb-8 list-none pl-0">
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#intro-to-sequence-models" class="text-brand-600 font-bold hover:underline">1. The Forest Hiker</a><br>
+                    <span class="text-sm text-gray-600">Why does sequence matter? Toggle the history of a hiker's steps to see how a model turns wild guessing into an accurate prediction of momentum.</span>
+                </li>
+                
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#problem-formulations" class="text-brand-600 font-bold hover:underline">2. AI Architecture Types</a><br>
+                    <span class="text-sm text-gray-600">Run math traces to see how the architecture changes whether you are doing Sentiment Analysis (Many-to-One) or Translation (Many-to-Many).</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#building-rnns" class="text-brand-600 font-bold hover:underline">3. Unrolling the Timeline</a><br>
+                    <span class="text-sm text-gray-600">Standard networks have amnesia. Watch an animation of how an RNN solves this by passing a "memory pad" (the hidden state) forward step-by-step.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#formalizing-rnn-internals" class="text-brand-600 font-bold hover:underline">4. Rolling vs Unrolling the Graph</a><br>
+                    <span class="text-sm text-gray-600">Click to physically expand the traditional "loop" of an RNN into an unrolled timeline to understand how parameters are shared across time.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#training-rnns-loss" class="text-brand-600 font-bold hover:underline">5. Calculating Sequence Loss</a><br>
+                    <span class="text-sm text-gray-600">Type a sentence and watch the engine calculate the error (loss) at every single word prediction to create a total score.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#word-embeddings" class="text-brand-600 font-bold hover:underline">6. Word Embeddings Pipeline</a><br>
+                    <span class="text-sm text-gray-600">Neural networks can't read the word "apple". Type a sentence and see how it gets translated into dense numerical vectors (heatmaps).</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#bptt-gradient-issues" class="text-brand-600 font-bold hover:underline">7. BPTT & Gradient Clipping</a><br>
+                    <span class="text-sm text-gray-600">Watch the math flow backwards in a 3-phase animation. See how numbers multiply too fast (exploding gradients) and how "clipping" saves the network.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#lstms-and-gating" class="text-brand-600 font-bold hover:underline">8. Inside the LSTM Cell</a><br>
+                    <span class="text-sm text-gray-600">Click the Forget, Input, and Output gates to see how LSTMs act like a smart conveyor belt, selectively keeping or deleting memory to fix the RNN gradient problem.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#limitations-of-rnns" class="text-brand-600 font-bold hover:underline">9. Architecture Evaluator</a><br>
+                    <span class="text-sm text-gray-600">Compare how RNNs, Dense Networks, and Attention mechanisms handle continuous streams, parallel processing, and long-term memory.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#intro-to-attention" class="text-brand-600 font-bold hover:underline">10. Interactive Self-Attention</a><br>
+                    <span class="text-sm text-gray-600">Hover your mouse over words in different sentences. Watch glowing lines reveal exactly which other words the AI "looks at" to determine context.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#qkv-mechanism" class="text-brand-600 font-bold hover:underline">11. Query, Key, Value Simulator</a><br>
+                    <span class="text-sm text-gray-600">Based on a database search analogy. Watch the target word (Query) check every other word (Key) to extract mathematical meaning (Value).</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#self-attention-operations" class="text-brand-600 font-bold hover:underline">12. The Attention Chessboard</a><br>
+                    <span class="text-sm text-gray-600">Hover over a grid to see the exact Linear Algebra (Dot Product + Softmax) happening behind the scenes for any pair of words.</span>
+                </li>
+
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <a href="/tools/master_sequence_hub.html#transformer-architecture" class="text-brand-600 font-bold hover:underline">13. Vision Transformer (Multi-Head)</a><br>
+                    <span class="text-sm text-gray-600">See how multiple attention heads pull apart a complex image. Click through the heads to see the AI isolate living entities, infrastructure, and nature independently.</span>
+                </li>
+            </ul>
+
+            <blockquote class="border-l-4 border-brand-600 pl-4 italic text-gray-500 my-8">
+                "Architecture is about trade-offs. If you trade performance for developer experience, make sure the user can afford the bill."
+            </blockquote>
+
+            <p>
+                By walking through these visualizations, the abstract math becomes concrete architecture. Click through the tools above, and demystify the engine powering today's AI revolution!
+            </p>
+        </div>
+    </article>
+</main>
+
+        <aside class="w-full lg:w-1/3">
+            <div class="sticky top-24">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Related posts</h3>
+                    <div id="sidebar-feed" class="flex flex-col space-y-6">
+                        </div>
+                    <a href="/blog.html" class="block w-full text-center mt-6 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition">View All Articles</a>
+                </div>
+
+
+            </div>
+        </aside>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Same Data Source
+        const articles = [
+            {
+                title: "Building a Tiny AI in Your Browser (No Python Required)",
+                excerpt: "We adopted micro-frontends two years ago. Here is the unvarnished truth about the bundle size and latency costs we incurred...",
+                date: "Feb 14, 2026",
+                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+            },
+            {
+                title: "Why I paused the advanced AI rush to build a simple regression tool",
+                excerpt: "Management isn't about tracking tasks. It's about unblocking people. Here is my framework for effective weekly syncs.",
+                date: "Feb 8, 2026",
+                image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
+            }
+        ];
+
+        const sidebar = document.getElementById('sidebar-feed');
+
+        articles.forEach(article => {
+            const item = `
+                <a href="${article.link}" class="group block">
+                    <h4 class="font-bold text-gray-800 group-hover:text-brand-600 transition leading-snug mb-1">${article.title}</h4>
+                    <div class="flex items-center text-xs text-gray-400">
+                        <span class="w-4 h-4 mr-1 bg-brand-600 rounded-sm flex items-center justify-center text-white font-bold" style="font-size: 8px;">in</span>
+                        <span>Posted on LinkedIn &bull; ${article.date}</span>
+                    </div>
+                </a>
+            `;
+            sidebar.innerHTML += item;
+        });
+    </script>
+</body>
+</html>
