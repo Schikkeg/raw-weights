@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer"> 
+	<meta name="description" content="Master Convolutional Neural Networks (CNNs) with this interactive visual sandbox. Explore the exact math behind filters, ReLU, max pooling, and backpropagation.">
+    <title>How The Machine Sees | CNN Sandbox</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pixelit@1.1.1/dist/pixelit.min.js"></script>
+
+	<script>
+      window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+        options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'svg'] }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js" defer></script>
+    <script defer>mermaid.initialize({startOnLoad:true});</script>
+        
+    <style>
+        :root {
+            --primary: #3b82f6; 
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --sidebar-width: 320px;
+            --nav-height: 70px;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; padding-top: var(--nav-height); display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        
+        /* Navigation & Sidebar Layout */
+        .global-nav { position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height); background: rgb(255 255 255 / .9); backdrop-filter: blur(10px); border-bottom: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; z-index: 2000; box-shadow: 0 4px 20px rgb(0 0 0 / .02); }
+        .global-nav a { margin: 0 15px; text-decoration: none; color: var(--text-muted); font-weight: 800; font-size: .95rem; transition: color 0.2s; text-transform: uppercase; }
+        .global-nav a:hover { color: var(--primary); }
+        .nav-links { display: flex; align-items: center; }
+        .site-header { text-align: center; padding: 40px 20px 20px 20px; background: #fff; border-bottom: 1px solid #e2e8f0; }
+        .site-header h1 { font-size: 2.5rem; font-weight: 800; margin: 0 0 10px 0; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .site-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+        .layout-container { display: flex; flex: 1; position: relative; }
+        .sidebar { width: var(--sidebar-width); background: #fff; height: calc(100vh - var(--nav-height)); position: sticky; top: var(--nav-height); border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; background: #fff; z-index: 10; }
+        .search-box { width: 100%; padding: 10px 15px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: .9rem; box-sizing: border-box; outline: none; transition: 0.2s; font-family: inherit; }
+        .toc { padding: 10px 0; }
+        .toc ul { list-style: none; padding: 0; margin: 0; }
+        .toc li a { display: block; padding: 12px 20px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: .9rem; border-left: 3px solid transparent; transition: 0.2s; }
+        .toc li a.active { border-left-color: var(--primary); color: var(--primary); background: #eff6ff; font-weight: 800; }
+        .main-content { flex: 1; padding: 40px 60px; max-width: 1100px; margin: 0 auto; }
+        section { margin-bottom: 80px; scroll-margin-top: 100px; }
+        h2 { font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .site-footer { background: #0f172a; color: #94a3b8; padding: 40px 0; text-align: center; font-weight: 600; margin-top: auto; width: 100%; }
+        .panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 2rem; margin-bottom: 3rem; }
+
+        /* Mobile Adjustments */
+        .mobile-menu-btn, .mobile-global-btn { display: none; position: absolute; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .mobile-menu-btn { left: 20px; background: var(--primary); color: #fff; }
+        .mobile-global-btn { right: 20px; background: var(--text-main); color: #fff; }
+        @media (max-width: 1024px) {
+            .mobile-menu-btn, .mobile-global-btn { display: block; }
+            .sidebar { position: fixed; left: 0; transform: translateX(-100%); transition: transform 0.3s; z-index: 1500; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { padding: 30px 20px; width: 100%; }
+            .nav-links { display: none; position: absolute; top: var(--nav-height); left: 0; width: 100%; background: #fff; flex-direction: column; }
+            .nav-links.show { display: flex; }
+        }
+
+        /* --- 3D FLIP ENGINE & SHREDDER CSS --- */
+        .perspective-1000 { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        .flip-hover:hover .flip-inner { transform: rotateY(180deg); }
+
+        /* The Paper Shredder Box */
+        .shredder-box { 
+            display: flex; flex-wrap: wrap; 
+            width: 240px; height: 240px; /* Forced square */
+            margin: 0 auto; gap: 0; 
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            background-color: #fff;
+        }
+
+        .shredder-box.flattened { 
+            width: 100%; height: 50px; /* Forced horizontal */
+            flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; 
+            gap: 4px; padding-bottom: 10px; 
+            background-color: transparent;
+            outline: none !important; box-shadow: none !important;
+            justify-content: flex-start;
+        }
+
+        /* Individual 30x30 Shredded Pieces */
+        .shred-piece { 
+            width: 30px; height: 30px; flex-shrink: 0; 
+            position: relative; cursor: crosshair; 
+            perspective: 1000px;
+        }
+
+        .shred-inner { 
+            position: relative; width: 100%; height: 100%; 
+            transform-style: preserve-3d; 
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        .shred-piece:hover .shred-inner { 
+            transform: rotateY(180deg) scale(1.3); 
+            z-index: 50; 
+        }
+        .shred-piece:hover { z-index: 50; }
+
+        .shred-front, .shred-back { 
+            position: absolute; width: 100%; height: 100%; 
+            backface-visibility: hidden; outline: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .shred-back { 
+            transform: rotateY(180deg); 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 11px; font-weight: bold; font-family: monospace; 
+        }
+
+        /* Enlarge Image Modal */
+        .enlarged-img {
+            position: fixed !important; top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw !important; height: 100vh !important;
+            object-fit: contain !important; background-color: rgba(0, 0, 0, 0.9);
+            z-index: 9999 !important; padding: 2rem; cursor: zoom-out !important;
+        }
+
+/* --- SECTION 3: FLIP & HIGHLIGHT CSS --- */
+.flip-inner { 
+    position: relative; width: 100%; height: 100%; 
+    transform-style: preserve-3d; 
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+.flip-front, .flip-back { 
+    position: absolute; width: 100%; height: 100%; 
+    backface-visibility: hidden; 
+}
+.flip-back { 
+    transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; 
+    font-size: 11px; font-weight: bold; font-family: monospace; 
+}
+/* Triggered by JS on hover */
+.force-flip { transform: rotateY(180deg) scale(1.1); z-index: 50; }
+
+/* Tracing Highlight Colors */
+.hl-input { outline: 3px solid #3b82f6 !important; box-shadow: 0 4px 10px rgba(59,130,246,0.6); z-index: 60; }
+.hl-filter { outline: 3px solid #facc15 !important; box-shadow: 0 4px 10px rgba(250,204,21,0.6); z-index: 60; }
+.hl-output { outline: 3px solid #10b981 !important; box-shadow: 0 4px 10px rgba(16,185,129,0.6); z-index: 60; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="global-nav">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰ Topics</button>
+        <div id="globalNavLinks" class="nav-links">
+            <a href="/">Home</a>
+		     <a href="/blog.html"><button >Blog</button></a>
+		     <a href="/tools/master_ml_hub.html"><button >ML Playground</button></a>
+		     <a href="/srt.html"><button >Simple Regression Tool</button></a>
+			<a href="/tools/master_sequence_hub.html" ><button >Attention Journey</button></a>
+        </div>
+        <button class="mobile-global-btn" onclick="toggleGlobalNav()">⋮ Menu</button>
+    </nav>
+
+    <header class="site-header">
+        <h1>How The Machine Sees</h1>
+        <p>A hands-on, interactive masterclass detailing the exact mathematics of Convolutional Neural Networks (CNNs).</p>
+    </header>
+
+    <div class="layout-container">
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <input type="text" id="tocSearch" class="search-box" placeholder="Search topics..." onkeyup="filterTOC()">
+            </div>
+            <div class="toc">
+                <ul id="tocList">
+                    <li><a href="#sec-sandbox" class="active">Global Sandbox Image</a></li>
+                    <li><a href="#sec-architecture">1. CNN Architecture</a></li>
+                    <li><a href="#sec-shredder">2. The Paper Shredder</a></li>
+                    <li><a href="#sec-convolution">3. Convolution</a></li>
+                    <li><a href="#sec-relu">4. Nonlinearity (ReLU)</a></li>
+                    <li><a href="#sec-pooling">5. Max Pooling</a></li>
+                    <li><a href="#sec-backprop">6. Backpropagation</a></li>
+                    <li><a href="#sec-outputs">7. Final Outputs</a></li>
+                    <li><a href="#sec-faq">8. FAQ & Insights</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+
+            <section id="sec-sandbox">
+                <h2>Global Sandbox Setup</h2>
+                <div class="panel border-t-4 border-t-slate-800 text-center">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Choose the Source Photograph</h3>
+                    <p class="text-slate-600 mb-6">Select an image below. <strong>Hover over the image to flip it and reveal its numerical grid.</strong></p>
+                    
+					<div class="flex flex-wrap justify-center gap-4 mb-4">
+            <button class="img-btn px-6 py-2 bg-blue-600 text-white font-bold rounded-full shadow-md" data-src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces">Close-up Face</button>
+            <button class="img-btn px-6 py-2 bg-slate-200 text-slate-700 font-bold rounded-full hover:bg-slate-300" data-src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=240&h=240&fit=crop&crop=faces">Dog Face</button>
+            <button class="img-btn px-6 py-2 bg-slate-200 text-slate-700 font-bold rounded-full hover:bg-slate-300" data-src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=240&h=240&fit=crop&crop=faces">Cat Face</button>
+            <button class="img-btn px-6 py-2 bg-slate-200 text-slate-700 font-bold rounded-full hover:bg-slate-300" data-src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=240&h=240&fit=crop&crop=edges">City Traffic</button>
+        </div>
+
+        			<div class="flex justify-center items-center gap-2 mb-8">
+            <input type="text" id="custom-img-url" placeholder="Paste custom image URL (must allow CORS)..." class="px-4 py-2 border border-slate-300 rounded-lg text-sm w-72 focus:outline-none focus:border-blue-500">
+            <button id="btn-load-custom" class="px-4 py-2 bg-slate-800 text-white font-bold rounded-lg shadow hover:bg-slate-700 text-sm transition">Load Custom</button>
+        </div>
+
+        			<div class="flex justify-center">
+            <div class="relative perspective-1000 w-[240px] h-[240px] flip-hover cursor-crosshair">
+                <div class="w-full h-full transition-transform duration-500 preserve-3d flip-inner shadow-2xl outline outline-4 outline-slate-800 rounded">
+                    <div class="absolute w-full h-full backface-hidden bg-slate-200">
+                        <img id="source-img" crossorigin="anonymous" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces" class="w-full h-full object-cover">
+                    </div>
+                    <div id="sandbox-grid" class="absolute w-full h-full backface-hidden rotate-y-180 bg-white" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                    <canvas id="pixelit-canvas" width="240" height="240" class="hidden"></canvas>
+                </div>
+            </section>
+
+            <section id="sec-architecture">
+                <h2>1. The Convolutional Pipeline</h2>
+                <div class="panel">
+                    <div class="flex flex-col lg:flex-row items-center justify-between gap-2 text-xs md:text-sm font-bold text-slate-600 text-center mb-12">
+                        <div class="p-3 bg-slate-100 rounded-lg flex-1 w-full border border-slate-200">1. Input Image<br><span class="text-[10px] font-normal">Raw Pixels</span></div>
+                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="p-3 bg-blue-50 text-blue-700 rounded-lg flex-1 w-full border border-blue-200">2. Convolution<br><span class="text-[10px] font-normal">Feature Extraction</span></div>
+                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="p-3 bg-green-50 text-green-700 rounded-lg flex-1 w-full border border-green-200">3. ReLU<br><span class="text-[10px] font-normal">Nonlinearity</span></div>
+                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="p-3 bg-purple-50 text-purple-700 rounded-lg flex-1 w-full border border-purple-200">4. Pooling<br><span class="text-[10px] font-normal">Downsampling</span></div>
+                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="p-3 bg-red-50 text-red-700 rounded-lg flex-1 w-full border border-red-200">5. Flattening<br><span class="text-[10px] font-normal">To 1D Vector</span></div>
+                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="p-3 bg-orange-50 text-orange-700 rounded-lg flex-1 w-full border border-orange-200">6. Softmax<br><span class="text-[10px] font-normal">Task Logic</span></div>
+                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="p-3 bg-slate-800 text-white rounded-lg flex-1 w-full border border-slate-900 shadow-md">7. Output<br><span class="text-[10px] text-slate-300 font-normal">Task Execution</span></div>
+                    </div>
+
+                    <div class="text-center border-t border-slate-200 pt-8">
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Network Architecture Diagram</h3>
+                        <p class="text-sm text-slate-500 mb-6">Click the diagram below to expand it to full screen.</p>
+                        
+
+
+                        <img src="../images/cnnarchi.jpeg" 
+                             alt="CNN Architecture" 
+                             class="mx-auto rounded-lg border-2 border-slate-300 shadow-md cursor-zoom-in transition-transform hover:scale-[1.02] max-w-full h-auto"
+                             onclick="this.classList.toggle('enlarged-img');">
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-shredder">
+                <h2>2. The Paper Shredder</h2>
+                <div class="panel border-l-4 border-l-red-500">
+                    <p class="text-slate-600 mb-6">Standard neural networks require a 1D line of data. <strong>Click 'Shred Image' to unroll the photograph. Hover over any piece to flip it and reveal its numerical grid value.</strong> Notice how destroying the 2D layout completely destroys the geometry of the image.</p>
+                    
+                    <div class="flex flex-col items-center gap-6">
+                        <button id="btn-flatten" class="px-8 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg transition">Shred Image (Flatten)</button>
+                        
+                        <div class="w-full bg-slate-50 p-6 rounded-xl border border-slate-200 min-h-[300px] flex items-center justify-center overflow-hidden shadow-inner">
+                            <div id="shredder-box" class="shredder-box outline outline-4 outline-slate-800 shadow-2xl bg-white">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="sec-convolution" class="max-w-6xl mx-auto">
+    <h2>3. Convolution: Feature Extraction</h2>
+    <div class="panel border-l-4 border-l-blue-500">
+        <p class="text-slate-600 mb-6">A CNN slides a filter over the photo to generate a new image (Feature Map). <strong>Select a filter below. Hover over the Feature Map output image to flip the cards and mathematically trace the calculation back to the input!</strong></p>
+
+        <div id="dynamic-filters" class="flex flex-wrap justify-center gap-4 mb-8">
+        </div>
+
+        <div class="flex flex-col xl:flex-row items-center justify-center gap-6">
+            
+            <div class="text-center">
+                <h3 class="text-sm font-bold text-slate-500 mb-2">Input Photo (8x8)</h3>
+                <div id="conv-in-grid" class="flex flex-wrap shadow-xl outline outline-4 outline-slate-800 bg-white" style="width: 240px; height: 240px;"></div>
+            </div>
+            
+            <div class="text-3xl font-bold text-slate-300">⊗</div>
+            
+            <div class="text-center">
+                <h3 class="text-sm font-bold text-slate-500 mb-2" id="conv-filter-title">Filter (3x3)</h3>
+                <div id="conv-filt-grid" class="flex flex-wrap shadow-md outline outline-2 outline-slate-400 bg-white" style="width: 90px; height: 90px;"></div>
+            </div>
+            
+            <div class="text-3xl font-bold text-slate-300">=</div>
+            
+            <div class="text-center">
+                <h3 class="text-sm font-bold text-slate-500 mb-2">Feature Map (6x6)</h3>
+                <div id="conv-out-grid" class="flex flex-wrap shadow-xl outline outline-4 outline-slate-800 bg-black" style="width: 240px; height: 240px;"></div>
+            </div>
+            
+        </div>
+        
+        <div id="conv-math" class="mt-8 text-center font-mono text-sm md:text-base text-slate-700 bg-slate-50 p-4 rounded border border-slate-200 min-h-[3rem] flex items-center justify-center transition-all">
+            Hover over the Feature Map image to trace the element-wise multiplication...
+        </div>
+    </div>
+</section>
+            
+<section id="sec-relu" class="max-w-5xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4 text-slate-900">4. Nonlinearity (ReLU)</h2>
+    <div class="panel border-l-4 border-l-green-500">
+        
+        <p class="text-slate-600 mb-6">Notice the red areas? That is mathematical noise (negative numbers where the filter found the opposite of what it wanted). The ReLU formula $f(x) = \max(0, x)$ instantly squashes all negative noise to zero (pure black). <strong>Hover to flip and see the red negative numbers, then click 'Apply Threshold'.</strong></p>
+        
+        <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+            <div class="text-center">
+                <h3 class="text-sm font-bold text-slate-500 mb-2">Pre-ReLU Image (6x6)</h3>
+                <div id="relu-in-grid" class="flex flex-wrap shadow-md outline outline-4 outline-slate-800 bg-black" style="width: 240px; height: 240px;"></div>
+            </div>
+            
+            <button id="btn-relu" class="px-6 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-lg transition transform hover:scale-105 z-10">Apply Threshold -></button>
+            
+            <div class="text-center transition-all duration-700 opacity-30 blur-sm grayscale" id="relu-out-wrapper">
+                <h3 class="text-sm font-bold text-slate-500 mb-2">Post-ReLU Image (6x6)</h3>
+                <div id="relu-out-grid" class="flex flex-wrap shadow-md outline outline-4 outline-green-500 bg-black" style="width: 240px; height: 240px;"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="sec-pooling" class="max-w-5xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4 text-slate-900">5. Max Pooling (Downsampling)</h2>
+    <div class="panel border-l-4 border-l-purple-500">
+        
+        <p class="text-slate-600 mb-6">To increase the network's field of view, we shrink the image. Pooling divides the map into 2x2 blocks and extracts <em>only the brightest pixel</em> from each block. <strong>Hover over the 3x3 output to flip it, and watch it automatically highlight the exact 4 input numbers it condensed!</strong></p>
+        
+        <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+            <div class="text-center">
+                <h3 class="text-sm font-bold text-slate-500 mb-2">6x6 Input (Post-ReLU)</h3>
+                <div id="pool-in-grid" class="flex flex-wrap shadow-md outline outline-4 outline-slate-800 bg-black" style="width: 240px; height: 240px;"></div>
+            </div>
+            
+            <div class="text-4xl text-slate-300 font-bold">→</div>
+            
+            <div class="text-center">
+                <h3 class="text-sm font-bold text-slate-500 mb-2">3x3 Pooled Image</h3>
+                <div id="pool-out-grid" class="flex flex-wrap shadow-md outline outline-4 outline-purple-500 bg-black" style="width: 240px; height: 240px;"></div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="sec-backprop" class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4 text-slate-900">6. Backpropagation (Learning)</h2>
+    <div class="panel border-l-4 border-l-orange-500">
+        <p class="text-slate-600 mb-6">CNNs don't start with perfect filters; they initialize with random noise. Backpropagation calculates the network's error and mathematically nudges the random numbers. <strong>Click 'Train Filter' to watch the random filter evolve. Notice how its messy Feature Map slowly snaps into focus to match the Target!</strong></p>
+        
+        <div class="flex flex-col xl:flex-row items-center justify-center gap-6">
+            
+            <div class="flex flex-col items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div class="flex gap-4 items-center mb-4">
+                    <div class="text-center">
+                        <h3 class="text-xs font-bold text-slate-500 mb-1">Random Filter</h3>
+                        <div id="bp-cur-filt" class="flex flex-wrap shadow-sm outline outline-2 outline-slate-400 bg-white" style="width: 60px; height: 60px;"></div>
+                    </div>
+                    <div class="text-2xl font-bold text-slate-300">→</div>
+                    <div class="text-center">
+                        <h3 class="text-xs font-bold text-slate-500 mb-1">Current Feature Map</h3>
+                        <div id="bp-cur-out" class="flex flex-wrap shadow-md outline outline-4 outline-slate-800 bg-black" style="width: 180px; height: 180px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-4 px-4">
+                <button id="btn-train" class="px-6 py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg shadow-lg transition transform hover:scale-105 z-10 whitespace-nowrap">Train (Reduce Error)</button>
+                <div id="bp-error-metric" class="font-mono font-bold text-lg text-red-500">Error: High</div>
+            </div>
+
+            <div class="flex flex-col items-center bg-green-50 p-4 rounded-xl border border-green-200">
+                <div class="flex gap-4 items-center mb-4">
+                    <div class="text-center">
+                        <h3 class="text-xs font-bold text-green-600 mb-1">Target Filter</h3>
+                        <div id="bp-tar-filt" class="flex flex-wrap shadow-sm outline outline-2 outline-green-500 bg-white" style="width: 60px; height: 60px;"></div>
+                    </div>
+                    <div class="text-2xl font-bold text-green-300">→</div>
+                    <div class="text-center">
+                        <h3 class="text-xs font-bold text-green-600 mb-1">Perfect Feature Map</h3>
+                        <div id="bp-tar-out" class="flex flex-wrap shadow-md outline outline-4 outline-green-500 bg-black" style="width: 180px; height: 180px;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section id="sec-outputs" class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4 text-slate-900">7. Final Output Paradigms</h2>
+    <div class="panel border-l-4 border-l-rose-500">
+        <p class="text-slate-600 mb-6">Once the image has been processed through all the layers above, what does the network actually <em>do</em> with the final mathematical features? The architecture of the very last layer defines the task.</p>
+        
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-200 pb-4">
+            <button class="out-tab-btn active px-6 py-2 bg-rose-500 text-white rounded-full font-bold shadow-md text-sm" data-target="tab-class">Classification (Softmax)</button>
+            <button class="out-tab-btn px-6 py-2 bg-slate-100 text-slate-600 rounded-full font-bold hover:bg-slate-200 text-sm" data-target="tab-rcnn">Object Detection</button>
+            <button class="out-tab-btn px-6 py-2 bg-slate-100 text-slate-600 rounded-full font-bold hover:bg-slate-200 text-sm" data-target="tab-seg">Semantic Segmentation</button>
+            <button class="out-tab-btn px-6 py-2 bg-slate-100 text-slate-600 rounded-full font-bold hover:bg-slate-200 text-sm" data-target="tab-reg">Probabilistic Control</button>
+        </div>
+
+        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 min-h-[300px]">
+            
+            <div id="tab-class" class="out-tab-content active">
+                <h3 class="font-bold text-slate-700 mb-4">Softmax Formula: $P(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}$</h3>
+                <p class="text-sm text-slate-600 mb-6">Softmax squashes raw neural scores into a probability distribution summing to 100%.</p>
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    <div class="flex-1 w-full">
+                        <label class="block text-sm mb-1 font-bold">Target Match Score: <span id="val-targ" class="font-mono text-blue-600">120</span></label>
+                        <input type="range" id="slider-targ" min="0" max="200" value="120" class="w-full accent-blue-600 mb-4">
+                        <label class="block text-sm mb-1 font-bold">Background Score: <span id="val-bg" class="font-mono text-slate-600">60</span></label>
+                        <input type="range" id="slider-bg" min="0" max="200" value="60" class="w-full accent-slate-500">
+                    </div>
+                    <div class="flex-1 w-full bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-24 text-sm font-bold">Target</div>
+                            <div class="flex-1 bg-slate-200 h-6 rounded-full overflow-hidden"><div id="bar-targ" class="bg-blue-600 h-full w-[0%] transition-all duration-300"></div></div>
+                            <div id="pct-targ" class="w-16 text-right font-mono font-bold">0%</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 text-sm font-bold text-slate-500">Background</div>
+                            <div class="flex-1 bg-slate-200 h-6 rounded-full overflow-hidden"><div id="bar-bg" class="bg-slate-400 h-full w-[0%] transition-all duration-300"></div></div>
+                            <div id="pct-bg" class="w-16 text-right font-mono font-bold text-slate-500">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-rcnn" class="out-tab-content hidden">
+                <h3 class="font-bold text-slate-700 mb-4 text-center">R-CNN: Bounding Boxes</h3>
+                <div class="flex justify-center">
+                    <div class="relative w-[240px] h-[240px] shadow-lg outline outline-4 outline-slate-800">
+                        <img id="rcnn-img" src="" crossorigin="anonymous" class="w-full h-full object-cover">
+                        <div class="absolute border-[4px] border-yellow-400 bg-yellow-400/20" style="top: 15%; left: 15%; width: 70%; height: 70%;">
+                            <span class="bg-yellow-400 text-black text-xs font-bold px-2 py-1 absolute -top-6 left-[-4px]">Target: 0.99</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+			<div id="tab-seg" class="out-tab-content hidden">
+                <h3 class="font-bold text-slate-700 mb-4 text-center">Segmentation: Pixel-Perfect Multi-Class Masks</h3>
+                <p class="text-sm text-slate-500 mb-4 text-center">The network classifies every individual pixel into a category.</p>
+                <div class="flex flex-col items-center">
+                    <div class="relative w-[240px] h-[240px] shadow-lg outline outline-4 outline-slate-800">
+                        <img id="seg-img" src="" crossorigin="anonymous" class="w-full h-full object-cover">
+                        <div id="seg-mask-container" class="absolute inset-0 grid grid-cols-8 grid-rows-8 opacity-70 pointer-events-none transition-all duration-500">
+                        </div>
+                    </div>
+                    <div id="seg-legend-container" class="flex gap-4 mt-4 text-sm font-bold bg-white px-4 py-2 rounded-full border border-slate-200 transition-all duration-500">
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-reg" class="out-tab-content hidden">
+                <h3 class="font-bold text-slate-700 mb-4 text-center">Regression: Continuous Control (e.g., Steering)</h3>
+                <div class="flex flex-col items-center w-full max-w-sm mx-auto mt-6">
+                    <svg id="steering-wheel" class="w-32 h-32 mb-8 transition-transform duration-100 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 2v20M2.05 12h20M12 12l-7 7M12 12l7 7"></path>
+                    </svg>
+                    <input type="range" id="slider-steer" min="-90" max="90" value="0" class="w-full accent-slate-800 mb-4">
+                    <div class="text-2xl font-mono font-bold bg-white px-6 py-2 rounded-lg border border-slate-200">Angle: <span id="val-steer" class="text-rose-500">0</span>°</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+            <section id="sec-faq" class="max-w-4xl mx-auto mb-24">
+    <h2 class="text-2xl font-bold mb-6 text-slate-900">8. FAQ & Insights</h2>
+    <div class="space-y-4">
+        <details open class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Show me the code! How do I build this CNN natively in Java (DL4J & ND4J)?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                <p class="mb-4">To build and train neural networks natively on the JVM, the industry standard is <strong>Deeplearning4j (DL4J)</strong> powered by <strong>ND4J</strong> (which handles the heavy matrix math, just like NumPy in Python). Notice how the DL4J Builder pattern perfectly mirrors the visual steps in our sandbox:</p>
+                
+                <div class="bg-slate-800 text-slate-50 p-5 rounded-lg font-mono text-[13px] overflow-x-auto mb-4 shadow-inner">
+<span class="text-purple-400">import</span> org.deeplearning4j.nn.conf.MultiLayerConfiguration;<br>
+<span class="text-purple-400">import</span> org.deeplearning4j.nn.conf.NeuralNetConfiguration;<br>
+<span class="text-purple-400">import</span> org.deeplearning4j.nn.conf.inputs.InputType;<br>
+<span class="text-purple-400">import</span> org.deeplearning4j.nn.conf.layers.*;<br>
+<span class="text-purple-400">import</span> org.nd4j.linalg.activations.Activation;<br>
+<span class="text-purple-400">import</span> org.nd4j.linalg.learning.config.Adam;<br>
+<span class="text-purple-400">import</span> org.nd4j.linalg.lossfunctions.LossFunctions;<br><br>
+
+<span class="text-slate-400">// 1. Define the Pipeline Architecture</span><br>
+MultiLayerConfiguration conf = <span class="text-purple-400">new</span> NeuralNetConfiguration.Builder()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">// 7. Backpropagation Setup (Error calculation & learning rate)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;.updater(<span class="text-purple-400">new</span> Adam(<span class="text-blue-300">0.001</span>))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.list()<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">// 2 & 3. Convolution (3x3 Filter) + ReLU</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;.layer(<span class="text-purple-400">new</span> ConvolutionLayer.Builder(<span class="text-blue-300">3</span>, <span class="text-blue-300">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.nIn(<span class="text-blue-300">1</span>).nOut(<span class="text-blue-300">64</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.activation(Activation.<span class="text-green-300">RELU</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.build())<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">// 4. Max Pooling (Downsampling by 2x2 blocks)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;.layer(<span class="text-purple-400">new</span> SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.<span class="text-green-300">MAX</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.kernelSize(<span class="text-blue-300">2</span>, <span class="text-blue-300">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.build())<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">// 5. Final Output Task (Classification with Softmax)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;.layer(<span class="text-purple-400">new</span> OutputLayer.Builder(LossFunctions.LossFunction.<span class="text-green-300">NEGATIVELOGLIKELIHOOD</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.nOut(<span class="text-blue-300">10</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.activation(Activation.<span class="text-green-300">SOFTMAX</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.build())<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">// 6. The Paper Shredder (Flatten to 1D)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">// DL4J handles flattening automatically when you specify the 2D input geometry!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;.setInputType(InputType.convolutional(<span class="text-blue-300">240</span>, <span class="text-blue-300">240</span>, <span class="text-blue-300">1</span>))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.build();
+                </div>
+                <p>Behind the scenes, ND4J executes this exact architecture by converting your Java code into highly optimized C++ and CUDA instructions, allowing it to run the massive parallel matrix multiplications on GPUs just like Python frameworks do.</p>
+            </div>
+        </details>
+
+<details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is the exact sequence of a CNN training loop?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed flex flex-col items-center">
+                <p class="mb-4 self-start">Here is the exact lifecycle of a single image passing through the network (one iteration):</p>
+                
+                <div class="mermaid">
+sequenceDiagram
+    participant Data as Input Image
+    participant Conv1 as L1: Convolution
+    participant ReLU1 as L1: ReLU
+    participant Pool1 as L1: Pooling
+    participant L2 as Layer 2 (Conv ➔ ReLU ➔ Pool)
+    participant L3 as Layer 3 (Conv ➔ ReLU ➔ Pool)
+    participant Flat as Flattening
+    participant Out as Classifier (Softmax)
+
+    Data->>Conv1: 1. Pass raw pixel array (2D or 3D)
+    
+    rect rgb(240, 248, 255)
+    Note over Conv1, Pool1: Layer 1: Early Features (Extracting Basic Elements)
+    Note over Conv1: Slide learned filters over patches,<br/>element-wise multiply and sum to<br/>detect basic edges and vertical lines.
+    Conv1->>ReLU1: 2. Pass feature map volume
+    Note over ReLU1: Apply thresholding <br/>(squash negatives to zero).
+    ReLU1->>Pool1: 3. Pass activated edge features
+    Note over Pool1: Downsample spatial dimensions <br/>(e.g., Max Pooling).
+    end
+    
+    Pool1->>L2: 4. Pass downsampled feature maps
+    Note over L2: Middle Layers:<br/>Filters combine early edges into parts<br/>like circles, eyes, noses, and ears.
+    
+    L2->>L3: 5. Pass higher-level spatial features
+    Note over L3: Deep Layers:<br/>Filters combine parts into full,<br/>complex structures like entire faces.
+    
+    L3->>Flat: 6. Pass final deep feature maps
+    Note over Flat: Destroy spatial structure,<br/>convert to a single 1D array.
+    
+    Flat->>Out: 7. Pass 1D feature array
+    Note over Out: Calculate probability distribution<br/>(e.g., Predicting which US President it is).
+    
+    Out-->>Data: 8. Return final classification
+                    </div>
+                
+                <p class="mt-4 self-start text-sm italic">Or, <a href="https://mermaid.live/view#pako:eNqVVcFu2zgQ_ZUBTw7geG3ZUh2iCLAbJ0ABtxts0MvCF1oaS0QpUiUpx26Qv9jzftx-yQ4pyZvG2QI1AllM3sx782Y4eWK5KZBx5vBrizrHlRSlFfVGA30aYb3MZSO0h5XwAoSDD7ppPXyoRYnnoBuj97OAWs94PBjVemn0OfIPXH8-IcPhHHJvjDpBwkHq8hy1TiJEHNFCAqNACv_8_VfMGV9C5MUbcfP_4uY_EXenhA-R4dujflPT722E3CjhnNxJYhg9mJ2vxYESdvBg5-X1dTSMw2wC94QFKx6hkQdUIKwVRxglKzCkb9UL6Z4Wcw-23I6SxXQMyWJJjzTtIZ-MRzB74oy5x52NvK-UXm6FVUe4Q-Fbiw5GtwdvRe6pEPhNOJnDrcIatXdvJ-TwoGSBoFBYjQXspPJoXYdohM8rdOP3W_vLNXZ5Lh-lQ6hb5WVDxEIX4NoavImgAn2oZhuZsShJUUBQMnJTKKCmo5t0SiI_mRZnh0PSm7brSoFaNBAGrsbXwvuAX5sgwFdUdmVUESqOGkbuaytcBRpL4eWeJHgD39Cai544xhNxb-W8Jw6u7YUnE4LwQYd7zd5HrcyjdqJuFIIjnyQVV0gyyNH9cL0QnJSTMXwUh2HeBwWoi5cTEFOSoHXCYdGrKU75i5eWnMkJMR9lUZCOOBOOR-67vo-5qbfkOWAck64jUpMhYcBdhCr5BSGXNlfUasBjeGrjwlfoHUUOHeue6yRInXNIe6mVLCu0lwr3NOmDGf9nXwhcITY_VBvFdTp3rVLdANIfyY0DOG_bvJv2KJ2GUpI5O5HjK6FzEhouNodsGC6pQ6MC_49M7YJWSFTmeCrpRDzo0WGuw3QJcNRdasFs1V3173SEbKSE1giHd70QAg4CYsBrBRF8I1TeUjAZYs1WbKWS_khjRkLkNm7il3N2b7GQ3c1_rGReweeH8DtH15uWmKQfd_GdLuK4JF1hd3FYTuhekB7de5T32y4XgYeNWWllwThZgGNWo61FOLKnkGrDfEXLYcM4vRa4E7QdNmyjnymMNuifxtRDpDVtWTG-E8rRqW0Kqq7_J3WC0O1Ae2Na7RlPs6uYg_EndmA8yZaTJF0kabLIsiSdJ9mYHRm_WkxmtD2XWTadvbtaZPPnMfsWWaeTZZpNk_Rqms5T-iSz538BBzZbAA" target="_blank" class="text-blue-500 underline">view this diagram in the Mermaid Live Editor</a>.</p>
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Why do standard neural networks fail on images? (The Paper Shredder)</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                Standard fully-connected networks require 1D inputs. Flattening a 2D image acts like a paper shredder. It destroys the spatial context—the network no longer knows which pixel was next to which, mathematically erasing the geometry of the face or object. CNNs solve this by sliding a 2D filter over the image, preserving the structural layout.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Does the network "know" it is looking for a nose or an eye?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                No. The computer has no concept of biology. A filter is just a dumb grid of numbers looking for contrasting light and dark pixels. For example, a "Collar" filter mathematically just looks for <em>dark pixels directly above bright pixels</em>. If you feed it a zoomed-out photo of a man in a dark suit with bright shoes, the math will highlight the shoes because they match the exact same mathematical light/dark pattern!
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>How does Backpropagation find better filters if it's blind?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                CNNs start with completely random noise filters. If the network predicts "Cat" when the image is a "Dog," it calculates an Error (Loss). Backpropagation uses calculus to trace that error backward, nudging all the numbers slightly to reduce the error. Over thousands of images, the network accidentally discovers that detecting "dark circles" helps it get the right answer. The filters naturally evolve into edge and shape detectors through blind mathematical evolution.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Does Max Pooling only shrink the detected features or the whole image?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                It shrinks the <strong>entire</strong> image. Max Pooling acts like a net dragged across the whole Feature Map, extracting the highest number from every 2x2 patch. If it only kept the detected features and threw away the background, the spatial geometry would be destroyed. Shrinking the whole grid keeps the "nose" in the center and the "ears" at the top, just at a lower, more compressed resolution.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Why is the ReLU threshold so important?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                Without ReLU (Rectified Linear Unit), a CNN is just a series of linear multiplications. Because the physical world is non-linear (curves, shadows, complex shapes), we need a way to break the linearity. The simple formula $f(x) = \max(0, x)$ instantly squashes all negative mathematical noise to zero, introducing the non-linearity required to learn complex real-world boundaries.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Autonomous Driving: Waymo vs. Tesla (Pure Vision)?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                <br><br>
+                <strong>Waymo (Robotaxis):</strong> Relies heavily on LiDAR (lasers that shoot out to measure exact physical depth), Radar, and pre-mapped HD maps, combined with cameras. It is incredibly precise but expensive and geofenced to areas it has mapped.<br><br>
+                <strong>Tesla (Pure Vision):</strong> Argues that humans drive using only two cameras (our eyes) and a neural net (our brain). Tesla relies almost entirely on CNNs and visual Transformers to process raw camera feeds in real-time, calculating depth, segmentation, and driving regressions dynamically without HD maps or LiDAR.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What exactly is a "Feature Map"?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                A Feature Map is the new "image" generated after a filter is applied. It looks like a glowing outline of the original photo. Bright spots indicate where the filter found a strong mathematical match, while dark spots indicate no match.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Why do we need multiple filters in one layer?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                A single filter can only look for one specific thing (e.g., vertical edges). To understand a complex image, a single layer might have 64 or 128 different filters running in parallel—one looking for horizontal edges, one looking for red colors, one looking for dark spots, etc.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What happens if the object is off-center? (Translation Invariance)</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                Because the CNN slides the exact same filter across every single pixel of the image, it will find the "dog nose" regardless of whether it is in the top-left corner or dead center. Combined with Max Pooling, this grants the network <em>Translation Invariance</em>.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>How do deeper layers see more complex things?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                This is called Hierarchical Feature Extraction. Layer 1 filters find basic lines and edges. Layer 2 filters run <em>on top of the Layer 1 feature maps</em>, combining those lines into shapes (like circles or squares). Layer 3 combines those shapes into complex objects (like eyes or wheels).
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is "Stride" in a Convolution?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                Stride is how many pixels the filter shifts each time it moves. A stride of 1 means it moves pixel by pixel. A stride of 2 means it jumps over a pixel every time, which generates a smaller output Feature Map and saves computational power.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is "Padding" and why use it?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                When a 3x3 filter slides over an image, it can't perfectly reach the edge pixels without hanging off the side. Because of this, the output Feature Map naturally shrinks. "Padding" involves wrapping the original image in a border of artificial zeros (black pixels) so the filter can reach the edges, keeping the output size identical to the input.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is the Softmax function used for?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                At the very end of a classification network, the CNN outputs raw, arbitrary scores (Logits), like "Dog: 120, Cat: 60." Softmax is a mathematical function that squashes these messy scores into a clean probability distribution that always equals 100% (e.g., "Dog: 88%, Cat: 12%").
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Classification vs. Object Detection?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                <strong>Image Classification</strong> looks at a photo and outputs one single label for the whole image ("This is a Dog").<br><br><strong>Object Detection</strong> (like R-CNN or YOLO) finds multiple objects inside the image, draws a bounding box around their exact X/Y coordinates, and classifies each box individually ("Dog here, Cat here, Tree here").
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is Semantic Segmentation?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                <br><br>
+                Instead of drawing boxes, Semantic Segmentation classifies <em>every single pixel</em> in the image. It outputs a color-coded mask showing exactly where the "road" ends and the "sidewalk" begins, which is critical for autonomous driving.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is Regression in computer vision?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                Unlike Classification which outputs a discrete word ("Dog"), Regression outputs a continuous numerical value based on the image. For example, looking at a curved road and outputting exactly "14.5 degrees" to turn the steering wheel.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Why do we flatten the data at the very end?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                While convolutions preserve 2D geometry during feature extraction, the final decision-making process (like Softmax classification) requires standard 1D Dense layers. We flatten the final, highly-condensed 2D pooled feature maps into a 1D array to feed into the final output layer.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is an Epoch?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                An Epoch is one complete pass of the entire training dataset through the neural network. Training a CNN usually requires dozens or hundreds of epochs, meaning the network looks at the same images over and over, refining its filters each time.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>What is Overfitting?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                Overfitting happens when a CNN memorizes the exact training images instead of learning general patterns. For example, it might learn to identify a specific tree in the background of your dog photos rather than the dog itself. We combat this using techniques like Dropout and Data Augmentation.
+            </div>
+        </details>
+
+        <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
+            <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
+                <span>Why do CNNs require GPUs to train?</span>
+                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+            </summary>
+            <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
+                As you saw in the sandbox, sliding just one 3x3 filter across one 8x8 image requires hundreds of multiplication operations. A real 4K image with hundreds of filters across dozens of layers requires trillions of simultaneous matrix multiplications. CPUs are designed for sequential tasks, but GPUs contain thousands of cores specifically designed to do parallel matrix math simultaneously.
+            </div>
+        </details>
+        
+    </div>
+</section>
+
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 RawWeights. All rights reserved. Convolutional Neural Networks Sandbox.</p>
+    </footer>
+
+    <script>
+        // --- LAYOUT CONTROLS ---
+        function toggleSidebar() { 
+            document.getElementById('globalNavLinks').classList.remove('show');
+            document.getElementById('sidebar').classList.toggle('open'); 
+        }
+        function toggleGlobalNav() {
+            document.getElementById('sidebar').classList.remove('open');    
+            document.getElementById('globalNavLinks').classList.toggle('show');
+        }
+        function filterTOC() {
+            const q = document.getElementById('tocSearch').value.toLowerCase();
+            document.querySelectorAll('#tocList li').forEach(li => {
+                li.classList.toggle('hidden', !li.innerText.toLowerCase().includes(q));
+            });
+        }
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const globalNavLinks = document.getElementById('globalNavLinks');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const mobileGlobalBtn = document.querySelector('.mobile-global-btn');
+            if (sidebar.classList.contains('open') && !sidebar.contains(event.target) && event.target !== mobileMenuBtn) {
+                sidebar.classList.remove('open');
+            }
+            if (globalNavLinks.classList.contains('show') && !globalNavLinks.contains(event.target) && event.target !== mobileGlobalBtn) {
+                globalNavLinks.classList.remove('show');
+            }
+        });
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const scrollOffset = window.scrollY + 150; 
+            document.querySelectorAll('section').forEach(sec => {
+                if (scrollOffset >= sec.offsetTop) { current = sec.getAttribute('id'); }
+            });
+            document.querySelectorAll('#tocList li a').forEach(a => {
+                a.classList.remove('active');
+                if (current && a.getAttribute('href').includes(current)) { a.classList.add('active'); }
+            });
+        });
+
+        // --- STATE & ENGINE ---
+        let globalImgData = Array(8).fill().map(() => Array(8).fill(0)); 
+        const sourceImg = document.getElementById('source-img');
+        const canvas = document.getElementById('pixelit-canvas');
+
+        function processImage() {
+            const sandboxGrid = document.getElementById('sandbox-grid');
+            sandboxGrid.innerHTML = ''; 
+            
+            try {
+                const px = new pixelit({ from: sourceImg, to: canvas, scale: 30 });
+                px.draw().pixelate();
+                
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                for(let r = 0; r < 8; r++) {
+                    for(let c = 0; c < 8; c++) {
+                        const pixel = ctx.getImageData(c * 30 + 15, r * 30 + 15, 1, 1).data;
+                        const grayVal = Math.floor(pixel[0]*0.299 + pixel[1]*0.587 + pixel[2]*0.114);
+                        globalImgData[r][c] = grayVal;
+                        
+                        const bgCol = `rgb(${grayVal}, ${grayVal}, ${grayVal})`;
+                        const txtCol = grayVal < 128 ? '#ffffff' : '#0f172a';
+                        sandboxGrid.innerHTML += `
+                            <div class="flex items-center justify-center font-mono text-[11px] font-bold" 
+                                 style="background-color: ${bgCol}; color: ${txtCol}; outline: 1px solid rgba(0,0,0,0.1);">
+                                ${grayVal}
+                            </div>`;
+                    }
+                }
+                triggerAllSectionsUpdate();
+            } catch (err) {
+                console.warn("CORS Blocked. Using Fallback Grid.", err);
+                for(let r = 0; r < 8; r++) {
+                    for(let c = 0; c < 8; c++) {
+                        const grayVal = Math.floor(Math.random() * 255);
+                        globalImgData[r][c] = grayVal;
+                        const bgCol = `rgb(${grayVal}, ${grayVal}, ${grayVal})`;
+                        const txtCol = grayVal < 128 ? '#ffffff' : '#0f172a';
+                        sandboxGrid.innerHTML += `
+                            <div class="flex items-center justify-center font-mono text-[11px] font-bold" 
+                                 style="background-color: ${bgCol}; color: ${txtCol}; outline: 1px solid rgba(0,0,0,0.1);">
+                                ${grayVal}
+                            </div>`;
+                    }
+                }
+                triggerAllSectionsUpdate();
+            }
+        }
+
+        // --- SHREDDER LOGIC ---
+        let isFlattened = false;
+
+        function initShredder() {
+            const box = document.getElementById('shredder-box');
+            if (!box) return;
+            box.innerHTML = ''; 
+            
+            const currentImgSrc = sourceImg.src;
+            let newHTML = '';
+
+            for(let r=0; r<8; r++) {
+                for(let c=0; c<8; c++) {
+                    const val = globalImgData[r][c] || 0;
+                    const bgCol = `rgb(${val}, ${val}, ${val})`;
+                    const txtCol = val < 128 ? '#ffffff' : '#0f172a';
+                    const bgPos = `-${c*30}px -${r*30}px`;
+                    
+                    newHTML += `
+                        <div class="shred-piece">
+                            <div class="shred-inner">
+                                <div class="shred-front" style="background-image: url('${currentImgSrc}'); background-size: 240px 240px; background-position: ${bgPos};"></div>
+                                <div class="shred-back" style="background-color: ${bgCol}; color: ${txtCol};">${val}</div>
+                            </div>
+                        </div>`;
+                }
+            }
+            box.innerHTML = newHTML;
+        }
+
+        document.getElementById('btn-flatten').addEventListener('click', (e) => {
+            isFlattened = !isFlattened;
+            const box = document.getElementById('shredder-box');
+            if (isFlattened) {
+                box.classList.add('flattened');
+                e.target.innerText = "Reconstruct 2D Structure";
+                e.target.classList.replace('bg-red-500', 'bg-slate-500');
+                e.target.classList.replace('hover:bg-red-600', 'hover:bg-slate-600');
+            } else {
+                box.classList.remove('flattened');
+                e.target.innerText = "Shred Image (Flatten)";
+                e.target.classList.replace('bg-slate-500', 'bg-red-500');
+                e.target.classList.replace('hover:bg-slate-600', 'hover:bg-red-600');
+            }
+        });
+
+
+// --- SECTION 3: DYNAMIC CONVOLUTION LOGIC ---
+
+// --- SECTION 3: DYNAMIC CONVOLUTION LOGIC ---
+const imageFilters = {
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces": [ 
+        { id: "eye", name: "Eyes (Dark Spots)", matrix: [[1,1,1], [1,-8,1], [1,1,1]] },
+        { id: "jaw", name: "Jawline (Dark above Light)", matrix: [[-1,-1,-1], [0,0,0], [1,1,1]] },
+        { id: "edge", name: "Face Edge (Vertical)", matrix: [[-1,0,1], [-1,0,1], [-1,0,1]] }
+    ],
+    "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=240&h=240&fit=crop&crop=faces": [ 
+        { id: "nose", name: "Dog Nose (Dark Spot)", matrix: [[1,1,1], [1,-8,1], [1,1,1]] },
+        { id: "fur", name: "Bright Fur (Light Spot)", matrix: [[-1,-1,-1], [-1,8,-1], [-1,-1,-1]] }
+    ],
+    "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=240&h=240&fit=crop&crop=faces": [ 
+        { id: "ears", name: "Cat Ears (Dark Triangles)", matrix: [[1,1,1], [-1,-1,-1], [0,0,0]] },
+        { id: "eyes", name: "Cat Eyes (Dark Spots)", matrix: [[1,1,1], [1,-8,1], [1,1,1]] }
+    ],
+    "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=240&h=240&fit=crop&crop=edges": [ 
+        { id: "lights", name: "Bright Headlights", matrix: [[-1,-1,-1], [-1,8,-1], [-1,-1,-1]] },
+        { id: "h_edge", name: "Horizontal Skyline", matrix: [[1,1,1], [0,0,0], [-1,-1,-1]] }
+    ]
+};
+
+let activeFilterData = null;
+let convData = [];
+
+// Reusable function to build the flip cards
+function renderFlipGrid(containerId, data, type, cellSize, prefix) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    const currentImgSrc = document.getElementById('source-img').src;
+    let maxAbs = Math.max(...data.flat().map(Math.abs), 1);
+
+    for(let r=0; r<data.length; r++) {
+        for(let c=0; c<data[0].length; c++) {
+            const val = data[r][c];
+            let frontHTML = '', backHTML = '';
+
+            if (type === 'photo') {
+                const bgPos = `-${c*cellSize}px -${r*cellSize}px`;
+                frontHTML = `<div class="flip-front" style="background-image: url('${currentImgSrc}'); background-size: 240px 240px; background-position: ${bgPos}; border: 1px solid rgba(255,255,255,0.05);"></div>`;
+                const bgCol = `rgb(${val}, ${val}, ${val})`;
+                const txtCol = val < 128 ? '#ffffff' : '#0f172a';
+                backHTML = `<div class="flip-back" style="background-color: ${bgCol}; color: ${txtCol}; border: 1px solid rgba(0,0,0,0.1);">${val}</div>`;
+            } 
+            else if (type === 'filter') {
+                let bg = '#000000', txt = '#ffffff';
+                if (val > 0) {
+                    const intensity = Math.floor((val / maxAbs) * 255);
+                    bg = `rgb(${intensity}, ${intensity}, 255)`; 
+                } else if (val < 0) {
+                    const intensity = Math.floor((Math.abs(val) / maxAbs) * 255);
+                    bg = `rgb(255, ${intensity}, ${intensity})`; 
+                }
+                frontHTML = `<div class="flip-front" style="background-color: ${bg}; border: 1px solid rgba(255,255,255,0.1);"></div>`;
+                backHTML = `<div class="flip-back" style="background-color: ${bg}; color: ${txt}; border: 1px solid rgba(0,0,0,0.2);">${val}</div>`;
+            } 
+            else if (type === 'feature' || type === 'pooled') {
+                const offsetMultiplier = type === 'pooled' ? 80 : 40;
+                const bgPos = `-${c*offsetMultiplier + 40}px -${r*offsetMultiplier + 40}px`;
+                
+                let overlayBg = 'rgba(0,0,0,0.9)'; 
+                let backBg = '#000000';
+                
+                if (val > 0) {
+                    const alpha = 0.9 - (val / maxAbs) * 0.9; 
+                    overlayBg = `rgba(0,0,0,${alpha})`;
+                    const intensity = Math.floor((val / maxAbs) * 255);
+                    backBg = `rgb(${intensity}, ${intensity}, ${intensity})`; 
+                } else if (val < 0) {
+                    const alpha = 0.5 + (Math.abs(val) / maxAbs) * 0.4;
+                    overlayBg = `rgba(220,38,38,${alpha})`;
+                    const intensity = Math.floor((Math.abs(val) / maxAbs) * 255);
+                    backBg = `rgb(${intensity}, 0, 0)`; 
+                }
+
+                frontHTML = `
+                    <div class="flip-front" style="background-image: url('${currentImgSrc}'); background-size: 320px 320px; background-position: ${bgPos}; border: 1px solid rgba(255,255,255,0.05);">
+                        <div class="w-full h-full transition-colors duration-300" style="background-color: ${overlayBg};"></div>
+                    </div>`;
+                
+                const txtCol = val < 0 ? '#ffffff' : (val / maxAbs) > 0.5 ? '#0f172a' : '#ffffff';
+                backHTML = `<div class="flip-back" style="background-color: ${backBg}; color: ${txtCol}; border: 1px solid rgba(255,255,255,0.2);">${val}</div>`;
+            }
+
+            container.innerHTML += `
+                <div id="${prefix}-${r}-${c}" class="shred-piece" style="width: ${cellSize}px; height: ${cellSize}px;">
+                    <div class="flip-inner" id="${prefix}-inner-${r}-${c}">
+                        ${frontHTML}
+                        ${backHTML}
+                    </div>
+                </div>`;
+        }
+    }
+}
+
+function initConvolution() {
+    if(!globalImgData || !globalImgData[0]) return;
+    
+    const srcImgUrl = document.getElementById('source-img').src;
+    
+    // Use mapped filters, OR use generic edge detectors for custom images
+    const availableFilters = imageFilters[srcImgUrl] || [
+        { id: "gen_h", name: "Horizontal Edge", matrix: [[1,1,1], [0,0,0], [-1,-1,-1]] },
+        { id: "gen_v", name: "Vertical Edge", matrix: [[1,0,-1], [1,0,-1], [1,0,-1]] },
+        { id: "gen_spot", name: "Bright Spot", matrix: [[-1,-1,-1], [-1,8,-1], [-1,-1,-1]] }
+    ];
+    
+    if(!activeFilterData || !availableFilters.find(f => f.id === activeFilterData.id)) {
+        activeFilterData = availableFilters[0];
+    }
+    
+    const filterContainer = document.getElementById('dynamic-filters');
+    if (filterContainer) {
+        filterContainer.innerHTML = '';
+        availableFilters.forEach(f => {
+            const isActive = f.id === activeFilterData.id ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300';
+            filterContainer.innerHTML += `<button class="conv-filter-btn px-6 py-2 font-bold rounded-full shadow-md text-sm ${isActive}" data-id="${f.id}">${f.name}</button>`;
+        });
+
+        document.querySelectorAll('.conv-filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                activeFilterData = availableFilters.find(f => f.id === e.target.dataset.id);
+                initConvolution(); 
+            });
+        });
+    }
+
+    document.getElementById('conv-filter-title').innerText = activeFilterData.name;
+    const filterMat = activeFilterData.matrix;
+    
+    convData = [];
+    for(let r=0; r<6; r++) {
+        let row = [];
+        for(let c=0; c<6; c++) {
+            let sum = 0;
+            for(let fr=0; fr<3; fr++) {
+                for(let fc=0; fc<3; fc++) {
+                    sum += globalImgData[r+fr][c+fc] * filterMat[fr][fc];
+                }
+            }
+            row.push(sum);
+        }
+        convData.push(row);
+    }
+
+    renderFlipGrid('conv-in-grid', globalImgData, 'photo', 30, 'cin');
+    renderFlipGrid('conv-filt-grid', filterMat, 'filter', 30, 'cfilt');
+    renderFlipGrid('conv-out-grid', convData, 'feature', 40, 'cout');
+
+    setupConvInteractions(filterMat);
+    
+    // IMPORTANT: Instantly update ReLU and Pooling whenever Convolution updates
+    initReluAndPooling();
+    
+    // Reset random weights and re-initialize Section 6
+    currentWeights = Array(3).fill(0).map(() => Array(3).fill(0).map(() => Math.floor(Math.random() * 5 - 2)));
+    initBackprop();
+}
+
+function setupConvInteractions(filterMat) {
+    const cMath = document.getElementById('conv-math');
+    
+    for(let r=0; r<6; r++) {
+        for(let c=0; c<6; c++) {
+            const outPiece = document.getElementById(`cout-${r}-${c}`);
+            if(!outPiece) continue;
+            
+            outPiece.addEventListener('mouseenter', () => {
+                document.getElementById(`cout-inner-${r}-${c}`).classList.add('force-flip');
+                outPiece.classList.add('hl-output');
+
+                let eq = "";
+                for(let fr=0; fr<3; fr++) {
+                    for(let fc=0; fc<3; fc++) {
+                        const inId = `cin-${r+fr}-${c+fc}`;
+                        const filtId = `cfilt-${fr}-${fc}`;
+                        
+                        const inInner = document.getElementById(`cin-inner-${r+fr}-${c+fc}`);
+                        const inPiece = document.getElementById(inId);
+                        if(inInner && inPiece) {
+                            inInner.classList.add('force-flip');
+                            inPiece.classList.add('hl-input');
+                        }
+                        
+                        const fInner = document.getElementById(`cfilt-inner-${fr}-${fc}`);
+                        const fPiece = document.getElementById(filtId);
+                        if(fInner && fPiece) {
+                            fInner.classList.add('force-flip');
+                            fPiece.classList.add('hl-filter');
+                        }
+
+                        const inVal = globalImgData[r+fr][c+fc];
+                        const fVal = filterMat[fr][fc];
+                        if(fVal !== 0) eq += `(${inVal}×${fVal}) + `;
+                    }
+                }
+                cMath.innerHTML = `${eq.slice(0, -3)} = <strong class="text-xl md:text-2xl text-slate-900">${convData[r][c]}</strong>`;
+                cMath.style.backgroundColor = '#d1fae5';
+            });
+
+            outPiece.addEventListener('mouseleave', () => {
+                document.querySelectorAll('.flip-inner').forEach(el => el.classList.remove('force-flip'));
+                document.querySelectorAll('.shred-piece').forEach(el => el.classList.remove('hl-input', 'hl-filter', 'hl-output'));
+                cMath.innerText = "Hover over the Feature Map image to trace the element-wise multiplication...";
+                cMath.style.backgroundColor = '#f8fafc';
+            });
+        }
+    }
+}
+
+// --- SECTION 4 & 5: ReLU & POOLING LOGIC ---
+let reluData = [];
+let poolData = [];
+
+function initReluAndPooling() {
+    if(!convData || !convData[0]) return;
+
+    // Reset the visual blur state of the ReLU Wrapper so the user can re-apply it!
+    const reluWrapper = document.getElementById('relu-out-wrapper');
+    if (reluWrapper) {
+        reluWrapper.classList.add('opacity-30', 'blur-sm', 'grayscale');
+    }
+
+    // 1. Math: Calculate ReLU (Squash negatives to 0)
+    reluData = convData.map(row => row.map(v => Math.max(0, v)));
+
+    // 2. Math: Calculate 3x3 Max Pooling
+    poolData = [];
+    for(let r=0; r<3; r++) {
+        let row = [];
+        for(let c=0; c<3; c++) {
+            let patch = [
+                reluData[r*2][c*2], reluData[r*2][c*2+1],
+                reluData[r*2+1][c*2], reluData[r*2+1][c*2+1]
+            ];
+            row.push(Math.max(...patch));
+        }
+        poolData.push(row);
+    }
+
+    // 3. Render the Grids
+    renderFlipGrid('relu-in-grid', convData, 'feature', 40, 'rin');
+    renderFlipGrid('relu-out-grid', reluData, 'feature', 40, 'rout');
+    
+    renderFlipGrid('pool-in-grid', reluData, 'feature', 40, 'pin');
+    renderFlipGrid('pool-out-grid', poolData, 'pooled', 80, 'pout');
+
+    setupPoolingInteractions();
+}
+
+function setupPoolingInteractions() {
+    for(let r=0; r<3; r++) {
+        for(let c=0; c<3; c++) {
+            const outPiece = document.getElementById(`pout-${r}-${c}`);
+            if(!outPiece) continue;
+            
+            // Mouse Enter: Flip output and the 4 corresponding inputs
+            outPiece.addEventListener('mouseenter', () => {
+                document.getElementById(`pout-inner-${r}-${c}`).classList.add('force-flip');
+                outPiece.classList.add('hl-output'); // Green outline
+
+                const patchCoords = [
+                    [r*2, c*2], [r*2, c*2+1],
+                    [r*2+1, c*2], [r*2+1, c*2+1]
+                ];
+                
+                patchCoords.forEach(([pr, pc]) => {
+                    const inCard = document.getElementById(`pin-${pr}-${pc}`);
+                    const inInner = document.getElementById(`pin-inner-${pr}-${pc}`);
+                    if(inCard && inInner) {
+                        inInner.classList.add('force-flip');
+                        inCard.classList.add('hl-input'); // Blue outline
+                    }
+                });
+            });
+
+            // Mouse Leave: Reset
+            outPiece.addEventListener('mouseleave', () => {
+                document.querySelectorAll('#pool-in-grid .shred-piece, #pool-out-grid .shred-piece').forEach(el => {
+                    const inner = el.querySelector('.flip-inner');
+                    if (inner) inner.classList.remove('force-flip');
+                    el.classList.remove('hl-input', 'hl-output');
+                });
+            });
+        }
+    }
+}
+
+// ReLU Button Logic
+const btnRelu = document.getElementById('btn-relu');
+if (btnRelu) {
+    btnRelu.addEventListener('click', () => {
+        const wrapper = document.getElementById('relu-out-wrapper');
+        if (wrapper) wrapper.classList.remove('opacity-30', 'blur-sm', 'grayscale');
+    });
+}
+
+// --- SECTION 6 & 7: BACKPROP & OUTPUT LOGIC ---
+// --- SECTION 6 & 7: BACKPROP & OUTPUT LOGIC ---
+
+let currentWeights = [];
+let targetWeights = [[0,0,0],[0,0,0],[0,0,0]];
+
+// Helper to manually calculate a Feature Map given a specific filter
+function calculateConv(filterMat) {
+    let out = [];
+    if(!globalImgData || !globalImgData[0]) return out;
+    for(let r=0; r<6; r++) {
+        let row = [];
+        for(let c=0; c<6; c++) {
+            let sum = 0;
+            for(let fr=0; fr<3; fr++) {
+                for(let fc=0; fc<3; fc++) {
+                    sum += globalImgData[r+fr][c+fc] * filterMat[fr][fc];
+                }
+            }
+            row.push(sum);
+        }
+        out.push(row);
+    }
+    return out;
+}
+
+function initBackprop() {
+    if (activeFilterData) {
+        targetWeights = activeFilterData.matrix;
+    }
+    
+    // Calculate the perfect output we are trying to achieve
+    const targetOutput = calculateConv(targetWeights);
+    
+    // Render the fixed target visuals
+    renderFlipGrid('bp-tar-filt', targetWeights, 'filter', 20, 'bptf');
+    renderFlipGrid('bp-tar-out', targetOutput, 'feature', 30, 'bpto');
+
+    // Randomize starting weights (-10 to 10 for messy noise)
+    currentWeights = Array(3).fill(0).map(() => Array(3).fill(0).map(() => Math.floor(Math.random() * 21 - 10)));
+    
+    updateBackpropVisuals();
+}
+
+function updateBackpropVisuals() {
+    // Generate the messy feature map from the current random weights
+    const currentOutput = calculateConv(currentWeights);
+    
+    // Render current state
+    renderFlipGrid('bp-cur-filt', currentWeights, 'filter', 20, 'bpcf');
+    renderFlipGrid('bp-cur-out', currentOutput, 'feature', 30, 'bpco');
+
+    // Calculate Error (Loss) - Mean Absolute Error sum
+    let error = 0;
+    for(let r=0; r<3; r++) {
+        for(let c=0; c<3; c++) {
+            error += Math.abs(targetWeights[r][c] - currentWeights[r][c]);
+        }
+    }
+    
+    const errMetric = document.getElementById('bp-error-metric');
+    if (error === 0) {
+        errMetric.innerText = "Error: 0 (Perfect!)";
+        errMetric.className = "font-mono font-bold text-lg text-green-600";
+    } else {
+        errMetric.innerText = `Error: ${error}`;
+        errMetric.className = "font-mono font-bold text-lg text-red-500";
+    }
+}
+
+// Training Button Event
+const btnTrain = document.getElementById('btn-train');
+if (btnTrain) {
+    btnTrain.addEventListener('click', () => {
+        // Nudge weights 1 step closer to target
+        for(let r=0; r<3; r++) {
+            for(let c=0; c<3; c++) {
+                if(currentWeights[r][c] < targetWeights[r][c]) currentWeights[r][c]++;
+                else if(currentWeights[r][c] > targetWeights[r][c]) currentWeights[r][c]--;
+            }
+        }
+        updateBackpropVisuals();
+    });
+}
+
+// Dictionary mapping Image URLs to specific Segmentation Masks and Legends
+const segmentationData = {
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces": { // Businessman
+        legend: `
+            <span class="text-blue-500">■ Background</span> 
+            <span class="text-purple-500">■ Hair</span>
+            <span class="text-green-500">■ Face</span> 
+            <span class="text-rose-500">■ Suit</span>`,
+        mask: `
+            <div class="row-span-8 col-span-2 bg-blue-500/50"></div>
+            <div class="row-span-8 col-start-7 col-span-2 bg-blue-500/50"></div>
+            <div class="row-start-1 row-span-2 col-start-3 col-span-4 bg-purple-500/70 rounded-t-xl"></div>
+            <div class="row-start-3 row-span-4 col-start-3 col-span-4 bg-green-500/70 rounded-full"></div>
+            <div class="row-start-7 row-span-2 col-start-3 col-span-4 bg-rose-500/70 rounded-b-xl"></div>`
+    },
+    "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=240&h=240&fit=crop&crop=faces": { // Dog
+        legend: `
+            <span class="text-blue-500">■ Background</span> 
+            <span class="text-purple-500">■ Ears</span>
+            <span class="text-green-500">■ Snout/Face</span> 
+            <span class="text-rose-500">■ Body Fur</span>`,
+        mask: `
+            <div class="row-span-8 col-span-1 bg-blue-500/50"></div>
+            <div class="row-span-8 col-start-8 col-span-1 bg-blue-500/50"></div>
+            <div class="row-start-1 row-span-3 col-start-2 col-span-2 bg-purple-500/70 rounded-t-full"></div>
+            <div class="row-start-1 row-span-3 col-start-6 col-span-2 bg-purple-500/70 rounded-t-full"></div>
+            <div class="row-start-3 row-span-4 col-start-3 col-span-4 bg-green-500/70 rounded-full"></div>
+            <div class="row-start-7 row-span-2 col-start-2 col-span-6 bg-rose-500/70 rounded-b-xl"></div>`
+    },
+    "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=240&h=240&fit=crop&crop=faces": { // Cat
+        legend: `
+            <span class="text-blue-500">■ Background</span> 
+            <span class="text-purple-500">■ Ears</span>
+            <span class="text-green-500">■ Cat Face</span> 
+            <span class="text-rose-500">■ Whiskers/Body</span>`,
+        mask: `
+            <div class="row-start-1 row-span-2 col-span-8 bg-blue-500/50"></div>
+            <div class="row-start-2 row-span-2 col-start-2 col-span-2 bg-purple-500/70 rounded-t-full"></div>
+            <div class="row-start-2 row-span-2 col-start-6 col-span-2 bg-purple-500/70 rounded-t-full"></div>
+            <div class="row-start-4 row-span-4 col-start-2 col-span-6 bg-green-500/70 rounded-full"></div>
+            <div class="row-start-8 row-span-1 col-start-1 col-span-8 bg-rose-500/70"></div>`
+    },
+    "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=240&h=240&fit=crop&crop=edges": { // City Traffic
+        legend: `
+            <span class="text-blue-400">■ Sky</span> 
+            <span class="text-slate-600">■ Buildings</span>
+            <span class="text-gray-800">■ Road</span> 
+            <span class="text-red-500">■ Vehicles</span>`,
+        mask: `
+            <div class="row-start-1 row-span-2 col-span-8 bg-blue-400/50"></div>
+            <div class="row-start-3 row-span-4 col-span-8 bg-slate-600/70"></div>
+            <div class="row-start-7 row-span-2 col-span-8 bg-gray-900/80"></div>
+            <div class="row-start-6 row-span-2 col-start-2 col-span-2 bg-red-500/80 rounded-t-lg"></div>
+            <div class="row-start-6 row-span-2 col-start-5 col-span-2 bg-yellow-500/80 rounded-t-lg"></div>`
+    }
+};
+
+function updateOutputs() {
+    const currentImgSrc = document.getElementById('source-img').src;
+    
+    // Update the base images
+    document.getElementById('rcnn-img').src = currentImgSrc;
+    document.getElementById('seg-img').src = currentImgSrc;
+    
+    // Update the Segmentation Mask (Use specific mapping, or a generic bulls-eye for custom images)
+    const segData = segmentationData[currentImgSrc] || {
+        legend: `
+            <span class="text-blue-500">■ Background</span> 
+            <span class="text-purple-500">■ Upper Area</span>
+            <span class="text-green-500">■ Center Focus</span>`,
+        mask: `
+            <div class="row-span-8 col-span-8 bg-blue-500/30"></div>
+            <div class="row-start-1 row-span-3 col-start-2 col-span-6 bg-purple-500/50 rounded-t-xl"></div>
+            <div class="row-start-3 row-span-4 col-start-3 col-span-4 bg-green-500/70 rounded-full"></div>`
+    };
+    
+    const maskContainer = document.getElementById('seg-mask-container');
+    const legendContainer = document.getElementById('seg-legend-container');
+    
+    if (maskContainer && legendContainer) {
+        maskContainer.innerHTML = segData.mask;
+        legendContainer.innerHTML = segData.legend;
+    }
+}
+
+document.querySelectorAll('.out-tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.out-tab-btn').forEach(b => {
+            b.classList.remove('bg-rose-500', 'text-white');
+            b.classList.add('bg-slate-100', 'text-slate-600');
+        });
+        e.target.classList.remove('bg-slate-100', 'text-slate-600');
+        e.target.classList.add('bg-rose-500', 'text-white');
+        
+        document.querySelectorAll('.out-tab-content').forEach(c => {
+            c.classList.add('hidden');
+            c.classList.remove('active');
+        });
+        const targetTab = document.getElementById(e.target.dataset.target);
+        if (targetTab) {
+            targetTab.classList.remove('hidden');
+            targetTab.classList.add('active');
+        }
+    });
+});
+
+function updateSoftmax() {
+    const targScore = parseFloat(document.getElementById('slider-targ').value);
+    const bgScore = parseFloat(document.getElementById('slider-bg').value);
+    document.getElementById('val-targ').innerText = targScore;
+    document.getElementById('val-bg').innerText = bgScore;
+    
+    const maxScore = Math.max(targScore, bgScore);
+    const sum = Math.exp((targScore - maxScore)/20) + Math.exp((bgScore - maxScore)/20);
+    const pctTarg = (Math.exp((targScore - maxScore)/20) / sum * 100).toFixed(1);
+    const pctBg = (Math.exp((bgScore - maxScore)/20) / sum * 100).toFixed(1);
+    
+    document.getElementById('bar-targ').style.width = `${pctTarg}%`;
+    document.getElementById('pct-targ').innerText = `${pctTarg}%`;
+    document.getElementById('bar-bg').style.width = `${pctBg}%`;
+    document.getElementById('pct-bg').innerText = `${pctBg}%`;
+}
+
+document.getElementById('slider-targ').addEventListener('input', updateSoftmax);
+document.getElementById('slider-bg').addEventListener('input', updateSoftmax);
+updateSoftmax();
+
+document.getElementById('slider-steer').addEventListener('input', (e) => {
+    document.getElementById('val-steer').innerText = e.target.value;
+    document.getElementById('steering-wheel').style.transform = `rotate(${e.target.value}deg)`;
+});
+
+// --- MASTER UPDATE TRIGGER ---
+function triggerAllSectionsUpdate() {
+    console.log("Global Image Updated! Rebuilding sections...");
+    
+    // Section 2: Shredder
+    if (isFlattened) {
+        document.getElementById('btn-flatten').click();
+        setTimeout(initShredder, 800); 
+    } else {
+        initShredder();
+    }
+    
+    // Section 3: Convolution (which automatically calls Section 4 & 5)
+    initConvolution();
+    
+    // Section 7: Update Output Images
+    updateOutputs();
+}
+
+        // --- INIT LISTENER ---
+        // Preset Image Buttons
+        document.querySelectorAll('.img-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.img-btn').forEach(b => {
+                    b.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+                    b.classList.add('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
+                });
+                e.target.classList.remove('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
+                e.target.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+
+                sourceImg.crossOrigin = "anonymous"; 
+                sourceImg.src = e.target.dataset.src; 
+            });
+        });
+
+        // Custom Image Load Button
+        document.getElementById('btn-load-custom').addEventListener('click', () => {
+            const url = document.getElementById('custom-img-url').value.trim();
+            if (!url) return;
+
+            // Deselect predefined buttons
+            document.querySelectorAll('.img-btn').forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+                b.classList.add('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
+            });
+
+            sourceImg.crossOrigin = "anonymous"; 
+            sourceImg.src = url; 
+        });
+
+        sourceImg.onload = processImage;
+
+        // Init on load (Bug fixed to match Close-up Face)
+        window.addEventListener('load', () => {
+            sourceImg.crossOrigin = "anonymous";
+            if (sourceImg.complete && sourceImg.naturalWidth > 0) {
+                processImage();
+            } else {
+                sourceImg.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces";
+            }
+        });
+
+// --- 8. FAQ ACCORDION LOGIC ---
+const faqSummaries = document.querySelectorAll('#sec-faq details summary');
+
+faqSummaries.forEach((summary, index) => {
+    summary.addEventListener('click', (e) => {
+        e.preventDefault(); // Stop default HTML toggle behavior
+        
+        const currentDetail = summary.parentElement;
+        const allDetails = document.querySelectorAll('#sec-faq details');
+        
+        if (!currentDetail.open) {
+            // Rule 1: Opening the next one closes all previous ones
+            allDetails.forEach(d => d.open = false);
+            currentDetail.open = true;
+        } else {
+            // Rule 2: Closing the current one automatically opens the next one
+            currentDetail.open = false;
+            if (index + 1 < allDetails.length) {
+                allDetails[index + 1].open = true;
+                
+                // Optional: Smoothly scroll the new FAQ into view
+                setTimeout(() => {
+                    allDetails[index + 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+    });
+});
+
+    </script>
+</body>
+</html>

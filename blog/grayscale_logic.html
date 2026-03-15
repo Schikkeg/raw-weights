@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Computer Vision is the New Business Intelligence | RawWeights</title>
+    <meta name="description" content="How do machines actually see? Explore the Tesla vs. Waymo pure vision debate and learn how B2B companies use CNNs to unlock powerful new business metrics.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            600: '#0077b5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+            <script type="text/javascript" async src="/includes/analytics.js"></script>
+
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="font-bold text-xl tracking-tight text-gray-900"><a href="/" >RawWeights</a></div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
+                <a href="/" class="hover:text-brand-600 transition">Home</a>
+                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
+                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
+		        <a href="/tools/master_ml_hub.html">ML Playground</a>
+				<a href="/tools/master_sequence_hub.html" >Attention Journey</a>
+				<a href="/tools/cnn_sandbox.html" >Explore CNN</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
+        
+        <main class="w-full lg:w-2/3 mx-auto mt-10">
+    <article class="bg-white p-8 md:p-12 rounded-3xl shadow-lg shadow-gray-200/50 border border-gray-100">
+        <!-- Header Section -->
+        <header class="mb-12">
+            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-6">
+                <span class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full font-bold uppercase tracking-wider text-xs">Grayscale Logic</span>
+                <span>&bull;</span>
+                <span class="font-medium">10 min read</span>
+                <span>&bull;</span>
+                <span class="font-medium">March 15, 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold font-sans text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 leading-tight mb-8">
+                Beyond the Pixels: Why Computer Vision is the New Business Intelligence
+            </h1>
+        </header>
+
+        <!-- Main Content -->
+        <div class="prose prose-lg max-w-none font-serif text-gray-700 leading-loose">
+            
+            <!-- Lead Section: The Philosophy Battle -->
+            <div class="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 md:p-10 mb-10 text-white shadow-xl overflow-hidden font-sans">
+                <!-- Decorative background elements -->
+                <div class="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 rounded-full bg-blue-500/20 blur-3xl pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-48 h-48 rounded-full bg-purple-500/20 blur-3xl pointer-events-none"></div>
+                
+                <p class="text-xl md:text-2xl text-slate-200 leading-relaxed font-medium relative z-10 m-0">
+                    Most people see a self-driving car and think "Science Fiction." But for an engineer, it’s a battle of philosophies. On one side, you have <strong class="text-blue-400">Waymo</strong>, relying on the expensive, precise "crutches" of LiDAR and HD Maps. On the other, you have <strong class="text-red-400">Tesla</strong>, betting everything on "Pure Vision"—the idea that if a human can drive with just two eyes and a brain, a machine should be able to do it with eight cameras and a Convolutional Neural Network (CNN).
+                </p>
+            </div>
+            
+            <!-- B2B Use Cases Callout -->
+            <div class="mb-12">
+                <p class="text-xl text-gray-800 font-sans font-semibold mb-6">But this isn't just about cars. Understanding how a machine "sees" opens up a massive frontier for B2B use cases.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans">
+                    <div class="flex items-start gap-4 p-5 bg-white border border-gray-100 shadow-sm rounded-2xl transition hover:shadow-md">
+                        <div class="bg-purple-100 text-purple-600 p-3 rounded-xl shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-lg m-0 mb-1">Event Tracking</h4>
+                            <p class="text-sm text-gray-600 m-0 leading-snug">Track exactly how many seconds a lead spends looking at a specific convention booth.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-5 bg-white border border-gray-100 shadow-sm rounded-2xl transition hover:shadow-md">
+                        <div class="bg-green-100 text-green-600 p-3 rounded-xl shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-lg m-0 mb-1">Factory QA</h4>
+                            <p class="text-sm text-gray-600 m-0 leading-snug">Identify microscopic fractures in manufacturing components before they leave the plant.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sandbox Intro -->
+            <p class="mb-12 text-lg text-gray-700 leading-relaxed border-l-4 border-gray-200 pl-6">
+                To explore these high-stakes metrics, we built an interactive sandbox. The tool comes pre-loaded with four distinct visual scenarios (from facial recognition to city traffic), but you aren't limited to our examples. <strong class="text-gray-900 bg-gray-100 px-2 py-1 rounded">You can input any custom image URL</strong> (provided it allows CORS) to watch the network process your own data and calculations in real-time. Here is the breakdown of the <strong>Grayscale Logic</strong> engine.
+            </p>
+
+            <!-- Architecture Image Space Allocation -->
+            <figure class="my-12 relative group">
+                <div class="absolute -inset-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl opacity-50 group-hover:opacity-100 transition duration-500 blur-lg"></div>
+                <img src="/images/cnnarchi.jpeg" alt="CNN Architecture Diagram" class="relative w-full rounded-xl border border-gray-200 shadow-md object-cover z-10">
+                <figcaption class="relative text-center text-sm text-gray-500 mt-4 font-sans z-10">
+                    The Convolutional Neural Network pipeline. <a href="/tools/cnn_sandbox.html#sec-architecture" class="text-blue-600 font-bold hover:text-blue-800 transition-colors">View the interactive diagram &rarr;</a>
+                </figcaption>
+            </figure>
+
+            <!-- Section 1 Card -->
+            <div class="bg-gray-50/50 border border-gray-100 rounded-3xl p-8 md:p-10 mb-10 transition-shadow hover:shadow-md">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-lg font-sans">1</span>
+                    <h3 class="text-2xl font-sans font-bold text-gray-900 m-0">The Death of Geometry</h3>
+                </div>
+                <p class="mb-6">
+                    Standard networks fail at visual tasks because they "shred" the image. When you flatten a 2D photo into a 1D line of numbers, you lose the spatial relationship between pixels. Our tool demonstrates this by physically unrolling an image, showing how a "nose" becomes just a disconnected sequence of values.
+                </p>
+                <a href="/tools/cnn_sandbox.html#sec-shredder" class="group inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm font-sans">
+                    Interact with the Paper Shredder 
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+
+            <!-- Section 2 Card -->
+            <div class="bg-gray-50/50 border border-gray-100 rounded-3xl p-8 md:p-10 mb-10 transition-shadow hover:shadow-md">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-lg font-sans">2</span>
+                    <h3 class="text-2xl font-sans font-bold text-gray-900 m-0">The "Pure Vision" Core</h3>
+                </div>
+                <p class="mb-4">
+                    How does Tesla find a lane line or a pedestrian? Through <strong>Filters</strong>. We allow users to select specific kernels that act as "mathematical eyes." As you slide these filters over the photo, you see the <strong>Feature Map</strong> glow where a match is found. 
+                </p>
+                <p class="mb-6">
+                    By including a <strong>ReLU</strong> (Nonlinearity) stage, we show how the network squashes "noise" (negative numbers) to zero. In a business context, this is the difference between a system that gets confused by shadows and one that accurately detects a customer’s face at a trade show booth.
+                </p>
+                <a href="/tools/cnn_sandbox.html#sec-convolution" class="group inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm font-sans">
+                    Extract features in the Sandbox
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+
+            <!-- Styled Blockquote -->
+            <blockquote class="relative bg-blue-50/50 border-l-4 border-blue-500 p-8 rounded-r-2xl text-gray-800 my-12 font-sans shadow-sm">
+                <svg class="absolute top-4 left-4 w-8 h-8 text-blue-200/50 -z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+                <p class="text-xl font-medium italic relative z-10 m-0 leading-relaxed">
+                    "Waymo uses lasers to feel the world; Tesla uses math to understand it. In the B2B world, math is cheaper, faster, and more scalable."
+                </p>
+            </blockquote>
+
+            <!-- Section 3 Card -->
+            <div class="bg-gray-50/50 border border-gray-100 rounded-3xl p-8 md:p-10 mb-10 transition-shadow hover:shadow-md">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-lg font-sans">3</span>
+                    <h3 class="text-2xl font-sans font-bold text-gray-900 m-0">Scaling Down: Max Pooling</h3>
+                </div>
+                <p class="mb-6">
+                    Processing 4K video in real-time is impossible without downsampling. Our <strong>Max Pooling</strong> section proves that the network can shrink an image by 75% while still keeping the most "important" features shining through. This is how a robotaxi can process 8 cameras at once without a supercomputer in the trunk.
+                </p>
+                <a href="/tools/cnn_sandbox.html#sec-pooling" class="group inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm font-sans">
+                    Test the Downsampling logic
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+
+            <!-- Section 4 Card -->
+            <div class="bg-gray-50/50 border border-gray-100 rounded-3xl p-8 md:p-10 mb-10 transition-shadow hover:shadow-md">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-lg font-sans">4</span>
+                    <h3 class="text-2xl font-sans font-bold text-gray-900 m-0">The Learning Loop</h3>
+                </div>
+                <p class="mb-6">
+                    This is where the "intelligence" comes from. We show a random, noisy filter that "sees" nothing. By clicking "Train," you watch <strong>Backpropagation</strong> nudging those random numbers until they perfectly match the target feature. It’s a visual representation of the billions of miles of data Tesla uses to refine its FSD (Full Self-Driving) beta.
+                </p>
+                <a href="/tools/cnn_sandbox.html#sec-backprop" class="group inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm font-sans">
+                    Train a filter using Backprop
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+
+            <!-- Section 5 Card -->
+            <div class="bg-gray-50/50 border border-gray-100 rounded-3xl p-8 md:p-10 mb-12 transition-shadow hover:shadow-md">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-lg font-sans">5</span>
+                    <h3 class="text-2xl font-sans font-bold text-gray-900 m-0">The Payoff: Tracking & Segmentation</h3>
+                </div>
+                <p class="mb-6">
+                    The final layer determines the business value. 
+                </p>
+                
+                <!-- Styled Custom List -->
+                <ul class="space-y-4 mb-8 font-sans">
+                    <li class="flex items-start gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <div class="bg-blue-100 text-blue-600 p-1.5 rounded-lg shrink-0 mt-0.5">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                        </div>
+                        <div><strong class="text-gray-900">Classification:</strong> <span class="text-gray-600">"Is there a person in the booth?"</span></div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <div class="bg-blue-100 text-blue-600 p-1.5 rounded-lg shrink-0 mt-0.5">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        </div>
+                        <div><strong class="text-gray-900">Object Detection:</strong> <span class="text-gray-600">"Where is the person and what are they holding?"</span></div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <div class="bg-blue-100 text-blue-600 p-1.5 rounded-lg shrink-0 mt-0.5">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
+                        </div>
+                        <div><strong class="text-gray-900">Segmentation:</strong> <span class="text-gray-600">"Exactly which pixels belong to the person vs. the background?"</span></div>
+                    </li>
+                </ul>
+
+                <p class="mb-6">
+                    By mastering these outputs, businesses can track metrics that were previously invisible—like dwell time, engagement depth, and micro-conversions in physical spaces.
+                </p>
+                <a href="/tools/cnn_sandbox.html#sec-outputs" class="group inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm font-sans">
+                    Explore the Output Paradigms
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+            
+            <!-- Final CTA Box -->
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-10 text-center shadow-xl my-12">
+                <h3 class="text-2xl font-bold font-sans text-white mb-4 m-0">Ready to see it in action?</h3>
+                <p class="text-gray-300 mb-8 max-w-xl mx-auto">
+                    Computer vision isn't just for labs or high-end tech. It's a tool for anyone who needs to convert the messy, visual world into clean, actionable data. 
+                </p>
+                <a href="/tools/cnn_sandbox.html#sec-sandbox" class="group inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white font-sans font-bold rounded-full hover:bg-blue-400 hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1">
+                    Explore the Logic. Unblackbox the Machine.
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+            
+        </div>
+    </article>
+</main>
+		
+        <aside class="w-full lg:w-1/3">
+            <div class="sticky top-24">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Related posts</h3>
+                    <div id="sidebar-feed" class="flex flex-col space-y-6">
+                        </div>
+                    <a href="/blog.html" class="block w-full text-center mt-6 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition">View All Articles</a>
+                </div>
+
+
+            </div>
+        </aside>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Same Data Source
+        const articles = [
+            {
+                title: "Teaching a Java App to Hear the Heartbeat of the Server",
+                excerpt: "Your own data is the best teacher. Discover why building a local neural network from scratch gives you the visibility needed to navigate the AI era...",
+                date: "Mar 08, 2026",
+                type:"Blog",
+                image: "./images/java_ai_exp.png",
+                link: "https://rawweights.com/blog/teaching-a-java-app-to-hear-the-heartbeat-of-the-server.html"
+            },
+            {
+                title: "Visualizing AI: An Interactive Journey from RNNs to Transformers",
+                excerpt: "Explore the evolution of sequence models. Understand the math and mechanics behind modern AI—from RNNs to Transformers—with 13 hands-on interactive visualizers...",
+                date: "Mar 01, 2026",
+                type:"Blog",
+                image: "./images/transformer.png",
+                link: "https://rawweights.com/blog/visualizing-ai-rnns-to-transformers.html"
+            },
+            {
+                title: "Bridging the Gap Between ML Theory and Intuition: An Interactive Sandbox)",
+                excerpt: "Learning Machine Learning is often a tale of two extremes: high-level conceptual fluff or dense, intimidating calculus. Discover how our new AI & ML Master Playground bridges the gap by turning static equations into dynamic, tactile experiences you can build, break, and manipulate in real-time...",
+                date: "Feb 22, 2026",
+                type:"Blog",
+                image: "./images/sandbox.png",
+                link: "https://rawweights.com/blog/bridging-the-gap-between-ml-theory-and-intuition-in-interactive-sandbox.html"
+            },
+            {
+                title: "Building a Tiny AI in Your Browser (No Python Required)",
+                excerpt: "We adopted micro-frontends two years ago. Here is the unvarnished truth about the bundle size and latency costs we incurred...",
+                date: "Feb 14, 2026",
+                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+            },
+            {
+                title: "Why I paused the advanced AI rush to build a simple regression tool",
+                excerpt: "Management isn't about tracking tasks. It's about unblocking people. Here is my framework for effective weekly syncs.",
+                date: "Feb 8, 2026",
+                image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
+            }
+        ];
+
+        const sidebar = document.getElementById('sidebar-feed');
+
+        articles.forEach(article => {
+            const item = `
+                <a href="${article.link}" class="group block">
+                    <h4 class="font-bold text-gray-800 group-hover:text-brand-600 transition leading-snug mb-1">${article.title}</h4>
+                    <div class="flex items-center text-xs text-gray-400">
+                        <span class="w-4 h-4 mr-1 bg-brand-600 rounded-sm flex items-center justify-center text-white font-bold" style="font-size: 8px;">in</span>
+                        <span>Posted on LinkedIn &bull; ${article.date}</span>
+                    </div>
+                </a>
+            `;
+            sidebar.innerHTML += item;
+        });
+    </script>
+</body>
+</html>
