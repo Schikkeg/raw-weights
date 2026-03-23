@@ -895,6 +895,19 @@
                     <summary class="font-semibold text-gray-800 flex justify-between items-center">How do Generative Adversarial Networks (GANs) learn to create realistic data?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
                     <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">GANs employ a Generator (the "forger") and a Discriminator (the "detective"). The competing objective forces the generator to continuously improve its fakes until it can completely fool the discriminator.</div>
                 </details>
+                <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">If the GAN "Discriminator" judges real vs. fake, isn't that just supervised learning? How does it get its knowledge?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
+                    <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">
+                        It feels like supervised learning because the Discriminator acts as a classifier, but the key difference is that <strong>no human had to manually label the data</strong>. The Discriminator gets its knowledge automatically by comparing two distinct buckets: the raw training dataset (which the network automatically tags as "Real") and the output coming from the Generator (which the network automatically tags as "Fake"). It is a clever trick that pits two neural networks against each other to achieve an unsupervised goal without needing a human "Watchman" .
+                    </div>
+                </details>
+
+                <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">Does training stop when the fake data perfectly matches the real data and fools the Discriminator?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
+                    <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">
+                        Yes! In the lecture, this is referred to as the <strong>"Global Optimum"</strong>. The two networks compete in a loop until the Generator perfectly reproduces the true data distribution. Visually, this means the generated fake data exactly overlaps the locations of the real data. At this point, the Discriminator is completely fooled and can no longer tell the difference, meaning the Generator has successfully learned how to create perfect new samples and training has achieved its goal.
+                    </div>
+                </details>
             </div>
         </div>
     </main>
@@ -1046,8 +1059,29 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            const viewport = document.getElementById('slider-viewport');
+            
+            if (viewport) {
+                viewport.scrollLeft = 0;
+                viewport.scrollTop = 0;
+            }
+
+            if (window.location.hash) {
+                const hashMatch = window.location.hash.match(/#slide-(\d+)/);
+                if (hashMatch && hashMatch[1]) {
+                    const targetIndex = parseInt(hashMatch[1], 10);
+                    if (targetIndex >= 0 && targetIndex < slides.length) {
+                        currentSlide = targetIndex;
+                    }
+                }
+            }
+
             setSandboxState('supervised', null);
-            setTimeout(updateSlider, 100);
+            
+            setTimeout(() => {
+                if (viewport) viewport.scrollLeft = 0;
+                updateSlider();
+            }, 50);
         });
     </script>
 </body>
