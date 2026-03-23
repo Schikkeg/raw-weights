@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <title>Deep Generative Modeling | RawWeights</title>
+    <meta name="description" content="A comprehensive, interactive masterclass on Deep Generative Modeling. Explore Unsupervised Learning, Autoencoders, VAEs, GANs, and Cycle GANs with interactive architectures.">
+    <meta name="keywords" content="Deep Learning, Generative Modeling, Autoencoders, VAE, GAN, Cycle GAN, AI, Machine Learning, Unsupervised Learning">
+    <meta property="og:title" content="Deep Generative Modeling Journey | RawWeights">
+    <meta property="og:description" content="Interactive visual architectures and sandboxes for learning Deep Generative Models.">
+    <meta property="og:type" content="article">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        serif: ["Merriweather", "serif"]
+                    },
+                    colors: {
+                        brand: {
+                            50: "#f0f9ff", 100: "#e0f2fe", 600: "#0077b5", 700: "#0369a1", 900: "#0e1111"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .slider-viewport { overflow: hidden; position: relative; width: 100%; transition: height 0.4s ease-out; }
+        .slider-track { display: flex; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; align-items: flex-start; }
+        .slide { width: 100%; flex-shrink: 0; padding: 0.5rem; }
+
+        .sandbox-container {
+            --bg-dark: #0f0f13; --panel-bg: #1a1a24; --text-light: #f5f5f5; --accent: #00d2ff; --accent-hover: #3a7bd5;
+            background-color: var(--bg-dark); color: var(--text-light); display: flex; flex-direction: row;
+            border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); min-height: 650px;
+        }
+        .sandbox-sidebar { width: 330px; flex-shrink: 0; background-color: var(--panel-bg); padding: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 10; border-right: 1px solid #333; }
+        .sandbox-sidebar h2 { color: var(--accent); text-align: center; margin-bottom: 10px; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; font-family: 'Inter', sans-serif; font-weight: 600; }
+        .sandbox-btn { background-color: #252530; color: var(--text-light); border: 1px solid #3a3a45; padding: 10px 14px; text-align: left; cursor: pointer; border-radius: 6px; font-size: 0.95rem; transition: all 0.3s ease; font-family: 'Inter', sans-serif; }
+        .sandbox-btn:hover { background-color: #353545; border-color: var(--accent-hover); transform: translateX(5px); }
+        .sandbox-btn.active { background: linear-gradient(90deg, var(--accent-hover), var(--accent)); color: #fff; border-color: transparent; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3); }
+
+        .sandbox-main { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
+        .sandbox-canvas { flex-grow: 1; display: flex; justify-content: center; align-items: center; background: linear-gradient(to left, #2a1a1a 0%, #111 60%, #050508 100%); position: relative; width: 100%; min-height: 350px; }
+        .sandbox-panel { background-color: var(--panel-bg); padding: 25px 40px; border-top: 3px solid var(--accent); font-size: 1.05rem; line-height: 1.6; min-height: 250px; }
+        .sandbox-panel h3 { color: var(--accent); margin-bottom: 8px; font-size: 1.4rem; font-weight: 600; }
+        .example-box { background-color: #252530; border-left: 4px solid var(--accent); padding: 12px 15px; margin-top: 15px; border-radius: 4px; font-size: 0.95rem; }
+
+        .sandbox-canvas svg { width: 100%; height: 100%; max-height: 400px; display: block; }
+        .fire-glow { animation: flicker 0.5s infinite alternate; }
+        @keyframes flicker { 0% { r: 50; opacity: 0.7; filter: drop-shadow(0 0 20px #ff5722); } 100% { r: 55; opacity: 1; filter: drop-shadow(0 0 40px #ff9800); } }
+        .move-up-down { animation: floatUpDown 5s ease-in-out infinite; }
+        @keyframes floatUpDown { 0% { transform: translateY(0px); } 50% { transform: translateY(-80px); } 100% { transform: translateY(0px); } }
+        .shadow-effect { fill: #000; opacity: 0.85; filter: blur(6px); }
+        .gan-learning-path { animation: ganLearnPath 9s infinite; }
+        @keyframes ganLearnPath { 0%, 25% { transform: translateY(-100px); } 35%, 60% { transform: translateY(-40px); } 70%, 100% { transform: translateY(0px); } }
+        .gan-text-status { animation: ganTextUpdate 9s infinite; font-weight: bold; }
+        @keyframes ganTextUpdate { 0%, 25% { content: "1. Poor Fake (Far apart)"; fill: #e74c3c; opacity: 1; } 35%, 60% { content: "2. Improving... (Closer)"; fill: #f39c12; opacity: 1; } 70%, 100% { content: "3. Perfect Fake! (Overlap)"; fill: #2ecc71; opacity: 1; } 26%, 34%, 61%, 69% { opacity: 0; } }
+        .cycle-ab { animation: cycleAB 4s infinite linear; }
+        @keyframes cycleAB { 0% { transform: translateX(0); fill: #fff; opacity: 0; } 10% { opacity: 1; fill: #fff; } 50% { transform: translateX(450px); fill: #3498db; opacity: 1; } 90% { transform: translateX(450px); opacity: 0; } 100% { transform: translateX(0); opacity: 0; } }
+        .cycle-ba { animation: cycleBA 4s infinite linear; animation-delay: 2s; opacity: 0; }
+        @keyframes cycleBA { 0% { transform: translateX(0); fill: #3498db; opacity: 0; } 10% { opacity: 1; fill: #3498db; } 50% { transform: translateX(-450px); fill: #fff; opacity: 1; } 90% { transform: translateX(-450px); opacity: 0; } 100% { transform: translateX(0); opacity: 0; } }
+        .cloud-pulse { animation: cloudPulse 2s infinite alternate; opacity: 0.6; fill: #00d2ff; }
+        @keyframes cloudPulse { 0% { transform: scale(0.9); filter: blur(8px); } 100% { transform: scale(1.3); filter: blur(15px); } }
+        .rigid-point { animation: vibrate 0.1s infinite; fill: #e74c3c; }
+        @keyframes vibrate { 0% {transform: translate(1px, 1px);} 50% {transform: translate(-1px, -1px);} 100% {transform: translate(1px, -1px);} }
+        .noise { animation: jitter 0.1s infinite; }
+        @keyframes jitter { 0% { transform: translate(0, 0); } 50% { transform: translate(4px, -4px); } 100% { transform: translate(-4px, 4px); } }
+
+        .timeline-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawLine 3s forwards ease-out; }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+        .svg-interactive-node { cursor: pointer; transition: all 0.2s ease; }
+        .svg-interactive-node:hover { filter: drop-shadow(0 0 8px rgba(0, 119, 181, 0.5)); transform: scale(1.02); }
+        .svg-tooltip-trigger { cursor: help; }
+        .svg-tooltip-trigger:hover rect { stroke: #0077b5; stroke-width: 4; }
+
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @media (max-width: 900px) {
+            .sandbox-container { flex-direction: column; min-height: auto; }
+            .sandbox-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: space-between; padding: 15px; border-right: none; border-bottom: 1px solid #333; }
+            .sandbox-sidebar h2 { width: 100%; }
+            .sandbox-btn { flex: 1 1 48%; padding: 10px; font-size: 0.85rem; text-align: center; margin-bottom: 5px; }
+            .sandbox-panel { padding: 20px; font-size: 0.95rem; min-height: auto; }
+            .sandbox-canvas { min-height: 250px; }
+        }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased bg-gray-50 font-sans min-h-screen text-gray-800">
+
+    <nav class="bg-white border-gray-200 border-b sticky top-0 z-50 shadow-sm relative">
+        <div class="flex items-center justify-between max-w-6xl mx-auto px-6 h-16">
+            <div class="font-bold text-gray-900 text-xl tracking-tight">
+                <a href="/">RawWeights</a>
+            </div>
+            <div class="text-sm font-medium hidden md:flex space-x-8 text-gray-600">
+                <a href="/" class="hover:text-brand-600 transition">Home</a>
+                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
+                <a href="/tools/master_ml_hub.html"  class="hover:text-brand-600 transition">ML Playground</a>
+                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
+                <a href="/tools/master_sequence_hub.html" class="hover:text-brand-600 transition">Attention Journey</a>
+                <a href="/tools/deep_generative_modeling.html" class="text-brand-600 font-semibold">Generative Journey</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="mx-auto px-6 flex-grow max-w-6xl py-8 w-full flex flex-col">
+
+        <div class="sticky top-16 bg-gray-50 z-40 pt-4 pb-2 border-b border-gray-200 mb-8" id="sticky-header">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4">
+                <div>
+                    <h1 class="text-3xl font-serif font-bold text-gray-900">Deep Generative Modeling</h1>
+                    <p class="text-gray-500 mt-1 text-sm md:text-base">Explore the foundations of AI capable of creating brand new data.</p>
+                </div>
+                
+                <div class="flex space-x-3 mt-4 md:mt-0">
+                    <button onclick="prevSlide()" id="prevBtn" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition">
+                        &larr; Prev
+                    </button>
+                    <button onclick="nextSlide()" id="nextBtn" class="px-4 py-2 bg-brand-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 transition shadow-sm">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+            
+            <div class="w-full flex space-x-6 overflow-x-auto hide-scrollbar pt-2" id="text-indicators">
+            </div>
+        </div>
+
+        <div class="slider-viewport" id="slider-viewport">
+            <div class="slider-track" id="slider-track">
+
+                <section class="slide" id="slide-0">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">Part 1</span>
+                        <h2 class="text-4xl font-serif font-bold text-gray-900 mb-6">The Big Picture</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center"><span class="text-2xl mr-2">🎨</span> Generative Modeling (The "Creator")</h3>
+                                <p class="text-gray-600 leading-relaxed mb-6">
+                                    Instead of just looking at pictures and learning to slap a label on them, this AI studies thousands of examples to learn the actual "recipe" of the data. Once it knows the recipe, it can generate brand-new, realistic examples that have never existed before.
+                                </p>
+
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center"><span class="text-2xl mr-2">🕵️</span> Unsupervised Learning</h3>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Learning without an Answer Key! The model does not use human-provided labels to learn. It figures out the hidden rules and structures entirely on its own just by observing the raw data.
+                                </p>
+                            </div>
+
+                            <div class="bg-brand-50 p-6 rounded-lg border border-brand-100">
+                                <h3 class="text-lg font-bold text-brand-900 mb-4 border-b border-brand-200 pb-2">The Core Capabilities</h3>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <svg class="h-6 w-6 text-brand-600 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                                        <div><strong class="text-gray-900">Density Estimation:</strong> <span class="text-gray-600 text-sm block mt-1">Figures out the "hidden ingredients" to understand the overall shape and spread of the data.</span></div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="h-6 w-6 text-brand-600 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                                        <div><strong class="text-gray-900">Sample Generation:</strong> <span class="text-gray-600 text-sm block mt-1">Using the learned "recipe" to actually create brand-new, realistic data instances.</span></div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="h-6 w-6 text-brand-600 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                        <div><strong class="text-gray-900">Outlier Detection:</strong> <span class="text-gray-600 text-sm block mt-1">Spotting highly unusual events (like a hazard for a self-driving car) because it knows what "normal" looks like.</span></div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="h-6 w-6 text-brand-600 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
+                                        <div><strong class="text-gray-900">Data Debiasing:</strong> <span class="text-gray-600 text-sm block mt-1">Tells if certain features are under-represented, allowing humans to fix data and build fairer systems.</span></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">Model Families</span>
+                        <h2 class="text-3xl font-serif font-bold text-gray-900 mb-6">The Branches of Generative Modeling</h2>
+                        
+                        <p class="text-sm text-gray-500 mb-4 font-medium italic">Click any model box below to jump straight to its detailed architecture!</p>
+
+                        <div class="w-full bg-slate-50 rounded-xl border border-slate-200 p-2 overflow-x-auto shadow-inner">
+                            <svg viewBox="0 0 1100 600" class="w-full h-auto font-sans" style="min-width: 900px;">
+                                <defs>
+                                    <marker id="arrow-solid" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+                                    <marker id="arrow-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6" /></marker>
+                                </defs>
+
+                                <foreignObject x="350" y="10" width="400" height="60">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-brand-600 rounded-xl flex items-center justify-center shadow-md border-2 border-brand-700">
+                                        <span class="text-white font-bold text-lg text-center">Generative Modeling<br/><span class="text-sm font-normal text-brand-100">(Unsupervised Learning)</span></span>
+                                    </div>
+                                </foreignObject>
+
+                                <rect x="30" y="110" width="440" height="470" fill="#f0fdf4" stroke="#86efac" stroke-width="2" stroke-dasharray="8,4" rx="16" />
+                                <text x="250" y="140" text-anchor="middle" font-weight="bold" fill="#166534" font-size="16" tracking="wide">LATENT VARIABLE MODELS</text>
+
+                                <rect x="630" y="110" width="440" height="470" fill="#fdf4ff" stroke="#f0abfc" stroke-width="2" stroke-dasharray="8,4" rx="16" />
+                                <text x="850" y="140" text-anchor="middle" font-weight="bold" fill="#86198f" font-size="16" tracking="wide">ADVERSARIAL MODELS</text>
+
+                                <foreignObject x="50" y="160" width="400" height="50">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-emerald-100 border border-emerald-300 rounded-lg flex items-center justify-center text-center px-4">
+                                        <span class="text-emerald-800 font-medium text-sm"><strong>Focus:</strong> Density Estimation & Interpretable Features</span>
+                                    </div>
+                                </foreignObject>
+
+                                <foreignObject x="50" y="240" width="400" height="80" class="svg-interactive-node" onclick="goToSlide(3)">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-white border-2 border-emerald-400 rounded-xl shadow-sm flex flex-col items-center justify-center text-center p-2 relative">
+                                        <div class="absolute top-1 right-2 text-[10px] text-brand-600 font-bold bg-brand-50 px-1 rounded border border-brand-100">Click to View</div>
+                                        <strong class="text-emerald-700 text-base">1. Autoencoder (AE)</strong>
+                                        <span class="text-xs text-gray-600 mt-1 leading-tight">Deterministic compression into a latent bottleneck.<br/><strong>Goal:</strong> Perfect Reconstruction.</span>
+                                    </div>
+                                </foreignObject>
+
+                                <foreignObject x="50" y="450" width="400" height="80" class="svg-interactive-node" onclick="goToSlide(4)">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-white border-2 border-emerald-500 rounded-xl shadow-sm flex flex-col items-center justify-center text-center p-2 relative">
+                                        <div class="absolute top-1 right-2 text-[10px] text-brand-600 font-bold bg-brand-50 px-1 rounded border border-brand-100">Click to View</div>
+                                        <strong class="text-emerald-700 text-base">2. Variational Autoencoder (VAE)</strong>
+                                        <span class="text-xs text-gray-600 mt-1 leading-tight">Probabilistic latent space (μ, σ).<br/><strong>Goal:</strong> Reconstruction + Generating New Samples.</span>
+                                    </div>
+                                </foreignObject>
+
+                                <foreignObject x="650" y="160" width="400" height="50">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-fuchsia-100 border border-fuchsia-300 rounded-lg flex items-center justify-center text-center px-4">
+                                        <span class="text-fuchsia-800 font-medium text-sm"><strong>Focus:</strong> Pure, High-Fidelity Sample Generation</span>
+                                    </div>
+                                </foreignObject>
+
+                                <foreignObject x="650" y="240" width="400" height="80" class="svg-interactive-node" onclick="goToSlide(5)">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-white border-2 border-fuchsia-400 rounded-xl shadow-sm flex flex-col items-center justify-center text-center p-2 relative">
+                                        <div class="absolute top-1 right-2 text-[10px] text-brand-600 font-bold bg-brand-50 px-1 rounded border border-brand-100">Click to View</div>
+                                        <strong class="text-fuchsia-700 text-base">3. Generative Adversarial Network (GAN)</strong>
+                                        <span class="text-xs text-gray-600 mt-1 leading-tight">Noise mapping via Generator vs. Discriminator.<br/><strong>Goal:</strong> Fool the Discriminator.</span>
+                                    </div>
+                                </foreignObject>
+
+                                <foreignObject x="650" y="450" width="400" height="80" class="svg-interactive-node" onclick="goToSlide(5)">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-white border-2 border-fuchsia-500 rounded-xl shadow-sm flex flex-col items-center justify-center text-center p-2 relative">
+                                        <div class="absolute top-1 right-2 text-[10px] text-brand-600 font-bold bg-brand-50 px-1 rounded border border-brand-100">Click to View</div>
+                                        <strong class="text-fuchsia-700 text-base">4. Cycle GAN</strong>
+                                        <span class="text-xs text-gray-600 mt-1 leading-tight">2x Generators & 2x Discriminators.<br/><strong>Goal:</strong> Unpaired Style Translation.</span>
+                                    </div>
+                                </foreignObject>
+
+                                <path d="M 550 70 L 550 90 L 250 90 L 250 105" fill="none" stroke="#64748b" stroke-width="3" marker-end="url(#arrow-solid)" />
+                                <path d="M 550 70 L 550 90 L 850 90 L 850 105" fill="none" stroke="#64748b" stroke-width="3" marker-end="url(#arrow-solid)" />
+                                <line x1="250" y1="210" x2="250" y2="235" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-solid)" />
+                                <line x1="250" y1="320" x2="250" y2="445" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-solid)" />
+                                
+                                <foreignObject x="60" y="340" width="380" height="100">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full flex items-center justify-center">
+                                        <div class="bg-white bg-opacity-90 px-3 py-2 rounded shadow-sm border border-gray-200 text-center text-xs text-gray-600">
+                                            Adds <strong>stochasticity</strong> (randomness) & <strong>regularization</strong><br/>to allow for brand-new data generation
+                                        </div>
+                                    </div>
+                                </foreignObject>
+
+                                <line x1="850" y1="210" x2="850" y2="235" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-solid)" />
+                                <line x1="850" y1="320" x2="850" y2="445" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-solid)" />
+                                
+                                <foreignObject x="660" y="340" width="380" height="100">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full flex items-center justify-center">
+                                        <div class="bg-white bg-opacity-90 px-3 py-2 rounded shadow-sm border border-gray-200 text-center text-xs text-gray-600">
+                                            Doubles the architecture and adds <strong>Cyclic Loss</strong><br/>to translate directly between two unlinked domains
+                                        </div>
+                                    </div>
+                                </foreignObject>
+
+                                <path d="M 450 490 C 530 490, 560 300, 640 300" fill="none" stroke="#8b5cf6" stroke-width="3" stroke-dasharray="6,6" marker-end="url(#arrow-dashed)" />
+                                <foreignObject x="455" y="345" width="180" height="100">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full flex items-center justify-center">
+                                        <div class="bg-purple-50 px-2 py-2 rounded shadow-sm border border-purple-200 text-center text-xs text-purple-800 font-medium">
+                                            Shifts focus away from interpretable latent variables toward pure generation from random noise
+                                        </div>
+                                    </div>
+                                </foreignObject>
+                            </svg>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">Part 3</span>
+                        <h2 class="text-3xl font-serif font-bold text-gray-900 mb-6">Deep Generative Modeling Use Cases</h2>
+                        <p class="text-sm text-gray-500 mb-4 font-medium italic">Hover over any Use Case node (UC) below to view its explanation.</p>
+
+                        <div class="w-full bg-slate-50 rounded-xl border border-slate-200 p-4 overflow-x-auto shadow-inner">
+                            <svg viewBox="0 0 1600 1200" class="w-full h-auto font-sans" style="min-width: 1200px;">
+                                <defs>
+                                    <marker id="arrow-include" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" /></marker>
+                                    <marker id="arrow-extend" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#10b981" /></marker>
+                                    <linearGradient id="gradDev" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#eff6ff" /><stop offset="100%" stop-color="#bfdbfe" /></linearGradient>
+                                    <linearGradient id="gradUser" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f0fdf4" /><stop offset="100%" stop-color="#bbf7d0" /></linearGradient>
+                                    <linearGradient id="gradLVM" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#faf5ff" /><stop offset="100%" stop-color="#f3e8ff" /></linearGradient>
+                                    <linearGradient id="gradGAN" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff1f2" /><stop offset="100%" stop-color="#ffe4e6" /></linearGradient>
+                                    <linearGradient id="gradCore" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fffbeb" /><stop offset="100%" stop-color="#fef3c7" /></linearGradient>
+                                    <filter id="drop-shadow" x="-10%" y="-10%" width="130%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.1"/></filter>
+                                </defs>
+
+                                <rect x="250" y="50" width="1100" height="1100" rx="24" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="10,6"/>
+                                <text x="800" y="90" font-size="24" font-weight="bold" fill="#334155" text-anchor="middle" tracking="wide">Deep Generative Modeling System</text>
+
+                                <rect x="300" y="110" width="400" height="520" rx="16" fill="url(#gradLVM)" stroke="#d8b4fe" stroke-width="2"/>
+                                <text x="500" y="145" font-size="18" font-weight="bold" fill="#7e22ce" text-anchor="middle">Latent Variable Models</text>
+
+                                <rect x="300" y="660" width="400" height="460" rx="16" fill="url(#gradGAN)" stroke="#fda4af" stroke-width="2"/>
+                                <text x="500" y="695" font-size="18" font-weight="bold" fill="#be123c" text-anchor="middle">Adversarial Models</text>
+
+                                <rect x="850" y="110" width="450" height="1010" rx="16" fill="url(#gradCore)" stroke="#fcd34d" stroke-width="2"/>
+                                <text x="1075" y="145" font-size="18" font-weight="bold" fill="#b45309" text-anchor="middle">Core Applications</text>
+
+                                <circle cx="120" cy="600" r="50" fill="url(#gradDev)" stroke="#3b82f6" stroke-width="4" filter="url(#drop-shadow)"/>
+                                <text x="120" y="615" font-size="45" text-anchor="middle">👨‍💻</text>
+                                <text x="120" y="680" font-size="16" font-weight="bold" fill="#1e293b" text-anchor="middle">AI Developer</text>
+
+                                <circle cx="1480" cy="600" r="50" fill="url(#gradUser)" stroke="#10b981" stroke-width="4" filter="url(#drop-shadow)"/>
+                                <text x="1480" y="615" font-size="45" text-anchor="middle">🤖</text>
+                                <text x="1480" y="680" font-size="16" font-weight="bold" fill="#1e293b" text-anchor="middle">Downstream System</text>
+
+                                <path d="M 170 600 C 250 600, 250 185, 340 185" fill="none" stroke="#94a3b8" stroke-width="3"/>
+                                <path d="M 170 600 C 250 600, 250 275, 340 275" fill="none" stroke="#94a3b8" stroke-width="3"/>
+                                <path d="M 170 600 C 250 600, 250 365, 340 365" fill="none" stroke="#94a3b8" stroke-width="3"/>
+                                <path d="M 170 600 C 500 600, 700 635, 910 635" fill="none" stroke="#94a3b8" stroke-width="3"/>
+                                <path d="M 170 600 C 250 600, 250 735, 340 735" fill="none" stroke="#94a3b8" stroke-width="3"/>
+
+                                <path d="M 1430 600 C 1350 600, 1350 235, 1240 235" fill="none" stroke="#94a3b8" stroke-width="3"/>
+                                <path d="M 1430 600 C 1350 600, 1350 435, 1240 435" fill="none" stroke="#94a3b8" stroke-width="3"/>
+                                <path d="M 1430 600 C 1350 600, 1350 835, 1240 835" fill="none" stroke="#94a3b8" stroke-width="3"/>
+                                <path d="M 1430 600 C 1350 600, 1350 1005, 660 1005" fill="none" stroke="#94a3b8" stroke-width="3"/>
+
+                                <path d="M 910 635 C 785 635, 785 455, 660 455" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-include)"/>
+                                <path d="M 910 835 C 785 835, 785 545, 660 545" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-include)"/>
+                                <path d="M 910 835 C 785 835, 785 915, 660 915" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-include)"/>
+                                <path d="M 500 970 L 500 950" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-include)"/>
+
+                                <path d="M 340 455 C 280 455, 280 365, 340 365" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-extend)"/>
+                                <path d="M 340 455 C 240 455, 240 275, 340 275" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-extend)"/>
+                                <path d="M 340 455 C 200 455, 200 185, 340 185" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-extend)"/>
+                                <path d="M 340 545 C 300 545, 300 365, 340 365" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-extend)"/>
+                                <path d="M 340 915 C 280 915, 280 735, 340 735" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-extend)"/>
+                                <path d="M 340 825 C 310 825, 310 735, 340 735" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="8,6" marker-end="url(#arrow-extend)"/>
+
+                                <style>.uc-rect { fill: #ffffff; stroke-width: 3; filter: url(#drop-shadow); } .uc-text { font-size: 16px; font-weight: 700; text-anchor: middle; }</style>
+
+                                <g class="svg-tooltip-trigger">
+                                    <title>Isolate randomness into a dice roll to allow predictable math for backprop.</title>
+                                    <rect x="340" y="150" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
+                                    <text x="500" y="190" class="uc-text" fill="#6b21a8">UC9: 🎲 Reparameterization Trick</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Keep the latent space organized with continuity and completeness.</title>
+                                    <rect x="340" y="240" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
+                                    <text x="500" y="280" class="uc-text" fill="#6b21a8">UC8: 📐 Apply KL Divergence</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Train by checking how different the redrawn picture is from the original.</title>
+                                    <rect x="340" y="330" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
+                                    <text x="500" y="370" class="uc-text" fill="#6b21a8">UC7: 📉 Minimize Recon Loss</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Compress input data into a tiny bottleneck representation.</title>
+                                    <rect x="340" y="420" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
+                                    <text x="500" y="460" class="uc-text" fill="#6b21a8">UC5: 🗜️ Encode to Latent Space</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Redraw the original data from the compressed latent summary.</title>
+                                    <rect x="340" y="510" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
+                                    <text x="500" y="550" class="uc-text" fill="#6b21a8">UC6: 🖼️ Decode from Latent</text>
+                                </g>
+
+                                <g class="svg-tooltip-trigger">
+                                    <title>Endless cat-and-mouse game between forger and detective.</title>
+                                    <rect x="340" y="700" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
+                                    <text x="500" y="740" class="uc-text" fill="#be123c">UC12: ⚔️ Optimize Competing Obj.</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Look at fake and real pictures to guess which is which.</title>
+                                    <rect x="340" y="790" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
+                                    <text x="500" y="830" class="uc-text" fill="#be123c">UC11: 🕵️ Classify Real vs. Fake</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Start with random noise and paint a fake picture.</title>
+                                    <rect x="340" y="880" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
+                                    <text x="500" y="920" class="uc-text" fill="#be123c">UC10: 🎭 Generate Fake Data</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Translate data directly from one style to another without matched pairs.</title>
+                                    <rect x="340" y="970" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
+                                    <text x="500" y="1010" class="uc-text" fill="#be123c">UC13: 🔄 Translate Style (Cycle)</text>
+                                </g>
+
+                                <g class="svg-tooltip-trigger">
+                                    <title>Spot highly unusual or rare events by knowing what normal looks like.</title>
+                                    <rect x="910" y="200" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
+                                    <text x="1075" y="240" class="uc-text" fill="#b45309">UC3: 🎯 Detect Outliers</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Identify under-represented features to build fairer AI systems.</title>
+                                    <rect x="910" y="400" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
+                                    <text x="1075" y="440" class="uc-text" fill="#b45309">UC4: ⚖️ Debias Data</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Learn the overall shape and spread of the data distribution.</title>
+                                    <rect x="910" y="600" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
+                                    <text x="1075" y="640" class="uc-text" fill="#b45309">UC1: 📊 Density Estimation</text>
+                                </g>
+                                <g class="svg-tooltip-trigger">
+                                    <title>Use the learned recipe to create brand-new, realistic data instances.</title>
+                                    <rect x="910" y="800" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
+                                    <text x="1075" y="840" class="uc-text" fill="#b45309">UC2: 🎨 Generate New Samples</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-3">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">Part 4</span>
+                        <h2 class="text-4xl font-serif font-bold text-gray-900 mb-6">The Foundation: Autoencoders</h2>
+
+                        <div class="bg-gray-900 text-white rounded-xl p-6 mb-8 shadow-inner flex flex-col md:flex-row items-center">
+                            <div class="text-4xl md:mr-6 mb-4 md:mb-0">🦇</div>
+                            <div>
+                                <h3 class="text-xl font-bold text-brand-400 mb-2">Latent Variables (Plato's Cave)</h3>
+                                <p class="text-gray-300 text-sm leading-relaxed">Imagine you are in a cave and can only see shadows moving on the wall. The shadows are the data we observe (like pixels in an image), but the latent variables are the actual, hidden 3D objects casting those shadows.</p>
+                            </div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Method 1: Autoencoders (The Summarizer)</h3>
+                        <p class="text-gray-600 mb-6">The architecture of compressing data into a hidden representation and forcing the network to redraw it perfectly.</p>
+
+                        <svg viewBox="0 0 1100 250" class="w-full h-auto font-sans bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-inner" style="min-width: 1000px;">
+                            <defs>
+                                <linearGradient id="gradEncMerged" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#10b981" /></linearGradient>
+                                <linearGradient id="gradDecMerged" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10b981" /><stop offset="100%" stop-color="#8b5cf6" /></linearGradient>
+                                <marker id="flow-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+                                <marker id="loss-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" /></marker>
+                            </defs>
+
+                            <rect x="20" y="20" width="1060" height="190" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" rx="12" />
+                            <text x="40" y="45" font-weight="bold" fill="#334155" font-size="14">1. Autoencoder Architecture</text>
+
+                            <foreignObject x="40" y="60" width="140" height="60">
+                                <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-300 rounded-lg shadow-sm flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800 leading-tight">Input Data (X)</span></div>
+                            </foreignObject>
+
+                            <polygon points="220,60 360,75 360,105 220,120" fill="url(#gradEncMerged)" opacity="0.95"/>
+                            <text x="290" y="94" text-anchor="middle" font-weight="bold" fill="#fff" font-size="14">Encoder</text>
+
+                            <foreignObject x="400" y="60" width="140" height="60">
+                                <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-amber-50 border-2 border-amber-400 rounded-full shadow-sm flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-amber-800 leading-tight">Latent Space (Z)<br/><span class="font-normal text-[10px]">Low-dimensional bottleneck</span></span></div>
+                            </foreignObject>
+
+                            <polygon points="580,75 720,60 720,120 580,105" fill="url(#gradDecMerged)" opacity="0.95"/>
+                            <text x="650" y="94" text-anchor="middle" font-weight="bold" fill="#fff" font-size="14">Decoder</text>
+
+                            <foreignObject x="760" y="60" width="140" height="60">
+                                <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-300 rounded-lg shadow-sm flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800 leading-tight">Reconstructed Output</span></div>
+                            </foreignObject>
+
+                            <foreignObject x="400" y="140" width="320" height="50">
+                                <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded shadow-sm flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-red-700 leading-tight">Reconstruction Loss<br/><span class="font-normal text-[10px]">Mean Squared Error = (X - Output)²</span></span></div>
+                            </foreignObject>
+
+                            <path d="M 180 90 L 210 90" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow)" />
+                            <path d="M 360 90 L 390 90" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow)" />
+                            <path d="M 540 90 L 570 90" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow)" />
+                            <path d="M 720 90 L 750 90" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow)" />
+                            
+                            <path d="M 830 120 v 45 h -100" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow)" />
+                            <path d="M 110 120 v 45 h 280" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow)" />
+                        </svg>
+
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">Part 5</span>
+                        <h2 class="text-4xl font-serif font-bold text-gray-900 mb-6">Method 2: Variational Autoencoders (VAEs)</h2>
+                        <p class="text-lg text-gray-600 mb-8 border-l-4 border-brand-500 pl-4">The Flexible Summarizer: A mathematical evolution designed to <strong>generate brand new data</strong>.</p>
+
+                        <div class="space-y-6 mb-8">
+                            <div class="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-5 rounded-lg border border-gray-200">
+                                <div class="text-4xl mr-4 mb-2 md:mb-0">🎲</div>
+                                <div><h4 class="text-lg font-bold text-gray-900">Stochasticity (Adding "Wiggle Room")</h4><p class="text-gray-600 mt-1 text-sm md:text-base">Instead of a single, rigid summary, it learns a flexible range defined by a <em>mean</em> and a <em>standard deviation</em>.</p></div>
+                            </div>
+                            <div class="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-5 rounded-lg border border-gray-200">
+                                <div class="text-4xl mr-4 mb-2 md:mb-0">🗂️</div>
+                                <div><h4 class="text-lg font-bold text-gray-900">Regularization (The Organizer)</h4><p class="text-gray-600 mt-1 text-sm md:text-base">Forces the latent space to have <strong>Continuity</strong> and <strong>Completeness</strong> (KL Divergence).</p></div>
+                            </div>
+                            <div class="flex flex-col md:flex-row items-start md:items-center bg-brand-50 border border-brand-100 p-5 rounded-lg">
+                                <div class="text-4xl mr-4 mb-2 md:mb-0">🧮</div>
+                                <div><h4 class="text-lg font-bold text-brand-900">The Reparameterization Trick</h4><p class="text-brand-800 mt-1 text-sm md:text-base">Isolates randomness into a "dice roll" constant (epsilon), keeping calculations smooth for backpropagation.</p></div>
+                            </div>
+                        </div>
+
+                        <svg viewBox="0 230 1100 300" class="w-full h-auto font-sans bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-inner" style="min-width: 1000px;" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="flow-arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+                                <marker id="loss-arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" /></marker>
+                            </defs>
+                            <rect x="20" y="230" width="1060" height="290" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" rx="12" />
+                            <text x="40" y="255" font-weight="bold" fill="#334155" font-size="14">2. Variational Autoencoder (VAE) Architecture</text>
+                            
+                            <foreignObject x="40" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-300 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800">Input Data (X)</span></div></foreignObject>
+                            <foreignObject x="220" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-emerald-50 border-2 border-emerald-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-emerald-800">Encoder Network</span></div></foreignObject>
+                            <foreignObject x="400" y="320" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-indigo-50 border border-indigo-300 rounded flex items-center justify-center text-center"><span class="text-xs font-bold text-indigo-800">Mean (μ)</span></div></foreignObject>
+                            <foreignObject x="400" y="400" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-indigo-50 border border-indigo-300 rounded flex items-center justify-center text-center"><span class="text-xs font-bold text-indigo-800">Std Dev (σ)</span></div></foreignObject>
+                            <foreignObject x="400" y="240" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-slate-100 border-2 border-slate-400 rounded-full flex items-center justify-center text-center"><span class="text-xs font-bold text-slate-700 leading-tight">Random Constant<br/><span class="font-normal text-[10px]">Epsilon (ε)</span></span></div></foreignObject>
+                            <foreignObject x="580" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-amber-50 border-2 border-amber-400 rounded-full flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-amber-800 leading-tight">Latent Variable (Z)<br/><span class="font-normal text-[10px]">Z = μ + (σ × ε)</span></span></div></foreignObject>
+                            <foreignObject x="760" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-emerald-50 border-2 border-emerald-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-emerald-800">Decoder Network</span></div></foreignObject>
+                            <foreignObject x="940" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-300 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800">Reconstructed Output</span></div></foreignObject>
+                            <foreignObject x="580" y="240" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-red-700 leading-tight">Regularization Term<br/><span class="font-normal text-[9px]">KL Divergence vs Prior (μ=0, σ=1)</span></span></div></foreignObject>
+                            <foreignObject x="760" y="450" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-red-700">Reconstruction Loss</span></div></foreignObject>
+                            <foreignObject x="940" y="450" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-100 border-2 border-red-400 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-red-800">Total Loss = Recon Loss + Reg Term</span></div></foreignObject>
+                            <path d="M 180 390 L 210 390" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 360 380 L 390 350" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 360 400 L 390 430" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 540 270 L 610 350" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 540 345 L 570 375" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 540 425 L 570 395" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 720 390 L 750 390" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 900 390 L 930 390" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
+                            <path d="M 470 320 L 570 270" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow2)" />
+                            <path d="M 500 400 L 570 290" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow2)" />
+                            <path d="M 1010 420 L 870 450" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow2)" />
+                            <path d="M 720 270 L 1010 440" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow2)" />
+                            <path d="M 900 475 L 930 475" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow2)" />
+                        </svg>
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-5">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">Part 6</span>
+                        <h2 class="text-4xl font-serif font-bold text-gray-900 mb-6">Method 3: GANs & Cycle GANs</h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                            <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
+                                <div class="absolute top-0 right-0 -mt-4 -mr-4 text-8xl opacity-10">🎭</div>
+                                <h3 class="text-2xl font-bold text-white mb-4">GANs</h3>
+                                <p class="text-gray-300 font-medium mb-6">The Forger vs. The Detective</p>
+                                <ul class="space-y-4">
+                                    <li><h4 class="text-brand-300 font-bold">The Generator</h4><p class="text-sm text-gray-400">Starts with completely random noise and tries to paint a realistic fake picture.</p></li>
+                                    <li><h4 class="text-red-400 font-bold">The Discriminator</h4><p class="text-sm text-gray-400">Looks at both fake and real pictures, and tries to classify which is which.</p></li>
+                                </ul>
+                            </div>
+                            <div class="bg-gradient-to-br from-brand-50 to-white border-2 border-brand-100 rounded-xl p-6 text-gray-800 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 right-0 -mt-2 -mr-2 text-8xl opacity-10">🦓</div>
+                                <h3 class="text-2xl font-bold text-brand-900 mb-4">Cycle GANs</h3>
+                                <p class="text-brand-600 font-medium mb-4">The Unpaired Translators</p>
+                                <p class="text-sm text-gray-600 mb-4">Two pairs of generators/discriminators working together to translate data directly from one style to another (e.g. horses to zebras).</p>
+                                <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex items-center justify-center space-x-4">
+                                    <span class="text-2xl">🐎</span><span class="text-brand-400 font-bold">&lrarr;</span><span class="text-2xl">🦓</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <svg viewBox="0 540 1100 660" class="w-full h-auto font-sans bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-inner" style="min-width: 1000px;" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="flow-arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+                                <marker id="loss-arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" /></marker>
+                            </defs>
+                            <rect x="20" y="540" width="1060" height="240" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" rx="12" />
+                            <text x="40" y="565" font-weight="bold" fill="#334155" font-size="14">3. Generative Adversarial Network (GAN) Architecture</text>
+                            
+                            <foreignObject x="40" y="580" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-slate-100 border-2 border-slate-300 rounded-full flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-slate-700">Random Gaussian Noise</span></div></foreignObject>
+                            <foreignObject x="220" y="580" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator Network</span></div></foreignObject>
+                            <foreignObject x="400" y="580" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-pink-50 border-2 border-pink-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-pink-700">Fake Data</span></div></foreignObject>
+                            <foreignObject x="400" y="680" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-emerald-50 border-2 border-emerald-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-emerald-800">Real Data (X)</span></div></foreignObject>
+                            <foreignObject x="580" y="630" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-orange-50 border-2 border-orange-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-orange-800">Discriminator Network</span></div></foreignObject>
+                            <foreignObject x="760" y="630" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-slate-800 border-2 border-slate-600 rounded flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-white leading-tight">Classification:<br/><span class="font-normal">Real vs. Fake</span></span></div></foreignObject>
+                            <foreignObject x="940" y="570" width="140" height="70"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-red-700 leading-tight">Generator Objective:<br/><span class="font-normal text-[9px]">Minimize fake ID prob</span></span></div></foreignObject>
+                            <foreignObject x="940" y="670" width="140" height="70"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-red-700 leading-tight">Discriminator Objective:<br/><span class="font-normal text-[9px]">Maximize correct real/fake</span></span></div></foreignObject>
+                            
+                            <path d="M 180 610 L 210 610" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 360 610 L 390 610" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 540 610 L 570 640" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 540 710 L 570 680" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 720 660 L 750 660" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 900 645 L 930 605" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow3)" />
+                            <path d="M 900 675 L 930 705" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow3)" />
+
+                            <rect x="20" y="800" width="1060" height="380" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" rx="12" />
+                            <text x="40" y="825" font-weight="bold" fill="#334155" font-size="14">4. Cycle GAN Architecture (Unpaired Translation)</text>
+                            
+                            <foreignObject x="40" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800 leading-tight">Domain A<br/><span class="font-normal text-[10px]">(e.g., Horse)</span></span></div></foreignObject>
+                            <foreignObject x="220" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator A→B</span></div></foreignObject>
+                            <foreignObject x="400" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-pink-50 border-2 border-pink-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-pink-700">Fake Domain B</span></div></foreignObject>
+                            <foreignObject x="580" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator B→A</span></div></foreignObject>
+                            <foreignObject x="760" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-100 border-2 border-blue-500 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-900 leading-tight">Reconstructed<br/>Domain A</span></div></foreignObject>
+                            <foreignObject x="400" y="940" width="140" height="40"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-orange-50 border border-orange-400 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-orange-800">Discriminator B</span></div></foreignObject>
+                            
+                            <foreignObject x="40" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-cyan-50 border-2 border-cyan-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-cyan-800 leading-tight">Domain B<br/><span class="font-normal text-[10px]">(e.g., Zebra)</span></span></div></foreignObject>
+                            <foreignObject x="220" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator B→A</span></div></foreignObject>
+                            <foreignObject x="400" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-pink-50 border-2 border-pink-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-pink-700">Fake Domain A</span></div></foreignObject>
+                            <foreignObject x="580" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator A→B</span></div></foreignObject>
+                            <foreignObject x="760" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-cyan-100 border-2 border-cyan-500 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-cyan-900 leading-tight">Reconstructed<br/>Domain B</span></div></foreignObject>
+                            <foreignObject x="400" y="1020" width="140" height="40"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-orange-50 border border-orange-400 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-orange-800">Discriminator A</span></div></foreignObject>
+                            
+                            <foreignObject x="940" y="960" width="140" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-100 border-2 border-red-500 rounded-xl shadow-md flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-red-800 leading-tight">Cyclic Loss<br/><span class="font-normal text-[10px] mt-1 block">Code Dependency Linking Both Domains</span></span></div></foreignObject>
+                            
+                            <path d="M 180 890 L 210 890" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 360 890 L 390 890" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 540 890 L 570 890" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 720 890 L 750 890" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 470 920 L 470 930" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow3)" />
+                            <path d="M 180 1110 L 210 1110" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 360 1110 L 390 1110" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 540 1110 L 570 1110" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 720 1110 L 750 1110" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow3)" />
+                            <path d="M 470 1080 L 470 1070" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#loss-arrow3)" />
+                            <path d="M 900 890 L 970 950" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#loss-arrow3)" />
+                            <path d="M 900 1110 L 970 1050" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#loss-arrow3)" />
+                        </svg>
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">Learning Path</span>
+                        <h2 class="text-3xl font-serif font-bold text-gray-900 mb-6">Generative Modeling Sequence Flow</h2>
+
+                        <div class="w-full bg-slate-50 rounded-xl border border-slate-200 p-6 overflow-x-auto shadow-inner">
+                            <svg viewBox="0 0 1200 1250" class="w-full h-auto font-sans" style="min-width: 1000px;">
+                                <defs>
+                                    <marker id="seq-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#475569" /></marker>
+                                    <linearGradient id="gradInstr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#2563eb" /></linearGradient>
+                                    <linearGradient id="gradConcept" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981" /><stop offset="100%" stop-color="#059669" /></linearGradient>
+                                    <linearGradient id="gradAE" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1" /><stop offset="100%" stop-color="#4f46e5" /></linearGradient>
+                                    <linearGradient id="gradVAE" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6" /><stop offset="100%" stop-color="#7c3aed" /></linearGradient>
+                                    <linearGradient id="gradGAN" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f43f5e" /><stop offset="100%" stop-color="#e11d48" /></linearGradient>
+                                </defs>
+                                <line x1="100" y1="60" x2="100" y2="1200" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,4"/>
+                                <line x1="320" y1="60" x2="320" y2="1200" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,4"/>
+                                <line x1="540" y1="60" x2="540" y2="1200" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,4"/>
+                                <line x1="760" y1="60" x2="760" y2="1200" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,4"/>
+                                <line x1="980" y1="60" x2="980" y2="1200" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,4"/>
+
+                                <rect x="30" y="20" width="140" height="40" rx="8" fill="url(#gradInstr)" shadow="sm"/>
+                                <text x="100" y="45" text-anchor="middle" font-weight="bold" fill="#fff">Instructor</text>
+                                
+                                <rect x="250" y="20" width="140" height="40" rx="8" fill="url(#gradConcept)"/>
+                                <text x="320" y="45" text-anchor="middle" font-weight="bold" fill="#fff">Core Concepts</text>
+
+                                <g class="svg-interactive-node" onclick="goToSlide(3)">
+                                    <rect x="470" y="20" width="140" height="40" rx="8" fill="url(#gradAE)"/>
+                                    <text x="540" y="45" text-anchor="middle" font-weight="bold" fill="#fff">Autoencoders</text>
+                                </g>
+
+                                <g class="svg-interactive-node" onclick="goToSlide(4)">
+                                    <rect x="680" y="20" width="160" height="40" rx="8" fill="url(#gradVAE)"/>
+                                    <text x="760" y="45" text-anchor="middle" font-weight="bold" fill="#fff">VAEs</text>
+                                </g>
+
+                                <g class="svg-interactive-node" onclick="goToSlide(5)">
+                                    <rect x="910" y="20" width="140" height="40" rx="8" fill="url(#gradGAN)"/>
+                                    <text x="980" y="45" text-anchor="middle" font-weight="bold" fill="#fff">GANs</text>
+                                </g>
+
+                                <path d="M 100 120 L 310 120" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="110" fill="#334155" font-size="13" font-weight="600">1. Introduce Generative Modeling</text>
+                                <rect x="330" y="95" width="200" height="40" rx="4" fill="#ecfdf5" stroke="#34d399" stroke-width="1"/>
+                                <text x="340" y="115" fill="#065f46" font-size="12"><tspan font-weight="bold">Goal:</tspan> Estimate probability</text>
+                                <text x="340" y="130" fill="#065f46" font-size="12">distribution P(X)</text>
+
+                                <path d="M 100 200 L 310 200" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="190" fill="#334155" font-size="13" font-weight="600">2. Explain Latent Variables (Z)</text>
+                                <rect x="330" y="175" width="200" height="55" rx="4" fill="#ecfdf5" stroke="#34d399" stroke-width="1"/>
+                                <text x="340" y="195" fill="#065f46" font-size="12"><tspan font-weight="bold">Plato's Cave Analogy:</tspan></text>
+                                <text x="340" y="210" fill="#065f46" font-size="12">Observe raw data (X) to uncover</text>
+                                <text x="340" y="225" fill="#065f46" font-size="12">hidden underlying features (Z)</text>
+
+                                <path d="M 100 290 L 530 290" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="280" fill="#334155" font-size="13" font-weight="600">3. Introduce Autoencoders (Deterministic)</text>
+                                <rect x="550" y="265" width="200" height="55" rx="4" fill="#eef2ff" stroke="#818cf8" stroke-width="1"/>
+                                <text x="560" y="285" fill="#3730a3" font-size="12"><tspan font-weight="bold">Encoder:</tspan> maps X → Z (Bottleneck)</text>
+                                <text x="560" y="300" fill="#3730a3" font-size="12"><tspan font-weight="bold">Decoder:</tspan> maps Z → Recon X</text>
+
+                                <path d="M 100 380 L 530 380" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="370" fill="#334155" font-size="13" font-weight="600">4. Define Reconstruction Loss</text>
+                                <rect x="550" y="355" width="200" height="65" rx="4" fill="#eef2ff" stroke="#818cf8" stroke-width="1"/>
+                                <text x="560" y="375" fill="#3730a3" font-size="12">Train by minimizing distance:</text>
+                                <text x="560" y="390" fill="#3730a3" font-size="12" font-weight="bold">Mean Squared Error =</text>
+                                <text x="560" y="405" fill="#3730a3" font-size="12" font-weight="bold">(Input - Reconstructed Output)²</text>
+
+                                <path d="M 100 480 L 750 480" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="470" fill="#334155" font-size="13" font-weight="600">5. Add Stochasticity for Generation (VAEs)</text>
+                                <rect x="770" y="455" width="200" height="65" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
+                                <text x="780" y="475" fill="#5b21b6" font-size="12">Parameterize Z as a probability</text>
+                                <text x="780" y="490" fill="#5b21b6" font-size="12">distribution defined by mean (μ)</text>
+                                <text x="780" y="505" fill="#5b21b6" font-size="12">and standard deviation (σ)</text>
+
+                                <path d="M 100 580 L 750 580" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="570" fill="#334155" font-size="13" font-weight="600">6. Define Full VAE Loss Function</text>
+                                <rect x="770" y="555" width="200" height="55" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
+                                <text x="780" y="575" fill="#5b21b6" font-size="12" font-weight="bold">Total Loss =</text>
+                                <text x="780" y="590" fill="#5b21b6" font-size="12">Reconstruction Loss +</text>
+                                <text x="780" y="605" fill="#5b21b6" font-size="12">Regularization Term</text>
+
+                                <path d="M 100 680 L 750 680" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="670" fill="#334155" font-size="13" font-weight="600">7. Explain Regularization</text>
+                                <rect x="770" y="655" width="200" height="70" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
+                                <text x="780" y="675" fill="#5b21b6" font-size="12">Compare to a normal prior (μ=0, σ=1)</text>
+                                <text x="780" y="690" fill="#5b21b6" font-size="12"><tspan font-weight="bold">Formula:</tspan> KL Divergence</text>
+                                <text x="780" y="705" fill="#5b21b6" font-size="12">(Ensures Continuity &amp; Completeness)</text>
+
+                                <path d="M 100 780 L 750 780" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="770" fill="#334155" font-size="13" font-weight="600">8. Address Backprop Roadblock</text>
+                                <rect x="770" y="755" width="200" height="40" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
+                                <text x="780" y="775" fill="#5b21b6" font-size="12"><tspan font-weight="bold">Issue:</tspan> Backpropagation requires</text>
+                                <text x="780" y="790" fill="#5b21b6" font-size="12">deterministic nodes.</text>
+
+                                <path d="M 100 860 L 750 860" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="850" fill="#334155" font-size="13" font-weight="600">9. Introduce Reparameterization Trick</text>
+                                <rect x="770" y="835" width="200" height="55" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
+                                <text x="780" y="855" fill="#5b21b6" font-size="12">Isolate randomness into</text>
+                                <text x="780" y="870" fill="#5b21b6" font-size="12">constant epsilon (ε).</text>
+                                <text x="780" y="885" fill="#5b21b6" font-size="12"><tspan font-weight="bold">Formula:</tspan> Z = μ + (σ × ε)</text>
+
+                                <path d="M 100 960 L 970 960" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="950" fill="#334155" font-size="13" font-weight="600">10. Introduce GANs</text>
+                                <rect x="990" y="935" width="200" height="55" rx="4" fill="#fff1f2" stroke="#fb7185" stroke-width="1"/>
+                                <text x="1000" y="955" fill="#be123c" font-size="12"><tspan font-weight="bold">Generator:</tspan> Maps Noise → Fake</text>
+                                <text x="1000" y="970" fill="#be123c" font-size="12"><tspan font-weight="bold">Discriminator:</tspan> Classifies Real</text>
+                                <text x="1000" y="985" fill="#be123c" font-size="12">vs. Fake X</text>
+
+                                <path d="M 100 1050 L 970 1050" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="1040" fill="#334155" font-size="13" font-weight="600">11. Define Competing Objective</text>
+                                <rect x="990" y="1025" width="200" height="55" rx="4" fill="#fff1f2" stroke="#fb7185" stroke-width="1"/>
+                                <text x="1000" y="1045" fill="#be123c" font-size="12"><tspan font-weight="bold">Discriminator:</tspan> Maximize correct</text>
+                                <text x="1000" y="1060" fill="#be123c" font-size="12">classifications.</text>
+                                <text x="1000" y="1075" fill="#be123c" font-size="12"><tspan font-weight="bold">Generator:</tspan> Minimize fake ID.</text>
+
+                                <path d="M 100 1140 L 970 1140" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
+                                <text x="110" y="1130" fill="#334155" font-size="13" font-weight="600">12. Expand to Cycle GANs</text>
+                                <rect x="990" y="1115" width="200" height="55" rx="4" fill="#fff1f2" stroke="#fb7185" stroke-width="1"/>
+                                <text x="1000" y="1135" fill="#be123c" font-size="12">Two sets of Gen &amp; Disc.</text>
+                                <text x="1000" y="1150" fill="#be123c" font-size="12"><tspan font-weight="bold">Linked by Cyclic Loss</tspan> for</text>
+                                <text x="1000" y="1165" fill="#be123c" font-size="12">unpaired style translation.</text>
+                            </svg>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-7">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm mb-2">History</span>
+                        <h2 class="text-4xl font-serif font-bold text-gray-900 mb-8">Evolution of Generative Modeling</h2>
+
+                        <div class="relative max-w-4xl mx-auto py-4 w-full">
+                            <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 -ml-0.5 bg-gray-100 z-0">
+                                <svg class="absolute top-0 left-0 w-full h-full" preserveAspectRatio="none"><line x1="50%" y1="0" x2="50%" y2="100%" stroke="#0077b5" stroke-width="4" stroke-linecap="round" class="timeline-path" /></svg>
+                            </div>
+                            <div class="md:hidden absolute left-6 top-0 bottom-0 w-1 -ml-0.5 bg-gray-100 z-0">
+                                <svg class="absolute top-0 left-0 w-full h-full" preserveAspectRatio="none"><line x1="50%" y1="0" x2="50%" y2="100%" stroke="#0077b5" stroke-width="4" stroke-linecap="round" class="timeline-path" /></svg>
+                            </div>
+
+                            <div class="space-y-12">
+                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">📜</div>
+                                    <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
+                                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition">
+                                            <span class="text-brand-600 font-bold block mb-1">Pre-1980s</span>
+                                            <h4 class="text-lg font-bold text-gray-900 mb-2">Foundational Statistics</h4>
+                                            <p class="text-sm text-gray-600">Latent Variables, Density Estimation, and Outlier Detection. Foundational statistical concepts that have existed for decades.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(3)">
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">🗜️</div>
+                                    <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
+                                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
+                                            <span class="text-brand-600 font-bold block mb-1">1986</span>
+                                            <h4 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-600">Autoencoders</h4>
+                                            <p class="text-sm text-gray-600">The concept of using neural networks to mathematically compress and reconstruct data unsupervised, popularized by Geoffrey Hinton.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(4)">
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">🎲</div>
+                                    <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
+                                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
+                                            <span class="text-brand-600 font-bold block mb-1">2013</span>
+                                            <h4 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-600">Variational Autoencoders (VAEs)</h4>
+                                            <p class="text-sm text-gray-600">Introduced by Kingma and Welling, bringing the crucial "probabilistic twist" that allowed models to smoothly generate brand new data.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(5)">
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">⚔️</div>
+                                    <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
+                                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
+                                            <span class="text-brand-600 font-bold block mb-1">2014</span>
+                                            <h4 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-600">Generative Adversarial Networks</h4>
+                                            <p class="text-sm text-gray-600">The "forger vs. detective" framework famously invented by Ian Goodfellow, kicking off a massive boom in high-quality image generation.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(5)">
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">🔄</div>
+                                    <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
+                                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
+                                            <span class="text-brand-600 font-bold block mb-1">2017</span>
+                                            <h4 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-600">Cycle GANs</h4>
+                                            <p class="text-sm text-gray-600">Architecture using pairs of generators and discriminators for unpaired style translation, introduced by Jun-Yan Zhu at UC Berkeley.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="slide" id="slide-8">
+                    <svg width="0" height="0" style="position:absolute; display:none;">
+                        <defs id="global-sandbox-defs">
+                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#00d2ff" /></marker>
+                            <marker id="arrow-purp" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#9b59b6" /></marker>
+                            <marker id="arrow-yellow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#f1c40f" /></marker>
+                            <g id="left-wall"><rect x="0" y="50" width="100" height="400" fill="#2c3e50" stroke="#1a252f" stroke-width="4" /><line x1="0" y1="150" x2="100" y2="150" stroke="#1a252f" stroke-width="2" /><line x1="0" y1="250" x2="100" y2="250" stroke="#1a252f" stroke-width="2" /><line x1="0" y1="350" x2="100" y2="350" stroke="#1a252f" stroke-width="2" /></g>
+                            <g id="prisoners"><rect x="250" y="300" width="15" height="120" fill="#444" /><circle cx="210" cy="330" r="15" fill="#aaa" /><rect x="220" y="345" width="20" height="40" fill="#777" /><line x1="240" y1="360" x2="250" y2="360" stroke="#888" stroke-width="4" /><path d="M 195 330 L 100 250" stroke="#fff" stroke-width="2" stroke-dasharray="4,4" opacity="0.3" /><circle cx="210" cy="380" r="15" fill="#999" /><rect x="220" y="395" width="20" height="40" fill="#666" /><line x1="240" y1="410" x2="250" y2="410" stroke="#888" stroke-width="4" /><path d="M 195 380 L 100 280" stroke="#fff" stroke-width="2" stroke-dasharray="4,4" opacity="0.3" /><text x="180" y="460" fill="#aaa" font-size="12" font-family="sans-serif">Eyes permanently on the wall</text></g>
+                            <g id="fire-source"><circle cx="950" cy="250" r="50" fill="#ff5722" class="fire-glow" /><circle cx="950" cy="250" r="30" fill="#ffeb3b" /><polygon points="950,250 100,50 100,450" fill="#ffeb3b" opacity="0.04" /></g>
+                        </defs>
+                    </svg>
+
+                    <div class="sandbox-container">
+                        <div class="sandbox-sidebar">
+                            <h2>Interactive Sandbox</h2>
+                            <button class="sandbox-btn" id="btn-supervised" onclick="setSandboxState('supervised', this)">1. Supervised Learning</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('unsupervised', this)">2. Unsupervised</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('density', this)">3. Density & Outliers</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('latent', this)">4. Latent Variables</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('autoencoder', this)">5. Autoencoder</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('vae', this)">6. VAEs (Probabilistic)</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('reparam', this)">7. Reparameterization</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('regularization', this)">8. Regularization</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('debias', this)">9. Data Debiasing</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('gan', this)">10. GANs</button>
+                            <button class="sandbox-btn" onclick="setSandboxState('cyclegan', this)">11. Cycle GANs</button>
+                        </div>
+                        <div class="sandbox-main">
+                            <div class="sandbox-canvas" id="svg-canvas-target"></div>
+                            <div class="sandbox-panel">
+                                <h3 id="sandbox-exp-title">Loading...</h3>
+                                <p id="sandbox-exp-text">Loading...</p>
+                                <div class="example-box" id="sandbox-exp-example">Loading Example...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <div class="mt-16 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h2 class="text-2xl font-serif font-bold text-gray-900 mb-6 flex items-center">
+                <span class="mr-2">💡</span> Frequently Asked Questions (Generative Modeling)
+            </h2>
+            <div class="space-y-4">
+                <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">What is the main difference between supervised and unsupervised learning?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
+                    <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">Supervised learning relies on a dataset where data comes with explicit human-provided labels. Unsupervised learning uses raw data without any labels. Generative modeling is unsupervised.</div>
+                </details>
+                <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">How does the "Plato's Cave" analogy explain latent variables?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
+                    <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">Prisoners can only see shadows moving on a wall (the observable data we see, like pixels). The true 3D objects casting shadows represent the latent variables, the hidden features governing the data distribution.</div>
+                </details>
+                <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">Why do Variational Autoencoders (VAEs) use the Reparameterization Trick?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
+                    <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">VAEs introduce randomness. This pure randomness breaks the predictable math required for backpropagation. The trick solves this by isolating randomness into a separate constant called epsilon.</div>
+                </details>
+                <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">How do Generative Adversarial Networks (GANs) learn to create realistic data?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
+                    <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">GANs employ a Generator (the "forger") and a Discriminator (the "detective"). The competing objective forces the generator to continuously improve its fakes until it can completely fool the discriminator.</div>
+                </details>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-gray-200 border-t mt-auto">
+        <div class="flex flex-col items-center justify-between max-w-6xl md:flex-row mx-auto px-6 py-12">
+            <div class="mb-4 md:mb-0"><p class="text-sm text-gray-500">© 2026 RawWeights. All rights reserved.</p></div>
+            <div class="flex space-x-6 text-sm"><a href="/disclaimer.html" class="hover:text-brand-600 text-gray-400">Disclaimer</a> <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-brand-600 text-gray-400">LinkedIn</a> <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-brand-600 text-gray-400">X</a></div>
+        </div>
+    </footer>
+
+    <script>
+        const track = document.getElementById('slider-track');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const textIndicators = document.getElementById('text-indicators');
+        const sliderViewport = document.getElementById('slider-viewport');
+        const stickyHeader = document.getElementById('sticky-header');
+        
+        const slideTitles = [
+            "1. Big Picture", "2. Model Families", "3. Use Cases", "4. Autoencoders", 
+            "5. VAEs", "6. GANs", "7. Sequence Flow", "8. History Timeline", "9. Interactive Sandbox"
+        ];
+        
+        let currentSlide = 0;
+
+        slideTitles.forEach((title, idx) => {
+            const btn = document.createElement('button');
+            // Styled as sleek tabs instead of buttons
+            btn.className = `whitespace-nowrap pb-2 px-1 mx-2 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${idx === 0 ? 'border-brand-600 text-brand-700' : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'}`;
+            btn.innerText = title;
+            btn.onclick = () => goToSlide(idx);
+            textIndicators.appendChild(btn);
+        });
+
+        function updateSliderHeight() {
+            const activeSlideElement = slides[currentSlide];
+            sliderViewport.style.height = activeSlideElement.offsetHeight + 'px';
+        }
+
+        function updateSlider() {
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            
+            Array.from(textIndicators.children).forEach((btn, idx) => {
+                btn.className = `whitespace-nowrap pb-2 px-1 mx-2 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${idx === currentSlide ? 'border-brand-600 text-brand-700' : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'}`;
+            });
+            
+            const activeAnchor = textIndicators.children[currentSlide];
+            if(activeAnchor) {
+                activeAnchor.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+
+            updateSliderHeight();
+            
+            const headerHeight = stickyHeader.offsetHeight + 60; // Calculate sticky header offset
+            const absoluteY = sliderViewport.getBoundingClientRect().top + window.scrollY;
+            window.scrollTo({ top: absoluteY - headerHeight, behavior: 'smooth' });
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlider(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlider(); } }
+        function goToSlide(idx) { currentSlide = idx; updateSlider(); }
+        window.addEventListener('resize', updateSliderHeight);
+
+        const defsHtml = document.getElementById('global-sandbox-defs').innerHTML;
+        const sandboxStates = {
+            supervised: {
+                title: "1. Supervised Learning",
+                text: "The prisoners are given the data (the shadow on the wall) AND it comes with explicit human-provided labels. The Watchman acts as our supervisor.",
+                example: "<b>Example:</b> You provide an AI with 10,000 images of handwritten digits, and a human has meticulously labeled every single image.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><use href="#fire-source" /><g class="move-up-down"><path d="M 750 250 L 770 230 L 790 250 L 780 265 L 760 265 Z" fill="#00d2ff" /><text x="730" y="295" fill="#fff" font-size="14" font-family="sans-serif">Real Bird (Hidden from view)</text></g><g class="move-up-down"><path class="shadow-effect" d="M 50 250 L 70 230 L 90 250 L 80 265 L 60 265 Z" /></g><g id="watchman"><circle cx="350" cy="150" r="20" fill="#e74c3c" /><rect x="335" y="170" width="30" height="60" fill="#c0392b" /><text x="310" y="250" fill="#e74c3c" font-weight="bold" font-family="sans-serif">The Watchman</text><path d="M 330 140 L 250 100 L 120 100 L 120 150 L 250 150 Z" fill="#fff" /><text x="130" y="130" fill="#000" font-weight="bold" font-size="14" font-family="sans-serif">"That's a Bird!"</text></g>`
+            },
+            unsupervised: {
+                title: "2. Unsupervised Learning",
+                text: "The Watchman is removed. We have just data and no labels. The prisoners must figure out the patterns entirely on their own.",
+                example: "<b>Example:</b> Feeding an AI millions of photos of human faces without any names or tags.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><use href="#fire-source" /><g class="move-up-down"><rect x="750" y="230" width="40" height="40" fill="#2ecc71" /><text x="730" y="295" fill="#fff" font-size="14" font-family="sans-serif">Real Cube (Hidden)</text></g><g class="move-up-down"><rect x="40" y="230" width="40" height="40" class="shadow-effect" /></g><text x="280" y="150" fill="#e74c3c" font-size="22" font-weight="bold" font-family="sans-serif">No Labels!</text><text x="250" y="180" fill="#aaa" font-size="14" font-family="sans-serif">(The Watchman is gone)</text>`
+            },
+            density: {
+                title: "3. Density & Outliers",
+                text: "By learning what is common, the prisoners can easily perform Outlier Detection.",
+                example: "<b>Example:</b> A self-driving car instantly flags a bizarre overturned truck as an Outlier because it falls outside the learned normal distribution.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><path d="M 120 350 Q 200 100 280 350" fill="none" stroke="#00d2ff" stroke-width="3" /><text x="160" y="150" fill="#00d2ff" font-weight="bold" font-family="sans-serif">Probability Distribution P(X)</text><rect x="180" y="250" width="20" height="20" fill="#fff" opacity="0.6" /><rect x="200" y="220" width="20" height="20" fill="#fff" opacity="0.8" /><rect x="220" y="260" width="20" height="20" fill="#fff" opacity="0.5" /><path d="M 330 330 L 350 310 L 360 340 Z" fill="#e74c3c" /><text x="320" y="300" fill="#e74c3c" font-weight="bold" font-family="sans-serif">Outlier! (Rare)</text><path d="M 230 330 L 320 330" stroke="#e74c3c" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)" />`
+            },
+            latent: {
+                title: "4. Latent Variables",
+                text: "The real 3D objects are the Latent Variables (Z). Our goal is to extract those hidden features.",
+                example: "<b>Example:</b> The AI mathematically extracts the 'Latent Variable' representing the 3D angle of a face from a flat 2D photo.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><use href="#fire-source" /><g class="move-up-down"><path d="M 750 250 L 770 230 L 790 250 L 780 265 L 760 265 Z" fill="#2ecc71" stroke="#fff" stroke-width="3" filter="drop-shadow(0 0 10px #2ecc71)"/><text x="700" y="200" fill="#2ecc71" font-size="20" font-weight="bold" font-family="sans-serif">Latent Variable (Z)</text><line x1="900" y1="250" x2="790" y2="250" stroke="#ffeb3b" stroke-width="2" stroke-dasharray="4,4" /><line x1="750" y1="250" x2="100" y2="250" stroke="#ffeb3b" stroke-width="2" stroke-dasharray="4,4" /></g><g class="move-up-down"><path class="shadow-effect" d="M 50 250 L 70 230 L 90 250 L 80 265 L 60 265 Z" /><text x="120" y="255" fill="#00d2ff" font-size="20" font-weight="bold" font-family="sans-serif">Observed Data (X)</text></g>`
+            },
+            autoencoder: {
+                title: "5. Autoencoders",
+                text: "Maps data into a tiny bottleneck, learning a single, rigid Latent Point (Z).",
+                example: "<b>Example:</b> Compressing a letter down to just 5 numbers, then trying to perfectly redraw it.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><rect x="40" y="100" width="40" height="40" class="shadow-effect" /><text x="120" y="125" fill="#fff" font-size="16" font-family="sans-serif">Original (X)</text><path d="M 220 120 L 400 230" stroke="#00d2ff" stroke-width="4" marker-end="url(#arrow)" /><text x="280" y="160" fill="#00d2ff" font-weight="bold" font-family="sans-serif">Encoder</text><rect x="430" y="220" width="60" height="60" fill="none" stroke="#e74c3c" stroke-width="2" /><circle cx="460" cy="250" r="8" class="rigid-point" /><text x="400" y="300" fill="#e74c3c" font-weight="bold" font-family="sans-serif">Rigid Latent Point</text><path d="M 400 270 L 220 380" stroke="#9b59b6" stroke-width="4" marker-end="url(#arrow-purp)" /><text x="280" y="350" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Decoder</text><rect x="40" y="360" width="40" height="40" fill="#000" opacity="0.5" filter="blur(4px)" /><text x="120" y="385" fill="#fff" font-size="16" font-family="sans-serif">Reconstructed</text><path d="M 90 140 L 90 350" stroke="#f39c12" stroke-width="3" stroke-dasharray="6,6" /><text x="110" y="250" fill="#f39c12" font-weight="bold" font-family="sans-serif">Reconstruction Loss</text>`
+            },
+            vae: {
+                title: "6. VAEs",
+                text: "Introduces Stochasticity. The Encoder outputs a fuzzy Probability Distribution instead of a rigid point.",
+                example: "<b>Example:</b> By randomly sampling a point from the cloud, it generates a brand-new face.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><use href="#fire-source" /><path d="M 200 250 L 450 250" stroke="#00d2ff" stroke-width="4" marker-end="url(#arrow)" /><ellipse cx="600" cy="250" rx="90" ry="60" class="cloud-pulse" /><text x="520" y="160" fill="#00d2ff" font-weight="bold" font-size="18" font-family="sans-serif">Probabilistic Cloud (Z)</text><text x="560" y="240" fill="#fff" font-weight="bold" font-family="sans-serif">Mean (μ)</text><text x="540" y="270" fill="#fff" font-weight="bold" font-family="sans-serif">Std Dev (σ)</text><path d="M 500 250 L 220 150" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-purp)" /><path d="M 500 250 L 220 350" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-purp)" /><rect x="40" y="130" width="40" height="40" fill="#000" opacity="0.6" filter="blur(6px)" /><polygon points="40,330 80,350 40,370" fill="#000" opacity="0.7" filter="blur(4px)" /><text x="110" y="150" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Brand New Shadow</text><text x="110" y="360" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Brand New Shadow</text>`
+            },
+            reparam: {
+                title: "7. Reparameterization Trick",
+                text: "Isolates the randomness into an external 'dice roll' constant, Epsilon (ε), saving the math.",
+                example: "<b>Example:</b> Putting the unpredictable dice roll in a separate box so the neural network can still run backwards smoothly.",
+                svg: `<rect x="250" y="100" width="500" height="250" fill="#2a2a35" rx="15" stroke="#00d2ff" stroke-width="2" /><rect x="280" y="150" width="100" height="60" fill="#3498db" rx="8" /><text x="300" y="185" fill="#fff" font-weight="bold" font-family="sans-serif">Mean (μ)</text><rect x="280" y="250" width="100" height="60" fill="#9b59b6" rx="8" /><text x="290" y="285" fill="#fff" font-weight="bold" font-family="sans-serif">Std Dev (σ)</text><circle cx="500" cy="350" r="30" fill="#f1c40f" /><text x="475" y="355" fill="#000" font-weight="bold" font-family="sans-serif">Dice (ε)</text><path d="M 500 320 L 500 280" stroke="#f1c40f" stroke-width="3" marker-end="url(#arrow)" /><circle cx="500" cy="220" r="40" fill="#e74c3c" /><text x="480" y="225" fill="#fff" font-weight="bold" font-size="20" font-family="sans-serif">Z =</text><text x="470" y="245" fill="#fff" font-size="14" font-family="sans-serif">μ + (σ × ε)</text><path d="M 380 180 L 460 210" stroke="#fff" stroke-width="3" marker-end="url(#arrow)" /><path d="M 380 280 L 460 230" stroke="#fff" stroke-width="3" marker-end="url(#arrow)" /><path d="M 540 220 L 650 220" stroke="#2ecc71" stroke-width="4" marker-end="url(#arrow)" /><text x="560" y="200" fill="#2ecc71" font-weight="bold" font-family="sans-serif">Smooth Gradients</text>`
+            },
+            regularization: {
+                title: "8. Regularization",
+                text: "Forces the latent space to have Continuity and Completeness via KL Divergence.",
+                example: "<b>Example:</b> Organizing the 'Square' shadows and 'Triangle' shadows neatly so you don't get broken blobs.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><circle cx="700" cy="250" r="140" fill="none" stroke="#f1c40f" stroke-width="3" stroke-dasharray="10,5" /><text x="610" y="100" fill="#f1c40f" font-weight="bold" font-size="18" font-family="sans-serif">Normal Prior (μ=0, σ=1)</text><circle cx="650" cy="200" r="40" fill="#e74c3c" class="cloud-pulse" /><text x="630" y="205" fill="#fff" font-weight="bold" font-family="sans-serif">Birds</text><circle cx="750" cy="300" r="50" fill="#3498db" class="cloud-pulse" /><text x="730" y="305" fill="#fff" font-weight="bold" font-family="sans-serif">Bats</text><path d="M 450 150 L 550 200" stroke="#f1c40f" stroke-width="3" marker-end="url(#arrow)" /><text x="300" y="140" fill="#f1c40f" font-weight="bold" font-size="18" font-family="sans-serif">KL Divergence</text><text x="290" y="160" fill="#ccc" font-size="14" font-family="sans-serif">Pulls clouds to the center grid</text>`
+            },
+            debias: {
+                title: "9. Data Debiasing",
+                text: "Uncovers if certain features are over-represented or under-represented.",
+                example: "<b>Example:</b> Automatically detecting a skewed dataset and balancing it to build fairer tech.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><rect x="500" y="150" width="300" height="200" fill="#1a1a24" stroke="#00d2ff" stroke-width="2" /><text x="560" y="180" fill="#00d2ff" font-weight="bold" font-size="18" font-family="sans-serif">Debiasing Audit</text><rect x="540" y="280" width="40" height="60" fill="#e74c3c" /><text x="540" y="270" fill="#fff" font-family="sans-serif">Birds</text><text x="520" y="360" fill="#e74c3c" font-size="12" font-family="sans-serif">Over-represented (Fixed)</text><line x1="540" y1="280" x2="580" y2="280" stroke="#fff" stroke-dasharray="4,4" /><rect x="660" y="210" width="40" height="130" fill="#2ecc71" /><text x="665" y="200" fill="#fff" font-family="sans-serif">Bats</text><text x="640" y="360" fill="#2ecc71" font-size="12" font-family="sans-serif">Under-represented (Boosted)</text><path d="M 600 250 L 640 250" stroke="#fff" stroke-width="3" marker-end="url(#arrow)" />`
+            },
+            gan: {
+                title: "10. GANs",
+                text: "A Generator maps Pure Noise to fake shadows, while a Discriminator guesses if they are Real.",
+                example: "<b>Example:</b> The fake data distribution visually moves closer until it perfectly overlaps the Real distribution.",
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><rect x="750" y="200" width="130" height="90" fill="#9b59b6" rx="10" /><text x="770" y="240" fill="#fff" font-weight="bold" font-family="sans-serif">Generator</text><text x="775" y="260" fill="#ddd" font-size="14" font-family="sans-serif">(The Forger)</text><g class="noise"><circle cx="950" cy="230" r="5" fill="#fff" /><circle cx="940" cy="250" r="6" fill="#aaa" /><circle cx="960" cy="260" r="4" fill="#888" /></g><text x="920" y="200" fill="#fff" font-family="sans-serif">Pure Noise</text><path d="M 910 245 L 880 245" stroke="#fff" stroke-width="2" marker-end="url(#arrow)" /><line x1="50" y1="50" x2="50" y2="450" stroke="#fff" stroke-width="2" opacity="0.3" /><text x="60" y="100" fill="#fff" opacity="0.5" font-size="12" font-family="sans-serif">1D Data Line</text><circle cx="50" cy="250" r="10" fill="#2ecc71" /><circle cx="50" cy="280" r="10" fill="#2ecc71" /><circle cx="50" cy="310" r="10" fill="#2ecc71" /><text x="80" y="330" fill="#2ecc71" font-weight="bold" font-family="sans-serif">Real Data</text><g class="gan-learning-path"><path d="M 750 245 L 100 280" stroke="#9b59b6" stroke-width="3" stroke-dasharray="8,4" marker-end="url(#arrow-purp)" /><circle cx="50" cy="250" r="10" fill="#9b59b6" opacity="0.8" /><circle cx="50" cy="280" r="10" fill="#9b59b6" opacity="0.8" /><circle cx="50" cy="310" r="10" fill="#9b59b6" opacity="0.8" /><text x="70" y="235" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Fake Data</text></g><g id="discriminator"><circle cx="450" cy="250" r="20" fill="#e74c3c" /><rect x="435" y="270" width="30" height="60" fill="#c0392b" /><text x="410" y="350" fill="#e74c3c" font-weight="bold" font-family="sans-serif">Discriminator</text><text x="415" y="370" fill="#ddd" font-size="12" font-family="sans-serif">(The Detective)</text><line x1="430" y1="240" x2="60" y2="250" stroke="#e74c3c" stroke-width="2" stroke-dasharray="4,4" /><line x1="430" y1="260" x2="60" y2="310" stroke="#e74c3c" stroke-width="2" stroke-dasharray="4,4" /><text x="480" y="255" font-size="18" class="gan-text-status" font-family="sans-serif"></text></g>`
+            },
+            cyclegan: {
+                title: "11. Cycle GANs",
+                text: "Two linked sets of Forgers and Detectives to perform unpaired translation directly between two domains.",
+                example: "<b>Example:</b> Seamlessly applying a blue Zebra style to a white Horse shape.",
+                svg: `<rect x="100" y="150" width="150" height="150" fill="#1a1a24" stroke="#fff" stroke-width="2" rx="10" /><text x="115" y="135" fill="#fff" font-weight="bold" font-family="sans-serif">Domain A (White Rects)</text><rect x="125" y="175" width="100" height="100" fill="#fff" /><rect x="700" y="150" width="150" height="150" fill="#1a1a24" stroke="#3498db" stroke-width="2" rx="10" /><text x="715" y="135" fill="#3498db" font-weight="bold" font-family="sans-serif">Domain B (Blue Triangles)</text><polygon points="775,175 725,275 825,275" fill="#3498db" /><path d="M 300 180 L 650 180" stroke="#9b59b6" stroke-width="4" stroke-dasharray="5,5" marker-end="url(#arrow-purp)" /><text x="390" y="165" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Generator (Apply Blue Style)</text><rect x="230" y="150" width="60" height="60" class="cycle-ab" /><path d="M 650 280 L 300 280" stroke="#f1c40f" stroke-width="4" stroke-dasharray="5,5" marker-end="url(#arrow-yellow)" /><text x="390" y="315" fill="#f1c40f" font-weight="bold" font-family="sans-serif">Generator (Apply White Style)</text><polygon points="680,250 650,310 710,310" class="cycle-ba" /><ellipse cx="475" cy="230" rx="140" ry="80" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="10,5" /><text x="400" y="235" fill="#fff" font-weight="bold" font-size="18" font-family="sans-serif">Cyclic Loss Loop</text>`
+            }
+        };
+
+        function setSandboxState(stateKey, btnElement) {
+            document.querySelectorAll('.sandbox-btn').forEach(btn => btn.classList.remove('active'));
+            if (btnElement) { btnElement.classList.add('active'); } 
+            else { document.getElementById('btn-supervised').classList.add('active'); }
+
+            const data = sandboxStates[stateKey];
+            document.getElementById('sandbox-exp-title').innerHTML = data.title;
+            document.getElementById('sandbox-exp-text').innerHTML = data.text;
+            document.getElementById('sandbox-exp-example').innerHTML = data.example;
+            document.getElementById('svg-canvas-target').innerHTML = `<svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${defsHtml}${data.svg}</svg>`;
+            setTimeout(updateSliderHeight, 50);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setSandboxState('supervised', null);
+            setTimeout(updateSlider, 100);
+        });
+    </script>
+</body>
+</html>
