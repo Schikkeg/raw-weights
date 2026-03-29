@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth scroll-pt-28">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Reinforcement Learning | Interactive Guide & Playground</title>
+    <meta name="description" content="A comprehensive, interactive guide to Deep Reinforcement Learning. Explore Q-Learning, Policy Gradients, and train your own AI agent directly in the browser with realistic simulators.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .math-box { @apply bg-slate-50 border border-slate-200 rounded-lg p-3 font-mono text-sm text-center shadow-inner my-3 text-slate-800; }
+        
+        /* Arrow animations for the diagram */
+        .animate-dash {
+            stroke-dasharray: 8;
+            animation: dash 1s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -16; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased flex flex-col min-h-screen relative">
+
+    <!-- Top Branding -->
+    <nav class="bg-white border-b border-slate-200 relative z-50">
+        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+            <div class="font-bold text-xl tracking-tight text-slate-900"><a href="/">RawWeights</a></div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
+                <a href="/" class="hover:text-brand-600 transition">Home</a>
+                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
+                <a href="/tools/master_ml_hub.html">ML Playground</a>
+                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
+                <a href="/tools/master_sequence_hub.html">Attention Journey</a>
+				<a href="/tools/cnn_sandbox.html" >Explore CNN</a>
+				<a href="/tools/deep_generative_modeling.html" >Generative Journey</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sub Navigation Flow Diagram (Sticks to top) -->
+    <div class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm py-3">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-2 text-[11px] md:text-xs font-bold text-slate-600 text-center">
+                <a href="#intro" class="p-2 bg-slate-100 rounded-lg flex-1 w-full border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition shadow-sm">1. Introduction<br><span class="text-[9px] font-normal">Beyond Supervised</span></a>
+                <div class="text-slate-400 hidden lg:block">→</div>
+                <a href="#pillars" class="p-2 bg-blue-50 text-blue-700 rounded-lg flex-1 w-full border border-blue-200 hover:bg-blue-100 transition shadow-sm">2. Core Pillars<br><span class="text-[9px] font-normal">Agent & Env Diagram</span></a>
+                <div class="text-slate-400 hidden lg:block">→</div>
+                <a href="#q-learning" class="p-2 bg-purple-50 text-purple-700 rounded-lg flex-1 w-full border border-purple-200 hover:bg-purple-100 transition shadow-sm">3. Q-Learning<br><span class="text-[9px] font-normal">Discrete Values</span></a>
+                <div class="text-slate-400 hidden lg:block">→</div>
+                <a href="#policy-gradients" class="p-2 bg-orange-50 text-orange-700 rounded-lg flex-1 w-full border border-orange-200 hover:bg-orange-100 transition shadow-sm">4. Policy Gradients<br><span class="text-[9px] font-normal">Continuous Action</span></a>
+                <div class="text-slate-400 hidden lg:block">→</div>
+                <a href="#training-algo" class="p-2 bg-red-50 text-red-700 rounded-lg flex-1 w-full border border-red-200 hover:bg-red-100 transition shadow-sm">5. Training Logic<br><span class="text-[9px] font-normal">The 5-Step Loop</span></a>
+                <div class="text-slate-400 hidden lg:block">→</div>
+                <a href="#playground" class="p-2 bg-slate-800 text-white rounded-lg flex-1 w-full border border-slate-900 hover:bg-slate-700 transition shadow-md">6. Playground<br><span class="text-[9px] text-slate-300 font-normal">Live Simulation</span></a>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow w-full space-y-12 pb-20 pt-8">
+        
+        <!-- Header -->
+        <div class="max-w-4xl mx-auto px-6 text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4 leading-tight">Deep Reinforcement Learning</h1>
+            <p class="text-lg text-slate-600 font-light">Understanding how AI agents learn to interact with dynamic environments through trial, error, and probability.</p>
+        </div>
+
+        <!-- Sections 1-4 (Brief Overview) -->
+        <div class="max-w-5xl mx-auto px-6 space-y-16">
+            
+            <section id="intro">
+                <h2 class="text-2xl font-serif font-semibold text-slate-900 mb-3">Moving Beyond Supervised Learning</h2>
+                <p class="leading-relaxed text-slate-700">Unlike traditional deep learning paradigms where models learn to map static inputs to outputs, Deep Reinforcement Learning (RL) involves an active model interacting dynamically with its environment. The ultimate goal is to learn a policy that maximizes future rewards over many continuous time steps.</p>
+            </section>
+
+            <!-- 5 PILLARS DIAGRAM SECTION -->
+            <section id="pillars">
+                <h2 class="text-2xl font-serif font-semibold text-slate-900 mb-6 text-center">The Five Pillars of RL (Bicycle Example)</h2>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                    
+                    <!-- SVG Background Arrows -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none hidden md:block" preserveAspectRatio="none">
+                        <!-- Top Arrow (Action Flow: Left to Right) -->
+                        <path d="M 22% 25% Q 50% 5% 78% 25%" fill="none" stroke="#e2e8f0" stroke-width="25" stroke-linecap="round"/>
+                        <path d="M 22% 25% Q 50% 5% 78% 25%" fill="none" stroke="#0ea5e9" stroke-width="4" class="animate-dash" stroke-linecap="round"/>
+                        <polygon points="78%,25% 75%,20% 81%,23%" fill="#0ea5e9" transform="translate(5, -2)"/>
+
+                        <!-- Bottom Arrow (State/Reward Flow: Right to Left) -->
+                        <path d="M 78% 75% Q 50% 95% 22% 75%" fill="none" stroke="#e2e8f0" stroke-width="25" stroke-linecap="round"/>
+                        <path d="M 78% 75% Q 50% 95% 22% 75%" fill="none" stroke="#ef4444" stroke-width="4" class="animate-dash" stroke-linecap="round"/>
+                        <polygon points="22%,75% 25%,80% 19%,77%" fill="#ef4444" transform="translate(-5, 2)"/>
+                    </svg>
+
+                    <!-- Center Loop Indicator -->
+                    <div class="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none z-0">
+                        <div class="bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full border-2 border-slate-300 shadow-sm text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                            <span class="text-lg text-brand-500">↻</span> Continuous Feedback Loop
+                        </div>
+                    </div>
+
+                    <!-- Left: AGENT -->
+                    <div class="z-10 bg-slate-50 p-5 rounded-xl border-2 border-slate-800 w-full md:w-1/4 text-center shadow-md">
+                        <div class="w-16 h-16 bg-slate-800 text-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">🚴</div>
+                        <h3 class="font-bold text-slate-900 text-lg mb-1">1. Agent</h3>
+                        <p class="text-[11px] text-slate-600 mb-3">The actor making decisions.</p>
+                        <div class="bg-white p-2 text-left rounded border border-slate-200 text-[10px]">
+                            <span class="font-bold text-brand-600">Bike Ex:</span> The AI controlling the steering wheel angle.
+                        </div>
+                    </div>
+
+                    <!-- Middle: ACTIONS, STATES, REWARDS -->
+                    <div class="z-10 w-full md:w-2/4 flex flex-col gap-8 justify-between h-full py-2">
+                        
+                        <!-- Top: Action -->
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 text-center shadow-sm mx-auto w-10/12 relative">
+                            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm">Executes Output</div>
+                            <h3 class="font-bold text-blue-800 mb-1 mt-1">3. Action (a<sub>t</sub>)</h3>
+                            <p class="text-[10px] text-blue-600 mb-2">A specific move executed in the world.</p>
+                            <div class="bg-white p-1.5 rounded text-[10px] text-left">
+                                <span class="font-bold text-blue-700">Bike Ex:</span> Turn handlebars -1.5 degrees.
+                            </div>
+                        </div>
+
+                        <!-- Bottom: State & Reward -->
+                        <div class="bg-red-50 p-3 rounded-xl border border-red-200 text-center shadow-sm mx-auto w-full relative">
+                            <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm">Receives Input</div>
+                            
+                            <div class="flex gap-2">
+                                <div class="flex-1 text-left">
+                                    <h3 class="font-bold text-red-800 mb-0.5 text-[11px]">4. State (s<sub>t</sub>)</h3>
+                                    <p class="text-[9px] text-red-600 mb-1">Observation of the world.</p>
+                                    <div class="bg-white p-1.5 rounded text-[9px]">
+                                        <span class="font-bold text-red-700">Bike Ex:</span> Camera pixels; distance from center line.
+                                    </div>
+                                </div>
+                                <div class="flex-1 text-left border-l border-red-200 pl-2">
+                                    <h3 class="font-bold text-red-800 mb-0.5 text-[11px]">5. Reward (r<sub>t</sub>)</h3>
+                                    <p class="text-[9px] text-red-600 mb-1">Feedback measuring success.</p>
+                                    <div class="bg-white p-1.5 rounded text-[9px]">
+                                        <span class="font-bold text-red-700">Bike Ex:</span> +1 point for staying on road.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reward Optimization Types -->
+                            <div class="mt-3 pt-2 border-t border-red-200 text-left">
+                                <h4 class="font-bold text-slate-800 mb-1.5 text-[9px] uppercase tracking-wider text-center">Reward Optimization Approaches</h4>
+                                <div class="grid grid-cols-2 gap-2 text-[9px]">
+                                    <div class="bg-white p-1.5 rounded border border-purple-200 shadow-sm relative overflow-hidden">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-500"></div>
+                                        <strong class="text-purple-700 block mb-0.5 pl-1.5">Value Learning</strong>
+                                        <span class="pl-1.5 block text-slate-600">Learn expected total future return (R<sub>t</sub>).</span>
+                                    </div>
+                                    <div class="bg-white p-1.5 rounded border border-orange-200 shadow-sm relative overflow-hidden">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-orange-500"></div>
+                                        <strong class="text-orange-700 block mb-0.5 pl-1.5">Policy Learning</strong>
+                                        <span class="pl-1.5 block text-slate-600">Directly map probabilities to maximize reward.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: ENVIRONMENT -->
+                    <div class="z-10 bg-slate-50 p-5 rounded-xl border-2 border-emerald-600 w-full md:w-1/4 text-center shadow-md">
+                        <div class="w-16 h-16 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">🛣️</div>
+                        <h3 class="font-bold text-slate-900 text-lg mb-1">2. Environment</h3>
+                        <p class="text-[11px] text-slate-600 mb-3">The world the agent acts within.</p>
+                        <div class="bg-white p-2 text-left rounded border border-slate-200 text-[10px]">
+                            <span class="font-bold text-emerald-600">Bike Ex:</span> The physical road, boundaries, and stone obstacles.
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="q-learning">
+                <h2 class="text-2xl font-serif font-semibold text-slate-900 mb-3">Value Learning & DQN</h2>
+                <p class="mb-2 text-slate-700">The <strong>Q-Function</strong> captures the expected total future reward an agent can receive by executing a certain action given a state. A Deep Q-Network (DQN) uses a neural network to estimate these values for highly complex spaces.</p>
+                <div class="math-box">Q(s<sub>t</sub>, a<sub>t</sub>) = E[ R<sub>t</sub> | s<sub>t</sub>, a<sub>t</sub> ]</div>
+                
+                <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm text-amber-900 mb-4 flex items-start gap-3">
+                    <span class="text-2xl mt-1">⚠️</span>
+                    <div>
+                        <strong class="block mb-1">Compute Warning: The Bicycle Example</strong>
+                        <p class="text-[13px] leading-relaxed">If we attempted to build a traditional Q-table and mathematically calculate the true expected future reward for <em>every possible raw pixel combination</em> and every continuous distance measurement in our bicycle environment, the massive amount of calculation required would instantly freeze our systems—the computer would simply "die to compute." This explosion of states is exactly why this interactive simulator is a sampled approximation, and why Deep Neural Networks are strictly required to estimate Q-functions in real-world scenarios.</p>
+                    </div>
+                </div>
+
+                <p class="text-sm text-slate-500 mt-2"><strong>Downsides:</strong> Q-Learning cannot handle continuous action spaces, as it requires a distinct, predefined output list (e.g., exclusively Left, Right, or Straight). It is also entirely deterministic, failing to learn stochastic, adaptable policies.</p>
+            </section>
+
+            <section id="policy-gradients">
+                <h2 class="text-2xl font-serif font-semibold text-slate-900 mb-3">Policy Learning & Continuous Actions</h2>
+                <p class="mb-2 text-slate-700">Instead of predicting static mathematical values for distinct choices, <strong>Policy Gradients</strong> output a probability distribution. This enables the modeling of infinite continuous actions (like precise steering wheel angles) by parameterizing a Gaussian curve defined by a Mean and Variance. The agent then samples from this curve to act.</p>
+                <div class="math-box">
+                    π(s) ~ P(a|s) = N(μ, σ²) <br><br>
+                    <span class="text-slate-500 text-xs block mb-1 mt-3">Policy Gradient Update (Gradient Ascent)</span>
+                    w' = w + ∇ log P(a<sub>t</sub> | s<sub>t</sub>) * R<sub>t</sub>
+                </div>
+            </section>
+        </div>
+
+        <!-- Full Width Training Animation Section -->
+        <div id="training-algo" class="bg-slate-900 text-slate-100 py-12 border-y border-slate-800">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-serif font-semibold text-white mb-3">The 5-Step Training Algorithm</h2>
+                    <p class="text-slate-400 max-w-3xl mx-auto text-sm">Watch how a policy network optimizes its continuous actions. The agent learns from its mistakes iteratively in a continuous feedback loop.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                    
+                    <!-- Narrative Steps -->
+                    <div class="space-y-3 lg:col-span-1">
+                        <div id="algo-step-1" class="p-3 rounded border-l-4 border-slate-600 bg-slate-800/50 transition opacity-50">
+                            <strong class="text-brand-400 block text-sm">1. Initialize Agent</strong>
+                        </div>
+                        <div id="algo-step-2" class="p-3 rounded border-l-4 border-slate-600 bg-slate-800/50 transition opacity-50">
+                            <strong class="text-brand-400 block text-sm">2. Run Until Termination</strong>
+                            <p class="text-[11px] text-slate-400 mt-1">Agent steers continuously until crash.</p>
+                        </div>
+                        <div id="algo-step-3" class="p-3 rounded border-l-4 border-slate-600 bg-slate-800/50 transition opacity-50">
+                            <strong class="text-brand-400 block text-sm">3. Record History</strong>
+                            <p class="text-[11px] text-slate-400 mt-1">Log all (s<sub>t</sub>, a<sub>t</sub>, r<sub>t</sub>) triplets.</p>
+                        </div>
+                        <div id="algo-step-4" class="p-3 rounded border-l-4 border-slate-600 bg-slate-800/50 transition opacity-50">
+                            <strong class="text-brand-400 block text-sm">4 & 5. Policy Update</strong>
+                            <p class="text-[11px] text-slate-400 mt-1">Decrease P(bad actions) via negative return. Increase P(good actions).</p>
+                        </div>
+                    </div>
+
+                    <!-- Visual / Code Breakdown -->
+                    <div class="lg:col-span-2 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden flex flex-col h-[400px]">
+                        <!-- SVG Animation -->
+                        <div class="relative h-40 bg-emerald-900 border-b border-slate-700 flex-shrink-0">
+                            <svg viewBox="0 0 600 150" class="w-full h-full" preserveAspectRatio="xMidYMid slice">
+                                <rect x="0" y="30" width="100%" height="90" fill="#334155"/>
+                                <line x1="0" y1="75" x2="100%" y2="75" stroke="#94a3b8" stroke-width="2" stroke-dasharray="15,15"/>
+                                <path id="anim-trace" d="M 50 75" fill="none" stroke="#0ea5e9" stroke-width="3" opacity="0.5"/>
+                                
+                                <g id="anim-bike" transform="translate(50, 75)" class="transition-transform duration-200">
+                                    <circle cx="-10" cy="0" r="6" fill="none" stroke="white" stroke-width="2"/>
+                                    <circle cx="10" cy="0" r="6" fill="none" stroke="white" stroke-width="2"/>
+                                    <line x1="-10" y1="0" x2="10" y2="0" stroke="white" stroke-width="2"/>
+                                    <circle cx="0" cy="-8" r="4" fill="#ef4444"/>
+                                </g>
+                                
+                                <g id="anim-crash" transform="translate(0,0)" class="hidden">
+                                    <circle cx="0" cy="0" r="15" fill="#ef4444" class="animate-ping opacity-75"/>
+                                    <text x="-10" y="5" fill="white" font-weight="bold" font-size="20">💥</text>
+                                </g>
+                            </svg>
+                            <div id="anim-run-counter" class="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded font-mono">Episode 1 Loading...</div>
+                        </div>
+                        
+                        <!-- Mathematical State Breakdown -->
+                        <div class="p-4 flex-grow overflow-y-auto text-[11px] font-mono space-y-2 hide-scrollbar" id="anim-log">
+                            <!-- Logs injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pre-Playground Descriptions -->
+        <div class="max-w-6xl mx-auto px-6 pt-6">
+            <h2 class="text-3xl font-serif font-bold text-slate-900 mb-4 text-center">Interactive RL Simulator</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+                <div class="bg-white p-4 rounded-xl border border-brand-200 shadow-sm">
+                    <h3 class="font-bold text-brand-700 mb-1 flex items-center"><span class="text-base mr-2">🕹️</span> DQN (Discrete Actions)</h3>
+                    <p class="text-slate-600 text-[13px] leading-relaxed">The agent is restricted to rigid choices: strictly left (-2.5), straight (0.0), or strictly right (+2.5). Watch the dashboard and the bike: DQN agents abruptly jerk back and forth, failing to weave smoothly.</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-purple-200 shadow-sm">
+                    <h3 class="font-bold text-purple-700 mb-1 flex items-center"><span class="text-base mr-2">🌊</span> Policy Gradients (Continuous Actions)</h3>
+                    <p class="text-slate-600 text-[13px] leading-relaxed">The agent samples an exact, precise decimal angle (e.g., -1.24) from a Gaussian distribution. Watch the dashboard continuously update with precise floats as the bike fluidly weaves around obstacles.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Width Interactive Playground -->
+        <div id="playground" class="max-w-[1300px] mx-auto px-4 md:px-6">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col xl:flex-row max-h-[75vh]">
+                
+                <!-- Left Panel: Controls & Input -->
+                <div class="xl:w-1/3 bg-slate-50 p-5 border-b xl:border-b-0 xl:border-r border-slate-200 flex flex-col space-y-5 overflow-y-auto">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 mb-1">Simulation Controls</h2>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">Run the automated Agent. <strong class="text-brand-600">You can manually intervene at any time by dragging sliders or holding buttons.</strong></p>
+                    </div>
+
+                    <!-- 1. Architecture -->
+                    <div>
+                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">1. Select Action Space</h3>
+                        <div class="flex space-x-2">
+                            <button id="btn-dqn" onclick="setPlaygroundMode('dqn')" class="flex-1 py-1.5 px-3 rounded text-xs bg-brand-600 text-white font-semibold shadow-sm transition">DQN (Discrete)</button>
+                            <button id="btn-pg" onclick="setPlaygroundMode('pg')" class="flex-1 py-1.5 px-3 rounded text-xs bg-white text-slate-600 border border-slate-300 hover:bg-slate-100 font-semibold transition">Policy (Continuous)</button>
+                        </div>
+                    </div>
+
+                    <!-- 2. Manual Controls -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">2. Manual Intervention</h3>
+                        
+                        <!-- DQN Controls -->
+                        <div id="ctrl-dqn" class="flex justify-between space-x-2">
+                            <button onmousedown="setManualOverride(-2.5)" onmouseup="clearManualOverride()" onmouseleave="clearManualOverride()" class="flex-1 py-2 bg-slate-800 text-white rounded text-xs font-bold hover:bg-slate-700 active:bg-brand-500 transition cursor-pointer">Hold Left</button>
+                            <button class="flex-1 py-2 bg-slate-200 text-slate-400 rounded text-xs font-bold cursor-not-allowed">AI Auto</button>
+                            <button onmousedown="setManualOverride(2.5)" onmouseup="clearManualOverride()" onmouseleave="clearManualOverride()" class="flex-1 py-2 bg-slate-800 text-white rounded text-xs font-bold hover:bg-slate-700 active:bg-brand-500 transition cursor-pointer">Hold Right</button>
+                        </div>
+
+                        <!-- PG Controls -->
+                        <div id="ctrl-pg" class="hidden space-y-3">
+                            <p class="text-[10px] text-slate-500 leading-tight mb-2">Drag sliders to manually override the AI's distribution probability.</p>
+                            
+                            <div>
+                                <div class="flex justify-between text-[10px] font-mono text-slate-600 mb-1">
+                                    <span>Mean (μ) Direction</span>
+                                    <span id="val-mu">0.00</span>
+                                </div>
+                                <input type="range" id="slide-mu" min="-3" max="3" step="0.1" value="0" class="w-full accent-brand-500 h-1" oninput="handlePGSliders(true)" onchange="handlePGSliders(false)">
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-[10px] font-mono text-slate-600 mb-1">
+                                    <span>Variance (σ²) Noise</span>
+                                    <span id="val-sigma">0.50</span>
+                                </div>
+                                <input type="range" id="slide-sigma" min="0" max="2" step="0.1" value="0.5" class="w-full accent-purple-500 h-1" oninput="handlePGSliders(true)" onchange="handlePGSliders(false)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Automated Training -->
+                    <div class="mt-auto pt-4 border-t border-slate-200 space-y-2">
+                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">3. Simulation Execution</h3>
+                        <button onclick="togglePlaygroundAuto()" id="btn-play-auto" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-white shadow transition text-sm">▶ Run Auto-Agent</button>
+                        <p id="play-log" class="text-[10px] text-slate-500 text-center h-3 font-mono"></p>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Environment & Stats -->
+                <div class="xl:w-2/3 bg-slate-900 flex flex-col p-4 relative">
+                    
+                    <!-- Dashboard -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                        <div class="bg-slate-800 p-2 rounded-lg border border-slate-700">
+                            <span class="block text-[9px] text-slate-400 uppercase tracking-wider mb-0.5">State (Y-Offset)</span>
+                            <span id="dash-state" class="text-sm font-mono font-bold text-white">0.0</span>
+                        </div>
+                        <div class="bg-slate-800 p-2 rounded-lg border border-slate-700">
+                            <span class="block text-[9px] text-brand-400 uppercase tracking-wider mb-0.5" id="label-action">Action (Discrete)</span>
+                            <span id="dash-action" class="text-lg font-mono font-bold text-brand-400">0.0</span>
+                        </div>
+                        <div class="bg-slate-800 p-2 rounded-lg border border-slate-700 relative overflow-hidden">
+                            <span class="block text-[9px] text-slate-400 uppercase tracking-wider mb-0.5">Reward (R = Σr)</span>
+                            <span id="dash-reward" class="text-sm font-mono font-bold text-emerald-400">0</span>
+                        </div>
+                        <div class="bg-slate-800 p-2 rounded-lg border border-slate-700">
+                            <span class="block text-[9px] text-slate-400 uppercase tracking-wider mb-0.5">Status</span>
+                            <span id="dash-status" class="text-sm font-mono font-bold text-amber-400">Ready</span>
+                        </div>
+                    </div>
+
+                    <!-- Environment Viewport -->
+                    <div class="w-full flex-grow min-h-[220px] bg-[#2d3748] rounded-xl overflow-hidden relative border border-slate-700 shadow-inner cursor-crosshair" id="svg-container" onclick="addObstacle(event)">
+                        
+                        <div class="absolute top-2 left-2 bg-black/60 text-white/90 text-[10px] px-2 py-1 rounded pointer-events-none z-10 font-medium">
+                            Click road to manually place obstacle stones
+                        </div>
+
+                        <svg id="play-svg" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="0" y="0" width="100%" height="100%" fill="#166534" />
+                            <rect id="svg-road" x="0" y="20%" width="100%" height="60%" fill="#334155" />
+                            <line id="svg-center" x1="0" y1="50%" x2="200%" y2="50%" stroke="#94a3b8" stroke-width="4" stroke-dasharray="30,30" />
+                            <g id="svg-obstacles"></g>
+                            <!-- The Bicycle Group -->
+                            <g id="play-bike" transform="translate(150, 150)">
+                                <ellipse cx="0" cy="5" rx="15" ry="3" fill="black" opacity="0.3"/>
+                                <circle cx="-15" cy="0" r="8" fill="#0f172a" stroke="#cbd5e1" stroke-width="2"/>
+                                <circle cx="15" cy="0" r="8" fill="#0f172a" stroke="#cbd5e1" stroke-width="2"/>
+                                <path d="M-15,0 L-5,-12 L10,-12 L15,0 M-5,-12 L0,0" fill="none" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+                                <circle cx="0" cy="-16" r="5" fill="#ef4444"/>
+                            </g>
+                        </svg>
+
+                        <!-- Crash Overlay -->
+                        <div id="play-crash" class="absolute inset-0 bg-red-900/80 backdrop-blur-sm flex flex-col items-center justify-center hidden z-20">
+                            <span class="text-4xl mb-1">💥</span>
+                            <span class="text-xl font-bold text-white tracking-widest">TERMINATION</span>
+                            <span id="play-crash-reason" class="text-red-200 mt-1 font-mono text-xs">Out of Bounds</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-10">
+        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center text-xs">
+            <p class="text-slate-500 mb-2 md:mb-0">&copy; 2026 RawWeights. Data sourced from MIT 6.S191 Lecture 5.</p>
+            <div class="flex space-x-6">
+                <a href="/disclaimer.html" class="text-slate-400 hover:text-brand-600 transition">Disclaimer</a>
+                <a href="#" class="text-slate-400 hover:text-brand-600 transition">LinkedIn</a>
+                <a href="#" class="text-slate-400 hover:text-brand-600 transition">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC                           -->
+    <!-- ========================================== -->
+
+    <script>
+        // ----------------------------------------------------
+        // MODULE A: The 5-Step Training Animation Loop (Continuous)
+        // ----------------------------------------------------
+        
+        let animInterval;
+        let animStep = 0;
+        let episodeCount = 1; 
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            startTrainingSequence();
+        });
+
+        function startTrainingSequence() {
+            const log = document.getElementById('anim-log');
+            const trace = document.getElementById('anim-trace');
+            const bike = document.getElementById('anim-bike');
+            const crash = document.getElementById('anim-crash');
+            const counter = document.getElementById('anim-run-counter');
+            
+            let x = 50; let y = 75;
+            let dPath = `M ${x} ${y}`;
+            trace.setAttribute('d', dPath);
+            bike.setAttribute('transform', `translate(${x}, ${y}) rotate(0)`);
+            crash.classList.add('hidden');
+            
+            if(episodeCount === 1) { log.innerHTML = ""; }
+            
+            let phase = (episodeCount - 1) % 3;
+            let sequence = [];
+            
+            log.innerHTML += `<div class="mt-4 pt-2 border-t border-slate-600"></div>`;
+
+            if(phase === 0) {
+                counter.innerText = `Episode ${episodeCount} (Left Drift)`;
+                counter.className = "absolute top-2 right-2 bg-red-900/80 text-white text-[10px] px-2 py-1 rounded font-mono";
+                sequence = [
+                    { s: 0, a: -0.5, r: 1 }, { s: -1, a: -1.0, r: 1 }, 
+                    { s: -2, a: -2.0, r: 1 }, { s: -4, a: -3.0, r: 1 }, 
+                    { s: -7, a: -2.0, r: -10, term: true }
+                ];
+            } else if (phase === 1) {
+                counter.innerText = `Episode ${episodeCount} (Right Drift)`;
+                counter.className = "absolute top-2 right-2 bg-red-900/80 text-white text-[10px] px-2 py-1 rounded font-mono";
+                sequence = [
+                    { s: 0, a: 0.5, r: 1 }, { s: 1, a: 1.0, r: 1 }, 
+                    { s: 2, a: 2.0, r: 1 }, { s: 4, a: 3.0, r: 1 }, 
+                    { s: 7, a: 2.0, r: -10, term: true }
+                ];
+            } else {
+                counter.innerText = `Episode ${episodeCount} (Learned & Stable)`;
+                counter.className = "absolute top-2 right-2 bg-emerald-700/80 text-white text-[10px] px-2 py-1 rounded font-mono";
+                for(let i=0; i<12; i++) {
+                    let wobbleA = Math.sin(i) * 0.4; 
+                    sequence.push({ s: wobbleA.toFixed(1), a: wobbleA, r: 1, term: false });
+                }
+            }
+
+            animStep = 0;
+            let runStep = 0;
+
+            function updateStepUI(stepNum) {
+                for(let i=1; i<=4; i++) {
+                    const el = document.getElementById(`algo-step-${i}`);
+                    if(i === stepNum) el.classList.replace('opacity-50', 'opacity-100');
+                    else el.classList.replace('opacity-100', 'opacity-50');
+                }
+            }
+
+            animInterval = setInterval(() => {
+                if (animStep === 0) {
+                    updateStepUI(1);
+                    log.innerHTML += `<div class="text-brand-400 py-1">=> Agent Initialized. Running Policy π(s).</div>`;
+                    animStep++;
+                } else if (animStep === 1) {
+                    updateStepUI(2);
+                    
+                    let move = sequence[runStep];
+                    if(!move) { animStep++; return; }
+                    
+                    x += 40; 
+                    y += (move.a * 6); 
+                    dPath += ` L ${x} ${y}`;
+                    trace.setAttribute('d', dPath);
+                    bike.setAttribute('transform', `translate(${x}, ${y}) rotate(${move.a * 5})`);
+                    
+                    if(move.term) {
+                        crash.setAttribute('transform', `translate(${x}, ${y})`);
+                        crash.classList.remove('hidden');
+                        log.innerHTML += `<div class="text-red-400 py-0.5">s=${move.s}, a=${move.a.toFixed(1)}, r=${move.r} (CRASH)</div>`;
+                        animStep++; 
+                    } else {
+                        log.innerHTML += `<div class="text-emerald-400 py-0.5">s=${move.s}, a=${move.a.toFixed(1)}, r=${move.r}</div>`;
+                    }
+                    runStep++;
+                    log.scrollTop = log.scrollHeight;
+
+                } else if (animStep === 2) {
+                    if (phase < 2) {
+                        updateStepUI(3);
+                        setTimeout(() => updateStepUI(4), 800);
+                        
+                        log.innerHTML += `<div class="my-2 p-2 bg-slate-900 border border-slate-700 rounded text-slate-300">
+                            <strong class="text-white block mb-1">Applying Gradients: w' = w + ∇ log P(a|s)*R</strong>
+                            <span class="text-red-400">- Decrease P(a|s) for moves near crash (R=-10)</span><br>
+                            <span class="text-emerald-400">+ Increase P(a|s) for stable moves (R=+1)</span>
+                        </div>`;
+                        log.scrollTop = log.scrollHeight;
+                        animStep++;
+                    } else {
+                        log.innerHTML += `<div class="text-white font-bold my-2 py-1.5 text-center bg-emerald-600/20 rounded border border-emerald-600">✨ Policy Learned Successfully!</div>`;
+                        log.scrollTop = log.scrollHeight;
+                        animStep++;
+                    }
+                } else if (animStep === 3) {
+                    animStep++;
+                } else if (animStep === 4) {
+                    clearInterval(animInterval);
+                    episodeCount++;
+                    setTimeout(startTrainingSequence, 1000);
+                }
+            }, 500);
+        }
+
+        // ----------------------------------------------------
+        // MODULE B: Interactive Playground (Fixed Physics & Output)
+        // ----------------------------------------------------
+        
+        let pMode = 'dqn'; 
+        let pIsRunning = false;
+        let pAnimFrame;
+        
+        let manualOverrideValue = null;
+        let isPgDragging = false;
+
+        let worldX = 0; 
+        const roadCenterY = 110; 
+        const roadHeight = 120;  
+        const bikeStartX = 150;
+        
+        let agent = { y: 110, angle: 0, speed: 4 };
+        let totalReward = 0;
+        let obstacles = [];
+
+        const elDashState = document.getElementById('dash-state');
+        const elDashAction = document.getElementById('dash-action');
+        const elDashReward = document.getElementById('dash-reward');
+        const elDashStatus = document.getElementById('dash-status');
+        const elLabelAction = document.getElementById('label-action');
+        
+        const elSvgContainer = document.getElementById('svg-container');
+        const elSvgCenter = document.getElementById('svg-center');
+        const elBike = document.getElementById('play-bike');
+        const elObsGroup = document.getElementById('svg-obstacles');
+        const elCrash = document.getElementById('play-crash');
+        const elCrashReason = document.getElementById('play-crash-reason');
+        const elLog = document.getElementById('play-log');
+
+        const sMu = document.getElementById('slide-mu');
+        const sSig = document.getElementById('slide-sigma');
+
+        function initPlayground() {
+            obstacles = [
+                // Start with only 1 faraway obstacle by default so the bike can run successfully
+                { id: 1, worldX: 800, y: 130 }
+            ];
+            renderObstacles();
+        }
+        initPlayground();
+
+        function setPlaygroundMode(mode) {
+            if(pIsRunning) togglePlaygroundAuto(); 
+            pMode = mode;
+            
+            const btnDqn = document.getElementById('btn-dqn');
+            const btnPg = document.getElementById('btn-pg');
+            const ctrlDqn = document.getElementById('ctrl-dqn');
+            const ctrlPg = document.getElementById('ctrl-pg');
+
+            if(mode === 'dqn') {
+                btnDqn.className = "flex-1 py-1.5 px-3 rounded text-xs bg-brand-600 text-white font-semibold shadow-sm transition";
+                btnPg.className = "flex-1 py-1.5 px-3 rounded text-xs bg-white text-slate-600 border border-slate-300 hover:bg-slate-100 font-semibold transition";
+                ctrlDqn.classList.remove('hidden');
+                ctrlPg.classList.add('hidden');
+                elLabelAction.innerText = "Action (Discrete)";
+                elDashAction.className = "text-lg font-mono font-bold text-amber-400";
+            } else {
+                btnPg.className = "flex-1 py-1.5 px-3 rounded text-xs bg-brand-600 text-white font-semibold shadow-sm transition";
+                btnDqn.className = "flex-1 py-1.5 px-3 rounded text-xs bg-white text-slate-600 border border-slate-300 hover:bg-slate-100 font-semibold transition";
+                ctrlDqn.classList.add('hidden');
+                ctrlPg.classList.remove('hidden');
+                elLabelAction.innerText = "Action (Continuous)";
+                elDashAction.className = "text-lg font-mono font-bold text-purple-400";
+            }
+            resetPlayground();
+        }
+
+        function setManualOverride(val) {
+            manualOverrideValue = parseFloat(val);
+            if(!pIsRunning) { agent.angle = manualOverrideValue; updateDashboard(); drawFrame(); }
+        }
+        function clearManualOverride() {
+            manualOverrideValue = null;
+            if(!pIsRunning) { agent.angle = 0; updateDashboard(); drawFrame(); }
+        }
+
+        function handlePGSliders(isDragging) {
+            isPgDragging = isDragging;
+            if(pMode !== 'pg') return;
+            
+            const mu = parseFloat(sMu.value);
+            const sigma = parseFloat(sSig.value);
+            document.getElementById('val-mu').innerText = mu.toFixed(2);
+            document.getElementById('val-sigma').innerText = sigma.toFixed(2);
+            
+            let u1 = Math.random(); let u2 = Math.random();
+            let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            let sample = mu + (z0 * sigma);
+            sample = Math.max(-4, Math.min(4, sample));
+            
+            if(isPgDragging) manualOverrideValue = sample;
+            else manualOverrideValue = null;
+            
+            if(!pIsRunning) { agent.angle = sample; updateDashboard(); drawFrame(); }
+        }
+
+        function addObstacle(e) {
+            const rect = elSvgContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            const absWorldX = worldX + clickX;
+            obstacles.push({ id: Math.random(), worldX: absWorldX, y: clickY });
+            renderObstacles();
+        }
+
+        function renderObstacles() {
+            elObsGroup.innerHTML = '';
+            obstacles.forEach(obs => {
+                const viewX = obs.worldX - worldX;
+                if(viewX > -50 && viewX < 2000) {
+                    const rock = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    rock.setAttribute("d", `M${viewX},${obs.y} q5,-10 15,-5 t10,10 t-15,5 z`);
+                    rock.setAttribute("fill", "#64748b");
+                    elObsGroup.appendChild(rock);
+                }
+            });
+        }
+
+        function resetPlayground() {
+            agent.y = roadCenterY;
+            agent.angle = 0;
+            worldX = 0;
+            totalReward = 0;
+            manualOverrideValue = null;
+            elCrash.classList.add('hidden');
+            elDashStatus.innerText = "Ready";
+            elDashStatus.className = "text-sm font-mono font-bold text-amber-400";
+            elLog.innerText = "";
+            
+            if(pMode === 'pg') {
+                sMu.value = 0; sSig.value = 0.5;
+                handlePGSliders(false);
+            }
+            updateDashboard(); 
+            drawFrame();
+        }
+
+        function togglePlaygroundAuto() {
+            const btn = document.getElementById('btn-play-auto');
+            if(pIsRunning) {
+                pIsRunning = false;
+                cancelAnimationFrame(pAnimFrame);
+                btn.innerText = "▶ Run Auto-Agent";
+                btn.className = "w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-white shadow transition text-sm";
+                elDashStatus.innerText = "Stopped";
+                elDashStatus.className = "text-sm font-mono font-bold text-slate-400";
+            } else {
+                if(!elCrash.classList.contains('hidden')) resetPlayground(); 
+                pIsRunning = true;
+                btn.innerText = "■ Stop Simulation";
+                btn.className = "w-full py-2.5 bg-red-600 hover:bg-red-500 rounded font-bold text-white shadow transition text-sm";
+                elDashStatus.innerText = "Running Policy...";
+                elDashStatus.className = "text-sm font-mono font-bold text-brand-400";
+                pAnimFrame = requestAnimationFrame(playLoop);
+            }
+        }
+
+        function updateDashboard() {
+            let stateOff = agent.y - roadCenterY;
+            elDashState.innerText = stateOff.toFixed(1);
+            
+            // Explicitly highlight discrete vs continuous output
+            if(pMode === 'dqn') {
+                // Formatting discrete to 1 decimal place to look rigid (-2.5, 0.0, 2.5)
+                elDashAction.innerText = (agent.angle > 0 ? "+" : "") + agent.angle.toFixed(1);
+            } else {
+                // Formatting continuous to 3 decimal places to show Gaussian float flux
+                elDashAction.innerText = (agent.angle > 0 ? "+" : "") + agent.angle.toFixed(3);
+            }
+            
+            elDashReward.innerText = Math.floor(totalReward);
+        }
+
+        function drawFrame() {
+            elSvgCenter.setAttribute('stroke-dashoffset', -(worldX % 60));
+            renderObstacles();
+            
+            let visualRotation = 0;
+            if (pMode === 'dqn') {
+                // Jerky, snapped rigid visual angle for Discrete
+                visualRotation = agent.angle * 6; 
+            } else {
+                // Fluid, exact rotation based on float + realistic tiny continuous wobble
+                let fluidWobble = (Math.random() - 0.5) * 1.5;
+                visualRotation = (agent.angle * 5) + fluidWobble;
+            }
+            
+            elBike.setAttribute('transform', `translate(${bikeStartX}, ${agent.y}) rotate(${visualRotation})`);
+        }
+
+        function triggerCrash(reason) {
+            pIsRunning = false;
+            cancelAnimationFrame(pAnimFrame);
+            
+            document.getElementById('btn-play-auto').innerText = "▶ Restart Episode";
+            document.getElementById('btn-play-auto').className = "w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-white shadow transition text-sm";
+            
+            elDashStatus.innerText = "TERMINATED";
+            elDashStatus.className = "text-sm font-mono font-bold text-red-500";
+            elCrashReason.innerText = reason;
+            elCrash.classList.remove('hidden');
+            elLog.innerHTML = `<span class="text-brand-600">Step 3,4,5:</span> Recording history. Decreasing P(bad actions).`;
+        }
+
+        function playLoop() {
+            if(!pIsRunning) return;
+
+            worldX += agent.speed;
+            totalReward += 0.5;
+
+            // Apply Manual Override if Active
+            if (manualOverrideValue !== null) {
+                agent.angle = manualOverrideValue;
+                elLog.innerHTML = `<span class="text-amber-500 font-bold tracking-widest">MANUAL OVERRIDE ACTIVE</span>`;
+            } else {
+                elLog.innerHTML = "";
+                let stateOff = agent.y - roadCenterY; 
+                let imminentObs = null;
+                
+                for(let o of obstacles) {
+                    if((o.worldX - worldX) > bikeStartX && (o.worldX - worldX) < bikeStartX + 200) {
+                        if(Math.abs(o.y - agent.y) < 25) {
+                            imminentObs = o; break;
+                        }
+                    }
+                }
+
+                if (pMode === 'dqn') {
+                    // EXPLICIT DISCRETE POLICY LOGIC
+                    let targetA = 0.0;
+                    if(imminentObs) {
+                        targetA = (imminentObs.y > agent.y) ? -2.5 : 2.5;
+                    } else {
+                        // Wide threshold causes jerky back-and-forth movement characteristic of DQN
+                        if (stateOff > 10) targetA = -2.5;
+                        else if (stateOff < -10) targetA = 2.5;
+                    }
+                    // Add random epsilon-greedy stochasticity (causes unpredictable jumps)
+                    if(Math.random() < 0.05) targetA = (Math.random() > 0.5) ? 2.5 : -2.5;
+                    agent.angle = targetA;
+                } else {
+                    // EXPLICIT CONTINUOUS POLICY LOGIC (Policy Gradients)
+                    let mu = 0;
+                    if(imminentObs) {
+                        let urgency = 180 / Math.max(10, (imminentObs.worldX - worldX) - bikeStartX);
+                        mu = (imminentObs.y > agent.y) ? -urgency : urgency;
+                    } else {
+                        // Smoothly targets 0 based on precise float deviation
+                        mu = -stateOff * 0.08; 
+                    }
+                    
+                    let sigma = 0.15; // Tightly learned variance
+                    let u1 = Math.random(); let u2 = Math.random();
+                    let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+                    let sample = mu + (z0 * sigma);
+                    agent.angle = Math.max(-4, Math.min(4, sample)); 
+                    
+                    if(!isPgDragging) {
+                        sMu.value = mu; sSig.value = sigma;
+                        document.getElementById('val-mu').innerText = mu.toFixed(2);
+                        document.getElementById('val-sigma').innerText = sigma.toFixed(2);
+                    }
+                }
+            }
+
+            // Move Bike Y
+            agent.y += agent.angle;
+
+            // Collisions
+            if(agent.y < roadCenterY - roadHeight/2 || agent.y > roadCenterY + roadHeight/2) {
+                triggerCrash("Out of Bounds (Off Road)");
+                return;
+            }
+            for(let o of obstacles) {
+                const dx = (o.worldX - worldX) - bikeStartX;
+                const dy = o.y - agent.y;
+                if(Math.sqrt(dx*dx + dy*dy) < 18) { 
+                    triggerCrash("Collision with Obstacle");
+                    return;
+                }
+            }
+
+            // Endless Obstacle Generation - Greatly Reduced spawn rate so it defaults to a clean path
+            if(Math.random() < 0.002) {
+                obstacles.push({ id: Math.random(), worldX: worldX + 1000 + Math.random()*500, y: roadCenterY + (Math.random() - 0.5) * roadHeight * 0.8 });
+                obstacles = obstacles.filter(o => (o.worldX - worldX) > -100);
+            }
+
+            updateDashboard(); 
+            drawFrame();
+            pAnimFrame = requestAnimationFrame(playLoop);
+        }
+    </script>
+</body>
+</html>
