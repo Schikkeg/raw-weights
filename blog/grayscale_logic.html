@@ -271,8 +271,15 @@
     </footer>
 
     <script>
-        // Same Data Source
-        const articles = [
+ 		const articles = [
+            {
+                title: "From Plato to Profile Pictures: Unpacking Deep Generative Models",
+                excerpt: "A comprehensive, interactive masterclass on Deep Generative Modeling. Explore Unsupervised Learning, Autoencoders, VAEs, GANs, and Cycle GANs with interactive architectures to understand how AI creates new data..",
+                date: "Mar 23, 2026",
+                type:"Blog",
+                image: "./images/dgm.jpg",
+                link: "https://rawweights.com/blog/variational_breakthrough.html"
+            },
             {
                 title: "Teaching a Java App to Hear the Heartbeat of the Server",
                 excerpt: "Your own data is the best teacher. Discover why building a local neural network from scratch gives you the visibility needed to navigate the AI era...",
@@ -301,6 +308,7 @@
                 title: "Building a Tiny AI in Your Browser (No Python Required)",
                 excerpt: "We adopted micro-frontends two years ago. Here is the unvarnished truth about the bundle size and latency costs we incurred...",
                 date: "Feb 14, 2026",
+                type:"Linkedin",
                 image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
                 link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
             },
@@ -308,6 +316,7 @@
                 title: "Why I paused the advanced AI rush to build a simple regression tool",
                 excerpt: "Management isn't about tracking tasks. It's about unblocking people. Here is my framework for effective weekly syncs.",
                 date: "Feb 8, 2026",
+                type:"Linkedin",
                 image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
                 link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
             }
@@ -315,18 +324,38 @@
 
         const sidebar = document.getElementById('sidebar-feed');
 
-        articles.forEach(article => {
-            const item = `
-                <a href="${article.link}" class="group block">
-                    <h4 class="font-bold text-gray-800 group-hover:text-brand-600 transition leading-snug mb-1">${article.title}</h4>
-                    <div class="flex items-center text-xs text-gray-400">
-                        <span class="w-4 h-4 mr-1 bg-brand-600 rounded-sm flex items-center justify-center text-white font-bold" style="font-size: 8px;">in</span>
-                        <span>Posted on LinkedIn &bull; ${article.date}</span>
-                    </div>
-                </a>
-            `;
-            sidebar.innerHTML += item;
-        });
+		sidebar.innerHTML = articles.map(article => {
+		    const isBlog = article.type.toLowerCase() === 'blog';
+		    const iconText = isBlog ? 'Blog' : 'in';
+		    
+		    const excerpt = article.excerpt ? 
+		        `<p class="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+		            ${article.excerpt}
+		        </p>` : '';
+		
+		    return `
+		        <article class="relative group border-b border-gray-100 last:border-0 pb-4 mb-4">
+		            <a href="${article.link}" class="block focus:outline-none">
+		                <h4 class="font-bold text-sm text-gray-800 group-hover:text-brand-600 transition-colors duration-200 leading-snug mb-1">
+		                    ${article.title}
+		                </h4>
+		
+		                <div class="flex items-center space-x-2 text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+		                    <span class="inline-flex items-center justify-center bg-brand-600 text-white rounded-[2px] px-1.5 h-4 min-w-[16px] font-black italic shadow-sm" style="font-size: 7px;">
+		                        ${iconText}
+		                    </span>
+		                    <span>${article.type}</span>
+		                    <span class="text-gray-300">&bull;</span>
+		                    <time datetime="${article.date}">${article.date}</time>
+		                </div>
+		
+		                ${excerpt}
+		
+		                <div class="absolute -left-4 top-0 h-full w-0.5 bg-brand-600 scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-center rounded-full"></div>
+		            </a>
+		        </article>
+		    `;
+		}).join('');
     </script>
 </body>
 </html>
