@@ -14,7 +14,8 @@
     <meta property="og:url" content="https://rawweights.com/guide/rag.html">
     <meta property="og:title" content="Ultimate Guide to RAG (Retrieval-Augmented Generation) | RawWeights">
     <meta property="og:description" content="Master Retrieval-Augmented Generation (RAG). Learn the architecture, chunking strategies, limitations, and evaluation metrics.">
-    
+    <meta property="og:image" content="https://rawweights.com/images/rag.jpg">
+
     <script type="application/ld+json">
 {
    "@context":"https://schema.org",
@@ -204,7 +205,7 @@
 	        </div>	        
 	        <div class="w-full lg:w-1/2 flex justify-center relative group">
 	            <div class="absolute inset-0 bg-brand-500 blur-[100px] opacity-20 rounded-full transition duration-500 group-hover:opacity-40"></div>
-	            <img src="../images/rag.jpg" alt="RAG Architecture Diagram" class="relative z-10 w-full max-w-lg lg:max-w-xl rounded-xl shadow-2xl border border-brand-700/50 hover:scale-[1.02] transition-transform duration-300 bg-white/5 backdrop-blur-sm p-2" />
+	            <img src="../images/rag.jpg" onclick="openImageModal(this.src)" alt="RAG Architecture Diagram" class="relative z-10 w-full max-w-lg lg:max-w-xl rounded-xl shadow-2xl border border-brand-700/50 hover:scale-[1.02] transition-transform duration-300 bg-white/5 backdrop-blur-sm p-2" />
 	        </div>
 	
 	    </div>
@@ -624,6 +625,46 @@
                 resultDiv.innerHTML = `📚 You scored ${score} out of ${total}. Keep reading and try again!`;
             }
         }
+        
+        function openImageModal(src) {
+		    const modal = document.getElementById('imageModal');
+		    const modalImg = document.getElementById('modalImage');
+		    
+		    modalImg.src = src;
+		    modal.classList.remove('hidden');
+		    
+		    // Tiny delay to ensure CSS transition triggers correctly
+		    setTimeout(() => {
+		        modal.classList.remove('opacity-0');
+		        modalImg.classList.remove('scale-95');
+		        modalImg.classList.add('scale-100');
+		    }, 10);
+		    
+		    // Prevent background scrolling
+		    document.body.style.overflow = 'hidden'; 
+		}
+		
+		function closeImageModal() {
+		    const modal = document.getElementById('imageModal');
+		    const modalImg = document.getElementById('modalImage');
+		    
+		    modal.classList.add('opacity-0');
+		    modalImg.classList.remove('scale-100');
+		    modalImg.classList.add('scale-95');
+		    
+		    // Wait for transition to finish before hiding completely
+		    setTimeout(() => {
+		        modal.classList.add('hidden');
+		        document.body.style.overflow = ''; // Restore scrolling
+		    }, 300);
+		}
     </script>
+    
+	<div id="imageModal" class="fixed inset-0 z-[51] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300" onclick="closeImageModal()">
+	    <button class="absolute top-6 right-6 text-white hover:text-gray-300 focus:outline-none transition-colors" aria-label="Close modal">
+    	    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    	</button>
+    	<img id="modalImage" src="" class="max-w-full max-h-[90vh] rounded-xl shadow-2xl transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()" />
+	</div>
 </body>
 </html>
