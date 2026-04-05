@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Ultimate Guide to RAG (Retrieval-Augmented Generation) | RawWeights</title>
+    <meta name="title" content="Ultimate Guide to RAG (Retrieval-Augmented Generation) | RawWeights">
+    <meta name="description" content="Master Retrieval-Augmented Generation (RAG). Learn the architecture, chunking strategies, limitations, and evaluation metrics for AI models. Tailored for Developers, PMs, and Beginners.">
+    <meta name="keywords" content="RAG, Retrieval-Augmented Generation, LLM, Generative AI, Vector DB, Chunking, Pinecone, ChromaDB, AI Metrics, RawWeights">
+    <meta name="author" content="RawWeights">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rawweights.com/guide/rag.html">
+    <meta property="og:title" content="Ultimate Guide to RAG (Retrieval-Augmented Generation) | RawWeights">
+    <meta property="og:description" content="Master Retrieval-Augmented Generation (RAG). Learn the architecture, chunking strategies, limitations, and evaluation metrics.">
+    
+    <script type="application/ld+json">
+{
+   "@context":"https://schema.org",
+   "@type":"FAQPage",
+   "mainEntity":[
+      {
+         "@type":"Question",
+         "name":"Do embedding models need to match for ingestion and user queries?",
+         "acceptedAnswer":{
+            "@type":"Answer",
+            "text":"Yes. Embeddings only map to the same vector space if the models match. Mixing models breaks Cosine Similarity completely."
+         }
+      },
+      {
+         "@type":"Question",
+         "name":"Why do I need a Re-ranker if I have a similarity search?",
+         "acceptedAnswer":{
+            "@type":"Answer",
+            "text":"Similarity search fetches vectors mathematically close to the prompt. A Re-ranker evaluates those retrieved chunks for human-level contextual relevance before LLM generation."
+         }
+      },
+      {
+         "@type":"Question",
+         "name":"How often should the Vector DB be updated?",
+         "acceptedAnswer":{
+            "@type":"Answer",
+            "text":"Based entirely on how frequently your source data changes. Static contracts can be weekly; dynamic tickets require event-driven updates."
+         }
+      },
+      {
+         "@type":"Question",
+         "name":"Can RAG guarantee the AI won't lie?",
+         "acceptedAnswer":{
+            "@type":"Answer",
+            "text":"It vastly reduces 'hallucinations', but since the AI generates the final words, there's always a tiny chance. That's why RAG provides source citations!"
+         }
+      }
+   ]
+}
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0077b5',
+                            700: '#0369a1',
+                            900: '#0e1111',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { position: relative; }
+        .persona-btn.active { background-color: #0077b5; color: white; border-color: #0077b5; box-shadow: 0 4px 6px -1px rgba(0, 119, 181, 0.2); }
+        .faq-content { transition: all 0.3s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; padding-bottom: 0;}
+        .faq-content.open { max-height: 1000px; opacity: 1; padding-top: 1rem; padding-bottom: 1rem; }
+        .faq-icon { transition: transform 0.3s ease; }
+        .faq-btn[aria-expanded="true"] .faq-icon { transform: rotate(180deg); }
+        
+        /* Custom scrollbar for better UX (SXO) */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .sidebar-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f1f1; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(229, 231, 235, 0.5); }
+        .fade-transition { transition: opacity 0.3s ease-in-out; }
+
+        /* Dynamic TOC Active Class */
+        .toc-link.active-toc { color: #0077b5; font-weight: 700; border-left-color: #0077b5; padding-left: 12px; transition: all 0.2s ease;}
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="font-bold text-2xl tracking-tight text-gray-900"><a href="/">RawWeights</a></div>
+            <div class="hidden md:flex space-x-8 text-sm font-semibold text-gray-600">
+                <a href="/" class="hover:text-brand-600 transition">Home</a>
+                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
+                <a href="/tools/master_ml_hub.html" class="hover:text-brand-600 transition">ML Playground</a>
+                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
+                <a href="/tools/master_sequence_hub.html" class="hover:text-brand-600 transition">Attention Journey</a>
+				<a href="/tools/cnn_sandbox.html" class="hover:text-brand-600 transition">Explore CNN</a>
+				<a href="/tools/deep_generative_modeling.html" class="hover:text-brand-600 transition">Generative Journey</a>
+				<a href="/tools/deep_reinforcement.html" class="hover:text-brand-600 transition">Reinforcement</a>
+				<a href="/tools/limitations-and-frontiers.html" class="hover:text-brand-600 transition">UAT</a>
+            </div>
+            <div class="md:hidden flex items-center">
+                <button class="text-gray-600 hover:text-brand-600 focus:outline-none" aria-label="Menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <script type="application/json" id="persona-data">
+
+
+    {
+        "developer": {
+            "intro": "Retrieval-Augmented Generation (RAG) is a critical architecture addressing the non-deterministic nature of LLMs by grounding outputs in verified external data. Unlike fine-tuning—which updates model weights to adapt stylistic responses—RAG handles ever-growing repositories of external knowledge dynamically.",
+            "architecture": "The pipeline strictly separates into Offline Ingestion (Indexing) and Online Retrieval. Offline, raw data is broken into chunks, run through an embedding model to create dense n-dimensional vectors, and stored in a Vector DB (like Pinecone) with rich metadata. Online, user queries are embedded using the <strong>exact same embedding model</strong>. We execute a similarity search (Cosine Similarity) to retrieve the Top-K vectors. Finally, a Re-ranker sorts these chunks for semantic relevance.",
+            "chunking": "<h4 class='font-bold text-lg mb-2'>1. Fixed-Size & Sliding Window</h4><p class='text-sm mb-4'>Splits strictly by token limits. Low complexity but prone to 'context fragmentation'.</p><h4 class='font-bold text-lg mb-2'>2. Recursive / Document-Based</h4><p class='text-sm mb-4'>Leverages natural structures. High accuracy, recommended baseline.</p><h4 class='font-bold text-lg mb-2'>3. Semantic Chunking</h4><p class='text-sm mb-4'>Groups text mathematically by semantic meaning. High accuracy but high latency.</p>",
+            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Hybrid Retrieval:</strong> Combines dense vector search with sparse keyword matching (BM25).</li><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Agentic RAG:</strong> The LLM sits inside the retrieval process. It retrieves, evaluates what it got, and decides if it was enough before generating the answer.</li></ul>",
+            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>Access Control (RBAC):</strong> RAG doesn't restrict permissions natively. You must enforce RBAC programmatically.</li><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>Data Lag:</strong> Data must be indexed, chunked, and embedded before it's retrievable.</li></ul>",
+            "metrics": "<p class='mb-3'>It is impossible to manually test 100 questions to verify if a RAG pipeline is working. 'Vibe evals' do not scale.</p><p>You need quantitative measures to evaluate <strong>Retrieval Quality</strong> and <strong>Generation Quality</strong> consistently.</p>",
+            "misconceptions": "<ul class='space-y-4 text-sm'><li><strong>Myth: RAG is Dead:</strong> False. Agentic workflows rely heavily on RAG.</li><li><strong>Myth: Fine-Tuning replaces RAG:</strong> False. Fine-tuning teaches style; RAG provides factual external knowledge.</li></ul>",
+            "comparisons": "<div class='space-y-4'><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>RAG (Retrieval-Augmented Generation):</strong> Acts as an 'open-book exam' by connecting the LLM to live, external enterprise data. It prevents hallucination by fetching exact paragraphs before answering <sup></sup>.</div><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>Fine-Tuning:</strong> Updates the actual mathematical weights of the model. This is used to teach the model a specific 'style' or 'structure' to respond in, NOT to give it facts. It is extremely expensive to run every day <sup></sup>.</div><div class='p-4 bg-brand-50 border border-brand-200 rounded-lg'><strong>RAFT (Retrieval-Augmented Fine Tuning):</strong> A highly advanced architecture that combines both methodologies. You fine-tune the model to understand complex domain jargon while simultaneously giving it dynamic RAG retrieval capabilities <sup></sup>.</div></div>",
+            "faq": "<div class='space-y-3'><div class='border rounded-lg bg-white overflow-hidden'><button class='faq-btn w-full px-4 py-3 text-left font-bold hover:bg-gray-50' aria-expanded='false'>Do embedding models need to match for ingestion and queries?</button><div class='faq-content bg-gray-50 px-4 text-sm'><p>Yes. If they differ, cosine similarity breaks down completely.</p></div></div><div class='border rounded-lg bg-white overflow-hidden'><button class='faq-btn w-full px-4 py-3 text-left font-bold hover:bg-gray-50' aria-expanded='false'>Why do I need a Re-ranker?</button><div class='faq-content bg-gray-50 px-4 text-sm'><p>Similarity search fetches vectors mathematically close. A Re-ranker evaluates them for strict contextual relevance to improve the LLM answer.</p></div></div></div>",
+            "quiz_html": "<div class='bg-white p-4 rounded-lg border border-gray-200'><p class='font-semibold text-gray-800 mb-3'>1. What happens if the embedding model for queries differs from the one used for ingestion?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q1' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. Cosine similarity breaks down completely.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q1' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. The model dynamically adapts the vectors.</span></label></div><div class='bg-white p-4 rounded-lg border border-gray-200 mt-4'><p class='font-semibold text-gray-800 mb-3'>2. Why implement a Re-ranker after similarity search?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q2' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. To speed up vector database indexing.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q2' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. To sort mathematically close chunks by true semantic relevance.</span></label></div><div class='bg-white p-4 rounded-lg border border-gray-200 mt-4'><p class='font-semibold text-gray-800 mb-3'>3. How does Agentic RAG differ from standard RAG?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q3' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. The LLM acts as the decision maker inside the retrieval loop.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q3' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. It completely removes the need for chunking.</span></label></div>",
+            "answers": {"q1": "A", "q2": "B", "q3": "A"}
+        },
+        "pm": {
+            "intro": "RAG enables organizations to safely use generative AI on proprietary enterprise data without the risk of 'hallucination'. It bridges the gap between public LLMs and your secure internal policies.",
+            "architecture": "Building a reliable product requires managing an Offline Phase (Indexing documents) and an Online Phase (Real-time queries). A major PM focus must be on <strong>Metadata</strong>. If documents aren't tagged correctly (e.g., department, access level), retrieval costs soar and accuracy drops.",
+            "chunking": "<h4 class='font-bold text-lg mb-2'>Why Chunking Matters</h4><p class='text-sm mb-4'>Accuracy in RAG doesn't come from having <em>many</em> chunks, but from having <em>meaningful</em> chunks. Good chunking ensures the bot reads complete paragraphs and provides better user experiences.</p>",
+            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Enterprise Search:</strong> An internal 'Google' for your company.</li><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Customer Support Bots:</strong> B2C bots that read exact, updated return policies.</li></ul>",
+            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>Role-Based Access Control (RBAC):</strong> A user asking about their salary should only get answers derived from documents they are authorized to see.</li></ul>",
+            "metrics": "<p class='mb-3'>As a Product Manager, you cannot rely on manual 'vibe evals'. Asking a handful of test questions is not a sustainable way to track product health.</p><p>You need quantitative metrics to continuously monitor if the generated answers are satisfying users' intents.</p>",
+            "misconceptions": "<ul class='space-y-4 text-sm'><li><strong>Myth: Just fine-tune the model instead:</strong> False. Fine-tuning an AI on daily database changes is financially ruinous. RAG is cost-effective for facts.</li></ul>",
+            "comparisons": "<div class='space-y-4'><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>RAG (Retrieval-Augmented Generation):</strong> Highly cost-effective. Acts as an updating memory allowing AI to read live policies <sup></sup>.</div><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>Fine-Tuning:</strong> Used to teach the AI brand tone. Updating this daily when databases change is financially ruinous <sup></sup>.</div><div class='p-4 bg-brand-50 border border-brand-200 rounded-lg'><strong>RAFT:</strong> A hybrid approach for products that need strict stylistic conformity AND live external knowledge retrieval <sup></sup>.</div></div>",
+            "faq": "<div class='space-y-3'><div class='border rounded-lg bg-white overflow-hidden'><button class='faq-btn w-full px-4 py-3 text-left font-bold hover:bg-gray-50' aria-expanded='false'>How often should the Vector DB be updated?</button><div class='faq-content bg-gray-50 px-4 text-sm'><p>Based entirely on how frequently your source data changes. Static contracts can be weekly; dynamic tickets require event-driven updates.</p></div></div></div>",
+            "quiz_html": "<div class='bg-white p-4 rounded-lg border border-gray-200'><p class='font-semibold text-gray-800 mb-3'>1. Why is preserving Metadata crucial in the offline phase?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q1' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. It allows for efficient pre-filtering and smart caching.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q1' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. It forces the LLM to generate faster responses.</span></label></div><div class='bg-white p-4 rounded-lg border border-gray-200 mt-4'><p class='font-semibold text-gray-800 mb-3'>2. Does RAG enforce Data Privacy (RBAC) automatically out of the box?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q2' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. Yes, vector databases block unauthorized access natively.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q2' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. No, RBAC must be explicitly built by the team.</span></label></div><div class='bg-white p-4 rounded-lg border border-gray-200 mt-4'><p class='font-semibold text-gray-800 mb-3'>3. How often should your product's Vector DB be updated?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q3' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. Based on how frequently the specific source data changes.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q3' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. Strictly once a month to save on cloud compute costs.</span></label></div>",
+            "answers": {"q1": "A", "q2": "B", "q3": "A"}
+        },
+        "beginner": {
+            "intro": "Large Language Models are smart, but they don't know your private information. RAG turns interactions into an 'open-book exam,' allowing the AI to read your specific documents right before it answers.",
+            "architecture": "RAG works in two steps. <strong>Step 1: Offline Indexing.</strong> We translate documents into numbers (embeddings) and store them. <strong>Step 2: Real-time Search.</strong> We turn your question into numbers, find matching documents, and hand them to the AI to answer.",
+            "chunking": "<h4 class='font-bold text-lg mb-2'>Breaking things down</h4><p class='text-sm mb-4'>Computers can't read a 10,000-page manual at once. 'Chunking' breaks it down into paragraphs before storing, helping the AI find exact answers.</p>",
+            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Simple Q&A:</strong> Chatbots answering HR policy questions.</li><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Multimodal RAG:</strong> Searching through company images, audio, and videos.</li></ul>",
+            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>It needs good organization:</strong> If company files are a mess, the AI will struggle. Good 'metadata' (tags) fixes this.</li></ul>",
+            "metrics": "<p class='mb-3'>How do we know if the AI is telling the truth? We use automated scoring systems. These scores act like a report card, constantly checking if the AI is pulling the right facts from your files.</p>",
+            "misconceptions": "<ul class='space-y-4 text-sm'><li><strong>Myth: We should just train the AI instead:</strong> Training is like teaching a style. RAG is giving it a textbook to read from. You need RAG for facts.</li></ul>",
+            "comparisons": "<div class='space-y-4'><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>RAG:</strong> Think of it as giving the AI an open-book textbook. It looks up the exact facts before answering <sup></sup>.</div><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>Fine-Tuning:</strong> Think of it as sending the AI to acting class. It learns how to talk differently, but it doesn't automatically learn new daily facts <sup></sup>.</div><div class='p-4 bg-brand-50 border border-brand-200 rounded-lg'><strong>RAFT:</strong> A special combination where the AI goes to acting class AND gets to use the open-book textbook <sup></sup>.</div></div>",
+            "faq": "<div class='space-y-3'><div class='border rounded-lg bg-white overflow-hidden'><button class='faq-btn w-full px-4 py-3 text-left font-bold hover:bg-gray-50' aria-expanded='false'>Can RAG guarantee the AI won't lie?</button><div class='faq-content bg-gray-50 px-4 text-sm'><p>It vastly reduces 'hallucinations', but since the AI generates the final words, there's always a tiny chance. That's why RAG provides source citations!</p></div></div></div>",
+            "quiz_html": "<div class='bg-white p-4 rounded-lg border border-gray-200'><p class='font-semibold text-gray-800 mb-3'>1. What does 'Chunking' mean in a RAG system?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q1' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. Breaking large documents down into smaller, searchable pieces.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q1' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. Combining multiple AI models together.</span></label></div><div class='bg-white p-4 rounded-lg border border-gray-200 mt-4'><p class='font-semibold text-gray-800 mb-3'>2. Do larger memory limits (1 Million context window) mean RAG is dead?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q2' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. Yes, we can just feed everything directly into the AI now.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q2' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>B. No, stuffing too much information confuses the AI and deteriorates accuracy.</span></label></div><div class='bg-white p-4 rounded-lg border border-gray-200 mt-4'><p class='font-semibold text-gray-800 mb-3'>3. RAG acts like which type of exam for an Artificial Intelligence?</p><label class='flex items-center space-x-3 mb-2 cursor-pointer'><input type='radio' name='q3' value='A' class='text-brand-600 w-4 h-4'><span class='text-sm'>A. An Open-book exam.</span></label><label class='flex items-center space-x-3 cursor-pointer'><input type='radio' name='q3' value='B' class='text-brand-600 w-4 h-4'><span class='text-sm'>A Closed-book exam purely from memory.</span></label></div>",
+            "answers": {"q1": "A", "q2": "B", "q3": "A"}
+        }
+    }
+    </script>
+
+	<header class="bg-brand-900 text-white py-20 relative overflow-hidden">
+    	<div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTAgMTBoNDBNMCAzMGg0ME0xMCAwdjQwTTMwIDB2NDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')]"></div>
+	    <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+        <div class="w-full lg:w-1/2 text-left">
+            <span class="text-brand-500 font-semibold tracking-wider uppercase text-sm mb-4 block">Guide</span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight">Retrieval-Augmented Generation</h1>
+            <p class="text-lg md:text-xl text-gray-300 font-light mb-8">From preventing AI hallucinations to advanced chunking strategies and quantitative metrics, discover the definitive architecture powering modern AI.</p>
+        </div>
+        <div class="w-full lg:w-1/2 flex justify-center relative group">
+            <div class="absolute inset-0 bg-brand-500 blur-[100px] opacity-20 rounded-full transition duration-500 group-hover:opacity-40"></div>
+            <img 
+                src="../images/rag.jpg" 
+                alt="RAG Architecture and Informative Diagram" 
+                class="relative z-10 w-full max-w-lg lg:max-w-xl rounded-xl shadow-2xl border border-brand-700/50 hover:scale-[1.02] transition-transform duration-300 bg-white/5 backdrop-blur-sm p-2" 
+            />
+        	</div>
+    	</div>
+	</header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col lg:flex-row gap-12 relative">
+
+        <aside class="lg:w-1/4 flex-shrink-0 order-2 lg:order-1 relative">
+            <div class="sticky top-24 space-y-8 max-h-[calc(100vh-6rem)] overflow-y-auto pb-4 sidebar-scroll pr-2">
+                
+                <!-- Navigation -->
+                <div class="glass-card p-6 rounded-2xl shadow-sm">
+                    <h3 class="text-xs uppercase tracking-wider font-bold text-gray-400 mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                        Table of Contents
+                    </h3>
+                    <ul class="space-y-3 text-sm font-medium text-gray-500 border-l-2 border-gray-200" id="toc-menu">
+                        <li><a href="#intro" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">1. The Power of RAG</a></li>
+                        <li><a href="#architecture" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">2. Architecture & Indexing</a></li>
+                        <li><a href="#chunking" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">3. Chunking Strategies</a></li>
+                        <li><a href="#types" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">4. Use Cases & Types</a></li>
+                        <li><a href="#limitations" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">5. Limitations & Constraints</a></li>
+                        <li><a href="#metrics" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">6. Evaluation & Metrics</a></li>
+                        <li><a href="#misconceptions" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">7. Misconceptions</a></li>
+                        <li><a href="#comparisons" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">8. Comparisons</a></li>
+                        <li><a href="#faq" class="toc-link hover:text-brand-600 transition block py-1 pl-3 -ml-[2px] border-l-2 border-transparent">9. FAQ</a></li>
+                        <li><a href="#quiz" class="toc-link hover:text-brand-600 transition block py-1 mt-2 text-brand-600 pl-3 -ml-[2px] border-l-2 border-transparent">10. Test Your Knowledge</a></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl shadow-sm bg-gradient-to-br from-white to-brand-50 border-brand-100">
+                    <h3 class="text-sm font-bold text-gray-900 mb-4">Tailor Your Experience</h3>
+                    <p class="text-xs text-gray-500 mb-4">Select a persona to adjust the technical depth of the entire page.</p>
+                    <div class="flex flex-col space-y-2">
+                        <button class="persona-btn active bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-left transition hover:bg-gray-50 flex items-center" data-target="developer">
+                            <span class="text-xl mr-3">💻</span> Developer (Default)
+                        </button>
+                        <button class="persona-btn bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-left transition hover:bg-gray-50 flex items-center" data-target="pm">
+                            <span class="text-xl mr-3">📊</span> Product Manager
+                        </button>
+                        <button class="persona-btn bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-left transition hover:bg-gray-50 flex items-center" data-target="beginner">
+                            <span class="text-xl mr-3">🌱</span> Beginner
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <article class="lg:w-3/4 pb-20 order-1 lg:order-2 space-y-16">
+            
+            <section id="intro" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">The Power of RAG: Grounding & Prevention</h2>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 leading-relaxed text-lg text-gray-700">
+                    <p id="content-intro" class="fade-transition"></p>
+                </div>
+            </section>
+
+            <section id="architecture" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Architecture Flow Diagram</h2>
+                </div>
+                
+                <p id="content-architecture" class="text-gray-700 text-lg mb-8 fade-transition"></p>
+
+                <div class="w-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative group" aria-label="RAG Architecture Diagram showing offline indexing and online retrieval">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-brand-50 opacity-50 z-0"></div>
+                    <svg viewBox="0 0 1000 650" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto relative z-10" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));">
+                        <defs>
+                            <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+                                <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.1"/>
+                            </filter>
+                            <linearGradient id="offlineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#e0f2fe"/>
+                                <stop offset="100%" stop-color="#bae6fd"/>
+                            </linearGradient>
+                            <linearGradient id="onlineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f8fafc"/>
+                                <stop offset="100%" stop-color="#f1f5f9"/>
+                            </linearGradient>
+                            <linearGradient id="dbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#0284c7"/>
+                                <stop offset="100%" stop-color="#0369a1"/>
+                            </linearGradient>
+                            <linearGradient id="llmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#0f172a"/>
+                                <stop offset="100%" stop-color="#1e293b"/>
+                            </linearGradient>
+                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#64748b" />
+                            </marker>
+                            <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#0284c7" />
+                            </marker>
+                            <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+                            </marker>
+                        </defs>
+
+                        <rect x="30" y="40" width="940" height="200" fill="url(#offlineGrad)" rx="16" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="8,4"/>
+                        <rect x="50" y="25" width="280" height="30" fill="#0284c7" rx="15" />
+                        <text x="190" y="45" font-family="sans-serif" font-weight="bold" font-size="14" fill="#ffffff" text-anchor="middle" letter-spacing="1">OFFLINE INGESTION (INDEXING)</text>
+
+                        <g filter="url(#shadow)">
+                            <rect x="60" y="100" width="130" height="70" fill="#ffffff" rx="8" stroke="#cbd5e1" stroke-width="2"/>
+                            <text x="125" y="140" font-family="sans-serif" font-weight="600" font-size="14" fill="#334155" text-anchor="middle">Documents</text>
+
+                            <rect x="250" y="100" width="130" height="70" fill="#ffffff" rx="8" stroke="#cbd5e1" stroke-width="2"/>
+                            <text x="315" y="140" font-family="sans-serif" font-weight="600" font-size="14" fill="#334155" text-anchor="middle">Chunking</text>
+
+                            <rect x="440" y="100" width="150" height="70" fill="#ffffff" rx="8" stroke="#cbd5e1" stroke-width="2"/>
+                            <text x="515" y="135" font-family="sans-serif" font-weight="600" font-size="14" fill="#334155" text-anchor="middle">Embedding Model</text>
+                            <text x="515" y="155" font-family="sans-serif" font-size="11" fill="#8b5cf6" text-anchor="middle">(Creates Vectors)</text>
+                            
+                            <rect x="650" y="75" width="280" height="120" fill="url(#dbGrad)" rx="12" stroke="#0369a1" stroke-width="2"/>
+                            <text x="790" y="135" font-family="sans-serif" font-weight="bold" font-size="18" fill="#ffffff" text-anchor="middle">Vector DB</text>
+                            <text x="790" y="155" font-family="sans-serif" font-size="12" fill="#e0f2fe" text-anchor="middle">(Vectors + Metadata)</text>
+                        </g>
+
+                        <path d="M 190 135 L 240 135" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+                        <path d="M 380 135 L 430 135" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+                        <path d="M 590 135 L 640 135" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+
+                        <rect x="30" y="280" width="940" height="330" fill="url(#onlineGrad)" rx="16" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,4"/>
+                        <rect x="50" y="265" width="220" height="30" fill="#475569" rx="15" />
+                        <text x="160" y="285" font-family="sans-serif" font-weight="bold" font-size="14" fill="#ffffff" text-anchor="middle" letter-spacing="1">ONLINE RETRIEVAL</text>
+
+                        <g filter="url(#shadow)">
+                            <rect x="60" y="340" width="130" height="70" fill="#ffffff" rx="8" stroke="#cbd5e1" stroke-width="2"/>
+                            <text x="125" y="380" font-family="sans-serif" font-weight="600" font-size="14" fill="#334155" text-anchor="middle">User Query</text>
+
+                            <rect x="250" y="340" width="150" height="70" fill="#ffffff" rx="8" stroke="#cbd5e1" stroke-width="2"/>
+                            <text x="325" y="375" font-family="sans-serif" font-weight="600" font-size="14" fill="#334155" text-anchor="middle">Embedding Model</text>
+                            <text x="325" y="395" font-family="sans-serif" font-size="11" fill="#8b5cf6" text-anchor="middle">(Must Match Offline!)</text>
+
+                            <rect x="460" y="340" width="140" height="70" fill="#ffffff" rx="8" stroke="#0ea5e9" stroke-width="2"/>
+                            <text x="530" y="370" font-family="sans-serif" font-weight="600" font-size="14" fill="#0284c7" text-anchor="middle">Similarity Search</text>
+                            <text x="530" y="390" font-family="sans-serif" font-size="11" fill="#64748b" text-anchor="middle">(Cosine/Dot)</text>
+
+                            <rect x="660" y="340" width="130" height="70" fill="#ffffff" rx="8" stroke="#f59e0b" stroke-width="2"/>
+                            <text x="725" y="375" font-family="sans-serif" font-weight="600" font-size="14" fill="#d97706" text-anchor="middle">Re-Ranker</text>
+                            <text x="725" y="395" font-family="sans-serif" font-size="11" fill="#64748b" text-anchor="middle">(Context Sort)</text>
+
+                            <rect x="580" y="480" width="140" height="90" fill="url(#llmGrad)" rx="12" stroke="#0f172a" stroke-width="2"/>
+                            <text x="650" y="525" font-family="sans-serif" font-weight="bold" font-size="20" fill="#ffffff" text-anchor="middle">LLM</text>
+                            <text x="650" y="550" font-family="sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">Reasoning Engine</text>
+
+                            <rect x="780" y="490" width="160" height="70" fill="#10b981" rx="8" stroke="#059669" stroke-width="2"/>
+                            <text x="860" y="530" font-family="sans-serif" font-weight="bold" font-size="15" fill="#ffffff" text-anchor="middle">Grounded Response</text>
+                        </g>
+
+                        <path d="M 190 375 L 240 375" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+                        <path d="M 400 375 L 450 375" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+                        <path d="M 600 375 L 650 375" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+                        
+                        <path d="M 790 195 L 790 280 L 530 280 L 530 330" stroke="#0284c7" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-blue)"/>
+                        <text x="660" y="270" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0284c7">Top K Vectors Retrieved</text>
+
+                        <path d="M 725 410 L 725 440 L 650 440 L 650 470" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                        <path d="M 125 410 L 125 525 L 570 525" stroke="#cbd5e1" stroke-width="3" marker-end="url(#arrow)"/>
+                        <text x="350" y="515" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="600">Raw Prompt Context</text>
+
+                        <path d="M 720 525 L 770 525" stroke="#10b981" stroke-width="4" marker-end="url(#arrow-green)"/>
+                    </svg>
+                </div>
+            </section>
+
+            <section id="chunking" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Document Chunking Strategies</h2>
+                </div>
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <div id="content-chunking" class="text-gray-700 fade-transition"></div>
+                </div>
+            </section>
+
+            <section id="types" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Architectures & Use Cases</h2>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-200 fade-transition" id="content-types">
+                </div>
+            </section>
+
+            <section id="limitations" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Limitations & Constraints</h2>
+                </div>
+                <div class="p-6 bg-red-50 border border-red-100 rounded-xl fade-transition" id="content-limitations">
+                </div>
+            </section>
+
+            <section id="metrics" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Evaluation & Metrics</h2>
+                </div>
+                <div class="bg-white border-l-4 border-brand-500 p-6 rounded-r-lg shadow-sm">
+                    <div id="content-metrics" class="text-gray-700 fade-transition leading-relaxed"></div>
+                </div>
+            </section>
+
+            <section id="misconceptions" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Common Misconceptions</h2>
+                </div>
+                <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm fade-transition" id="content-misconceptions">
+                </div>
+            </section>
+
+            <section id="comparisons" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">RAG vs. Fine-Tuning vs. RAFT</h2>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl shadow-sm">
+                    <div id="content-comparisons" class="text-gray-700 fade-transition"></div>
+                </div>
+            </section>
+
+            <section id="faq" class="scroll-mt-28">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Frequently Asked Questions</h2>
+                </div>
+                <div id="content-faq" class="fade-transition"></div>
+            </section>
+
+            <section id="quiz" class="scroll-mt-28 bg-brand-50 rounded-2xl p-8 border border-brand-200 shadow-sm mt-12">
+                <h2 class="text-2xl font-serif font-bold text-brand-900 mb-2">Test Your Knowledge</h2>
+                <p class="text-sm text-gray-600 mb-6">Answer the 3 questions below tailored to your selected persona to check your understanding.</p>
+                
+                <form id="rag-quiz-form" class="space-y-6">
+                    <div id="dynamic-quiz-container" class="fade-transition"></div>
+                    
+                    <button type="button" onclick="calculateScore()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-md w-full md:w-auto">Submit Answers</button>
+                </form>
+
+                <div id="quiz-result" class="hidden mt-6 p-4 rounded-lg text-center font-bold text-lg fade-transition"></div>
+            </section>
+
+        </article>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <span class="text-white font-bold text-lg tracking-tight">RawWeights</span>
+                <p class="text-sm mt-2">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables for Quiz
+        let currentAnswers = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup DOM nodes
+            const personaDataStr = document.getElementById('persona-data').textContent;
+            const personaData = JSON.parse(personaDataStr);
+            const buttons = document.querySelectorAll('.persona-btn');
+            
+            // Sections to update dynamically
+            const sections = [
+                { el: document.getElementById('content-intro'), key: 'intro' },
+                { el: document.getElementById('content-architecture'), key: 'architecture' },
+                { el: document.getElementById('content-chunking'), key: 'chunking' },
+                { el: document.getElementById('content-types'), key: 'types' },
+                { el: document.getElementById('content-limitations'), key: 'limitations' },
+                { el: document.getElementById('content-metrics'), key: 'metrics' },
+                { el: document.getElementById('content-misconceptions'), key: 'misconceptions' },
+                { el: document.getElementById('content-comparisons'), key: 'comparisons' },
+                { el: document.getElementById('content-faq'), key: 'faq' },
+                { el: document.getElementById('dynamic-quiz-container'), key: 'quiz_html'}
+            ];
+
+            // Attach dynamic accordion listeners
+            function attachAccordionListeners() {
+                const faqBtns = document.querySelectorAll('.faq-btn');
+                faqBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const expanded = this.getAttribute('aria-expanded') === 'true';
+                        const content = this.nextElementSibling;
+                        
+                        faqBtns.forEach(other => {
+                            if (other !== this) {
+                                other.setAttribute('aria-expanded', 'false');
+                                 if (other.nextElementSibling) other.nextElementSibling.classList.remove('open');
+                            }
+                        });
+
+                        this.setAttribute('aria-expanded', !expanded);
+                        if (!expanded) {
+                            content.classList.add('open');
+                        } else {
+                            content.classList.remove('open');
+                        }
+                    });
+                });
+            }
+
+            // Load Persona Logic
+            function loadPersona(target) {
+                const content = personaData[target];
+                currentAnswers = content.answers; // Store answer key
+                
+                // 1. Clear Quiz score automatically when switching
+                const resultDiv = document.getElementById('quiz-result');
+                if (resultDiv) {
+                    resultDiv.classList.add('hidden');
+                    resultDiv.innerHTML = '';
+                    resultDiv.className = 'hidden mt-6 p-4 rounded-lg text-center font-bold text-lg fade-transition'; 
+                }
+                const form = document.getElementById('rag-quiz-form');
+                if(form) form.reset();
+
+                // 2. Fade out current content
+                sections.forEach(s => { if(s.el) s.el.style.opacity = '0'; });
+
+                // 3. Update & Fade in after short delay
+                setTimeout(() => {
+                    sections.forEach(s => {
+                        if(s.el) {
+                            s.el.innerHTML = content[s.key];
+                            s.el.style.opacity = '1';
+                        }
+                    });
+                    attachAccordionListeners();
+                }, 300);
+            }
+
+            // Bind click events for persona buttons
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active', 'border-brand-600'));
+                    btn.classList.add('active', 'border-brand-600');
+                    loadPersona(btn.getAttribute('data-target'));
+                });
+            });
+
+            // Initialize default persona
+            loadPersona('developer');
+
+            // --- TOC SCROLL HIGHLIGHTING ---
+            const scrollSections = document.querySelectorAll("article section[id]");
+            const navLinks = document.querySelectorAll(".toc-link");
+
+            // Intersection Observer configuration
+            const observerOptions = {
+                root: null,
+                rootMargin: "-20% 0px -75% 0px", // triggers when section is near top middle
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach((link) => {
+                            link.classList.remove("active-toc");
+                            if (link.getAttribute("href") === `#${entry.target.id}`) {
+                                link.classList.add("active-toc");
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            scrollSections.forEach((sec) => observer.observe(sec));
+        });
+
+        // Dynamic Quiz Validation Logic
+        function calculateScore() {
+            let score = 0;
+            let total = Object.keys(currentAnswers).length;
+            let form = document.getElementById('rag-quiz-form');
+            const resultDiv = document.getElementById('quiz-result');
+
+            for(let key in currentAnswers) {
+                let selected = form.querySelector(`input[name="${key}"]:checked`);
+                if (selected && selected.value === currentAnswers[key]) {
+                    score++;
+                }
+            }
+
+            // Reset specific color classes
+            resultDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-yellow-100', 'text-yellow-800', 'bg-red-100', 'text-red-800');
+            
+            if (score === total) {
+                resultDiv.classList.add('bg-green-100', 'text-green-800');
+                resultDiv.innerHTML = `🎉 Perfect! You scored ${score} out of ${total}. You're a RAG expert!`;
+            } else if (score >= Math.ceil(total / 2)) {
+                resultDiv.classList.add('bg-yellow-100', 'text-yellow-800');
+                resultDiv.innerHTML = `👍 Good job! You scored ${score} out of ${total}. Review the sections above to fill in the gaps.`;
+            } else {
+                resultDiv.classList.add('bg-red-100', 'text-red-800');
+                resultDiv.innerHTML = `📚 You scored ${score} out of ${total}. Keep reading and try again!`;
+            }
+        }
+    </script>
+</body>
+</html>
