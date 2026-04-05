@@ -102,6 +102,11 @@
 
         /* Dynamic TOC Active Class */
         .toc-link.active-toc { color: #0077b5; font-weight: 700; border-left-color: #0077b5; padding-left: 12px; transition: all 0.2s ease;}
+
+.header-persona .persona-btn { background-color: transparent; color: #cbd5e1; border-color: transparent; }
+.header-persona .persona-btn:hover:not(.active) { background-color: rgba(255,255,255,0.1); color: #ffffff; }
+.header-persona .persona-btn.active { background-color: #0077b5; color: #ffffff; border-color: #0077b5; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
@@ -175,27 +180,41 @@
     </script>
 
 	<header class="bg-brand-900 text-white py-20 relative overflow-hidden">
-    	<div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTAgMTBoNDBNMCAzMGg0ME0xMCAwdjQwTTMwIDB2NDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')]"></div>
+	    <div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTAgMTBoNDBNMCAzMGg0ME0xMCAwdjQwTTMwIDB2NDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')]"></div>
+	    
 	    <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-        <div class="w-full lg:w-1/2 text-left">
-            <span class="text-brand-500 font-semibold tracking-wider uppercase text-sm mb-4 block">Guide</span>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight">Retrieval-Augmented Generation</h1>
-            <p class="text-lg md:text-xl text-gray-300 font-light mb-8">From preventing AI hallucinations to advanced chunking strategies and quantitative metrics, discover the definitive architecture powering modern AI.</p>
-        </div>
-        <div class="w-full lg:w-1/2 flex justify-center relative group">
-            <div class="absolute inset-0 bg-brand-500 blur-[100px] opacity-20 rounded-full transition duration-500 group-hover:opacity-40"></div>
-            <img 
-                src="../images/rag.jpg" 
-                alt="RAG Architecture and Informative Diagram" 
-                class="relative z-10 w-full max-w-lg lg:max-w-xl rounded-xl shadow-2xl border border-brand-700/50 hover:scale-[1.02] transition-transform duration-300 bg-white/5 backdrop-blur-sm p-2" 
-            />
-        	</div>
-    	</div>
+	        <div class="w-full lg:w-1/2 text-left">
+	            <span class="text-brand-500 font-semibold tracking-wider uppercase text-sm mb-4 block">Guide</span>
+	            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight">Retrieval-Augmented Generation</h1>
+	            <p class="text-lg md:text-xl text-gray-300 font-light mb-8">From preventing AI hallucinations to advanced chunking strategies and quantitative metrics, discover the definitive architecture powering modern AI.</p>
+	            <div class="header-persona bg-white/5 backdrop-blur-md border border-white/10 p-4 rounded-xl inline-block w-full sm:w-auto">
+	                <p class="text-xs text-brand-100 font-semibold uppercase tracking-wider mb-3">Select Your Persona:</p>
+	                <div class="flex flex-col sm:flex-row gap-2">
+	                    <button class="persona-btn active border rounded-lg px-4 py-2 text-sm font-medium transition flex items-center justify-center" data-target="developer">
+	                        <span class="mr-2">💻</span> Developer
+	                    </button>
+	                    <button class="persona-btn border rounded-lg px-4 py-2 text-sm font-medium transition flex items-center justify-center" data-target="pm">
+	                        <span class="mr-2">📊</span> Product Manager
+	                    </button>
+	                    <button class="persona-btn border rounded-lg px-4 py-2 text-sm font-medium transition flex items-center justify-center" data-target="beginner">
+	                        <span class="mr-2">🌱</span> Beginner
+	                    </button>
+	                </div>
+	            </div>
+	        </div>	        
+	        <div class="w-full lg:w-1/2 flex justify-center relative group">
+	            <div class="absolute inset-0 bg-brand-500 blur-[100px] opacity-20 rounded-full transition duration-500 group-hover:opacity-40"></div>
+	            <img src="../images/rag.jpg" alt="RAG Architecture Diagram" class="relative z-10 w-full max-w-lg lg:max-w-xl rounded-xl shadow-2xl border border-brand-700/50 hover:scale-[1.02] transition-transform duration-300 bg-white/5 backdrop-blur-sm p-2" />
+	        </div>
+	
+	    </div>
 	</header>
+
+
 
     <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col lg:flex-row gap-12 relative">
 
-        <aside class="lg:w-1/4 flex-shrink-0 order-2 lg:order-1 relative">
+        <aside class="lg:w-1/4 flex-shrink-0 order-1  relative">
             <div class="sticky top-24 space-y-8 max-h-[calc(100vh-6rem)] overflow-y-auto pb-4 sidebar-scroll pr-2">
                 
                 <!-- Navigation -->
@@ -218,25 +237,11 @@
                     </ul>
                 </div>
 
-                <div class="glass-card p-6 rounded-2xl shadow-sm bg-gradient-to-br from-white to-brand-50 border-brand-100">
-                    <h3 class="text-sm font-bold text-gray-900 mb-4">Tailor Your Experience</h3>
-                    <p class="text-xs text-gray-500 mb-4">Select a persona to adjust the technical depth of the entire page.</p>
-                    <div class="flex flex-col space-y-2">
-                        <button class="persona-btn active bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-left transition hover:bg-gray-50 flex items-center" data-target="developer">
-                            <span class="text-xl mr-3">💻</span> Developer (Default)
-                        </button>
-                        <button class="persona-btn bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-left transition hover:bg-gray-50 flex items-center" data-target="pm">
-                            <span class="text-xl mr-3">📊</span> Product Manager
-                        </button>
-                        <button class="persona-btn bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-left transition hover:bg-gray-50 flex items-center" data-target="beginner">
-                            <span class="text-xl mr-3">🌱</span> Beginner
-                        </button>
-                    </div>
-                </div>
+                
             </div>
         </aside>
 
-        <article class="lg:w-3/4 pb-20 order-1 lg:order-2 space-y-16">
+        <article class="lg:w-3/4 pb-20 order-2 space-y-16">
             
             <section id="intro" class="scroll-mt-28">
                 <div class="flex items-center mb-6">
