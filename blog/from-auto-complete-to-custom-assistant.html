@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Auto-Complete to Custom Assistant: A Visual Guide to LLM Post-Training | RawWeights</title>
+    <meta name="description" content="Discover how to move beyond basic RAG with our new interactive, visual guide to LLM post-training. Explore step-by-step infographics on data preparation, DPO training, model merging, and test-time compute, inspired by insights from Maxime Labonne's MIT lecture">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            600: '#0077b5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+            <script type="text/javascript" async src="/includes/analytics.js"></script>
+
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="font-bold text-xl tracking-tight text-gray-900"><a href="/" >RawWeights</a></div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
+                <a href="/" class="hover:text-brand-600 transition">Home</a>
+                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
+                <a href="/tools/master_ml_hub.html"  class="hover:text-brand-600 transition">ML Playground</a>
+                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
+                <a href="/tools/master_sequence_hub.html" class="hover:text-brand-600 transition">Attention Journey</a>
+	            <a href="/tools/deep_reinforcement.html" class="hover:text-brand-600 transition">Reinforcement</a>
+                <a href="/tools/limitations-and-frontiers.html" class="hover:text-brand-600 transition">UAT</a>            </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
+        
+        <main class="w-full lg:w-2/3">
+    <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+        <header class="mb-10">
+            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+                <span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded font-semibold">Generative AI</span>
+                <span>&bull;</span>
+                <span>6 min read</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-bold font-sans text-slate-900 leading-tight mb-6">
+                From Auto-Complete to Custom Assistant: A Visual Guide to LLM Post-Training
+            </h1>
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border border-slate-300">
+                    <img src="https://api.dicebear.com/9.x/bottts/svg?seed=Felix" alt="Avatar">
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-bold text-slate-900">Custom LLMs</p>
+                    <p class="text-xs text-slate-500">Apr 13, 2026</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="font-sans text-slate-700 leading-relaxed">
+            
+            <!-- Origin Story -->
+            <p class="mb-6 text-lg">
+                It’s easy to forget that if you strip the "assistant" persona away from ChatGPT or Gemini, what you are fundamentally left with is just a very powerful auto-complete. 
+            </p>
+            <p class="mb-6">
+                During the <em>pre-training</em> phase, models ingest trillions of tokens just to learn how to predict the next word. But how do we turn that raw, probabilistic text engine into a helpful, instruction-following assistant? More importantly, how do we make it deeply understand our <em>specific</em> enterprise data and business context?
+            </p>
+            
+            <blockquote class="border-l-4 border-indigo-500 bg-indigo-50/50 p-6 rounded-r-xl italic text-slate-700 my-8 shadow-sm">
+                "Many teams start with RAG (Retrieval-Augmented Generation). But when RAG isn't enough—when you need to fundamentally change the model's tone, format, or embed deep, nuanced domain knowledge—you need to build a custom LLM." 
+            </blockquote>
+
+            <p class="mb-8">
+                Inspired by an incredible lecture by Maxime Labonne (Liquid AI) at MIT, I realized that the path to creating custom models—the <strong>Post-Training Pipeline</strong>—is often gated behind dense academic papers and walls of text. I wanted to change that. 
+            </p>
+
+            <!-- Why Infographics? -->
+            <div class="mb-10 bg-slate-900 text-white p-8 rounded-2xl shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500 rounded-full blur-[80px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+                <h3 class="text-2xl font-bold mb-4 text-white relative z-10">Why I Built a Visual-First Tool</h3>
+                <p class="text-slate-300 mb-0 relative z-10">
+                    Concepts like <em>Process Reward Models</em>, <em>DARE-TIES Merging</em>, and <em>Direct Preference Optimization</em> are deeply mathematical. Reading about them is exhausting. I built this interactive guide completely around <strong>custom-designed infographics and step-by-step diagrams</strong>. Instead of reading about tree-search logic, you can visually trace how an LLM scores individual steps and loops them back to form a perfect answer. Visuals map abstract math directly to human intuition.
+                </p>
+            </div>
+
+            <h3 class="text-2xl font-bold text-slate-900 mt-10 mb-6 border-b pb-2">Inside the Interactive Guide</h3>
+            <p class="mb-6">
+                I packaged this entire journey into a interactive tool: <a href="/guide/llm-post-training-guide.html" class="text-indigo-600 font-bold hover:underline">The Custom LLM Post-Training Guide</a>. Here is a breakdown of the interactive modules you can explore inside:
+            </p>
+
+            <!-- Grid of Features -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                
+                <!-- Card 1 -->
+                <a href="/guide/llm-post-training-guide.html#data" class="block p-6 rounded-xl border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md transition bg-white group cursor-pointer">
+                    <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path></svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-800 mb-2">1. Data Preparation</h4>
+                    <p class="text-sm text-slate-600">The most critical step. Learn how to synthesize data without causing "diversity collapse," and balance the three pillars: Accuracy, Diversity, and Complexity.</p>
+                </a>
+
+                <!-- Card 2 -->
+                <a href="/guide/llm-post-training-guide.html#training" class="block p-6 rounded-xl border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md transition bg-white group cursor-pointer">
+                    <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-800 mb-2">2. Training Algorithms</h4>
+                    <p class="text-sm text-slate-600">Visual breakdowns of how Full Fine-Tuning compares to parameter-efficient methods like LoRA, and why DPO is overtaking PPO for preference alignment.</p>
+                </a>
+
+                <!-- Card 3 -->
+                <a href="/guide/llm-post-training-guide.html#merging" class="block p-6 rounded-xl border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md transition bg-white group cursor-pointer">
+                    <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-800 mb-2">3. Model Merging</h4>
+                    <p class="text-sm text-slate-600">Why train from scratch? Explore the visual math behind SLERP and DARE-TIES, showing how to fuse a Coding AI with a Language AI to create a super-model.</p>
+                </a>
+
+                <!-- Card 4 -->
+                <a href="/guide/llm-post-training-guide.html#evaluation" class="block p-6 rounded-xl border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md transition bg-white group cursor-pointer">
+                    <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-800 mb-2">4. The Evaluation Paradox</h4>
+                    <p class="text-sm text-slate-600">Automated benchmarks (like MMLU) correlate poorly with human preference [16]. See how to combine Human Rating, LLM Judges, and automated scripts.</p>
+                </a>
+                
+                <!-- Card 5 (Full Width) -->
+                <a href="/guide/llm-post-training-guide.html#compute" class="block p-6 rounded-xl border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md transition bg-indigo-50 group cursor-pointer md:col-span-2">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 shrink-0 bg-indigo-200 text-indigo-700 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-indigo-900 mb-2">5. Test-Time Compute (The New Frontier)</h4>
+                            <p class="text-sm text-indigo-800">Scaling compute isn't just for training anymore. Our diagrams break down how <strong>Process Reward Models (PRMs)</strong> score reasoning step-by-step to outperform massive frontier models using smaller architectures.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="text-center mt-12 bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">Ready to upgrade your enterprise models?</h3>
+                <a href="/guide/llm-post-training-guide.html" class="inline-flex items-center gap-2 bg-indigo-600 text-white font-bold px-8 py-4 rounded-full shadow-lg hover:bg-indigo-700 hover:-translate-y-1 transition-all">
+                    Explore the Interactive Guide
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+            </div>
+
+        </div>
+    </article>
+</main>
+
+        <aside class="w-full lg:w-1/3">
+            <div class="sticky top-24">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Related posts</h3>
+                    <div id="sidebar-feed" class="flex flex-col space-y-6">
+                        </div>
+                    <a href="/blog.html" class="block w-full text-center mt-6 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition">View All Articles</a>
+                </div>
+
+
+            </div>
+        </aside>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Same Data Source
+        const articles = [
+            {
+                title: "The Architect's Illusion: Why AI is Transforming Jobs, Not Erasing Them",
+                excerpt: "A visual exploration of the shift from deterministic programming to probabilistic AI. Discover why the limitations of the Universal Approximation Theorem (UAT) are creating new opportunities for Developers, QA, Security, and Architects...",
+                date: "Apr 06, 2026",
+                type:"Blog",
+                image: "./images/uat.jpg",
+                link: "https://rawweights.com/blog/uat.html"
+            },        
+            {
+                title: "Guide to RAG (Retrieval-Augmented Generation)",
+                excerpt: "Learn the architecture, chunking strategies, limitations, and evaluation metrics for AI models. Tailored for Developers, PMs, and Beginners...",
+                date: "Apr 04, 2026",
+                type:"Blog",
+                image: "./images/rag.jpg",
+                link: "https://rawweights.com/guide/rag.html"
+            },        
+            {
+                title: "From Asset Selectors to Liquid Synthesis: How the Bicycle Math of Reinforcement Learning Drives the Next Digital Transformation",
+                excerpt: "Explore an interactive Deep Reinforcement Learning playground that teaches the math behind AI. Discover how continuous policy gradients could transform the web through real-time 'Liquid Synthesis'..",
+                date: "Mar 29, 2026",
+                type:"Blog",
+                image: "./images/rel.jpg",
+                link: "https://rawweights.com/blog/learning-bicycle-math-driving-ai-evolution.html"
+            },
+            {
+                title: "From Plato to Profile Pictures: Unpacking Deep Generative Models",
+                excerpt: "A comprehensive, interactive masterclass on Deep Generative Modeling. Explore Unsupervised Learning, Autoencoders, VAEs, GANs, and Cycle GANs with interactive architectures to understand how AI creates new data..",
+                date: "Mar 23, 2026",
+                type:"Blog",
+                image: "./images/dgm.jpg",
+                link: "https://rawweights.com/blog/variational_breakthrough.html"
+            },
+            {
+                title: "Why Computer Vision is the New Business Intelligence",
+                excerpt: "How do machines actually see? Explore the Tesla vs. Waymo pure vision debate and learn how B2B companies use CNNs to unlock powerful new business metrics..",
+                date: "Mar 15, 2026",
+                type:"Blog",
+                image: "./images/cnnarchi.jpeg",
+                link: "https://rawweights.com/blog/grayscale_logic.html"
+            },
+            {
+                title: "Teaching a Java App to Hear the Heartbeat of the Server",
+                excerpt: "Your own data is the best teacher. Discover why building a local neural network from scratch gives you the visibility needed to navigate the AI era...",
+                date: "Mar 08, 2026",
+                type:"Blog",
+                image: "./images/java_ai_exp.png",
+                link: "https://rawweights.com/blog/teaching-a-java-app-to-hear-the-heartbeat-of-the-server.html"
+            },
+            {
+                title: "Visualizing AI: An Interactive Journey from RNNs to Transformers",
+                excerpt: "Explore the evolution of sequence models. Understand the math and mechanics behind modern AI—from RNNs to Transformers—with 13 hands-on interactive visualizers...",
+                date: "Mar 01, 2026",
+                type:"Blog",
+                image: "./images/transformer.png",
+                link: "https://rawweights.com/blog/visualizing-ai-rnns-to-transformers.html"
+            },
+            {
+                title: "Bridging the Gap Between ML Theory and Intuition: An Interactive Sandbox)",
+                excerpt: "Learning Machine Learning is often a tale of two extremes: high-level conceptual fluff or dense, intimidating calculus. Discover how our new AI & ML Master Playground bridges the gap by turning static equations into dynamic, tactile experiences you can build, break, and manipulate in real-time...",
+                date: "Feb 22, 2026",
+                type:"Blog",
+                image: "./images/sandbox.png",
+                link: "https://rawweights.com/blog/bridging-the-gap-between-ml-theory-and-intuition-in-interactive-sandbox.html"
+            },
+            {
+                title: "Building a Tiny AI in Your Browser (No Python Required)",
+                excerpt: "We adopted micro-frontends two years ago. Here is the unvarnished truth about the bundle size and latency costs we incurred...",
+                date: "Feb 14, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+            },
+            {
+                title: "Why I paused the advanced AI rush to build a simple regression tool",
+                excerpt: "Management isn't about tracking tasks. It's about unblocking people. Here is my framework for effective weekly syncs.",
+                date: "Feb 8, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
+            }
+        ];
+
+        const sidebar = document.getElementById('sidebar-feed');
+
+		sidebar.innerHTML = articles.map(article => {
+		    const isBlog = article.type.toLowerCase() === 'blog';
+		    const iconText = isBlog ? 'Blog' : 'in';
+		    
+		    const excerpt = article.excerpt ? 
+		        `<p class="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+		            ${article.excerpt}
+		        </p>` : '';
+		
+		    return `
+		        <article class="relative group border-b border-gray-100 last:border-0 pb-4 mb-4">
+		            <a href="${article.link}" class="block focus:outline-none">
+		                <h4 class="font-bold text-sm text-gray-800 group-hover:text-brand-600 transition-colors duration-200 leading-snug mb-1">
+		                    ${article.title}
+		                </h4>
+		
+		                <div class="flex items-center space-x-2 text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+		                    <span class="inline-flex items-center justify-center bg-brand-600 text-white rounded-[2px] px-1.5 h-4 min-w-[16px] font-black italic shadow-sm" style="font-size: 7px;">
+		                        ${iconText}
+		                    </span>
+		                    <span>${article.type}</span>
+		                    <span class="text-gray-300">&bull;</span>
+		                    <time datetime="${article.date}">${article.date}</time>
+		                </div>
+		
+		                ${excerpt}
+		
+		                <div class="absolute -left-4 top-0 h-full w-0.5 bg-brand-600 scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-center rounded-full"></div>
+		            </a>
+		        </article>
+		    `;
+		}).join('');
+    </script>
+</body>
+</html>
