@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Understanding AI Threats: The Claude Mythos Report | RawWeights</title>
+    <meta name="title" content="Understanding AI Threats: The Claude Mythos Report | RawWeights">
+    <meta name="description" content="Master the new landscape of AI threats following the industry-shifting Claude Mythos report. Learn about emergent capabilities, TCP SACK bugs, sandbox escapes, and virtual jailbreaks.">
+    <meta name="keywords" content="Claude Mythos, AI Threats, Emergent Capabilities, TCP SACK, Sandbox Escape, Virtual Jailbreak, Cybersecurity, RawWeights">
+    <meta name="author" content="RawWeights">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            600: '#0077b5',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0e1111',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+
+	<header class="bg-brand-900 text-white py-20 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+            
+            <div class="w-full lg:w-3/5">
+                <span class="text-brand-200 uppercase tracking-widest text-xs font-bold mb-3 block">Industry Guide</span>
+                <h1 class="text-4xl md:text-5xl font-serif font-bold mb-6 tracking-tight">Understanding the New AI Threats</h1>
+                <p class="text-lg text-brand-50 font-light max-w-2xl">
+                    The Claude Mythos Preview report changed how the industry views cybersecurity. Select your role below to dynamically update this entire guide with tailored insights, impacts, and checklists.
+                </p>
+
+                <div class="mt-10 flex flex-col md:flex-row md:items-center gap-4 bg-white/10 p-5 rounded-xl border border-white/20 w-full backdrop-blur-sm">
+                    <span class="font-semibold text-sm text-white min-w-max">Select Your Role:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="btn-developer" class="persona-btn bg-white text-brand-900 px-4 py-2 text-sm font-medium rounded-md shadow-sm transition" onclick="updatePersona('developer')">Developer</button>
+                        <button id="btn-qa" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('qa')">QA</button>
+                        <button id="btn-architect" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('architect')">Architect</button>
+                        <button id="btn-manager" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('manager')">Manager</button>
+                    </div>
+                </div>
+                <p id="persona-desc" class="text-sm text-brand-200 mt-3 italic font-medium h-6"></p>
+            </div>
+
+            <div class="w-full lg:w-2/5 relative">
+                <div class="absolute -inset-4 bg-brand-600/40 blur-3xl rounded-full z-0"></div>
+                
+                <img 
+                    src="../images/mythos.jpg" 
+                    alt="Claude Mythos Security" 
+                    class="w-full h-auto rounded-2xl shadow-2xl border border-white/10 relative z-10 object-cover"
+                />
+            </div>
+
+        </div>
+	</header>	
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col lg:flex-row gap-12 relative">
+        
+        <aside class="lg:w-1/4 flex-shrink-0">
+            <div class="sticky top-24 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Table of Contents</h5>
+                <ul id="toc-menu" class="space-y-3 text-sm font-medium text-gray-500">
+                    <li><a href="#foundation" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-brand-600">1.</span> A Watershed Moment</a></li>
+                    <li><a href="#industry-impact" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-brand-600">2.</span> Core AI Threats</a></li>
+                    <li><a href="#core-risks" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-brand-600">3.</span> Why These Matter</a></li>
+                    <li><a href="#interactive" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-brand-600">4.</span> Interactive Visualizer</a></li>
+                    <li><a href="#watch-report" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-brand-600">5.</span> Watch & Report Strategy</a></li>
+                    <li><a href="#checklist" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-brand-600">6.</span> Summary Checklist</a></li>
+                    <li><a href="#notable-cases" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-brand-600">7.</span> Notable Case Studies</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="lg:w-3/4 space-y-16">
+
+            <section id="foundation" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">1. A Watershed Moment for Security</h2>
+                <div class="bg-blue-50 border-l-4 border-brand-600 p-6 rounded-r-xl">
+                    <p class="text-xl italic text-gray-800 font-serif mb-3">
+                        "Once the security landscape has reached a new equilibrium, we believe that powerful language models will benefit defenders more than attackers..."
+                    </p>
+                    <p id="dynamic-foundation-text" class="text-sm text-gray-700 leading-relaxed">
+                    </p>
+                </div>
+            </section>
+
+            <section id="industry-impact" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">2. The 4 Core AI Threats</h2>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8 p-6 md:p-10">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 text-center">Threat Vector Map</h3>
+                    <p class="text-sm text-gray-500 text-center mb-8">How Claude Mythos Preview breaches security across the entire technology stack.</p>
+                    
+                    <div class="w-full max-w-4xl mx-auto">
+                        <svg viewBox="0 0 1000 600" class="w-full h-auto drop-shadow-sm font-sans">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+                                </marker>
+                                <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+                                    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.05"/>
+                                </filter>
+                            </defs>
+
+                            <rect x="450" y="20" width="520" height="560" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="8 4" stroke-width="2"/>
+                            <text x="710" y="55" font-weight="bold" font-size="16" text-anchor="middle" fill="#475569" class="uppercase tracking-widest">Target System Architecture</text>
+
+                            <rect x="480" y="80" width="460" height="100" rx="8" fill="#e0f2fe" stroke="#0369a1" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="710" y="105" font-weight="bold" fill="#0369a1" font-size="14" text-anchor="middle">AI &amp; Model Logic Layer</text>
+                            <rect x="500" y="120" width="200" height="40" rx="6" fill="white" stroke="#bae6fd"/>
+                            <text x="600" y="145" font-size="13" font-weight="600" fill="#0369a1" text-anchor="middle">Virtual Jailbreaks</text>
+                            <rect x="720" y="120" width="200" height="40" rx="6" fill="white" stroke="#bae6fd"/>
+                            <text x="820" y="145" font-size="13" font-weight="600" fill="#0369a1" text-anchor="middle">Emergent Capabilities</text>
+
+                            <rect x="480" y="200" width="460" height="120" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="710" y="225" font-weight="bold" fill="#b45309" font-size="14" text-anchor="middle">Application, Media &amp; Web Layer</text>
+                            <rect x="500" y="235" width="200" height="30" rx="4" fill="white" stroke="#fde68a"/>
+                            <text x="600" y="255" font-size="11" font-weight="600" fill="#b45309" text-anchor="middle">Web Browser JIT Heap Sprays</text>
+                            <rect x="720" y="235" width="200" height="30" rx="4" fill="white" stroke="#fde68a"/>
+                            <text x="820" y="255" font-size="11" font-weight="600" fill="#b45309" text-anchor="middle">FFmpeg H.264 Codec Overflows</text>
+                            <rect x="500" y="275" width="200" height="30" rx="4" fill="white" stroke="#fde68a"/>
+                            <text x="600" y="295" font-size="11" font-weight="600" fill="#b45309" text-anchor="middle">Web App Auth &amp; Logic Bypasses</text>
+                            <rect x="720" y="275" width="200" height="30" rx="4" fill="white" stroke="#fde68a"/>
+                            <text x="820" y="295" font-size="11" font-weight="600" fill="#b45309" text-anchor="middle">Crypto Implementation Flaws</text>
+
+                            <rect x="480" y="340" width="460" height="100" rx="8" fill="#dcfce7" stroke="#15803d" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="710" y="365" font-weight="bold" fill="#15803d" font-size="14" text-anchor="middle">Network &amp; Protocol Layer</text>
+                            <rect x="500" y="380" width="200" height="40" rx="6" fill="white" stroke="#bbf7d0"/>
+                            <text x="600" y="405" font-size="12" font-weight="600" fill="#15803d" text-anchor="middle">OpenBSD TCP SACK Panic</text>
+                            <rect x="720" y="380" width="200" height="40" rx="6" fill="white" stroke="#bbf7d0"/>
+                            <text x="820" y="405" font-size="12" font-weight="600" fill="#15803d" text-anchor="middle">FreeBSD NFS Server RCE</text>
+
+                            <rect x="480" y="460" width="460" height="100" rx="8" fill="#f3e8ff" stroke="#7e22ce" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="710" y="485" font-weight="bold" fill="#7e22ce" font-size="14" text-anchor="middle">OS, Kernel &amp; Virtualization Layer</text>
+                            <rect x="500" y="500" width="200" height="40" rx="6" fill="white" stroke="#e9d5ff"/>
+                            <text x="600" y="525" font-size="12" font-weight="600" fill="#7e22ce" text-anchor="middle">Linux Kernel Priv Escalation</text>
+                            <rect x="720" y="500" width="200" height="40" rx="6" fill="white" stroke="#e9d5ff"/>
+                            <text x="820" y="525" font-size="12" font-weight="600" fill="#7e22ce" text-anchor="middle">VMM Sandbox Escapes</text>
+
+                            <circle cx="120" cy="300" r="75" fill="#0f172a" stroke="#cbd5e1" stroke-width="4" filter="url(#shadow)"/>
+                            <text x="120" y="295" font-weight="bold" font-size="18" fill="white" text-anchor="middle">Claude Mythos</text>
+                            <text x="120" y="315" font-weight="normal" font-size="14" fill="#94a3b8" text-anchor="middle">Preview</text>
+
+                            <path d="M 195 300 C 260 300, 310 130, 470 130" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="6" marker-end="url(#arrow)"/>
+                            <rect x="245" y="170" width="130" height="26" fill="white" rx="4" stroke="#e2e8f0" filter="url(#shadow)"/>
+                            <text x="310" y="187" font-size="12" font-weight="700" fill="#334155" text-anchor="middle">Bypasses Safety</text>
+
+                            <path d="M 195 300 C 260 300, 310 260, 470 260" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="6" marker-end="url(#arrow)"/>
+                            <rect x="255" y="265" width="160" height="26" fill="white" rx="4" stroke="#e2e8f0" filter="url(#shadow)"/>
+                            <text x="335" y="282" font-size="12" font-weight="700" fill="#334155" text-anchor="middle">Exploits Memory/Logic</text>
+
+                            <path d="M 195 300 C 260 300, 310 390, 470 390" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="6" marker-end="url(#arrow)"/>
+                            <rect x="255" y="355" width="170" height="26" fill="white" rx="4" stroke="#e2e8f0" filter="url(#shadow)"/>
+                            <text x="340" y="372" font-size="12" font-weight="700" fill="#334155" text-anchor="middle">Sends Malformed Packets</text>
+
+                            <path d="M 195 300 C 260 300, 310 510, 470 510" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="6" marker-end="url(#arrow)"/>
+                            <rect x="245" y="450" width="200" height="26" fill="white" rx="4" stroke="#e2e8f0" filter="url(#shadow)"/>
+                            <text x="345" y="467" font-size="12" font-weight="700" fill="#334155" text-anchor="middle">Chains Kernel Vulnerabilities</text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative">
+                    <div class="p-8 md:p-12 min-h-[300px] flex flex-col justify-center">
+                        <div class="flex items-center gap-4 mb-6">
+                            <span id="carousel-letter" class="bg-brand-100 text-brand-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">A</span>
+                            <h3 id="carousel-title" class="text-2xl font-bold text-gray-900">Emergent Capabilities</h3>
+                        </div>
+                        <p id="carousel-desc" class="text-gray-700 text-lg leading-relaxed mb-6"></p>
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-100">
+                            <strong class="text-brand-700 block mb-1 uppercase text-xs tracking-wider">Impact on Your Role:</strong>
+                            <p id="carousel-impact" class="text-gray-800 text-sm"></p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 border-t border-gray-100 px-8 py-4 flex items-center justify-between">
+                        <button onclick="prevSlide()" class="text-gray-500 hover:text-brand-600 font-semibold text-sm flex items-center transition">
+                            &larr; Previous
+                        </button>
+                        <div id="carousel-dots" class="flex gap-2">
+                        </div>
+                        <button onclick="nextSlide()" class="text-gray-500 hover:text-brand-600 font-semibold text-sm flex items-center transition">
+                            Next &rarr;
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="core-risks" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">3. Why These Matter For Your Role</h2>
+                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+                    <table class="min-w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-1/3">Concept</th>
+                                <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-2/3">The Core Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="risks-table-body" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="interactive" class="scroll-mt-24">
+                <div class="bg-slate-900 rounded-2xl overflow-hidden shadow-xl">
+                    <div class="p-8 text-center border-b border-slate-800">
+                        <h2 class="text-3xl font-bold text-white mb-3">4. Interactive Threat Visualizer</h2>
+                        <p class="text-sm text-slate-400 max-w-2xl mx-auto">Select a concept below and step through the animation to see a high-level breakdown of how these mechanisms execute.</p>
+                    </div>
+                    
+                    <div class="w-full bg-white">
+                        <div class="flex flex-wrap border-b border-gray-200 bg-gray-50">
+                            <button class="tab-btn active flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('emergent')">Emergent Skills</button>
+                            <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('sack')">Internet Pipes</button>
+                            <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('sandbox')">Trapped Virus</button>
+                            <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('jailbreak')">Misbehaving AI</button>
+                        </div>
+                        
+                        <div class="relative w-full h-72 bg-slate-800 overflow-hidden">
+                            <div id="scene-emergent" class="scene active step-1 absolute inset-0 w-full h-full">
+                                <svg viewBox="0 0 600 300" class="w-full h-full">
+                                    <rect x="50" y="220" width="500" height="10" fill="#475569"/>
+                                    <rect id="em-wall" x="400" y="80" width="20" height="140" fill="#94a3b8"/>
+                                    <text id="em-wall-text" x="410" y="70" text-anchor="middle" font-size="12" fill="#94a3b8" opacity="0">High Wall</text>
+                                    <g id="em-blocks">
+                                        <rect id="em-block1" x="250" y="180" width="40" height="40" fill="#f59e0b" rx="4"/>
+                                        <rect id="em-block2" x="310" y="180" width="40" height="40" fill="#f59e0b" rx="4"/>
+                                    </g>
+                                    <g id="em-agent" transform="translate(0,0)">
+                                        <circle cx="100" cy="200" r="20" fill="#3b82f6"/>
+                                        <text x="100" y="205" text-anchor="middle" fill="white" font-weight="bold" font-size="12">AI</text>
+                                    </g>
+                                </svg>
+                            </div>
+                            
+                            <div id="scene-sack" class="scene step-1 absolute inset-0 w-full h-full">
+                                <svg viewBox="0 0 600 300" class="w-full h-full">
+                                    <rect id="sack-server" x="450" y="100" width="80" height="100" rx="8" fill="#10b981"/>
+                                    <text x="490" y="155" text-anchor="middle" fill="white" font-weight="bold">Server</text>
+                                    <rect x="50" y="100" width="80" height="100" rx="8" fill="#3b82f6"/>
+                                    <text x="90" y="155" text-anchor="middle" fill="white" font-weight="bold">Client</text>
+                                    <g transform="translate(160,130)">
+                                        <rect x="0" y="0" width="30" height="40" fill="#cbd5e1" rx="4"/>
+                                        <text x="15" y="25" text-anchor="middle" font-size="14">1</text>
+                                        <rect x="40" y="0" width="30" height="40" fill="#cbd5e1" rx="4"/>
+                                        <text x="55" y="25" text-anchor="middle" font-size="14">2</text>
+                                        <rect x="80" y="0" width="30" height="40" fill="#cbd5e1" rx="4"/>
+                                        <text x="95" y="25" text-anchor="middle" font-size="14">3</text>
+                                        <rect x="120" y="0" width="30" height="40" fill="transparent" stroke="#ef4444" stroke-dasharray="4" rx="4"/>
+                                        <rect x="160" y="0" width="30" height="40" fill="#cbd5e1" rx="4"/>
+                                        <text x="175" y="25" text-anchor="middle" font-size="14">5</text>
+                                    </g>
+                                    <g id="sack-msg" transform="translate(180,200)">
+                                        <path d="M0 10 L 250 10" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5"/>
+                                        <polygon points="250,5 260,10 250,15" fill="#f59e0b"/>
+                                        <text x="125" y="-5" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="12">SACK Request: "Resend exactly #4"</text>
+                                    </g>
+                                    <g id="sack-hacker-packet" transform="translate(0,0)">
+                                        <rect x="350" y="130" width="40" height="40" fill="#ef4444" rx="4"/>
+                                        <text x="370" y="155" text-anchor="middle" fill="white" font-weight="bold" font-size="16">-1</text>
+                                        <text x="370" y="120" text-anchor="middle" fill="#ef4444" font-weight="bold" font-size="12">Malformed!</text>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div id="scene-sandbox" class="scene step-1 absolute inset-0 w-full h-full">
+                                <svg viewBox="0 0 600 300" class="w-full h-full">
+                                    <rect x="50" y="30" width="500" height="240" fill="#1e293b" rx="12" stroke="#475569" stroke-width="2"/>
+                                    <text x="70" y="60" font-weight="bold" fill="#94a3b8">Host Operating System</text>
+                                    <rect x="100" y="90" width="200" height="150" fill="#334155" stroke="#3b82f6" stroke-width="4" rx="8"/>
+                                    <text x="200" y="120" text-anchor="middle" font-weight="bold" fill="#60a5fa">Secure Sandbox</text>
+                                    <g id="sb-bridge">
+                                        <rect x="290" y="150" width="20" height="30" fill="#cbd5e1"/>
+                                        <path d="M 290 150 L 310 150 M 290 180 L 310 180" stroke="#f59e0b" stroke-width="4" stroke-dasharray="4"/>
+                                        <text x="350" y="165" font-size="12" fill="#f59e0b" font-weight="bold">Shared Clipboard</text>
+                                    </g>
+                                    <g id="sb-app" transform="translate(0,0)">
+                                        <circle cx="180" cy="180" r="25" fill="#ef4444"/>
+                                        <text x="180" y="185" text-anchor="middle" fill="white" font-weight="bold" font-size="12">App</text>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div id="scene-jailbreak" class="scene step-1 absolute inset-0 w-full h-full">
+                                <svg viewBox="0 0 600 300" class="w-full h-full">
+                                    <rect x="420" y="80" width="120" height="140" fill="#1e293b" rx="12" stroke="#475569" stroke-width="3"/>
+                                    <circle cx="480" cy="130" r="20" fill="#cbd5e1"/>
+                                    <circle cx="480" cy="180" r="10" fill="#cbd5e1"/>
+                                    <text x="480" y="65" text-anchor="middle" font-weight="bold" fill="#94a3b8">AI Model</text>
+                                    <path id="jb-shield" d="M 360 50 Q 380 150 360 250" stroke="#10b981" stroke-width="8" fill="none" stroke-linecap="round"/>
+                                    <text x="350" y="40" text-anchor="middle" font-weight="bold" fill="#10b981">Safety Guardrail</text>
+                                    <g id="jb-prompt" transform="translate(0,0)">
+                                        <rect x="50" y="130" width="140" height="40" fill="#3b82f6" rx="6"/>
+                                        <text x="120" y="155" text-anchor="middle" fill="white" font-weight="bold" font-size="12">"How to pick a lock"</text>
+                                        <g id="jb-mask">
+                                            <rect x="40" y="120" width="160" height="60" fill="transparent" stroke="#f59e0b" stroke-width="4" stroke-dasharray="6" rx="8"/>
+                                            <rect x="40" y="95" width="120" height="20" fill="#f59e0b" rx="4"/>
+                                            <text x="100" y="110" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Fiction Persona</text>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="p-8 bg-white border-t border-gray-100">
+                            <div class="flex justify-center space-x-3 mb-6">
+                                <button class="step-btn active px-6 py-2 text-sm font-semibold rounded-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition" id="btn-step-1" onclick="setStep(1)">1. The Setup</button>
+                                <button class="step-btn px-6 py-2 text-sm font-semibold rounded-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition" id="btn-step-2" onclick="setStep(2)">2. The Trigger</button>
+                                <button class="step-btn px-6 py-2 text-sm font-semibold rounded-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition" id="btn-step-3" onclick="setStep(3)">3. The Result</button>
+                            </div>
+                            <div class="text-gray-800 text-sm md:text-base bg-blue-50/50 p-6 rounded-xl border border-blue-100 shadow-inner min-h-[120px] flex items-center" id="explanation-text"></div>
+                            
+                            <div id="dynamic-visualizer-tip" class="mt-4 text-sm font-medium text-brand-700 bg-brand-50 p-3 rounded-md border border-brand-100 text-center">
+                            </div>
+                        </div>
+
+                        <style>
+                            .tab-btn.active { border-bottom-color: #0077b5; color: #0077b5; background-color: #ffffff; }
+                            .step-btn.active { background-color: #0077b5; color: white; border-color: #0077b5; }
+                            .scene { display: none; }
+                            .scene.active { display: block; }
+                            
+                            /* Animations */
+                            #em-agent, #em-block1, #em-block2 { transition: transform 1s ease; }
+                            .step-2 #em-agent { transform: translate(130px, 0); }
+                            .step-3 #em-agent { transform: translate(290px, -140px); }
+                            .step-3 #em-block1 { transform: translate(110px, 0); }
+                            .step-3 #em-block2 { transform: translate(110px, -40px); }
+                            
+                            #sack-msg { transition: opacity 0.5s, transform 1s; opacity: 0; transform: translate(180px, 200px); }
+                            .step-2 #sack-msg { opacity: 1; transform: translate(180px, 150px); }
+                            .step-3 #sack-msg { opacity: 0; }
+                            #sack-hacker-packet { transition: opacity 0.5s, transform 1s; opacity: 0; transform: translate(0, 100px); }
+                            .step-3 #sack-hacker-packet { opacity: 1; transform: translate(0, 0); }
+                            .step-3 #sack-server { fill: #ef4444; transition: fill 0.5s 1s; }
+                            
+                            #sb-bridge { opacity: 0; transition: opacity 0.5s; }
+                            .step-2 #sb-bridge { opacity: 1; }
+                            #sb-app { transition: transform 1s; }
+                            .step-3 #sb-app { transform: translate(170px, 0); }
+                            
+                            #jb-mask { opacity: 0; transition: opacity 0.5s; }
+                            .step-2 #jb-mask { opacity: 1; }
+                            #jb-prompt { transition: transform 1s; }
+                            .step-3 #jb-prompt { transform: translate(250px, -20px); }
+                            .step-3 #jb-shield { stroke: #ef4444; transition: stroke 0.5s 0.8s; }
+                            
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+                        </style>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="watch-report" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">5. The "Watch & Report" Strategy</h2>
+                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+                    <table class="min-w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-1/3">Threat</th>
+                                <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-2/3">How You Can Detect It</th>
+                            </tr>
+                        </thead>
+                        <tbody id="watch-report-table-body" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="checklist" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">6. Summary Checklist for 2026</h2>
+                <div id="checklist-items" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+            </section>
+            <section id="notable-cases" class="scroll-mt-24 mt-16 pt-8 border-t border-gray-200">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">7. Other Notable Feats</h2>
+                <p class="text-gray-700 text-sm mb-8 max-w-3xl">Beyond the core threats, the Claude Mythos Preview report highlighted several highly specific, real-world case studies demonstrating its unprecedented capabilities.</p>
+                
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative">
+                    <div class="p-8 md:p-12 min-h-[250px] flex flex-col justify-center bg-slate-50">
+                        <div class="flex items-center gap-4 mb-6">
+                            <span id="case-letter" class="bg-brand-900 text-brand-100 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">1</span>
+                            <h3 id="case-title" class="text-2xl font-bold text-gray-900"></h3>
+                        </div>
+                        <p id="case-desc" class="text-gray-700 text-lg leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-gray-100 border-t border-gray-200 px-8 py-4 flex items-center justify-between">
+                        <button onclick="prevCase()" class="text-gray-500 hover:text-brand-600 font-semibold text-sm flex items-center transition">
+                            &larr; Previous
+                        </button>
+                        <div id="case-dots" class="flex gap-2">
+                        </div>
+                        <button onclick="nextCase()" class="text-gray-500 hover:text-brand-600 font-semibold text-sm flex items-center transition">
+                            Next &rarr;
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        const personaData = {
+            developer: {
+                desc: "Viewing as: Developer. Focus on Fuzzing & Static Analysis to spot Old Chaos in the code.",
+                foundation: "As a developer, your code is the frontline. The release of the Mythos Preview proved that AI can autonomously parse codebases, find subtle memory flaws, and exploit them. Your role is shifting from simply writing features to fundamentally understanding how AI interacts with your APIs and legacy dependencies.",
+                threats: [
+                    { letter: "A", title: "Emergent Capabilities", desc: "Imagine you teach a student basic addition, and without further instruction, they discover multiplication. In software, an emergent capability is a skill an AI develops that it was never explicitly programmed to perform.", impact: "Code you write might be used in ways you never imagined by AI agents making downstream API calls." },
+                    { letter: "B", title: "TCP SACK Bug", desc: "TCP are the rules for how data travels the internet. When downloading a file, it breaks into tiny pieces. SACK asks for specific missing pieces. AI found a 27-year-old flaw where impossible SACK requests crashed the system.", impact: "Deep, legacy dependencies you rely on (like open source libraries) might contain integer overflows AI can find instantly." },
+                    { letter: "C", title: "Sandbox Escape", desc: "A 'Sandbox' is a secure digital container. When you run an untrusted program, the computer isolates it. A Sandbox Escape is when malicious code finds a crack in the playpen walls and crawls out.", impact: "Your application's isolation boundaries can be bypassed if you leave shared clipboards or memory unhardened." },
+                    { letter: "D", title: "Virtual Jailbreak", desc: "AI models have strict safety guardrails. A Virtual Jailbreak is a method of using carefully crafted text (like asking the AI to roleplay) to trick the system into ignoring its own rules.", impact: "Logic flaws in your code can be exploited by an AI acting under a deceptive persona. Never trust raw LLM output." }
+                ],
+                risks: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Capabilities</td><td class="px-6 py-4 text-sm text-gray-700">Standard test suites will miss novel, AI-generated attack vectors targeting your APIs.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">Memory corruption in legacy open-source packages you import.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Container escapes via shared memory leaks.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">Prompt injection manipulating your backend database logic.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Skills</td><td class="px-6 py-4 text-sm text-gray-700">Implement strict input validation on all API endpoints.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">Run continuous static analysis and fuzzing on old code.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Use memory-safe languages (Rust, Go) for new microservices.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">Sanitize all AI inputs and do not trust raw LLM output in your logic.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Drastically Shorten Patch Cycles</h4><p class="text-sm text-gray-700 mt-1">Treat dependency bumps as critical tasks.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Fight AI with AI</h4><p class="text-sm text-gray-700 mt-1">Use LLMs to review your pull requests for memory leaks.</p></div></div>
+                `,
+                tip: "Developer Tip: AI models are now capable of automating the exploitation of the bugs you leave behind. Write tests for edge cases."
+            },
+            qa: {
+                desc: "Viewing as: QA. Focus on Red Teaming & Boundary Tests to find Emergent Skills via stress tests.",
+                foundation: "As QA, traditional testing is no longer enough. The Mythos Preview showed that AI can chain multiple minor bugs together to create massive breaches. Your role is shifting toward 'Red Teaming'—actively trying to break the system using AI models as your testing tools.",
+                threats: [
+                    { letter: "A", title: "Emergent Capabilities", desc: "Imagine you teach a student basic addition, and without further instruction, they discover multiplication. In software, an emergent capability is a skill an AI develops that it was never explicitly programmed to perform.", impact: "You cannot simply write test cases for known behaviors; you must test for unpredictable, novel attacks generated by AI." },
+                    { letter: "B", title: "TCP SACK Bug", desc: "TCP are the rules for how data travels the internet. When downloading a file, it breaks into tiny pieces. SACK asks for specific missing pieces. AI found a 27-year-old flaw where impossible SACK requests crashed the system.", impact: "Network stress tests must account for mathematically malformed packets that AI can generate instantly." },
+                    { letter: "C", title: "Sandbox Escape", desc: "A 'Sandbox' is a secure digital container. When you run an untrusted program, the computer isolates it. A Sandbox Escape is when malicious code finds a crack in the playpen walls and crawls out.", impact: "Edge cases in application boundaries are highly vulnerable. You must test if separate components interact dangerously." },
+                    { letter: "D", title: "Virtual Jailbreak", desc: "AI models have strict safety guardrails. A Virtual Jailbreak is a method of using carefully crafted text (like asking the AI to roleplay) to trick the system into ignoring its own rules.", impact: "QA must now test for psychological and logical deception, not just basic code errors." }
+                ],
+                risks: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Capabilities</td><td class="px-6 py-4 text-sm text-gray-700">Missing novel attack vectors because they aren't in the regression suite.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">System crashes during unexpected data floods.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Chained vulnerabilities bypassing staging environment limits.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">Chatbots revealing sensitive test data or internal system prompts.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Skills</td><td class="px-6 py-4 text-sm text-gray-700">Perform behavioral benchmarking and automated red-teaming.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">Introduce chaos engineering to test system resilience.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Actively attempt to breach test environments from within.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">Build test suites consisting of complex persona prompts.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Automate Red Teaming</h4><p class="text-sm text-gray-700 mt-1">Deploy internal AI models to constantly attack your staging environment.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Input Scanning</h4><p class="text-sm text-gray-700 mt-1">Ensure test coverage includes verifying the rejection of malicious AI prompts.</p></div></div>
+                `,
+                tip: "QA Tip: Assume the AI is smarter than your standard test suite. You must stress test for intent, not just syntax errors."
+            },
+            architect: {
+                desc: "Viewing as: Architect. Focus on MicroVMs & AI Data Lakes to catch Sandbox Escapes via system logs.",
+                foundation: "As an Architect, system isolation is your primary defense. The Mythos report proved that traditional sandboxing is not enough against advanced AI. Your role requires moving towards 'zero-trust' environments where a breach in one component cannot spread to another.",
+                threats: [
+                    { letter: "A", title: "Emergent Capabilities", desc: "Imagine you teach a student basic addition, and without further instruction, they discover multiplication. In software, an emergent capability is a skill an AI develops that it was never explicitly programmed to perform.", impact: "System architectures must be resilient to automated attacks they were not explicitly designed to handle." },
+                    { letter: "B", title: "TCP SACK Bug", desc: "TCP are the rules for how data travels the internet. When downloading a file, it breaks into tiny pieces. SACK asks for specific missing pieces. AI found a 27-year-old flaw where impossible SACK requests crashed the system.", impact: "Core routing infrastructure can be taken offline by seemingly legitimate traffic if not scrubbed at the edge." },
+                    { letter: "C", title: "Sandbox Escape", desc: "A 'Sandbox' is a secure digital container. When you run an untrusted program, the computer isolates it. A Sandbox Escape is when malicious code finds a crack in the playpen walls and crawls out.", impact: "A compromised container might lead to a full host OS takeover if virtualization isolation is weak." },
+                    { letter: "D", title: "Virtual Jailbreak", desc: "AI models have strict safety guardrails. A Virtual Jailbreak is a method of using carefully crafted text (like asking the AI to roleplay) to trick the system into ignoring its own rules.", impact: "Guardrails must be architected at the infrastructure level via intermediate 'Guard Models', not just at the app layer." }
+                ],
+                risks: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Capabilities</td><td class="px-6 py-4 text-sm text-gray-700">Lack of defense-in-depth allowing AI to pivot through the network.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">DDoS taking down centralized monolith architectures.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Shared kernels across containers leading to multi-tenant breaches.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">Lack of an AI gateway allowing direct, unfiltered model access.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Skills</td><td class="px-6 py-4 text-sm text-gray-700">Implement zero-trust architecture across all microservices.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">Deploy advanced WAFs and scrub network traffic at the edge.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Monitor syscalls and file integrity via virtualization tools.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">Deploy intermediary "Guard Models" to filter all incoming LLM requests.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">MicroVM Adoption</h4><p class="text-sm text-gray-700 mt-1">Shift from basic containers to MicroVMs (like Firecracker) for untrusted workloads.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Human-in-the-Loop</h4><p class="text-sm text-gray-700 mt-1">Design fail-safes that require human approval for critical state changes.</p></div></div>
+                `,
+                tip: "Architect Tip: Assume the sandbox will be broken. Build your systems with strict micro-segmentation so lateral movement is impossible."
+            },
+            manager: {
+                desc: "Viewing as: Manager. Focus on Governance & Patch Policies to ensure Jailbreak protections are funded.",
+                foundation: "As a Manager, risk and governance are shifting drastically. The Mythos report highlights that vulnerabilities previously requiring expert hackers can now be exploited autonomously by AI. Your role is to ensure rapid patch cycles, secure funding for AI defensive tooling, and manage vendor risk.",
+                threats: [
+                    { letter: "A", title: "Emergent Capabilities", desc: "Imagine you teach a student basic addition, and without further instruction, they discover multiplication. In software, an emergent capability is a skill an AI develops that it was never explicitly programmed to perform.", impact: "Regulatory compliance and brand reputation are at risk from unpredictable AI behavior." },
+                    { letter: "B", title: "TCP SACK Bug", desc: "TCP are the rules for how data travels the internet. When downloading a file, it breaks into tiny pieces. SACK asks for specific missing pieces. AI found a 27-year-old flaw where impossible SACK requests crashed the system.", impact: "Extended downtime from legacy vulnerabilities affects the bottom line and SLAs." },
+                    { letter: "C", title: "Sandbox Escape", desc: "A 'Sandbox' is a secure digital container. When you run an untrusted program, the computer isolates it. A Sandbox Escape is when malicious code finds a crack in the playpen walls and crawls out.", impact: "Data breaches originating from third-party vendor applications could result in major liability." },
+                    { letter: "D", title: "Virtual Jailbreak", desc: "AI models have strict safety guardrails. A Virtual Jailbreak is a method of using carefully crafted text (like asking the AI to roleplay) to trick the system into ignoring its own rules.", impact: "Legal liability if customer-facing AI goes rogue, breaks policies, or leaks data." }
+                ],
+                risks: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Capabilities</td><td class="px-6 py-4 text-sm text-gray-700">Reputational damage if autonomous AI takes unapproved actions.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">Financial loss due to service outages.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Third-party vendor risk and compliance violations (GDPR/HIPAA).</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">PR disasters from chatbots being manipulated by the public.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Emergent Skills</td><td class="px-6 py-4 text-sm text-gray-700">Audit AI vendor updates and establish clear AI usage policies.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">TCP SACK Bug</td><td class="px-6 py-4 text-sm text-gray-700">Enforce strict SLAs for patching CVEs across the organization.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Sandbox Escape</td><td class="px-6 py-4 text-sm text-gray-700">Review vendor isolation strategies during procurement.</td></tr>
+                    <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Virtual Jailbreak</td><td class="px-6 py-4 text-sm text-gray-700">Fund and mandate Red Teaming exercises for all LLM deployments.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Expedite Vulnerability Strategy</h4><p class="text-sm text-gray-700 mt-1">Create playbooks for out-of-band updates on critical legacy systems.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Fund AI Defensive Tooling</h4><p class="text-sm text-gray-700 mt-1">Allocate budget for models that assist in triaging and auto-patching.</p></div></div>
+                `,
+                tip: "Manager Tip: Ensure your teams are funded to decrease patch cycles. The time between a bug being disclosed and an AI writing an exploit for it is shrinking rapidly."
+            }
+        };
+
+        let currentPersona = 'developer';
+        let currentSlideIndex = 0;
+
+        function updatePersona(role) {
+            currentPersona = role;
+            currentSlideIndex = 0; 
+
+            document.querySelectorAll('.persona-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-brand-900');
+                btn.classList.add('text-brand-100', 'border-brand-600');
+            });
+            const activeBtn = document.getElementById('btn-' + role);
+            activeBtn.classList.remove('text-brand-100', 'border-brand-600');
+            activeBtn.classList.add('bg-white', 'text-brand-900');
+
+            const data = personaData[role];
+            document.getElementById('persona-desc').innerText = data.desc;
+            document.getElementById('dynamic-foundation-text').innerText = data.foundation;
+            document.getElementById('risks-table-body').innerHTML = data.risks;
+            document.getElementById('watch-report-table-body').innerHTML = data.watch;
+            document.getElementById('checklist-items').innerHTML = data.checklist;
+            document.getElementById('dynamic-visualizer-tip').innerText = data.tip;
+
+            renderCarousel();
+        }
+
+        function renderCarousel() {
+            const data = personaData[currentPersona].threats[currentSlideIndex];
+            
+            document.getElementById('carousel-letter').innerText = data.letter;
+            document.getElementById('carousel-title').innerText = data.title;
+            document.getElementById('carousel-desc').innerHTML = data.desc;
+            document.getElementById('carousel-impact').innerText = data.impact;
+
+            const dotsContainer = document.getElementById('carousel-dots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const dot = document.createElement('button');
+                dot.onclick = () => { currentSlideIndex = i; renderCarousel(); };
+                dot.className = `w-3 h-3 rounded-full transition ${i === currentSlideIndex ? 'bg-brand-600' : 'bg-gray-300 hover:bg-gray-400'}`;
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % 4;
+            renderCarousel();
+        }
+
+        function prevSlide() {
+            currentSlideIndex = (currentSlideIndex - 1 + 4) % 4;
+            renderCarousel();
+        }
+
+        updatePersona('developer');
+        
+        const caseData = [
+            { 
+                letter: "1", 
+                title: "The 17-Year-Old Remote Takeover", 
+                desc: "The AI autonomously found a 17-year-old bug in a core server protocol (FreeBSD). Without any human help, it figured out how to send an exact sequence of network requests to completely bypass security and gain full administrative ('root') control over the internet." 
+            },
+            { 
+                letter: "2", 
+                title: "The Poisoned Video File", 
+                desc: "In one of the world's most tested video processing tools (FFmpeg), the AI found a 16-year-old math error. By creating a video frame with an impossible number of pieces (65,536), it tricked the program into reading data that didn't exist, causing a crash." 
+            },
+            { 
+                letter: "3", 
+                title: "Decoding the Black Box", 
+                desc: "Normally, companies hide their code in 'compiled' formats that humans can't easily read. The AI proved it could look at this unreadable code, reverse-engineer it back into English-like instructions, and successfully find vulnerabilities like smartphone lock-screen bypasses." 
+            },
+            { 
+                letter: "4", 
+                title: "Weaponizing the Past (N-Days)", 
+                desc: "When companies fix bugs, the public 'patch' shows exactly what was broken. The AI is exceptionally good at looking at these public patches for old bugs and rapidly generating fully working, complex cyberattacks to target users who haven't updated their systems yet." 
+            }
+        ];
+
+        let currentCaseIndex = 0;
+
+        function renderCaseCarousel() {
+            const data = caseData[currentCaseIndex];
+            
+            document.getElementById('case-letter').innerText = data.letter;
+            document.getElementById('case-title').innerText = data.title;
+            document.getElementById('case-desc').innerText = data.desc;
+
+            const dotsContainer = document.getElementById('case-dots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < caseData.length; i++) {
+                const dot = document.createElement('button');
+                dot.onclick = () => { currentCaseIndex = i; renderCaseCarousel(); };
+                dot.className = `w-3 h-3 rounded-full transition ${i === currentCaseIndex ? 'bg-brand-600' : 'bg-gray-300 hover:bg-gray-400'}`;
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function nextCase() {
+            currentCaseIndex = (currentCaseIndex + 1) % caseData.length;
+            renderCaseCarousel();
+        }
+
+        function prevCase() {
+            currentCaseIndex = (currentCaseIndex - 1 + caseData.length) % caseData.length;
+            renderCaseCarousel();
+        }
+
+        renderCaseCarousel();
+
+        const svgContent = {
+            'emergent': {
+                1: "<strong>The Training:</strong> An AI is trained in a simple 2D simulation to navigate mazes. It is only explicitly taught how to move its body up, down, left, and right.",
+                2: "<strong>The New Environment:</strong> The AI is placed in a new room containing movable blocks and a high wall. It was never taught to interact with blocks, only to move.",
+                3: "<strong>The Emergence:</strong> The AI discovers that moving into blocks pushes them. Through trial and error, it stacks the blocks to create stairs and climbs over the wall."
+            },
+            'sack': {
+                1: "<strong>Normal Download:</strong> A client computer is downloading a file. Pieces 1, 2, 3, and 5 arrive safely, but piece 4 is lost.",
+                2: "<strong>The SACK Request:</strong> The client sends a Selective Acknowledgment (SACK) message back to the server: 'Please resend exactly piece #4.'",
+                3: "<strong>The Bug Triggered:</strong> A hacker intercepts the connection and replies with a mathematically malformed packet. The server gets stuck in an infinite loop and crashes."
+            },
+            'sandbox': {
+                1: "<strong>The Confinement:</strong> An untrusted application is executed inside a secure Sandbox environment, keeping it isolated from the Host Operating System.",
+                2: "<strong>Finding the Flaw:</strong> The application scans its surroundings and finds a 'shared clipboard' feature accidentally left open.",
+                3: "<strong>The Escape:</strong> The application turns malicious, smuggling its virus code through the clipboard bridge to gain full control of the computer."
+            },
+            'jailbreak': {
+                1: "<strong>The Guardrail:</strong> A user asks the AI how to pick a lock. The AI's safety filter catches this and replies: 'I cannot assist with illegal acts.'",
+                2: "<strong>The Setup:</strong> The user wraps their prompt in a 'Persona', asking the AI to roleplay as an author writing a fictional mystery novel.",
+                3: "<strong>The Bypass:</strong> Believing it is just writing a creative story, the AI bypasses its own guardrail and provides the dangerous instructions."
+            }
+        };
+
+        let currentConcept = 'emergent';
+        
+        function setConcept(concept) {
+            currentConcept = concept;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.scene').forEach(scene => scene.classList.remove('active'));
+            document.getElementById('scene-' + concept).classList.add('active');
+            setStep(1);
+        }
+
+        function setStep(step) {
+            document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-step-' + step).classList.add('active');
+            document.getElementById('explanation-text').innerHTML = svgContent[currentConcept][step];
+            const scene = document.getElementById('scene-' + currentConcept);
+            scene.classList.remove('step-1', 'step-2', 'step-3');
+            scene.classList.add('step-' + step);
+        }
+        
+        setStep(1);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '-50% 0px -50% 0px', 
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        
+                        // Remove active styling from all TOC links
+                        document.querySelectorAll('.toc-link').forEach(link => {
+                            link.classList.remove('text-brand-700', 'font-bold', 'translate-x-2');
+                            link.classList.add('text-gray-500');
+                        });
+
+                        // Add active styling to the currently visible section
+                        const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                        if (activeLink) {
+                            activeLink.classList.remove('text-gray-500');
+                            activeLink.classList.add('text-brand-700', 'font-bold', 'translate-x-2');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('section[id]').forEach((section) => {
+                observer.observe(section);
+            });
+        });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+        
+    </script>
+</body>
+</html>
