@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adobe CX Enterprise Ecosystem | Interactive AI Architecture Guide | RawWeights</title>
+    <meta name="description" content="An independent, interactive breakdown of the 2026 Adobe CX Enterprise Architecture. Explore how agentic AI, Real-Time CDP, and GenStudio connect the content supply chain with customer journeys.">
+	<meta name="keywords" content="Adobe Summit, Adobe CX Enterprise, Agentic AI, Adobe GenStudio, Real-Time CDP, Customer Journey Analytics, Journey Optimizer, Content Supply Chain, MarTech Architecture">
+	<meta name="author" content="RawWeights">
+	<meta property="og:image" content="https://rawweights.com/images/cx.jpg">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://www.rawweights.com/guide/adobe-cx-enterprise-ecosystem.html">
+	<meta property="og:title" content="Adobe CX Enterprise Ecosystem | Interactive AI Architecture Guide">
+	<meta property="og:description" content="An independent, interactive breakdown of the 2026 Adobe CX Enterprise Architecture. Explore how agentic AI, Real-Time CDP, and GenStudio connect the content supply chain with customer journeys.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; }
+        
+        .svg-box { 
+            cursor: pointer; 
+        }
+
+        .svg-box rect,
+        .svg-box circle,
+        .svg-box ellipse {
+            transition: all 0.2s ease;
+            transform-origin: center;
+            pointer-events: all;
+        }
+        
+        .svg-box:hover rect,
+        .svg-box:hover circle,
+        .svg-box:hover ellipse { 
+            stroke: #EB1000 !important; 
+            stroke-width: 2.5 !important; 
+            filter: brightness(0.95);
+            transform: scale(0.98); 
+        }
+        
+        .svg-box.no-click { 
+            cursor: default; 
+        }
+        
+        .svg-box.no-click:hover rect,
+        .svg-box.no-click:hover circle,
+        .svg-box.no-click:hover ellipse {
+            stroke: inherit !important;
+            stroke-width: inherit !important;
+            filter: none;
+            transform: none;
+        }
+        
+        #tooltip {
+            pointer-events: none !important; 
+            position: absolute;
+            background: rgba(17, 24, 39, 0.95);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            max-width: 300px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 50;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .svg-box text, 
+        .svg-box path, 
+        .svg-box line,
+        .svg-box polyline {
+            pointer-events: none !important; 
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
+
+    <script id="adobe-data" type="application/json">
+    {
+        "slides": [
+            {
+                "id": "overview",
+                "category": "Enterprise Architecture",
+                "navTitle": "CX Enterprise Ecosystem",
+                "title": "Adobe CX Enterprise Architecture",
+                "description": "The end-to-end agentic system for Customer Experience Orchestration (CXO). Hover over components for intelligence details, and click on major modules to explore deep-dive workflows.",
+                "notes": [
+                    {
+                        "title": "Unprecedented ROI through Connected CX",
+                        "today": "Organizations struggle with siloed execution, leading to fragmented customer journeys and unmeasurable impact.",
+                        "tomorrow": "Connecting Adobe Real-Time CDP, Journey Optimizer, and Customer Journey Analytics yields a massive 431% return on investment."
+                    }
+                ]
+            },
+            {
+                "id": "brand-visibility",
+                "category": "Experience Delivery",
+                "navTitle": "Brand Visibility & AEM",
+                "title": "Brand Visibility (AEM + Agentic Web)",
+                "description": "Reimagine your brand experience for the agentic web. Transform digital content into intelligent experiences that drive deeper engagement.",
+                "notes": [
+                    {
+                        "title": "The Threat of AI Search",
+                        "today": "Customers find your site via traditional links and organic SEO.",
+                        "tomorrow": "Gartner predicts a 50%+ decrease in organic search traffic by 2028 as consumers embrace generative AI search. LLM Optimizer shapes how you show up."
+                    },
+                    {
+                        "title": "Brand Truth Layer in AEM",
+                        "today": "Regional teams launch campaigns with inconsistent tones and unapproved imagery.",
+                        "tomorrow": "AEM's brand truth layer acts as the single governed source for tone and visuals. Inconsistencies get flagged by AI before going live."
+                    },
+                    {
+                        "title": "Agentic Authoring",
+                        "today": "Only trained AEM authors can publish. Everyone else waits in a queue.",
+                        "tomorrow": "Marketers use Brand Experience Agent to generate pages from briefs. AEM handles assembly, shifting authors from builders to curators."
+                    }
+                ]
+            },
+            {
+                "id": "customer-engagement",
+                "category": "Journey Orchestration",
+                "navTitle": "Customer Engagement",
+                "title": "Customer Engagement (AEP Native Apps)",
+                "description": "Scale personalization with AI-powered orchestration that transforms customer intelligence into timely, relevant moments across every touchpoint.",
+                "notes": [
+                    {
+                        "title": "Omnichannel Journey Orchestration",
+                        "today": "Channels operate in silos. A batch email fails to account for live browsing behavior.",
+                        "tomorrow": "Journey Optimizer blends batch sends with in-the-moment responses across email, WhatsApp, SMS, and iOS Live Activities based on real-time signals."
+                    },
+                    {
+                        "title": "B2B Buying Group Engagement",
+                        "today": "Marketing scores individual leads, lacking visibility into the broader buying committee.",
+                        "tomorrow": "Journey Optimizer B2B Edition tracks buying groups, detects gaps, and signals sales readiness through AI-assisted MQBGs."
+                    }
+                ]
+            },
+            {
+                "id": "content-supply",
+                "category": "Creative & Production",
+                "navTitle": "Content Supply Chain",
+                "title": "Content Supply Chain (Adobe GenStudio)",
+                "description": "Empower marketing and creative teams to plan, create, and deliver content efficiently with GenStudio, Firefly, and Workfront.",
+                "notes": [
+                    {
+                        "title": "Eliminating Content Bottlenecks",
+                        "today": "Marketers wait weeks for design teams to resize, localize, and format assets.",
+                        "tomorrow": "GenStudio enables a 47% faster content production cycle by letting marketers self-serve on-brand variations safely."
+                    },
+                    {
+                        "title": "3D Digital Twins",
+                        "today": "High production costs from repeated studio shoots for every product refresh.",
+                        "tomorrow": "NVIDIA-powered 3D digital twins create pixel-perfect product representations that harmonize with AI-generated scenes."
+                    }
+                ]
+            },
+            {
+                "id": "cx-analytics",
+                "category": "Data & Measurement",
+                "navTitle": "Adobe CX Analytics",
+                "title": "Adobe CX Analytics Suite",
+                "description": "Bring your customer experience and enterprise data together into one intelligence engine, delivering fast insights and activation at scale.",
+                "notes": [
+                    {
+                        "title": "Marketing Campaign Analytics (MCA)",
+                        "today": "Relying on outdated, last-touch attribution models to justify ad spend.",
+                        "tomorrow": "MCA uses causal AI to unify Marketing Mix Modeling (MMM) and Multi-Touch Attribution (MTA), providing clear incremental ROI forecasting."
+                    },
+                    {
+                        "title": "Customer Journey Analytics (CJA)",
+                        "today": "Analysts spend weeks manually stitching online and offline data.",
+                        "tomorrow": "Data Insights Agent acts as an analyst-in-a-box, answering natural language questions to root-cause anomalies in the customer journey."
+                    }
+                ]
+            },
+            {
+                "id": "ai-platform",
+                "category": "AI Orchestration",
+                "navTitle": "Adobe AI Platform",
+                "title": "Adobe AI Platform & Orchestration",
+                "description": "The reasoning engine and coordination layer for enterprise AI. Agent Orchestrator manages conversational interfaces and specialized agents.",
+                "notes": [
+                    {
+                        "title": "Agent Orchestrator",
+                        "today": "AI tools are disconnected from execution layers.",
+                        "tomorrow": "Agent Orchestrator acts as the central brain, interpreting user intent through a Reasoning Engine to coordinate Audience, Content, and Journey agents."
+                    },
+                    {
+                        "title": "Agent Composer",
+                        "today": "IT struggles to govern rogue AI usage and prompts.",
+                        "tomorrow": "Agent Composer empowers teams to manage and apply governance to agents, ensuring they operate securely within enterprise boundaries."
+                    }
+                ]
+            },
+            {
+                "id": "coworker",
+                "category": "AI Orchestration",
+                "navTitle": "CX Coworker & Agents",
+                "title": "CX Enterprise Coworker & Agents",
+                "description": "Transform manual coordination into agentic orchestration with an AI teammate that executes goals.",
+                "notes": [
+                    {
+                        "title": "CX Enterprise Coworker",
+                        "today": "Marketers manually coordinate cross-system tasks.",
+                        "tomorrow": "You define the goal; CX Coworker builds and executes the workflow, activating specialized agents and re-evaluating outcomes in real time."
+                    },
+                    {
+                        "title": "Model Context Protocols (MCPs)",
+                        "today": "AI models are siloed from third-party tools.",
+                        "tomorrow": "MCPs establish open standards that allow Adobe AI to seamlessly interface with third-party agents like Microsoft Copilot."
+                    }
+                ]
+            },
+            {
+                "id": "brand-intel",
+                "category": "Intelligence Layer",
+                "navTitle": "Adobe Brand Intelligence",
+                "title": "Adobe Brand Intelligence",
+                "description": "A continuously learning system that captures your brand ontology, enforcing guidelines across all AI-generated content.",
+                "notes": [
+                    {
+                        "title": "Brand Ontology",
+                        "today": "Generative AI drifts off-brand because it lacks deep brand context.",
+                        "tomorrow": "Brand Intelligence builds a living knowledge graph of your brand's visual identity and voice, instructing creative tools at the point of generation."
+                    },
+                    {
+                        "title": "Automated Content Validation",
+                        "today": "Manual QA checks bog down review cycles.",
+                        "tomorrow": "The Brand Governance Agent automatically scans and scores AI-generated assets for compliance before they go live."
+                    }
+                ]
+            },
+            {
+                "id": "eng-intel",
+                "category": "Intelligence Layer",
+                "navTitle": "Engagement Intelligence",
+                "title": "Adobe Engagement Intelligence",
+                "description": "AI-driven decisioning that continuously optimizes customer journeys to deliver the next best action.",
+                "notes": [
+                    {
+                        "title": "Semantic Intelligence",
+                        "today": "Personalization relies strictly on structured clicks and views.",
+                        "tomorrow": "Adobe unifies structured data with conversational intent, audio, and video context to power meaning-based personalization."
+                    },
+                    {
+                        "title": "Autonomous Orchestration",
+                        "today": "Marketers manually build complex journey branches.",
+                        "tomorrow": "Engagement Intelligence acts autonomously to optimize for key goals by delivering the next best action dynamically without fixed rules."
+                    }
+                ]
+            },
+            {
+                "id": "aep",
+                "category": "Data Foundation",
+                "navTitle": "Experience Platform",
+                "title": "Adobe Experience Platform (AEP)",
+                "description": "Unify and harmonize data from every source to create AI-powered profiles and audiences.",
+                "notes": [
+                    {
+                        "title": "Real-Time CDP",
+                        "today": "Customer data is siloed across CRM and web analytics.",
+                        "tomorrow": "AEP connects online, offline, and pseudonymous data to create unified profiles activated instantly across the ecosystem."
+                    },
+                    {
+                        "title": "Data Engineering Agent",
+                        "today": "Data teams spend weeks writing SQL to onboard data.",
+                        "tomorrow": "The Data Engineering Agent reduces onboarding from weeks to hours using conversational prompts for schema mapping and SQL prep."
+                    }
+                ]
+            }
+        ],
+        "tooltips": {
+            "vis": "Brand Visibility: Optimize your site for AI-readiness and turn passive browsing into guided conversational journeys.",
+            "eng": "Customer Engagement: Scale personalization with connected data, audiences, and real-time journeys on AEP.",
+            "csc": "Content Supply Chain: GenStudio orchestrates human and AI workflows, maximizing ROI and content agility.",
+            "cxa": "Adobe CX Analytics: Unify customer experience and enterprise data into one causal AI intelligence engine.",
+            "ai-coworker": "CX Enterprise Coworker: Execute complex, cross-system workflows using an AI agent that understands your business context.",
+            "ai-agents": "Adobe Agents & 3rd Party: Specialized agents like Audience Agent and Journey Agent orchestrated to fulfill tasks.",
+            "ai-skills": "Agent Skills: Define how work gets done, capturing workflows, rules, and best practices.",
+            "ai-tools": "Tools: Native integrations that empower agents to action data and update content.",
+            "ai-mcps": "MCPs: Model Context Protocols for headless and third-party AI system interoperability.",
+            "brand-intel": "Adobe Brand Intelligence: A continuously learning system that captures your brand ontology and enforces guidelines.",
+            "eng-intel": "Adobe Engagement Intelligence: AI-driven decisioning to continuously optimize experiences and outcomes across the lifecycle.",
+            "aep": "Adobe Experience Platform: The central foundation for real-time customer profiles, governance, and omnichannel data.",
+            "native-ai": "Native AI Integrations: Partnerships with Microsoft, NVIDIA, AWS, OpenAI, Anthropic, and Google Cloud powering enterprise scale.",
+            "ai-assistant": "AI Assistant: Conversational UI allowing marketers to trigger workflows via natural language.",
+            "orchestrator": "Agent Orchestrator: The core 'brain' connecting intent to multi-step agent actions.",
+            "reasoning": "Reasoning Engine: Interprets prompts and determines the exact steps needed to accomplish goals.",
+            "knowledge": "Knowledge Base: Provides the essential business context and rules for the reasoning engine.",
+            "composer": "Agent Composer: Empowers teams to manage, configure, and apply governance to agents.",
+            "agent-audience": "Audience Agents: Discover, build, and activate intelligent audiences.",
+            "agent-content": "Content Agents: Surface relevant content and generate optimal channel renditions.",
+            "agent-journey": "Journey Agents: Build, analyze, and optimize multi-touch customer journeys.",
+            "cx-coworker": "CX Enterprise Coworker: Goal-driven orchestrator that automates complex marketing workflows.",
+            "native-agents": "Adobe Native Agents: Purpose-built agents like Content Advisor and Brand Governance.",
+            "3rd-party": "3rd Party Agents: External agents like Microsoft Copilot integrated securely.",
+            "skills": "Agent Skills: Custom logic defining exactly how specific work gets done.",
+            "tools": "Integration Tools: APIs and systems agents use to execute actions.",
+            "mcp": "Model Context Protocols (MCP): Open standards connecting Adobe AI with third-party systems.",
+            "brand-guide": "Brand Guidelines: Voice, tone, and channel rules uploaded into the system.",
+            "dam-assets": "Approved Assets: Experience Manager Assets serving as the single source of truth.",
+            "camp-data": "Past Campaign Data: Historical performance data used to inform new content.",
+            "ontology": "Brand Ontology Graph: A living AI knowledge graph of your brand's unique identity.",
+            "validate": "Validate Content: Automated checks for brand compliance before publishing.",
+            "instruct": "Instruct Creation: Translates campaign briefs directly into production-ready assets.",
+            "predict": "Predict Resonance: Simulates how synthetic audiences will react to content.",
+            "signals": "Customer Signals: Behavioral data including clicks, intent, audio, and video context.",
+            "semantic": "Semantic Intelligence: Understands deep context and meaning behind customer actions.",
+            "predictive": "Predictive Decisioning: Determines the real-time next best action for each customer.",
+            "auto-orch": "Autonomous Orchestration: Executing actions via Journey Optimizer and Marketo Engage.",
+            "data-crm": "CRM & Offline Data: First-party sales, POS, and relationship data.",
+            "data-web": "Web & Mobile Behavior: Digital analytics and usage patterns.",
+            "data-comm": "Commerce: Transactional, catalog, and purchasing histories.",
+            "data-eng": "Data Engineering Agent: Automates SQL, data onboarding, and schema mapping.",
+            "activation": "Omnichannel Activation: Delivering unified experiences across advertising and messaging.",
+            "ajo": "Adobe Journey Optimizer: Orchestrate and deliver personalized customer engagement.",
+            "marketo": "Marketo Engage: Complete AI-powered marketing automation platform for B2B.",
+            "commerce": "Adobe Commerce: AI-powered product discovery and composable commerce platform.",
+            "rtcdp": "Real-Time CDP: Unify online and offline data to build AI-powered audiences.",
+            "workfront": "Adobe Workfront: Centralize workflow, campaign planning, and metadata.",
+            "frameio": "Frame.io: Streamline video and rich media creative collaboration.",
+            "aem-assets": "Experience Manager Assets: Enterprise Digital Asset Management.",
+            "express": "Adobe Express: Scale on-brand content creation with commercially safe AI.",
+            "firefly": "Adobe Firefly: Generate on-brand imagery and variants using Custom Models.",
+            "genstudio": "GenStudio: Generate, activate, and optimize campaign performance assets.",
+            "cja": "Customer Journey Analytics: Connect customer identities and interactions.",
+            "mca": "Marketing Campaign Analytics: Measure incremental ROI across media.",
+            "customer": "Customer / Buyer: The end recipient of targeted, omnichannel experiences.",
+            "creative": "Creative Team: Designs and produces assets using Creative Cloud and Firefly.",
+            "marketer": "Marketer: Plans campaigns, builds audiences, and orchestrates journeys.",
+            "analyst": "Analyst: Uncovers insights, models ROI, and builds data pipelines."
+        }
+    }
+    </script>
+</head>
+<body class="antialiased">
+
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+<header class="bg-gray-900 text-white py-20 relative overflow-hidden">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#EB1000] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob"></div>
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+        
+        <div class="w-full lg:w-3/5">
+            <span class="text-red-400 uppercase tracking-widest text-xs font-black mb-3 block">Interactive Architecture Guide</span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight leading-tight text-white">
+                Deconstructing the <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">Agentic Web</span>
+            </h1>
+            
+            <p class="text-lg text-gray-300 font-light max-w-2xl mb-10 leading-relaxed">
+                Welcome to my interactive breakdown of enterprise customer experience (CX) architecture. This independent deep-dive is inspired by Adobe Summit social messages, my review of their web pages, and my personal understanding based on official Adobe documentation and messaging.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <button onclick="switchSlide('overview')" class="w-full sm:w-auto px-8 py-4 bg-[#EB1000] hover:bg-red-700 text-white text-base font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(235,16,0,0.4)] hover:shadow-[0_0_25px_rgba(235,16,0,0.6)] transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                    Explore the Architecture
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+            
+            <div class="mt-8 flex items-center gap-4 text-sm text-gray-400 font-medium">
+                <div class="flex -space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 border-2 border-gray-900 flex items-center justify-center text-xs text-white font-bold">CX</div>
+                    <div class="w-8 h-8 rounded-full bg-purple-500 border-2 border-gray-900 flex items-center justify-center text-xs text-white font-bold">AI</div>
+                    <div class="w-8 h-8 rounded-full bg-green-500 border-2 border-gray-900 flex items-center justify-center text-xs text-white font-bold">Data</div>
+                </div>
+                <p>Independent Analysis & Commentary</p>
+            </div>
+        </div>
+
+        <div class="w-full lg:w-2/5 relative group cursor-pointer" onclick="switchSlide('ai-platform')">
+            <div class="absolute -inset-1 bg-gradient-to-r from-red-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            
+            <svg viewBox="0 0 600 400" class="w-full h-auto rounded-xl shadow-2xl border border-white/10 relative z-10 bg-gray-900/80 backdrop-blur-sm" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="6" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#475569" />
+                        <stop offset="50%" stop-color="#EB1000" />
+                        <stop offset="100%" stop-color="#475569" />
+                    </linearGradient>
+                </defs>
+
+                <g stroke="#334155" stroke-width="0.5" stroke-dasharray="4 4" opacity="0.3">
+                    <line x1="0" y1="100" x2="600" y2="100" />
+                    <line x1="0" y1="200" x2="600" y2="200" />
+                    <line x1="0" y1="300" x2="600" y2="300" />
+                    <line x1="200" y1="0" x2="200" y2="400" />
+                    <line x1="400" y1="0" x2="400" y2="400" />
+                </g>
+
+                <path d="M 300 200 L 150 100 M 300 200 L 450 100 M 300 200 L 150 300 M 300 200 L 450 300" stroke="url(#line-grad)" stroke-width="3" opacity="0.6" />
+
+                <circle cx="300" cy="200" r="100" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="4 8" />
+                <circle cx="300" cy="200" r="140" fill="none" stroke="#334155" stroke-width="1" stroke-dasharray="2 6" />
+
+                <circle cx="300" cy="200" r="45" fill="#1e293b" stroke="#EB1000" stroke-width="3" filter="url(#glow)"/>
+                <circle cx="300" cy="200" r="35" fill="#EB1000" opacity="0.2" />
+                <path d="M285,195 h30 M285,205 h30" stroke="#EB1000" stroke-width="3" stroke-linecap="round"/>
+                <text x="300" y="230" text-anchor="middle" fill="#fff" font-weight="bold" font-family="sans-serif" font-size="10" tracking="widest">AGENT CORE</text>
+
+                <g transform="translate(150, 100)">
+                    <circle cx="0" cy="0" r="28" fill="#0f172a" stroke="#3b82f6" stroke-width="2" filter="url(#glow)"/>
+                    <rect x="-10" y="-10" width="20" height="20" rx="3" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="0" y="45" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" font-family="sans-serif">Data Foundation</text>
+                </g>
+                
+                <g transform="translate(450, 100)">
+                    <circle cx="0" cy="0" r="28" fill="#0f172a" stroke="#a855f7" stroke-width="2" filter="url(#glow)"/>
+                    <polygon points="0,-12 10,8 -10,8" fill="none" stroke="#a855f7" stroke-width="2"/>
+                    <text x="0" y="45" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" font-family="sans-serif">Content Supply</text>
+                </g>
+
+                <g transform="translate(150, 300)">
+                    <circle cx="0" cy="0" r="28" fill="#0f172a" stroke="#22c55e" stroke-width="2" filter="url(#glow)"/>
+                    <path d="M-10,-5 Q0,-15 10,-5 T10,10" fill="none" stroke="#22c55e" stroke-width="2"/>
+                    <text x="0" y="45" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" font-family="sans-serif">Journey Orchestration</text>
+                </g>
+
+                <g transform="translate(450, 300)">
+                    <circle cx="0" cy="0" r="28" fill="#0f172a" stroke="#f59e0b" stroke-width="2" filter="url(#glow)"/>
+                    <circle cx="0" cy="0" r="10" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 2"/>
+                    <text x="0" y="45" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" font-family="sans-serif">Experience Delivery</text>
+                </g>
+            </svg>
+        </div>
+
+    </div>
+</header>
+
+    <div id="tooltip"></div>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col lg:flex-row gap-12 relative">
+        
+        <aside class="lg:w-1/4 w-full flex-shrink-0 z-20">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden lg:sticky lg:top-6">
+                <div class="bg-gray-900 text-white p-6">
+                    <h2 class="text-sm uppercase tracking-wider font-bold text-gray-400 mb-1">Notes</h2>
+                    <h1 class="text-xl font-black">Adobe CX Enterprise</h1>
+                </div>
+                
+                <div class="block lg:hidden p-4 bg-gray-50 border-b border-gray-100">
+                    <label for="mobile-nav" class="sr-only">Select presentation slide</label>
+                    <select id="mobile-nav" onchange="switchSlide(this.value)" class="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-800 font-semibold focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm appearance-none cursor-pointer">
+                    </select>
+                </div>
+
+                <nav id="slide-nav" class="hidden lg:flex flex-col py-2"></nav>
+            </div>
+        </aside>
+
+        <section class="lg:w-3/4 w-full flex flex-col min-w-0" id="content-area"></section>
+    </main>
+    
+   <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm">© 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const jsonData = JSON.parse(document.getElementById('adobe-data').textContent);
+        let currentSlideId = window.location.hash.replace('#', '') || jsonData.slides.id;
+        let currentNoteIndex = 0;
+
+        const navContainer = document.getElementById('slide-nav');
+        const mobileNav = document.getElementById('mobile-nav');
+        const contentArea = document.getElementById('content-area');
+        const tooltip = document.getElementById('tooltip');
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.svg-box')) {
+                hideTooltip();
+            }
+        });
+        
+        function showTooltip(e, key) {
+            const text = jsonData.tooltips[key];
+            if (!text) return;
+            tooltip.innerText = text;
+            tooltip.style.opacity = 1;
+            tooltip.style.left = (e.pageX + 20) + 'px';
+            tooltip.style.top = (e.pageY + 20) + 'px';
+        }
+        function hideTooltip() { tooltip.style.opacity = 0; }
+
+function renderNav() {
+            if (navContainer) navContainer.innerHTML = '';
+            if (mobileNav) mobileNav.innerHTML = '';
+            
+            jsonData.slides.forEach((slide) => {
+                if (navContainer) {
+                    const btn = document.createElement('button');
+                    btn.className = `nav-item text-left px-6 py-4 text-sm font-medium border-l-4 transition-colors hover:bg-gray-50 focus:outline-none ${slide.id === currentSlideId ? 'active border-red-600 bg-red-50 text-red-900' : 'border-transparent text-gray-600'}`;
+                    btn.innerHTML = `<span class="text-xs font-bold text-gray-400 block mb-1">${slide.category}</span>${slide.navTitle}`;
+                    btn.onclick = () => switchSlide(slide.id);
+                    navContainer.appendChild(btn);
+                }
+
+                if (mobileNav) {
+                    const option = document.createElement('option');
+                    option.value = slide.id;
+                    option.textContent = `${slide.category}: ${slide.navTitle}`;
+                    if (slide.id === currentSlideId) option.selected = true;
+                    mobileNav.appendChild(option);
+                }
+            });
+        }
+
+        window.updateCarousel = function() {
+            const track = document.getElementById('notes-track');
+            if(!track) return;
+            track.style.transform = `translateX(-${currentNoteIndex * 100}%)`;
+            
+            document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+                if (index === currentNoteIndex) {
+                    dot.classList.remove('bg-gray-300');
+                    dot.classList.add('bg-red-600', 'w-4');
+                    dot.classList.remove('w-2');
+                } else {
+                    dot.classList.add('bg-gray-300', 'w-2');
+                    dot.classList.remove('bg-red-600', 'w-4');
+                }
+            });
+        }
+        window.nextNote = function(total) {
+            currentNoteIndex = (currentNoteIndex + 1) % total;
+            updateCarousel();
+        }
+        window.prevNote = function(total) {
+            currentNoteIndex = (currentNoteIndex - 1 + total) % total;
+            updateCarousel();
+        }
+        window.goToNote = function(index) {
+            currentNoteIndex = index;
+            updateCarousel();
+        }
+
+        function renderSlide() {
+            const currentIndex = jsonData.slides.findIndex(s => s.id === currentSlideId);
+            const slide = jsonData.slides[currentIndex];
+            if (!slide) return;
+
+            const prevSlide = currentIndex > 0 ? jsonData.slides[currentIndex - 1] : null;
+            const nextSlide = currentIndex < jsonData.slides.length - 1 ? jsonData.slides[currentIndex + 1] : null;
+
+            let html = `
+                <div class="fade-in bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden w-full">
+                    
+                    <!-- TOP NAVIGATION BAR -->
+                    <div class="p-4 bg-gray-50 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+            `;
+
+            if (prevSlide) {
+                html += `<button onclick="switchSlide('${prevSlide.id}')" class="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-gray-200 w-full sm:w-1/3 text-center sm:text-left truncate" title="${prevSlide.navTitle}">&larr; ${prevSlide.navTitle}</button>`;
+            } else { 
+                html += `<div class="hidden sm:block w-1/3"></div>`; 
+            }
+
+            html += `<div class="w-full sm:w-1/3 text-center order-first sm:order-none">`;
+            if (currentSlideId !== 'overview') {
+                html += `
+                    <button onclick="switchSlide('overview')" class="px-6 py-2 text-sm font-bold text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 inline-flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> 
+                        Overview
+                    </button>`;
+            }
+            html += `</div>`;
+
+            if (nextSlide) {
+                html += `<button onclick="switchSlide('${nextSlide.id}')" class="px-4 py-2 bg-[#EB1000] hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm w-full sm:w-1/3 text-center sm:text-right truncate" title="${nextSlide.navTitle}">${nextSlide.navTitle} &rarr;</button>`;
+            } else { 
+                html += `<div class="hidden sm:block w-1/3"></div>`; 
+            }
+            html += `</div>`; 
+
+            html += `
+                    <div class="p-8 border-b border-gray-100">
+                        <span class="inline-block px-3 py-1 bg-red-100 text-red-700 font-bold text-xs rounded-full mb-3 uppercase tracking-wider">${slide.category}</span>
+                        <h2 class="text-3xl font-black text-gray-900 tracking-tight mb-4">${slide.title}</h2>
+                        <p class="text-gray-600 text-lg leading-relaxed">${slide.description}</p>
+                    </div>
+                    <div class="p-8 bg-gray-50 flex justify-center items-center w-full overflow-x-auto">
+                        <div class="min-w-[800px] w-full">
+                            ${getSlideSVG(slide.id)}
+                        </div>
+                    </div>
+            `;
+
+            if (slide.notes && slide.notes.length > 0) {
+                currentNoteIndex = 0; 
+                html += `<div class="p-8 bg-white border-t border-gray-100 w-full relative">`;
+                html += `<h3 class="text-lg font-bold text-gray-900 mb-6">Strategic Insights</h3>`;
+                
+                html += `<div class="relative overflow-hidden w-full group">`;
+                html += `<div id="notes-track" class="flex transition-transform duration-300 ease-in-out w-full">`;
+                slide.notes.forEach(note => {
+                    html += `
+                        <div class="w-full flex-shrink-0 px-1">
+                            <div class="border border-gray-200 rounded-xl p-8 bg-gradient-to-br from-gray-50 to-white shadow-sm h-full">
+                                <h4 class="text-xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-200">${note.title}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <span class="text-xs font-bold text-red-600 uppercase tracking-widest flex items-center gap-2 mb-3">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            Today
+                                        </span>
+                                        <p class="text-sm text-gray-600 leading-relaxed">${note.today}</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-bold text-green-600 uppercase tracking-widest flex items-center gap-2 mb-3">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                            Tomorrow
+                                        </span>
+                                        <p class="text-sm text-gray-800 font-medium leading-relaxed">${note.tomorrow}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`; 
+
+                if (slide.notes.length > 1) {
+                    html += `
+                        <button onclick="prevNote(${slide.notes.length})" class="absolute left-3 top-1/2 -translate-y-1/2 bg-white text-gray-800 shadow-md border border-gray-100 rounded-full w-10 h-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none hover:bg-gray-50">
+                            &larr;
+                        </button>
+                        <button onclick="nextNote(${slide.notes.length})" class="absolute right-3 top-1/2 -translate-y-1/2 bg-white text-gray-800 shadow-md border border-gray-100 rounded-full w-10 h-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none hover:bg-gray-50">
+                            &rarr;
+                        </button>
+                    `;
+                    // Dots
+                    html += `<div class="flex justify-center gap-2 mt-6">`;
+                    slide.notes.forEach((_, idx) => {
+                        html += `<button onclick="goToNote(${idx})" class="carousel-dot h-2 rounded-full transition-all duration-300 focus:outline-none ${idx === 0 ? 'bg-red-600 w-4' : 'bg-gray-300 w-2'}"></button>`;
+                    });
+                    html += `</div>`;
+                }
+                html += `</div></div>`; 
+            }
+
+            html += `</div>`; 
+
+            contentArea.innerHTML = html;
+            attachSVGListeners();
+        }
+
+        function switchSlide(id) {
+            hideTooltip(); 
+            currentSlideId = id;
+                window.location.hash = id; 
+            renderNav();
+            renderSlide();
+            const contentSection = document.getElementById('content-area');
+            if (contentSection) {
+                const scrollPosition = contentSection.getBoundingClientRect().top + window.scrollY - 24;
+                window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+            }
+        }
+
+        function handleHash() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && jsonData.slides.some(s => s.id === hash)) {
+                currentSlideId = hash;
+            }
+            renderNav();
+            renderSlide();
+        }
+
+        function attachSVGListeners() {
+            document.querySelectorAll('.svg-box').forEach(el => {
+                el.addEventListener('mouseenter', (e) => {
+                    const tip = el.getAttribute('data-tip');
+                    if(tip) showTooltip(e, tip);
+                });
+                el.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = (e.pageX + 20) + 'px';
+                    tooltip.style.top = (e.pageY + 20) + 'px';
+                });
+                el.addEventListener('mouseleave', hideTooltip);
+                el.addEventListener('click', hideTooltip);
+            });
+        }
+
+        function getSlideSVG(id) {
+            if (id === 'overview') {
+                return `
+                <svg viewBox="0 0 1000 650" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff" />
+                            <stop offset="100%" stop-color="#f8fafc" />
+                        </linearGradient>
+                        <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+                            <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.05" />
+                        </filter>
+                    </defs>
+                    <rect x="10" y="10" width="980" height="630" rx="12" fill="url(#bg-grad)" stroke="#e5e7eb" stroke-width="2" />
+                    
+                    <g class="svg-box" data-tip="native-ai" transform="translate(750, 40)">
+                        <rect x="0" y="0" width="210" height="570" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="2" filter="url(#shadow)" />
+                        <text x="105" y="40" text-anchor="middle" font-weight="900" font-size="16" fill="#b91c1c">Native AI</text>
+                        <text x="105" y="60" text-anchor="middle" font-weight="900" font-size="16" fill="#b91c1c">Integrations</text>
+                        <rect x="25" y="90" width="160" height="60" rx="6" fill="#fff" stroke="#fecaca" />
+                        <text x="105" y="125" text-anchor="middle" font-weight="600" font-size="14" fill="#333">Anthropic</text>
+                        <rect x="25" y="170" width="160" height="60" rx="6" fill="#fff" stroke="#fecaca" />
+                        <text x="105" y="205" text-anchor="middle" font-weight="600" font-size="14" fill="#333">OpenAI</text>
+                        <rect x="25" y="250" width="160" height="60" rx="6" fill="#fff" stroke="#fecaca" />
+                        <text x="105" y="285" text-anchor="middle" font-weight="600" font-size="14" fill="#333">Google Cloud</text>
+                        <rect x="25" y="330" width="160" height="60" rx="6" fill="#fff" stroke="#fecaca" />
+                        <text x="105" y="365" text-anchor="middle" font-weight="600" font-size="14" fill="#333">Microsoft</text>
+                        <rect x="25" y="410" width="160" height="60" rx="6" fill="#fff" stroke="#fecaca" />
+                        <text x="105" y="445" text-anchor="middle" font-weight="600" font-size="14" fill="#333">AWS</text>
+                        <rect x="25" y="490" width="160" height="60" rx="6" fill="#fff" stroke="#fecaca" />
+                        <text x="105" y="525" text-anchor="middle" font-weight="600" font-size="14" fill="#333">NVIDIA</text>
+                    </g>
+
+                    <g class="svg-box" data-tip="vis" onclick="switchSlide('brand-visibility')" transform="translate(40, 40)">
+                        <rect x="0" y="0" width="220" height="100" rx="8" fill="#fff" stroke="#EB1000" stroke-width="2" filter="url(#shadow)" />
+                        <text x="110" y="45" text-anchor="middle" font-weight="800" font-size="16" fill="#222">Brand Visibility</text>
+                        <text x="110" y="70" text-anchor="middle" font-weight="500" font-size="12" fill="#666">(AEM + Agentic Web)</text>
+                    </g>
+                    <g class="svg-box" data-tip="eng" onclick="switchSlide('customer-engagement')" transform="translate(275, 40)">
+                        <rect x="0" y="0" width="220" height="100" rx="8" fill="#fff" stroke="#1473E6" stroke-width="2" filter="url(#shadow)" />
+                        <text x="110" y="45" text-anchor="middle" font-weight="800" font-size="16" fill="#222">Customer Engagement</text>
+                        <text x="110" y="70" text-anchor="middle" font-weight="500" font-size="12" fill="#666">(AEP Native Apps)</text>
+                    </g>
+                    <g class="svg-box" data-tip="csc" onclick="switchSlide('content-supply')" transform="translate(510, 40)">
+                        <rect x="0" y="0" width="220" height="100" rx="8" fill="#fff" stroke="#7448FF" stroke-width="2" filter="url(#shadow)" />
+                        <text x="110" y="45" text-anchor="middle" font-weight="800" font-size="16" fill="#222">Content Supply Chain</text>
+                        <text x="110" y="70" text-anchor="middle" font-weight="500" font-size="12" fill="#666">(Adobe GenStudio)</text>
+                    </g>
+
+                    <g class="svg-box" data-tip="cxa" onclick="switchSlide('cx-analytics')" transform="translate(40, 155)">
+                        <rect x="0" y="0" width="690" height="60" rx="8" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" filter="url(#shadow)" />
+                        <text x="345" y="35" text-anchor="middle" font-weight="800" font-size="18" fill="#0369a1">Adobe CX Analytics</text>
+                    </g>
+
+                    <g transform="translate(40, 230)">
+                        <rect x="0" y="0" width="690" height="380" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
+                        <text x="345" y="30" text-anchor="middle" font-weight="900" font-size="16" fill="#475569" letter-spacing="1.5">ADOBE AI PLATFORM</text>
+                        
+                        <g transform="translate(20, 50)">
+                            <g class="svg-box" data-tip="ai-coworker" onclick="switchSlide('coworker')" transform="translate(0, 0)">
+                                <rect x="0" y="0" width="130" height="80" rx="6" fill="#fff" stroke="#94a3b8" filter="url(#shadow)"/>
+                                <text x="65" y="35" text-anchor="middle" font-weight="700" font-size="12" fill="#333">CX Enterprise</text>
+                                <text x="65" y="55" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Coworker</text>
+                            </g>
+                            <g class="svg-box" data-tip="ai-agents" onclick="switchSlide('ai-platform')" transform="translate(140, 0)">
+                                <rect x="0" y="0" width="110" height="80" rx="6" fill="#fff" stroke="#94a3b8" filter="url(#shadow)"/>
+                                <text x="55" y="35" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Adobe & 3rd</text>
+                                <text x="55" y="55" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Party Agents</text>
+                            </g>
+                            <g class="svg-box" data-tip="ai-skills" transform="translate(260, 0)">
+                                <rect x="0" y="0" width="110" height="80" rx="6" fill="#fff" stroke="#94a3b8" filter="url(#shadow)"/>
+                                <text x="55" y="45" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Agent Skills</text>
+                            </g>
+                            <g class="svg-box" data-tip="ai-tools" transform="translate(380, 0)">
+                                <rect x="0" y="0" width="130" height="80" rx="6" fill="#fff" stroke="#94a3b8" filter="url(#shadow)"/>
+                                <text x="65" y="35" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Integration</text>
+                                <text x="65" y="55" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Tools</text>
+                            </g>
+                            <g class="svg-box" data-tip="ai-mcps" transform="translate(520, 0)">
+                                <rect x="0" y="0" width="130" height="80" rx="6" fill="#fff" stroke="#94a3b8" filter="url(#shadow)"/>
+                                <text x="65" y="35" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Model Context</text>
+                                <text x="65" y="55" text-anchor="middle" font-weight="700" font-size="12" fill="#333">Protocols (MCP)</text>
+                            </g>
+                        </g>
+
+                        <g transform="translate(20, 150)">
+                            <g class="svg-box" data-tip="brand-intel" onclick="switchSlide('brand-intel')" transform="translate(0, 0)">
+                                <rect x="0" y="0" width="315" height="70" rx="6" fill="#fae8ff" stroke="#d946ef" filter="url(#shadow)"/>
+                                <text x="157.5" y="40" text-anchor="middle" font-weight="800" font-size="15" fill="#86198f">Adobe Brand Intelligence</text>
+                            </g>
+                            <g class="svg-box" data-tip="eng-intel" onclick="switchSlide('eng-intel')" transform="translate(335, 0)">
+                                <rect x="0" y="0" width="315" height="70" rx="6" fill="#dcfce7" stroke="#22c55e" filter="url(#shadow)"/>
+                                <text x="157.5" y="40" text-anchor="middle" font-weight="800" font-size="15" fill="#166534">Adobe Engagement Intelligence</text>
+                            </g>
+                        </g>
+
+                        <g class="svg-box" data-tip="aep" onclick="switchSlide('aep')" transform="translate(20, 240)">
+                            <rect x="0" y="0" width="650" height="80" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="325" y="45" text-anchor="middle" font-weight="900" font-size="18" fill="#334155">Adobe Experience Platform (AEP)</text>
+                        </g>
+                    </g>
+                </svg>`;
+            } else if (id === 'brand-visibility') {
+                return `
+                <svg viewBox="0 0 800 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#EB1000" />
+                        </marker>
+                    </defs>
+                    <rect x="50" y="100" width="150" height="80" rx="8" fill="#fff" stroke="#333" stroke-width="2" />
+                    <text x="125" y="145" text-anchor="middle" font-weight="700">Marketers</text>
+                    <line x1="200" y1="140" x2="330" y2="140" stroke="#EB1000" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <text x="265" y="130" text-anchor="middle" font-size="12" fill="#666">Natural Prompt</text>
+                    <rect x="340" y="50" width="200" height="180" rx="8" fill="#fef2f2" stroke="#EB1000" stroke-width="2" />
+                    <text x="440" y="80" text-anchor="middle" font-weight="900" fill="#EB1000">AEM Brand Truth</text>
+                    <text x="440" y="110" text-anchor="middle" font-size="12" font-weight="600">- Brand Exp. Agent</text>
+                    <text x="440" y="140" text-anchor="middle" font-size="12" font-weight="600">- Content Advisor Agent</text>
+                    <text x="440" y="170" text-anchor="middle" font-size="12" font-weight="600">- Brand Gov. Agent</text>
+                    <line x1="540" y1="140" x2="660" y2="140" stroke="#EB1000" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <text x="600" y="130" text-anchor="middle" font-size="12" fill="#666">Validate & Serve</text>
+                    <rect x="670" y="80" width="120" height="120" rx="8" fill="#f3f4f6" stroke="#1f2937" stroke-width="2" />
+                    <text x="730" y="130" text-anchor="middle" font-weight="800">LLM Apps</text>
+                    <text x="730" y="155" text-anchor="middle" font-size="12">(ChatGPT, etc)</text>
+                </svg>`;
+            } else if (id === 'customer-engagement') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1473E6" /></marker>
+                        <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#EB1000" /></marker>
+                    </defs>
+                    <rect x="250" y="20" width="450" height="400" rx="12" fill="#f0f9ff" stroke="#bae6fd" stroke-width="2"/>
+                    <text x="475" y="50" text-anchor="middle" font-weight="900" font-size="14" fill="#0284c7" letter-spacing="2">ENGAGEMENT & COMMERCE</text>
+                    <g class="svg-box" data-tip="rtcdp" transform="translate(20, 170)">
+                        <rect x="0" y="0" width="150" height="60" rx="8" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <text x="75" y="25" text-anchor="middle" font-weight="bold" font-size="12" fill="#312e81">Real-Time CDP</text>
+                        <text x="75" y="45" text-anchor="middle" font-size="10" fill="#666">Profiles & Audiences</text>
+                    </g>
+                    <g class="svg-box" data-tip="marketer" transform="translate(280, 320)">
+                        <circle cx="40" cy="20" r="15" fill="#333"/>
+                        <path d="M40,35 v25 M20,50 h40 M40,60 l-15,25 M40,60 l15,25" stroke="#333" stroke-width="3" fill="none"/>
+                        <text x="40" y="100" text-anchor="middle" font-weight="bold" font-size="12">Marketer</text>
+                    </g>
+                    <g class="svg-box" data-tip="ajo" transform="translate(350, 80)">
+                        <rect x="0" y="0" width="250" height="60" rx="8" fill="#fff" stroke="#1473E6" stroke-width="2"/>
+                        <text x="125" y="35" text-anchor="middle" font-weight="bold" font-size="14" fill="#0f172a">Adobe Journey Optimizer</text>
+                    </g>
+                    <g class="svg-box" data-tip="marketo" transform="translate(350, 170)">
+                        <rect x="0" y="0" width="250" height="60" rx="8" fill="#fff" stroke="#1473E6" stroke-width="2"/>
+                        <text x="125" y="35" text-anchor="middle" font-weight="bold" font-size="14" fill="#0f172a">Marketo Engage (B2B)</text>
+                    </g>
+                    <g class="svg-box" data-tip="commerce" transform="translate(350, 260)">
+                        <rect x="0" y="0" width="250" height="60" rx="8" fill="#fff" stroke="#1473E6" stroke-width="2"/>
+                        <text x="125" y="35" text-anchor="middle" font-weight="bold" font-size="14" fill="#0f172a">Adobe Commerce</text>
+                    </g>
+                    <g class="svg-box" data-tip="customer" transform="translate(780, 150)">
+                        <circle cx="40" cy="20" r="15" fill="#EB1000"/>
+                        <path d="M40,35 v35 M20,50 h40 M40,70 l-20,30 M40,70 l20,30" stroke="#EB1000" stroke-width="4" fill="none"/>
+                        <text x="40" y="120" text-anchor="middle" font-weight="900" font-size="16" fill="#EB1000">Customer</text>
+                    </g>
+                    <path d="M 170 200 Q 250 200 340 110" fill="none" stroke="#1473E6" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-blue)"/>
+                    <line x1="170" y1="200" x2="340" y2="200" stroke="#1473E6" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-blue)"/>
+                    <path d="M 170 200 Q 250 200 340 290" fill="none" stroke="#1473E6" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-blue)"/>
+                    <path d="M 320 330 Q 300 110 340 110" fill="none" stroke="#888" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                    <path d="M 320 330 Q 300 200 340 200" fill="none" stroke="#888" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                    <path d="M 600 110 Q 700 110 770 180" fill="none" stroke="#EB1000" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <line x1="600" y1="200" x2="770" y2="200" stroke="#EB1000" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <path d="M 600 290 Q 700 290 770 220" fill="none" stroke="#EB1000" stroke-width="3" marker-end="url(#arrow-red)"/>
+                </svg>`;
+            } else if (id === 'content-supply') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-purp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#7448FF" /></marker>
+                        <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#888888" /></marker>
+                    </defs>
+                    <rect x="250" y="20" width="550" height="400" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+                    <text x="525" y="50" text-anchor="middle" font-weight="900" font-size="14" fill="#64748b" letter-spacing="2">CONTENT SUPPLY CHAIN</text>
+                    <g class="svg-box" data-tip="creative" transform="translate(50, 100)">
+                        <circle cx="40" cy="20" r="15" fill="#333"/>
+                        <path d="M40,35 v35 M20,50 h40 M40,70 l-20,30 M40,70 l20,30" stroke="#333" stroke-width="4" fill="none"/>
+                        <text x="40" y="120" text-anchor="middle" font-weight="bold">Creative</text>
+                    </g>
+                    <g class="svg-box" data-tip="marketer" transform="translate(50, 300)">
+                        <circle cx="40" cy="20" r="15" fill="#333"/>
+                        <path d="M40,35 v35 M20,50 h40 M40,70 l-20,30 M40,70 l20,30" stroke="#333" stroke-width="4" fill="none"/>
+                        <text x="40" y="120" text-anchor="middle" font-weight="bold">Marketer</text>
+                    </g>
+                    <g class="svg-box" data-tip="firefly" transform="translate(280, 80)">
+                        <rect x="0" y="0" width="140" height="50" rx="8" fill="#fae8ff" stroke="#d946ef" stroke-width="2"/>
+                        <text x="70" y="30" text-anchor="middle" font-weight="bold" font-size="12" fill="#86198f">Firefly / Express</text>
+                    </g>
+                    <g class="svg-box" data-tip="frameio" transform="translate(280, 160)">
+                        <rect x="0" y="0" width="140" height="50" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+                        <text x="70" y="30" text-anchor="middle" font-weight="bold" font-size="12" fill="#3730a3">Frame.io</text>
+                    </g>
+                    <g class="svg-box" data-tip="workfront" transform="translate(280, 320)">
+                        <rect x="0" y="0" width="140" height="50" rx="8" fill="#fee2e2" stroke="#f43f5e" stroke-width="2"/>
+                        <text x="70" y="30" text-anchor="middle" font-weight="bold" font-size="12" fill="#9f1239">Adobe Workfront</text>
+                    </g>
+                    <g class="svg-box" data-tip="aem-assets" transform="translate(520, 120)">
+                        <rect x="0" y="0" width="140" height="60" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+                        <text x="70" y="35" text-anchor="middle" font-weight="bold" font-size="12" fill="#1e3a8a">AEM Assets (DAM)</text>
+                    </g>
+                    <g class="svg-box" data-tip="genstudio" transform="translate(520, 260)">
+                        <rect x="0" y="0" width="140" height="80" rx="8" fill="#f3e8ff" stroke="#7448FF" stroke-width="3"/>
+                        <text x="70" y="35" text-anchor="middle" font-weight="900" font-size="14" fill="#4c1d95">Adobe GenStudio</text>
+                        <text x="70" y="55" text-anchor="middle" font-weight="500" font-size="10" fill="#4c1d95">Campaign Assembly</text>
+                    </g>
+                    <path d="M 110 130 Q 180 105 270 105" fill="none" stroke="#888" stroke-width="2" marker-end="url(#arrow-gray)"/>
+                    <path d="M 110 130 Q 180 185 270 185" fill="none" stroke="#888" stroke-width="2" marker-end="url(#arrow-gray)"/>
+                    <line x1="110" y1="345" x2="270" y2="345" stroke="#888" stroke-width="2" marker-end="url(#arrow-gray)"/>
+                    <path d="M 110 345 Q 200 300 510 300" fill="none" stroke="#888" stroke-width="2" marker-end="url(#arrow-gray)"/>
+                    <path d="M 420 105 Q 470 105 510 130" fill="none" stroke="#7448FF" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-purp)"/>
+                    <path d="M 420 185 Q 470 185 510 160" fill="none" stroke="#7448FF" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-purp)"/>
+                    <line x1="590" y1="180" x2="590" y2="250" stroke="#7448FF" stroke-width="2" marker-end="url(#arrow-purp)"/>
+                    <path d="M 420 345 Q 470 345 510 320" fill="none" stroke="#7448FF" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-purp)"/>
+                    <line x1="660" y1="300" x2="800" y2="300" stroke="#EB1000" stroke-width="3" marker-end="url(#arrow-purp)"/>
+                    <text x="730" y="290" text-anchor="middle" font-size="11" font-weight="bold" fill="#EB1000">Activate to Engagement</text>
+                </svg>`;
+            } else if (id === 'cx-analytics') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669" /></marker>
+                    </defs>
+                    <rect x="250" y="20" width="400" height="400" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="2"/>
+                    <text x="450" y="50" text-anchor="middle" font-weight="900" font-size="14" fill="#047857" letter-spacing="2">DATA & ANALYTICS</text>
+                    <g class="svg-box" data-tip="aep" transform="translate(20, 120)">
+                        <rect x="0" y="0" width="150" height="150" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+                        <text x="75" y="30" text-anchor="middle" font-weight="bold" font-size="12" fill="#333">Data Sources</text>
+                        <text x="75" y="60" text-anchor="middle" font-size="10" fill="#666">• Web & App</text>
+                        <text x="75" y="80" text-anchor="middle" font-size="10" fill="#666">• CRM & Offline</text>
+                        <text x="75" y="100" text-anchor="middle" font-size="10" fill="#666">• Paid Media</text>
+                        <text x="75" y="120" text-anchor="middle" font-size="10" fill="#666">• Commerce</text>
+                    </g>
+                    <g class="svg-box" data-tip="cja" transform="translate(300, 100)">
+                        <rect x="0" y="0" width="300" height="60" rx="8" fill="#fff" stroke="#059669" stroke-width="2"/>
+                        <text x="150" y="35" text-anchor="middle" font-weight="bold" font-size="14" fill="#064e3b">Customer Journey Analytics</text>
+                    </g>
+                    <g class="svg-box" data-tip="cja" transform="translate(300, 190)">
+                        <rect x="0" y="0" width="300" height="60" rx="8" fill="#fff" stroke="#059669" stroke-width="2"/>
+                        <text x="150" y="35" text-anchor="middle" font-weight="bold" font-size="14" fill="#064e3b">CJA B2B Edition</text>
+                    </g>
+                    <g class="svg-box" data-tip="mca" transform="translate(300, 280)">
+                        <rect x="0" y="0" width="300" height="60" rx="8" fill="#fff" stroke="#059669" stroke-width="2"/>
+                        <text x="150" y="35" text-anchor="middle" font-weight="bold" font-size="14" fill="#064e3b">Marketing Campaign Analytics</text>
+                    </g>
+                    <g class="svg-box" data-tip="analyst" transform="translate(750, 160)">
+                        <circle cx="30" cy="20" r="15" fill="#064e3b"/>
+                        <path d="M30,35 v35 M10,50 h40 M30,70 l-15,25 M30,70 l15,25" stroke="#064e3b" stroke-width="4" fill="none"/>
+                        <text x="30" y="115" text-anchor="middle" font-weight="900" font-size="16" fill="#064e3b">Analyst</text>
+                    </g>
+                    <path d="M 170 195 Q 230 195 290 130" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <line x1="170" y1="195" x2="290" y2="220" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <path d="M 170 195 Q 230 195 290 310" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <path d="M 600 130 Q 680 130 730 190" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-green)"/>
+                    <line x1="600" y1="220" x2="730" y2="210" stroke="#888" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-green)"/>
+                    <path d="M 600 310 Q 680 310 730 230" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-green)"/>
+                </svg>`;
+            } else if (id === 'ai-platform') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-dark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker>
+                    </defs>
+                    <rect x="50" y="30" width="800" height="380" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+                    <text x="450" y="60" text-anchor="middle" font-weight="900" font-size="16" fill="#334155" letter-spacing="2">ADOBE AI PLATFORM ORCHESTRATION</text>
+                    <g class="svg-box" data-tip="ai-assistant" transform="translate(80, 150)">
+                        <rect x="0" y="0" width="160" height="60" rx="8" fill="#fff" stroke="#1473E6" stroke-width="2"/>
+                        <text x="80" y="35" text-anchor="middle" font-weight="bold" fill="#1473E6">AI Assistant (UI)</text>
+                        <text x="80" y="50" text-anchor="middle" font-size="10" fill="#666">Natural Prompts</text>
+                    </g>
+                    <g class="svg-box" data-tip="orchestrator" transform="translate(320, 100)">
+                        <rect x="0" y="0" width="220" height="170" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="3"/>
+                        <text x="110" y="30" text-anchor="middle" font-weight="900" fill="#1d4ed8">Agent Orchestrator</text>
+                    </g>
+                    <g class="svg-box" data-tip="reasoning" transform="translate(340, 140)">
+                        <rect x="0" y="0" width="180" height="40" rx="4" fill="#fff" stroke="#93c5fd" stroke-width="2"/>
+                        <text x="90" y="25" text-anchor="middle" font-weight="bold" font-size="12" fill="#1e40af">Reasoning Engine</text>
+                    </g>
+                    <g class="svg-box" data-tip="knowledge" transform="translate(340, 200)">
+                        <rect x="0" y="0" width="180" height="40" rx="4" fill="#fff" stroke="#93c5fd" stroke-width="2"/>
+                        <text x="90" y="25" text-anchor="middle" font-weight="bold" font-size="12" fill="#1e40af">Knowledge Base</text>
+                    </g>
+                    <g class="svg-box" data-tip="composer" transform="translate(330, 310)">
+                        <rect x="0" y="0" width="200" height="60" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+                        <text x="100" y="30" text-anchor="middle" font-weight="bold" font-size="12" fill="#b91c1c">Agent Composer</text>
+                        <text x="100" y="45" text-anchor="middle" font-size="10" fill="#b91c1c">Governance & Compliance</text>
+                    </g>
+                    <g class="svg-box" data-tip="agent-audience" transform="translate(640, 100)">
+                        <rect x="0" y="0" width="160" height="40" rx="6" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+                        <text x="80" y="25" text-anchor="middle" font-weight="bold" font-size="12" fill="#4c1d95">Audience Agents</text>
+                    </g>
+                    <g class="svg-box" data-tip="agent-content" transform="translate(640, 165)">
+                        <rect x="0" y="0" width="160" height="40" rx="6" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+                        <text x="80" y="25" text-anchor="middle" font-weight="bold" font-size="12" fill="#4c1d95">Content Agents</text>
+                    </g>
+                    <g class="svg-box" data-tip="agent-journey" transform="translate(640, 230)">
+                        <rect x="0" y="0" width="160" height="40" rx="6" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+                        <text x="80" y="25" text-anchor="middle" font-weight="bold" font-size="12" fill="#4c1d95">Journey Agents</text>
+                    </g>
+                    <line x1="240" y1="180" x2="310" y2="180" stroke="#333" stroke-width="2" marker-end="url(#arrow-dark)"/>
+                    <line x1="430" y1="310" x2="430" y2="280" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/>
+                    <path d="M 540 180 Q 590 120 630 120" fill="none" stroke="#333" stroke-width="2" marker-end="url(#arrow-dark)"/>
+                    <line x1="540" y1="180" x2="630" y2="180" stroke="#333" stroke-width="2" marker-end="url(#arrow-dark)"/>
+                    <path d="M 540 180 Q 590 250 630 250" fill="none" stroke="#333" stroke-width="2" marker-end="url(#arrow-dark)"/>
+                </svg>`;
+            } else if (id === 'coworker') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1473E6" /></marker>
+                    </defs>
+                    <rect x="290" y="40" width="560" height="340" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+                    <text x="570" y="70" text-anchor="middle" font-weight="900" fill="#475569">AGENTIC EXECUTION LAYER</text>
+                    <g class="svg-box" data-tip="cx-coworker" transform="translate(40, 160)">
+                        <rect x="0" y="0" width="190" height="80" rx="8" fill="#1473E6" stroke="#1e3a8a" stroke-width="2"/>
+                        <text x="95" y="35" text-anchor="middle" font-weight="900" font-size="16" fill="#fff">CX Enterprise</text>
+                        <text x="95" y="55" text-anchor="middle" font-weight="900" font-size="16" fill="#fff">Coworker</text>
+                        <text x="95" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="#1473E6">Goal-Driven Orchestrator</text>
+                    </g>
+                    <g class="svg-box" data-tip="native-agents" transform="translate(320, 110)">
+                        <rect x="0" y="0" width="200" height="60" rx="8" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+                        <text x="100" y="30" text-anchor="middle" font-weight="bold" fill="#4c1d95">Adobe Native Agents</text>
+                        <text x="100" y="45" text-anchor="middle" font-size="10" fill="#666">(e.g., Brand Governance)</text>
+                    </g>
+                    <g class="svg-box" data-tip="3rd-party" transform="translate(320, 250)">
+                        <rect x="0" y="0" width="200" height="60" rx="8" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+                        <text x="100" y="30" text-anchor="middle" font-weight="bold" fill="#4c1d95">3rd Party Agents</text>
+                        <text x="100" y="45" text-anchor="middle" font-size="10" fill="#666">(e.g., Microsoft Copilot)</text>
+                    </g>
+                    <g class="svg-box" data-tip="skills" transform="translate(610, 100)">
+                        <rect x="0" y="0" width="210" height="45" rx="4" fill="#e0f2fe" stroke="#3b82f6" stroke-width="2"/>
+                        <text x="105" y="27" text-anchor="middle" font-weight="bold" font-size="12" fill="#1e40af">Agent Skills</text>
+                    </g>
+                    <g class="svg-box" data-tip="tools" transform="translate(610, 180)">
+                        <rect x="0" y="0" width="210" height="45" rx="4" fill="#e0f2fe" stroke="#3b82f6" stroke-width="2"/>
+                        <text x="105" y="27" text-anchor="middle" font-weight="bold" font-size="12" fill="#1e40af">Integration Tools / APIs</text>
+                    </g>
+                    <g class="svg-box" data-tip="mcp" transform="translate(610, 260)">
+                        <rect x="0" y="0" width="210" height="45" rx="4" fill="#e0f2fe" stroke="#3b82f6" stroke-width="2"/>
+                        <text x="105" y="27" text-anchor="middle" font-weight="bold" font-size="12" fill="#1e40af">Model Context Protocol (MCP)</text>
+                    </g>
+                    <path d="M 230 200 Q 280 140 310 140" fill="none" stroke="#1473E6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                    <path d="M 230 200 Q 280 280 310 280" fill="none" stroke="#1473E6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                    <line x1="520" y1="140" x2="600" y2="120" stroke="#888" stroke-width="2" stroke-dasharray="4"/>
+                    <line x1="520" y1="140" x2="600" y2="200" stroke="#888" stroke-width="2" stroke-dasharray="4"/>
+                    <line x1="520" y1="280" x2="600" y2="200" stroke="#888" stroke-width="2" stroke-dasharray="4"/>
+                    <line x1="520" y1="280" x2="600" y2="280" stroke="#888" stroke-width="2" stroke-dasharray="4"/>
+                </svg>`;
+            } else if (id === 'brand-intel') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-purp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d946ef" /></marker>
+                    </defs>
+                    <g class="svg-box" data-tip="brand-guide" transform="translate(40, 110)">
+                        <rect x="0" y="0" width="180" height="50" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                        <text x="90" y="30" text-anchor="middle" font-weight="bold" font-size="12">Brand Guidelines</text>
+                    </g>
+                    <g class="svg-box" data-tip="dam-assets" transform="translate(40, 190)">
+                        <rect x="0" y="0" width="180" height="50" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                        <text x="90" y="30" text-anchor="middle" font-weight="bold" font-size="12">Approved Assets (DAM)</text>
+                    </g>
+                    <g class="svg-box" data-tip="camp-data" transform="translate(40, 270)">
+                        <rect x="0" y="0" width="180" height="50" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                        <text x="90" y="30" text-anchor="middle" font-weight="bold" font-size="12">Past Campaign Data</text>
+                    </g>
+                    <g class="svg-box" data-tip="ontology" transform="translate(420, 215)">
+                        <ellipse cx="0" cy="0" rx="140" ry="80" fill="#fae8ff" stroke="#d946ef" stroke-width="4"/>
+                        <text x="0" y="-5" text-anchor="middle" font-weight="900" font-size="18" fill="#86198f">Adobe Brand</text>
+                        <text x="0" y="15" text-anchor="middle" font-weight="900" font-size="18" fill="#86198f">Intelligence</text>
+                        <text x="0" y="40" text-anchor="middle" font-size="12" fill="#86198f">(Brand Ontology Graph)</text>
+                    </g>
+                    <g class="svg-box" data-tip="validate" transform="translate(680, 90)">
+                        <rect x="0" y="0" width="180" height="60" rx="8" fill="#fff" stroke="#d946ef" stroke-width="2"/>
+                        <text x="90" y="25" text-anchor="middle" font-weight="bold" font-size="12">Validate Content</text>
+                        <text x="90" y="40" text-anchor="middle" font-size="10" fill="#666">Automated Compliance</text>
+                    </g>
+                    <g class="svg-box" data-tip="instruct" transform="translate(680, 185)">
+                        <rect x="0" y="0" width="180" height="60" rx="8" fill="#fff" stroke="#d946ef" stroke-width="2"/>
+                        <text x="90" y="25" text-anchor="middle" font-weight="bold" font-size="12">Instruct Creation</text>
+                        <text x="90" y="40" text-anchor="middle" font-size="10" fill="#666">Campaign Brief Assembly</text>
+                    </g>
+                    <g class="svg-box" data-tip="predict" transform="translate(680, 280)">
+                        <rect x="0" y="0" width="180" height="60" rx="8" fill="#fff" stroke="#d946ef" stroke-width="2"/>
+                        <text x="90" y="25" text-anchor="middle" font-weight="bold" font-size="12">Predict Resonance</text>
+                        <text x="90" y="40" text-anchor="middle" font-size="10" fill="#666">Synthetic Audiences</text>
+                    </g>
+                    <path d="M 220 135 Q 260 215 270 215" fill="none" stroke="#888" stroke-width="2" marker-end="url(#arrow-purp)"/>
+                    <line x1="220" y1="215" x2="270" y2="215" stroke="#888" stroke-width="2" marker-end="url(#arrow-purp)"/>
+                    <path d="M 220 295 Q 260 215 270 215" fill="none" stroke="#888" stroke-width="2" marker-end="url(#arrow-purp)"/>
+                    <path d="M 560 215 Q 620 120 670 120" fill="none" stroke="#d946ef" stroke-width="2" marker-end="url(#arrow-purp)"/>
+                    <line x1="560" y1="215" x2="670" y2="215" stroke="#d946ef" stroke-width="2" marker-end="url(#arrow-purp)"/>
+                    <path d="M 560 215 Q 620 310 670 310" fill="none" stroke="#d946ef" stroke-width="2" marker-end="url(#arrow-purp)"/>
+                </svg>`;
+            } else if (id === 'eng-intel') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#22c55e" /></marker>
+                    </defs>
+                    <g class="svg-box" data-tip="signals" transform="translate(50, 160)">
+                        <rect x="0" y="0" width="180" height="80" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                        <text x="90" y="35" text-anchor="middle" font-weight="bold" font-size="14">Customer Signals</text>
+                        <text x="90" y="55" text-anchor="middle" font-size="10" fill="#666">Clicks, Intent, Audio, Video</text>
+                    </g>
+                    <rect x="300" y="80" width="280" height="240" rx="12" fill="#dcfce7" stroke="#22c55e" stroke-width="3"/>
+                    <text x="440" y="120" text-anchor="middle" font-weight="900" font-size="16" fill="#166534">Engagement Intelligence</text>
+                    <g class="svg-box" data-tip="semantic" transform="translate(340, 150)">
+                        <rect x="0" y="0" width="200" height="50" rx="6" fill="#fff" stroke="#86efac" stroke-width="2"/>
+                        <text x="100" y="25" text-anchor="middle" font-weight="bold" fill="#15803d">Semantic Intelligence</text>
+                        <text x="100" y="40" text-anchor="middle" font-size="10" fill="#666">Context & Meaning</text>
+                    </g>
+                    <g class="svg-box" data-tip="predictive" transform="translate(340, 220)">
+                        <rect x="0" y="0" width="200" height="50" rx="6" fill="#fff" stroke="#86efac" stroke-width="2"/>
+                        <text x="100" y="25" text-anchor="middle" font-weight="bold" fill="#15803d">Predictive Decisioning</text>
+                        <text x="100" y="40" text-anchor="middle" font-size="10" fill="#666">Real-time Next Best Action</text>
+                    </g>
+                    <g class="svg-box" data-tip="auto-orch" transform="translate(660, 160)">
+                        <rect x="0" y="0" width="200" height="80" rx="8" fill="#fff" stroke="#1473E6" stroke-width="2"/>
+                        <text x="100" y="30" text-anchor="middle" font-weight="bold" fill="#1473E6">Autonomous Orchestration</text>
+                        <text x="100" y="50" text-anchor="middle" font-size="10" fill="#666">Journey Optimizer</text>
+                        <text x="100" y="65" text-anchor="middle" font-size="10" fill="#666">Marketo Engage</text>
+                    </g>
+                    <line x1="230" y1="200" x2="290" y2="200" stroke="#22c55e" stroke-width="3" marker-end="url(#arrow-green)"/>
+                    <line x1="580" y1="200" x2="650" y2="200" stroke="#1473E6" stroke-width="3" marker-end="url(#arrow-green)"/>
+                </svg>`;
+            } else if (id === 'aep') {
+                return `
+                <svg viewBox="0 0 900 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-plat" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155" /></marker>
+                    </defs>
+                    <g transform="translate(40, 90)">
+                        <g class="svg-box" data-tip="data-crm" transform="translate(0, 0)">
+                            <rect x="0" y="0" width="160" height="40" rx="6" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                            <text x="80" y="25" text-anchor="middle" font-weight="bold" font-size="12">CRM & Offline Data</text>
+                        </g>
+                        <g class="svg-box" data-tip="data-web" transform="translate(0, 70)">
+                            <rect x="0" y="0" width="160" height="40" rx="6" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                            <text x="80" y="25" text-anchor="middle" font-weight="bold" font-size="12">Web & Mobile Behavior</text>
+                        </g>
+                        <g class="svg-box" data-tip="data-comm" transform="translate(0, 140)">
+                            <rect x="0" y="0" width="160" height="40" rx="6" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                            <text x="80" y="25" text-anchor="middle" font-weight="bold" font-size="12">Commerce & POS</text>
+                        </g>
+                    </g>
+                    <rect x="280" y="50" width="320" height="260" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="3"/>
+                    <text x="440" y="90" text-anchor="middle" font-weight="900" font-size="16" fill="#334155">Adobe Experience Platform</text>
+                    <g class="svg-box" data-tip="rtcdp" transform="translate(320, 120)">
+                        <rect x="0" y="0" width="240" height="60" rx="8" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+                        <text x="120" y="25" text-anchor="middle" font-weight="bold" fill="#1d4ed8">Real-Time CDP</text>
+                        <text x="120" y="45" text-anchor="middle" font-size="10" fill="#666">Unified B2B & B2C Profiles</text>
+                    </g>
+                    <g class="svg-box" data-tip="data-eng" transform="translate(320, 200)">
+                        <rect x="0" y="0" width="240" height="60" rx="8" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+                        <text x="120" y="25" text-anchor="middle" font-weight="bold" fill="#4c1d95">Data Engineering Agent</text>
+                        <text x="120" y="45" text-anchor="middle" font-size="10" fill="#666">Automated SQL & Ingestion</text>
+                    </g>
+                    <g class="svg-box" data-tip="activation" transform="translate(680, 130)">
+                        <rect x="0" y="0" width="180" height="100" rx="8" fill="#fff" stroke="#EB1000" stroke-width="2"/>
+                        <text x="90" y="35" text-anchor="middle" font-weight="bold" fill="#EB1000">Omnichannel Activation</text>
+                        <text x="90" y="60" text-anchor="middle" font-size="12" fill="#333">Journey Optimizer</text>
+                        <text x="90" y="80" text-anchor="middle" font-size="12" fill="#333">Digital Advertising</text>
+                    </g>
+                    <path d="M 200 110 Q 240 180 270 180" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-plat)"/>
+                    <line x1="200" y1="180" x2="270" y2="180" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-plat)"/>
+                    <path d="M 200 250 Q 240 180 270 180" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-plat)"/>
+                    <line x1="600" y1="180" x2="670" y2="180" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-plat)"/>
+                </svg>`;
+            }
+            return `<div class="p-12 text-gray-400">Diagram rendering...</div>`;
+        }
+        
+        
+        function initApp() {
+            const hash = window.location.hash.replace('#', '');
+            currentSlideId = jsonData.slides.some(s => s.id === hash) ? hash : 'overview';
+            
+            renderNav();
+            renderSlide();
+            
+            if (hash ) {
+                setTimeout(() => {
+                    const contentSection = document.getElementById('content-area');
+                    if (contentSection) {
+                        const scrollPosition = contentSection.getBoundingClientRect().top + window.scrollY - 24;
+                        window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                    }
+                }, 100);
+            }
+        }
+
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && jsonData.slides.some(s => s.id === hash)) {
+                currentSlideId = hash;
+                renderNav();
+                renderSlide();
+            }
+        });
+
+        initApp(); 
+        
+        document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+        
+    </script>
+</body>
+</html>
