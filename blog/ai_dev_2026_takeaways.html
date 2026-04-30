@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Reality of Agentic Engineering: Insights and Debates from AI Dev 26  | RawWeights</title>
+    <meta name="description" content="What happens when you put 25,000 tools in the hands of AI agents? Dive into my AI Dev 26 conference recap for hands-on insights, networking highlights, and the hard questions we need to answer about multi-agent sandboxing, privacy, and UX.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            600: '#0077b5',
+                        }
+                    }
+                }
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    // 1. Identify all links that want to be grouped
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    // 2. Build the dropdowns
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        // Create the wrapper
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        // Create the Trigger Button
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        // Create the Menu
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        // 3. THE KEY CHANGE: 
+        // Replace the FIRST link of the group in the DOM with our dropdown wrapper
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        // 4. Now move all items (including the first one) into the menu
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        // Click to toggle
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            // Close others
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    // Close when clicking document
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+    </script>
+            <script type="text/javascript" async src="/includes/analytics.js"></script>
+	   <style>
+    	/* Navigation */
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+	<nav>
+	    <a href="/" class="nav-brand">RawWeights</a>
+	    <div class="nav-links">
+	        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+	        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+			<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+			<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+			<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+			<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+			<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+			<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+			<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+	        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+	    </div>
+	</nav>
+	
+
+    <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
+        
+        <main class="w-full lg:w-2/3">
+<!-- Article Content -->
+            <article class="bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                
+                <!-- Header Section -->
+                <header class="mb-10">
+                    <div class="flex items-center gap-3 text-sm text-brand-600 font-semibold uppercase tracking-wide mb-4">
+                        <span>AI Dev 26</span>
+                        <span>&bull;</span>
+                        <span>San Francisco</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-tight mb-6">
+                        Demos, Takeaways, and the Hard Questions Shaping Software Engineering
+                    </h1>
+                    <p class="text-gray-500 font-medium font-sans">Published on April 29, 2026</p>
+                </header>
+
+                <div class="prose prose-lg max-w-none text-gray-700 font-serif leading-relaxed">
+                    <p class="mb-6">
+                        I just spent the last two days at the <strong>AI Dev 26</strong> conference hosted by DeepLearning.AI at Pier 48, and the energy was simply phenomenal. It's one thing to read about the shift toward agentic engineering, but it's another entirely to be sharing the floor with over 3,000 pioneering developers actively building these tools. 
+                    </p>
+                    <p class="mb-8">
+                        The ecosystem on display was massive. Between the hands-on workshops and networking, it was incredible to see builders from major networks like AMD, AWS, Oracle, and Google rubbing shoulders with founders from agile, emerging AI startups. 
+                    </p>
+                    
+				<!-- Highlight Banner with Image -->
+                    <div class="bg-blue-50 border-l-4 border-brand-600 p-6 rounded-r-lg mb-10 font-sans flex flex-col md:flex-row items-center md:items-start gap-6 shadow-sm">
+                        <div class="flex-1">
+                            <p class="text-gray-900 font-semibold m-0 flex items-start gap-3">
+                                <svg class="w-6 h-6 text-brand-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span><strong>Personal Highlight:</strong> I managed to grab a photo with Andrew Ng! His work has paved the way for so many of us in this space, and meeting him was an absolute honor.</span>
+                            </p>
+                        </div>
+                        <!-- Image Container -->
+                        <div class="w-full md:w-1/3 flex-shrink-0">
+                            <!-- ADD YOUR IMAGE PATH BELOW -->
+                            <img src="../images/Sham_Andrew.png" alt="Meeting Andrew Ng at AI Dev 26" class="w-full h-auto rounded-lg shadow-md border border-blue-200 object-cover hover:shadow-lg transition-shadow duration-300">
+                        </div>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-gray-900 font-sans mt-12 mb-6 pb-2 border-b border-gray-200">
+                        The Good Stuff: What I Loved & Tried
+                    </h2>
+                    
+                    <ul class="space-y-5 mb-12 font-sans">
+                        <li class="flex items-start">
+                            <span class="text-brand-600 mr-4 mt-1">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            </span>
+                            <span><strong>Google's Latest:</strong> Paige Bailey from Google DeepMind gave an awesome update on what's new and next, particularly covering Google's latest audio, video, and Gemini models.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-brand-600 mr-4 mt-1">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            </span>
+                            <span><strong>Hands-on Custom Models:</strong> I actually got my hands dirty and built a custom summarizer model using Oumi! Huge thanks to Stefan Webb and Manos Koukoumidis for showing how to go from a prompt to a specialized model so quickly.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-brand-600 mr-4 mt-1">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            </span>
+                            <span><strong>Networking:</strong> Had a really nice time connecting with Amrita Venkatraman from Cursor after her session on cloud-native agent factories.</span>
+                        </li>
+                    </ul>
+
+                    <h2 class="text-2xl font-bold text-gray-900 font-sans mt-12 mb-6 pb-2 border-b border-gray-200">
+                        Post-Session Deep Dives: Questions I Asked the Speakers
+                    </h2>
+                    <p class="mb-8 font-sans">One of the best parts of the conference was having the opportunity to catch the speakers after their sessions. I had some incredible deep-dive discussions on the reality of building these systems. Here are the core questions I brought up with them:</p>
+
+                    <div class="grid gap-6 font-sans mb-12">
+                        <!-- Card 1 -->
+                        <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl hover:shadow-md transition-shadow duration-200">
+                            <h3 class="font-bold text-gray-900 mb-1">Federated Learning Complexity</h3>
+                            <p class="text-sm text-gray-500 mb-4">Discussed with Daniel Beutel (Flower Labs)</p>
+                            <p class="text-gray-700 italic">"Federated learning solves data privacy, but it shifts the complexity to training. How do you ensure robustness when client data distributions are highly uneven or conflicting?"</p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl hover:shadow-md transition-shadow duration-200">
+                            <h3 class="font-bold text-gray-900 mb-1">Generative UI Consistency</h3>
+                            <p class="text-sm text-gray-500 mb-4">Discussed with Atai Barkai (CopilotKit)</p>
+                            <p class="text-gray-700 italic">"How do you prevent unpredictability and maintain UX consistency when the interface itself is being actively generated or modified by an AI agent?"</p>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl hover:shadow-md transition-shadow duration-200">
+                            <h3 class="font-bold text-gray-900 mb-1">Voice UI & Privacy</h3>
+                            <p class="text-sm text-gray-500 mb-4">Discussed with Ashwyn Sharma (Vocal Bridge AI)</p>
+                            <p class="text-gray-700 italic">"Since voice naturally captures sensitive information, how do you handle privacy, consent, and compliance while maintaining real-time processing and analytics?"</p>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl hover:shadow-md transition-shadow duration-200">
+                            <h3 class="font-bold text-gray-900 mb-1">The Real RAG Bottlenecks</h3>
+                            <p class="text-sm text-gray-500 mb-4">Discussed with Jerry Liu (LlamaIndex)</p>
+                            <p class="text-gray-700 italic">"Most RAG failures stem from data ingestion and retrieval rather than the model itself. Where do you see the biggest bottleneck today in production LlamaIndex pipelines?"</p>
+                        </div>
+
+                        <!-- Card 5 -->
+                        <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl hover:shadow-md transition-shadow duration-200">
+                            <h3 class="font-bold text-gray-900 mb-1">Multi-Agent Coordination & Sandboxing</h3>
+                            <p class="text-sm text-gray-500 mb-4">Discussed with João Moura (CrewAI), Andi Partovi (Veris AI), and Tushar Jain (Docker)</p>
+                            <p class="text-gray-700 italic">"As multi-agent systems scale, how do you prevent coordination overhead from outweighing specialization? And how do you ensure behavior observed in a sandboxed agent environment accurately reflects what will happen in production when autonomy and tool access increase?"</p>
+                        </div>
+
+                        <!-- Card 6 -->
+                        <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl hover:shadow-md transition-shadow duration-200">
+                            <h3 class="font-bold text-gray-900 mb-1">The Legal Angles of Massive Tooling</h3>
+                            <p class="text-sm text-gray-500 mb-4">Post-session reflections on Apify</p>
+                            <p class="text-gray-700 italic">"I heard their reasoning on putting 25,000 tools in the hands of agents. It has insanely high potential for many use cases, but from a legal/compliance angle, I'm still not fully convinced. Definitely something to dig into more."</p>
+                        </div>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-gray-900 font-sans mt-12 mb-6 pb-2 border-b border-gray-200">
+                        The Reality of a Packed Schedule: What I Missed
+                    </h2>
+                    <p class="font-sans mb-8">
+                        With three breakout stages running simultaneously across both days—covering everything from Next-Gen Tools to Agent Observability and Foundation Models—it was physically impossible to see it all. I know I missed some incredible insights from teams at Databricks, Snowflake, and Temporal. If you caught those sessions, I'd love to hear your takeaways.
+                    </p>
+
+                </div>
+            </article>
+
+            <!-- Call to Action Banner -->
+            <aside class="bg-gray-900 text-white p-8 sm:p-10 rounded-2xl shadow-lg text-center font-sans">
+                <h3 class="text-2xl font-bold mb-4">Let's Keep the Conversation Going</h3>
+                <p class="text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed">
+                    AI Dev 26 wasn't just about flashy demos; it was a deep dive into the messy, exciting reality of deploying agents into production. If you have thoughts on these questions or the answers the speakers gave, I'd love to hear from you!
+                </p>
+                <a href="https://www.linkedin.com/in/shamhc/" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-semibold rounded-md text-brand-600 bg-white hover:bg-gray-100 transition-colors shadow-sm">
+                    Connect on LinkedIn
+                </a>
+            </aside>
+		</main>
+
+        <aside class="w-full lg:w-1/3">
+            <div class="sticky top-24">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Related posts</h3>
+                    <div id="sidebar-feed" class="flex flex-col space-y-6">
+                        </div>
+                    <a href="/blog.html" class="block w-full text-center mt-6 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition">View All Articles</a>
+                </div>
+
+
+            </div>
+        </aside>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Same Data Source
+        const articles = [
+        	{
+                title: "From Auto-Complete to Custom Assistant: A Visual Guide to LLM Post-Training",
+                excerpt: "Discover how to move beyond basic RAG with our new interactive, visual guide to LLM post-training. Explore step-by-step infographics on data preparation, DPO training, model merging, and test-time compute, inspired by insights from Maxime Labonne's MIT lecture...",
+                date: "Apr 13, 2026",
+                type:"Blog",
+                image: "./images/ptl.jpg",
+                link: "https://rawweights.com/blog/from-auto-complete-to-custom-assistant.html"
+            },    
+            {
+                title: "The Architect's Illusion: Why AI is Transforming Jobs, Not Erasing Them",
+                excerpt: "A visual exploration of the shift from deterministic programming to probabilistic AI. Discover why the limitations of the Universal Approximation Theorem (UAT) are creating new opportunities for Developers, QA, Security, and Architects...",
+                date: "Apr 06, 2026",
+                type:"Blog",
+                image: "./images/uat.jpg",
+                link: "https://rawweights.com/blog/uat.html"
+            },        
+            {
+                title: "Guide to RAG (Retrieval-Augmented Generation)",
+                excerpt: "Learn the architecture, chunking strategies, limitations, and evaluation metrics for AI models. Tailored for Developers, PMs, and Beginners...",
+                date: "Apr 04, 2026",
+                type:"Blog",
+                image: "./images/rag.jpg",
+                link: "https://rawweights.com/guide/rag.html"
+            },        
+            {
+                title: "From Asset Selectors to Liquid Synthesis: How the Bicycle Math of Reinforcement Learning Drives the Next Digital Transformation",
+                excerpt: "Explore an interactive Deep Reinforcement Learning playground that teaches the math behind AI. Discover how continuous policy gradients could transform the web through real-time 'Liquid Synthesis'..",
+                date: "Mar 29, 2026",
+                type:"Blog",
+                image: "./images/rel.jpg",
+                link: "https://rawweights.com/blog/learning-bicycle-math-driving-ai-evolution.html"
+            },
+            {
+                title: "From Plato to Profile Pictures: Unpacking Deep Generative Models",
+                excerpt: "A comprehensive, interactive masterclass on Deep Generative Modeling. Explore Unsupervised Learning, Autoencoders, VAEs, GANs, and Cycle GANs with interactive architectures to understand how AI creates new data..",
+                date: "Mar 23, 2026",
+                type:"Blog",
+                image: "./images/dgm.jpg",
+                link: "https://rawweights.com/blog/variational_breakthrough.html"
+            },
+            {
+                title: "Why Computer Vision is the New Business Intelligence",
+                excerpt: "How do machines actually see? Explore the Tesla vs. Waymo pure vision debate and learn how B2B companies use CNNs to unlock powerful new business metrics..",
+                date: "Mar 15, 2026",
+                type:"Blog",
+                image: "./images/cnnarchi.jpeg",
+                link: "https://rawweights.com/blog/grayscale_logic.html"
+            },
+            {
+                title: "Teaching a Java App to Hear the Heartbeat of the Server",
+                excerpt: "Your own data is the best teacher. Discover why building a local neural network from scratch gives you the visibility needed to navigate the AI era...",
+                date: "Mar 08, 2026",
+                type:"Blog",
+                image: "./images/java_ai_exp.png",
+                link: "https://rawweights.com/blog/teaching-a-java-app-to-hear-the-heartbeat-of-the-server.html"
+            },
+            {
+                title: "Visualizing AI: An Interactive Journey from RNNs to Transformers",
+                excerpt: "Explore the evolution of sequence models. Understand the math and mechanics behind modern AI—from RNNs to Transformers—with 13 hands-on interactive visualizers...",
+                date: "Mar 01, 2026",
+                type:"Blog",
+                image: "./images/transformer.png",
+                link: "https://rawweights.com/blog/visualizing-ai-rnns-to-transformers.html"
+            },
+            {
+                title: "Bridging the Gap Between ML Theory and Intuition: An Interactive Sandbox)",
+                excerpt: "Learning Machine Learning is often a tale of two extremes: high-level conceptual fluff or dense, intimidating calculus. Discover how our new AI & ML Master Playground bridges the gap by turning static equations into dynamic, tactile experiences you can build, break, and manipulate in real-time...",
+                date: "Feb 22, 2026",
+                type:"Blog",
+                image: "./images/sandbox.png",
+                link: "https://rawweights.com/blog/bridging-the-gap-between-ml-theory-and-intuition-in-interactive-sandbox.html"
+            },
+            {
+                title: "Building a Tiny AI in Your Browser (No Python Required)",
+                excerpt: "We adopted micro-frontends two years ago. Here is the unvarnished truth about the bundle size and latency costs we incurred...",
+                date: "Feb 14, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+            },
+            {
+                title: "Why I paused the advanced AI rush to build a simple regression tool",
+                excerpt: "Management isn't about tracking tasks. It's about unblocking people. Here is my framework for effective weekly syncs.",
+                date: "Feb 8, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
+            }
+        ];
+
+        const sidebar = document.getElementById('sidebar-feed');
+
+		sidebar.innerHTML = articles.map(article => {
+		    const isBlog = article.type.toLowerCase() === 'blog';
+		    const iconText = isBlog ? 'Blog' : 'in';
+		    
+		    const excerpt = article.excerpt ? 
+		        `<p class="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+		            ${article.excerpt}
+		        </p>` : '';
+		
+		    return `
+		        <article class="relative group border-b border-gray-100 last:border-0 pb-4 mb-4">
+		            <a href="${article.link}" class="block focus:outline-none">
+		                <h4 class="font-bold text-sm text-gray-800 group-hover:text-brand-600 transition-colors duration-200 leading-snug mb-1">
+		                    ${article.title}
+		                </h4>
+		
+		                <div class="flex items-center space-x-2 text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+		                    <span class="inline-flex items-center justify-center bg-brand-600 text-white rounded-[2px] px-1.5 h-4 min-w-[16px] font-black italic shadow-sm" style="font-size: 7px;">
+		                        ${iconText}
+		                    </span>
+		                    <span>${article.type}</span>
+		                    <span class="text-gray-300">&bull;</span>
+		                    <time datetime="${article.date}">${article.date}</time>
+		                </div>
+		
+		                ${excerpt}
+		
+		                <div class="absolute -left-4 top-0 h-full w-0.5 bg-brand-600 scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-center rounded-full"></div>
+		            </a>
+		        </article>
+		    `;
+		}).join('');
+    </script>
+</body>
+</html>
