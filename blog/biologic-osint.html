@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>BioLogic: AI-Powered OSINT Dashboard - Hackathon Pitch | RawWeights</title>
+    <meta name="title" content="BioLogic: AI-Powered OSINT Dashboard - Hackathon Pitch  | RawWeights">
+    <meta name="description" content="An under-the-hood look at BioLogic, a real-time OSINT health intelligence dashboard. Learn how we integrated React, Node, Java MCP tools, and Gemini AI to aggregate clinical and social data instantly.">
+    <meta name="author" content="RawWeights">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            600: '#0077b5',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0e1111',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+
+	<header class="bg-brand-900 text-white py-20 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+        
+        <div class="w-full lg:w-3/5">
+            <span class="text-brand-200 uppercase tracking-widest text-xs font-bold mb-3 block">Hackathon Pitch 2026</span>
+            <h1 class="text-4xl md:text-5xl font-serif font-bold mb-6 tracking-tight">Stop Searching.<br><span class="text-emerald-400">Start Synthesizing.</span></h1>
+            <p class="text-lg text-brand-50 font-light max-w-2xl">
+                BioLogic is a real-time OSINT dashboard aggregating clinical citations and social momentum. We bypassed black-box AI agents and built a custom Java MCP server from scratch. Select your persona to update this guide with tailored insights.
+            </p>
+
+            <div class="mt-10 flex flex-col md:flex-row md:items-center gap-4 bg-white/10 p-5 rounded-xl border border-white/20 w-full backdrop-blur-sm">
+                <span class="font-semibold text-sm text-white min-w-max">Select Your Role:</span>
+                <div class="flex flex-wrap gap-2">
+                    <button id="btn-beginner" class="persona-btn bg-white text-brand-900 px-4 py-2 text-sm font-medium rounded-md shadow-sm transition" onclick="updatePersona('beginner')">Beginner</button>
+                    <button id="btn-researcher" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('researcher')">Non-Technical</button>
+                    <button id="btn-engineer" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('engineer')">Technical Engineer</button>
+                    <button id="btn-judge" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('judge')">Hackathon Judge</button>
+                </div>
+            </div>
+            <p id="persona-desc" class="text-sm text-brand-200 mt-3 italic font-medium h-6">"I just want an answer I can trust without writing code."</p>
+        </div>
+
+        <div class="w-full lg:w-2/5 relative">
+            <div class="absolute -inset-4 bg-emerald-600/40 blur-3xl rounded-full z-0"></div>
+            
+            <div class="w-full aspect-video rounded-2xl shadow-2xl border border-white/10 relative z-10 object-cover bg-brand-950/80 backdrop-blur-md flex flex-col items-center justify-center overflow-hidden group cursor-pointer">
+                <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] group-hover:scale-110 transition-transform">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white" class="ml-1"><path d="M5 3l14 9-14 9V3z"/></svg>
+                </div>
+                <div class="absolute bottom-4 left-4 text-xs font-mono text-brand-200 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <div class="w-full aspect-video rounded-2xl shadow-2xl border border-white/10 relative z-10 overflow-hidden bg-black">
+        <video 
+            class="w-full h-full object-cover" 
+            controls 
+            preload="metadata"
+            poster="../images/videos/biologic.mp4">
+            <source src="Hackathon_Pitch_Demo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+
+
+<main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col lg:flex-row gap-12 relative">
+        
+    <aside class="lg:w-1/4 flex-shrink-0">
+        <div class="sticky top-24 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Pitch Contents</h5>
+            <ul id="toc-menu" class="space-y-3 text-sm font-medium text-gray-500">
+                <li><a href="#foundation" class="toc-link block hover:text-emerald-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-emerald-600">1.</span> The Philosophy</a></li>
+                <li><a href="#industry-impact" class="toc-link block hover:text-emerald-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-emerald-600">2.</span> Deep Architecture</a></li>
+                <li><a href="#core-risks" class="toc-link block hover:text-emerald-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-emerald-600">3.</span> Why It Matters</a></li>
+                <li><a href="#interactive" class="toc-link block hover:text-emerald-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-emerald-600">4.</span> Technical Hurdles</a></li>
+                <li><a href="#watch-report" class="toc-link block hover:text-emerald-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-emerald-600">5.</span> Engineering ROI</a></li>
+                <li><a href="#checklist" class="toc-link block hover:text-emerald-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-emerald-600">6.</span> Action Checklist</a></li>
+                <li><a href="#notable-cases" class="toc-link block hover:text-emerald-600 transition-all duration-300 flex items-center gap-2"><span class="w-4 text-emerald-600">7.</span> Technical Deep Dives</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <div class="lg:w-3/4 space-y-16">
+
+        <section id="foundation" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">1. The Core Philosophy</h2>
+            <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 rounded-r-xl">
+                <p class="text-xl italic text-gray-800 font-serif mb-3">
+                    "Health intelligence is dangerously fragmented. Clinical trials are locked in rigid databases, while real-world human experiences are buried in Reddit threads."
+                </p>
+                <p id="dynamic-foundation-text" class="text-sm text-gray-700 leading-relaxed font-medium"></p>
+            </div>
+        </section>
+
+        <section id="industry-impact" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">2. System Architecture</h2>
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8 p-6 md:p-10">
+                <h3 class="text-lg font-bold text-gray-900 mb-2 text-center">Data Flow Map</h3>
+                <p class="text-sm text-gray-500 text-center mb-8">How BioLogic bridges the gap between the Vercel AI SDK and custom Java Tooling.</p>
+                
+                <div class="w-full max-w-4xl mx-auto">
+                    <svg viewBox="0 0 1000 400" class="w-full h-auto drop-shadow-sm font-sans">
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+                            </marker>
+                            <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+                                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.05"/>
+                            </filter>
+                        </defs>
+
+                        <rect x="50" y="150" width="160" height="80" rx="8" fill="#f8fafc" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
+                        <text x="130" y="185" font-weight="bold" fill="#0f172a" font-size="16" text-anchor="middle">React UI</text>
+                        <text x="130" y="210" font-family="monospace" fill="#64748b" font-size="12" text-anchor="middle">Vercel AI SDK</text>
+
+                        <rect x="350" y="150" width="160" height="80" rx="8" fill="#f8fafc" stroke="#8b5cf6" stroke-width="2" filter="url(#shadow)"/>
+                        <text x="430" y="185" font-weight="bold" fill="#0f172a" font-size="16" text-anchor="middle">Node.js Relay</text>
+                        <text x="430" y="210" font-family="monospace" fill="#64748b" font-size="12" text-anchor="middle">Custom HTTP POST</text>
+
+                        <rect x="650" y="150" width="160" height="80" rx="8" fill="#f8fafc" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+                        <text x="730" y="185" font-weight="bold" fill="#0f172a" font-size="16" text-anchor="middle">Java MCP Server</text>
+                        <text x="730" y="210" font-family="monospace" fill="#64748b" font-size="12" text-anchor="middle">Javalin Extractor</text>
+
+                        <rect x="880" y="80" width="100" height="40" rx="4" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+                        <text x="930" y="105" font-size="12" font-weight="600" fill="#991b1b" text-anchor="middle">PubMed API</text>
+
+                        <rect x="880" y="170" width="100" height="40" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1"/>
+                        <text x="930" y="195" font-size="12" font-weight="600" fill="#c2410c" text-anchor="middle">Reddit API</text>
+
+                        <path d="M 210 190 L 340 190" stroke="#475569" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)"/>
+                        <text x="275" y="180" font-size="12" fill="#64748b" text-anchor="middle">JSON Stream</text>
+
+                        <path d="M 510 190 L 640 190" stroke="#475569" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)"/>
+                        <text x="575" y="180" font-size="12" fill="#64748b" text-anchor="middle">HTTP POST</text>
+
+                        <path d="M 810 170 L 870 100" stroke="#475569" stroke-width="1" marker-end="url(#arrow)"/>
+                        <path d="M 810 190 L 870 190" stroke="#475569" stroke-width="1" marker-end="url(#arrow)"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative">
+                <div class="p-8 md:p-12 min-h-[300px] flex flex-col justify-center">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span id="carousel-letter" class="bg-emerald-100 text-emerald-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">A</span>
+                        <h3 id="carousel-title" class="text-2xl font-bold text-gray-900"></h3>
+                    </div>
+                    <p id="carousel-desc" class="text-gray-700 text-lg leading-relaxed mb-6"></p>
+                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-100">
+                        <strong class="text-emerald-700 block mb-1 uppercase text-xs tracking-wider">Impact on Your Role:</strong>
+                        <p id="carousel-impact" class="text-gray-800 text-sm"></p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 border-t border-gray-100 px-8 py-4 flex items-center justify-between">
+                    <button onclick="prevSlide()" class="text-gray-500 hover:text-emerald-600 font-semibold text-sm flex items-center transition">
+                        &larr; Previous
+                    </button>
+                    <div id="carousel-dots" class="flex gap-2"></div>
+                    <button onclick="nextSlide()" class="text-gray-500 hover:text-emerald-600 font-semibold text-sm flex items-center transition">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="core-risks" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">3. Why This Architecture Matters For You</h2>
+            <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+                <table class="min-w-full text-left border-collapse">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-1/3">Core Component</th>
+                            <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-2/3">The Persona Benefit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="risks-table-body" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="interactive" class="scroll-mt-24">
+            <div class="bg-slate-900 rounded-2xl overflow-hidden shadow-xl">
+                <div class="p-8 text-center border-b border-slate-800">
+                    <h2 class="text-3xl font-bold text-white mb-3">4. Technical Hurdles Visualizer</h2>
+                    <p class="text-sm text-slate-400 max-w-2xl mx-auto">Select a technical challenge we faced below and step through the animation to see how we engineered a solution.</p>
+                </div>
+                
+                <div class="w-full bg-white">
+                    <div class="flex flex-wrap border-b border-gray-200 bg-gray-50">
+                        <button class="tab-btn active flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-emerald-600 transition border-b-2 border-transparent" onclick="setConcept('tools')">Invisible Tools</button>
+                        <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-emerald-600 transition border-b-2 border-transparent" onclick="setConcept('sse')">SSE 400 Error</button>
+                        <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-emerald-600 transition border-b-2 border-transparent" onclick="setConcept('crash')">UI Data Crash</button>
+                        <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-gray-600 hover:text-emerald-600 transition border-b-2 border-transparent" onclick="setConcept('schema')">Vercel Typings</button>
+                    </div>
+                    
+                    <div class="relative w-full h-72 bg-slate-800 overflow-hidden">
+                        
+                        <div id="scene-tools" class="scene active step-1 absolute inset-0 w-full h-full">
+                            <svg viewBox="0 0 600 300" class="w-full h-full">
+                                <rect x="100" y="100" width="80" height="100" rx="8" fill="#3b82f6"/>
+                                <text x="140" y="155" text-anchor="middle" fill="white" font-weight="bold">AI Node</text>
+                                
+                                <rect x="400" y="100" width="80" height="100" rx="8" fill="#8b5cf6"/>
+                                <text x="440" y="155" text-anchor="middle" fill="white" font-weight="bold">Java MCP</text>
+                                
+                                <g id="tool-search" transform="translate(180, 130)">
+                                    <path d="M0 0 L 200 0" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4"/>
+                                    <text x="100" y="-10" text-anchor="middle" fill="#cbd5e1" font-size="12">"Do you have tools?"</text>
+                                </g>
+
+                                <g id="tool-reply-bad" transform="translate(180, 160)">
+                                    <path d="M200 0 L 0 0" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/>
+                                    <text x="100" y="20" text-anchor="middle" fill="#ef4444" font-size="12">Error: No Handshake</text>
+                                </g>
+
+                                <g id="tool-reply-good" transform="translate(180, 160)" opacity="0">
+                                    <path d="M200 0 L 0 0" stroke="#10b981" stroke-width="2" stroke-dasharray="4"/>
+                                    <text x="100" y="20" text-anchor="middle" fill="#10b981" font-size="12">{"capabilities": {"tools": {}}}</text>
+                                </g>
+                            </svg>
+                        </div>
+                        
+                        <div id="scene-sse" class="scene step-1 absolute inset-0 w-full h-full">
+                            <svg viewBox="0 0 600 300" class="w-full h-full">
+                                <rect x="100" y="100" width="80" height="100" rx="8" fill="#3b82f6"/>
+                                <text x="140" y="155" text-anchor="middle" fill="white" font-weight="bold">Node</text>
+                                
+                                <rect x="400" y="100" width="80" height="100" rx="8" fill="#8b5cf6"/>
+                                <text x="440" y="155" text-anchor="middle" fill="white" font-weight="bold">Javalin</text>
+
+                                <path id="sse-line" d="M 180 150 L 400 150" stroke="#ef4444" stroke-width="4" stroke-dasharray="10"/>
+                                <text id="sse-text" x="290" y="140" text-anchor="middle" fill="#ef4444" font-weight="bold">SSE Stream (400 Rejected)</text>
+                                
+                                <path id="http-line" d="M 180 150 L 400 150" stroke="#10b981" stroke-width="4" opacity="0"/>
+                                <text id="http-text" x="290" y="140" text-anchor="middle" fill="#10b981" font-weight="bold" opacity="0">HTTP POST ByPass (200 OK)</text>
+                            </svg>
+                        </div>
+
+                        <div id="scene-crash" class="scene step-1 absolute inset-0 w-full h-full">
+                            <svg viewBox="0 0 600 300" class="w-full h-full">
+                                <rect id="ui-screen" x="200" y="50" width="200" height="150" fill="#1e293b" rx="8" stroke="#475569" stroke-width="4"/>
+                                <text x="300" y="125" text-anchor="middle" fill="white" font-weight="bold">React Chart</text>
+                                
+                                <g id="crash-data" transform="translate(300, 250)">
+                                    <circle cx="0" cy="0" r="10" fill="#f59e0b"/>
+                                    <text x="20" y="5" fill="#f59e0b" font-size="12">Half-Streamed Data</text>
+                                </g>
+
+                                <path id="crash-shield" d="M 220 200 L 380 200" stroke="#10b981" stroke-width="6" opacity="0"/>
+                                <text id="crash-shield-text" x="300" y="225" text-anchor="middle" fill="#10b981" font-weight="bold" font-size="12" opacity="0">Array.isArray() Shield</text>
+                            </svg>
+                        </div>
+
+                        <div id="scene-schema" class="scene step-1 absolute inset-0 w-full h-full">
+                            <svg viewBox="0 0 600 300" class="w-full h-full">
+                                <rect x="50" y="100" width="150" height="80" fill="#3b82f6" rx="8"/>
+                                <text x="125" y="145" text-anchor="middle" fill="white" font-weight="bold">Vercel Parser</text>
+                                
+                                <g id="schema-bad" transform="translate(250, 110)">
+                                    <rect x="0" y="0" width="100" height="20" fill="#ef4444" rx="4"/>
+                                    <text x="50" y="15" text-anchor="middle" fill="white" font-size="10">type: "object"</text>
+                                    <rect x="120" y="-10" width="40" height="40" fill="#1e293b" stroke="#ef4444"/>
+                                    <text x="140" y="15" text-anchor="middle" fill="#ef4444" font-size="10">Dropped</text>
+                                </g>
+
+                                <g id="schema-good" transform="translate(250, 160)" opacity="0">
+                                    <rect x="0" y="0" width="100" height="20" fill="#10b981" rx="4"/>
+                                    <text x="50" y="15" text-anchor="middle" fill="white" font-size="10">type: "object[]"</text>
+                                    <rect x="120" y="-10" width="40" height="40" fill="#1e293b" stroke="#10b981"/>
+                                    <text x="140" y="15" text-anchor="middle" fill="#10b981" font-size="10">Parsed!</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="p-8 bg-white border-t border-gray-100">
+                        <div class="flex justify-center space-x-3 mb-6">
+                            <button class="step-btn active px-6 py-2 text-sm font-semibold rounded-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition" id="btn-step-1" onclick="setStep(1)">1. The Problem</button>
+                            <button class="step-btn px-6 py-2 text-sm font-semibold rounded-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition" id="btn-step-2" onclick="setStep(2)">2. The Crash</button>
+                            <button class="step-btn px-6 py-2 text-sm font-semibold rounded-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition" id="btn-step-3" onclick="setStep(3)">3. The Solution</button>
+                        </div>
+                        <div class="text-gray-800 text-sm md:text-base bg-emerald-50/50 p-6 rounded-xl border border-emerald-100 shadow-inner min-h-[120px] flex items-center" id="explanation-text"></div>
+                        
+                        <div id="dynamic-visualizer-tip" class="mt-4 text-sm font-medium text-emerald-700 bg-emerald-50 p-3 rounded-md border border-emerald-100 text-center"></div>
+                    </div>
+
+                    <style>
+                        .tab-btn.active { border-bottom-color: #10b981; color: #10b981; background-color: #ffffff; }
+                        .step-btn.active { background-color: #10b981; color: white; border-color: #10b981; }
+                        .scene { display: none; }
+                        .scene.active { display: block; }
+                        
+                        /* Animations for BioLogic */
+                        /* Scene 1: Tools */
+                        #tool-reply-bad, #tool-reply-good { transition: opacity 0.5s; }
+                        .step-2 #tool-reply-bad { opacity: 1; }
+                        .step-3 #tool-reply-bad { opacity: 0; }
+                        .step-3 #tool-reply-good { opacity: 1; }
+
+                        /* Scene 2: SSE */
+                        #sse-line, #sse-text, #http-line, #http-text { transition: opacity 0.5s; }
+                        .step-3 #sse-line, .step-3 #sse-text { opacity: 0; }
+                        .step-3 #http-line, .step-3 #http-text { opacity: 1; }
+
+                        /* Scene 3: Crash */
+                        #crash-data { transition: transform 1s; }
+                        .step-2 #crash-data { transform: translate(300, 125); }
+                        .step-2 #ui-screen { fill: #ef4444; transition: fill 0.5s 0.8s; }
+                        .step-3 #crash-data { transform: translate(300, 220); }
+                        .step-3 #ui-screen { fill: #1e293b; }
+                        .step-3 #crash-shield, .step-3 #crash-shield-text { opacity: 1; transition: opacity 0.5s; }
+
+                        /* Scene 4: Schema */
+                        #schema-bad, #schema-good { transition: opacity 0.5s; }
+                        .step-3 #schema-bad { opacity: 0; }
+                        .step-3 #schema-good { opacity: 1; }
+                    </style>
+                </div>
+            </div>
+        </section>
+        
+        <section id="watch-report" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">5. Engineering ROI & Strategy</h2>
+            <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+                <table class="min-w-full text-left border-collapse">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-1/3">Strategy Adopted</th>
+                            <th class="px-6 py-4 text-sm font-bold text-gray-900 uppercase tracking-wider w-2/3">Time/Cost Saved</th>
+                        </tr>
+                    </thead>
+                    <tbody id="watch-report-table-body" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="checklist" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">6. Persona Takeaways</h2>
+            <div id="checklist-items" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <section id="notable-cases" class="scroll-mt-24 mt-16 pt-8 border-t border-gray-200">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">7. OSINT Deep Dives</h2>
+            <p class="text-gray-700 text-sm mb-8 max-w-3xl">Beyond the core dashboard, here are some of the most complex clinical synthesis tasks our LLM was able to execute autonomously using the MCP tools.</p>
+            
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative">
+                <div class="p-8 md:p-12 min-h-[250px] flex flex-col justify-center bg-slate-50">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span id="case-letter" class="bg-brand-900 text-brand-100 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">1</span>
+                        <h3 id="case-title" class="text-2xl font-bold text-gray-900"></h3>
+                    </div>
+                    <p id="case-desc" class="text-gray-700 text-lg leading-relaxed"></p>
+                </div>
+
+                <div class="bg-gray-100 border-t border-gray-200 px-8 py-4 flex items-center justify-between">
+                    <button onclick="prevCase()" class="text-gray-500 hover:text-emerald-600 font-semibold text-sm flex items-center transition">
+                        &larr; Previous
+                    </button>
+                    <div id="case-dots" class="flex gap-2"></div>
+                    <button onclick="nextCase()" class="text-gray-500 hover:text-emerald-600 font-semibold text-sm flex items-center transition">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+const personaData = {
+    beginner: {
+        desc: "Viewing as: Beginner. Focus on ease of use and natural language queries.",
+        foundation: "You shouldn't need a PhD to understand health protocols. BioLogic abstracts away the complexity of medical journals and API endpoints. You simply ask a question, and the LLM safely routes the request, reads the papers, and gives you a 0-100 validity score.",
+        threats: [
+            { letter: "A", title: "Information Overload", desc: "Reading raw clinical trials on PubMed is overwhelming and jargon-heavy.", impact: "BioLogic synthesizes thousands of words into a single, understandable paragraph." },
+            { letter: "B", title: "Snake Oil Supplements", desc: "Social media is full of unverified health claims that can be dangerous.", impact: "The dashboard cross-references Reddit hype directly against actual clinical trial data." },
+            { letter: "C", title: "No Code Required", desc: "Accessing public datasets usually requires writing Python scripts.", impact: "The LLM writes and executes the data-fetch scripts in the background for you." },
+            { letter: "D", title: "Visual Certainty", desc: "Text answers from AI can be vague.", impact: "We enforce strict JSON returns to guarantee data is visualized cleanly on a 0-100 scale." }
+        ],
+        risks: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Natural Language</td><td class="px-6 py-4 text-sm text-gray-700">No need to learn complex search syntax or API headers.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Validity Score</td><td class="px-6 py-4 text-sm text-gray-700">Instantly see if a claim is backed by science or just internet hype.</td></tr>
+        `,
+        watch: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">No LLM Hallucinations</td><td class="px-6 py-4 text-sm text-gray-700">Because the LLM reads real PubMed data, it stops making things up.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Free Access</td><td class="px-6 py-4 text-sm text-gray-700">Bypasses paywalls by accessing open-access data through our Java relay.</td></tr>
+        `,
+        checklist: `
+            <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Ask Anything</h4><p class="text-sm text-gray-700 mt-1">Try: "Is NMN actually proven to work?"</p></div></div>
+        `,
+        tip: "Beginner Tip: Trust the Validity Score. It only goes up if the LLM successfully pulls a real clinical trial from the Java tool."
+    },
+    researcher: {
+        desc: "Viewing as: Non-Technical Researcher. Focus on data aggregation and sentiment analysis.",
+        foundation: "As a researcher, your biggest bottleneck is having 20 tabs open. BioLogic gives you a God-view of a topic. It pulls strict clinical data from PubMed and juxtaposes it against community sentiment from Reddit and HackerNews, instantly revealing where public opinion diverges from science.",
+        threats: [
+            { letter: "A", title: "Data Silos", desc: "Scientific data and social data live on completely different platforms.", impact: "Our Java MCP Server acts as a bridge, giving the LLM a unified view of both." },
+            { letter: "B", title: "Time Scraping", desc: "Manually searching Reddit for anecdotal evidence takes hours.", impact: "The AI summarizes hundreds of community comments into a single 'Signal' metric." },
+            { letter: "C", title: "Citation Tracking", desc: "Losing track of where a specific claim came from.", impact: "The dashboard explicitly forces the LLM to provide a timeline of sources and links." },
+            { letter: "D", title: "Format Parsing", desc: "Different APIs return data in messy, different formats (XML vs JSON).", impact: "The LLM intelligently reads whatever the API throws at it and normalizes it." }
+        ],
+        risks: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Unified Dashboard</td><td class="px-6 py-4 text-sm text-gray-700">See clinical validity and social momentum side-by-side.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Real-Time Fetching</td><td class="px-6 py-4 text-sm text-gray-700">Data isn't based on old training data; it fetches the live internet today.</td></tr>
+        `,
+        watch: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Automated Summary</td><td class="px-6 py-4 text-sm text-gray-700">Saved hours compiling literature reviews.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Trend Spotting</td><td class="px-6 py-4 text-sm text-gray-700">Identifies hype cycles before clinical trials catch up.</td></tr>
+        `,
+        checklist: `
+            <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Compare Datasets</h4><p class="text-sm text-gray-700 mt-1">Prompt the AI to explicitly compare PubMed results with Reddit anecdotes.</p></div></div>
+        `,
+        tip: "Researcher Tip: Use the 'OSINT Timeline' section to click directly through to the source documents the AI found."
+    },
+    engineer: {
+        desc: "Viewing as: Technical Engineer. Focus on MCP Tooling, Custom Transports, and Strict Typings.",
+        foundation: "We didn't just use a no-code wrapper. We built a custom Express Node.js relay and a Java Javalin backend. We had to write a Custom HTTP Transport to bypass strict SSE stream requirements, and utilized strict Vercel AI SDK JSON schemas to prevent React from crashing during data hydration.",
+        threats: [
+            { letter: "A", title: "Invisible Tools Bug", desc: "The AI claimed it didn't have internet access even though the tools were wired up.", impact: "We injected an explicit capabilities payload into the Java handshake to announce the tools." },
+            { letter: "B", title: "The 400 Bad Request", desc: "Node.js failed to connect to Javalin because Java strictly expected an SSE connection.", impact: "Wrote a custom HTTP POST Transport class in TypeScript to force pure JSON stateless requests." },
+            { letter: "C", title: "UI Streaming Crash", desc: "React crashed with a white screen because Recharts tried to render half-completed data arrays.", impact: "Implemented defensive Array.isArray() checks to allow graceful UI loading states." },
+            { letter: "D", title: "Vercel Strict Typings", desc: "Vercel SDK silently dropped our engagement data because it wasn't typed perfectly.", impact: "Defined strict object[] schemas with explicit attributes in the useCopilotAction." }
+        ],
+        risks: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">React Frontend</td><td class="px-6 py-4 text-sm text-gray-700">Defensive programming ensures no white-screen-of-death during streams.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Node Relay</td><td class="px-6 py-4 text-sm text-gray-700">Custom HTTP Bypass proves mastery of the underlying transport layer.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Java Backend</td><td class="px-6 py-4 text-sm text-gray-700">Manual JSON handshake configuration bypassed buggy SDK implementations.</td></tr>
+        `,
+        watch: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">UI Mockups First</td><td class="px-6 py-4 text-sm text-gray-700">Validating the UI layout before burning expensive LLM tokens.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">AI as API Tester</td><td class="px-6 py-4 text-sm text-gray-700">The LLM parsed the messy API returns automatically, saving manual mapping time.</td></tr>
+        `,
+        checklist: `
+            <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Check the Console</h4><p class="text-sm text-gray-700 mt-1">Open DevTools to watch the raw JSON stream populate perfectly.</p></div></div>
+        `,
+        tip: "Engineer Tip: The Vercel AI SDK strictly enforces 'object[]'. If you just use 'object' for an array, it silently drops the data."
+    },
+    judge: {
+        desc: "Viewing as: Hackathon Judge. Focus on Architecture, ROI, and bypassing Black-Box tools.",
+        foundation: "We could have used an out-of-the-box agent generator, but we wanted to understand the engine. BioLogic proves we can wire a custom Java Server directly into a React frontend using the Model Context Protocol, solving complex asynchronous streaming and routing issues manually.",
+        threats: [
+            { letter: "A", title: "Complete Understanding", desc: "Black-box AI wrappers abstract away the actual engineering.", impact: "We built the transport layer, the schema validation, and the UI fallbacks entirely from scratch." },
+            { letter: "B", title: "Lean Execution", desc: "API tokens get expensive during debugging.", impact: "We built a hardcoded MOCK state in React to perfect the UI before ever turning the AI on." },
+            { letter: "C", title: "Real World Utility", desc: "Many AI projects are toys. This solves a real problem.", impact: "Aggregating clinical and social data instantly saves actual researchers hours of manual scraping." },
+            { letter: "D", title: "Technical Persistence", desc: "The Java MCP SDK had strict SSE bugs that blocked progress.", impact: "We engineered a custom TypeScript bypass to force HTTP POST communication, refusing to be blocked." }
+        ],
+        risks: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Custom Tooling</td><td class="px-6 py-4 text-sm text-gray-700">We didn't rely on pre-built plugins; we wrote the Java API fetchers ourselves.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Resilient UI</td><td class="px-6 py-4 text-sm text-gray-700">The dashboard gracefully handles half-streamed JSON data without crashing.</td></tr>
+        `,
+        watch: `
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Time to MVP</td><td class="px-6 py-4 text-sm text-gray-700">By letting the AI parse the API returns, we skipped hours of tedious JSON mapping.</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">Cost Savings</td><td class="px-6 py-4 text-sm text-gray-700">Mocking data saved 80% of our LLM token budget during development.</td></tr>
+        `,
+        checklist: `
+            <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Review the Code</h4><p class="text-sm text-gray-700 mt-1">Look at server.js to see our custom HttpPostTransport class.</p></div></div>
+            <div class="flex items-start bg-white p-5 rounded-lg border border-gray-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-gray-900">Try the Prompts</h4><p class="text-sm text-gray-700 mt-1">Ask the dashboard: 'Analyze NAD+ protocols.'</p></div></div>
+        `,
+        tip: "Judge Tip: We successfully merged Java (Backend), Node (Relay), React (Frontend), and Gemini (LLM) into a single unified protocol."
+    }
+};
+
+let currentPersona = 'beginner';
+let currentSlideIndex = 0;
+
+function updatePersona(role) {
+    currentPersona = role;
+    currentSlideIndex = 0; 
+
+    document.querySelectorAll('.persona-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-brand-900');
+        btn.classList.add('text-brand-100', 'border-brand-600');
+    });
+    const activeBtn = document.getElementById('btn-' + role);
+    activeBtn.classList.remove('text-brand-100', 'border-brand-600');
+    activeBtn.classList.add('bg-white', 'text-brand-900');
+
+    const data = personaData[role];
+    document.getElementById('persona-desc').innerText = data.desc;
+    document.getElementById('dynamic-foundation-text').innerText = data.foundation;
+    document.getElementById('risks-table-body').innerHTML = data.risks;
+    document.getElementById('watch-report-table-body').innerHTML = data.watch;
+    document.getElementById('checklist-items').innerHTML = data.checklist;
+    document.getElementById('dynamic-visualizer-tip').innerText = data.tip;
+
+    renderCarousel();
+}
+
+function renderCarousel() {
+    const data = personaData[currentPersona].threats[currentSlideIndex];
+    
+    document.getElementById('carousel-letter').innerText = data.letter;
+    document.getElementById('carousel-title').innerText = data.title;
+    document.getElementById('carousel-desc').innerHTML = data.desc;
+    document.getElementById('carousel-impact').innerText = data.impact;
+
+    const dotsContainer = document.getElementById('carousel-dots');
+    dotsContainer.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+        const dot = document.createElement('button');
+        dot.onclick = () => { currentSlideIndex = i; renderCarousel(); };
+        dot.className = `w-3 h-3 rounded-full transition ${i === currentSlideIndex ? 'bg-emerald-600' : 'bg-gray-300 hover:bg-gray-400'}`;
+        dotsContainer.appendChild(dot);
+    }
+}
+
+function nextSlide() {
+    currentSlideIndex = (currentSlideIndex + 1) % 4;
+    renderCarousel();
+}
+
+function prevSlide() {
+    currentSlideIndex = (currentSlideIndex - 1 + 4) % 4;
+    renderCarousel();
+}
+
+updatePersona('beginner');
+
+const caseData = [
+    { 
+        letter: "1", 
+        title: "NAD+ Augmentation Protocols", 
+        desc: "Prompted to analyze NMN and NAD+. The LLM successfully fetched 3 recent PubMed clinical trials confirming systemic elevation, then cross-referenced them with HackerNews threads to gauge community sentiment." 
+    },
+    { 
+        letter: "2", 
+        title: "The Defensive 'Mock' Toggle", 
+        desc: "Instead of burning API tokens during CSS styling, we wired the React dashboard to a hardcoded TEST_DATA object. This allowed us to perfectly style the Recharts and Animations without hitting the LLM once." 
+    },
+    { 
+        letter: "3", 
+        title: "Bypassing the Strict SSE SDK", 
+        desc: "When the standard Java MCP SDK threw constant 400 Bad Request errors due to strict SSE requirements, we engineered a custom 20-line HttpPostTransport in Node to force successful communication." 
+    },
+    { 
+        letter: "4", 
+        title: "Vercel Schema Mapping", 
+        desc: "We utilized strict Zod-like JSON schema typing in the useCopilotAction hook. By defining 'object[]' with explicit attributes, the AI returned flawless arrays every time." 
+    }
+];
+
+let currentCaseIndex = 0;
+
+function renderCaseCarousel() {
+    const data = caseData[currentCaseIndex];
+    
+    document.getElementById('case-letter').innerText = data.letter;
+    document.getElementById('case-title').innerText = data.title;
+    document.getElementById('case-desc').innerText = data.desc;
+
+    const dotsContainer = document.getElementById('case-dots');
+    dotsContainer.innerHTML = '';
+    for (let i = 0; i < caseData.length; i++) {
+        const dot = document.createElement('button');
+        dot.onclick = () => { currentCaseIndex = i; renderCaseCarousel(); };
+        dot.className = `w-3 h-3 rounded-full transition ${i === currentCaseIndex ? 'bg-emerald-600' : 'bg-gray-300 hover:bg-gray-400'}`;
+        dotsContainer.appendChild(dot);
+    }
+}
+
+function nextCase() {
+    currentCaseIndex = (currentCaseIndex + 1) % caseData.length;
+    renderCaseCarousel();
+}
+
+function prevCase() {
+    currentCaseIndex = (currentCaseIndex - 1 + caseData.length) % caseData.length;
+    renderCaseCarousel();
+}
+
+renderCaseCarousel();
+
+const svgContent = {
+    'tools': {
+        1: "<strong>The Problem:</strong> Node asks Java if it has any tools. Java replies but forgets to explicitly declare them.",
+        2: "<strong>The Crash:</strong> The AI tries to search the web, realizes it has no tools, and hallucinates 'I don't have internet access.'",
+        3: "<strong>The Fix:</strong> We explicitly inject a capabilities JSON payload into the Java handshake, forcing it to announce its tools."
+    },
+    'sse': {
+        1: "<strong>The Problem:</strong> Node tries to establish a continuous stream to Java.",
+        2: "<strong>The Crash:</strong> The strict Java SDK rejects the connection with a 400 Bad Request because of a minor header mismatch.",
+        3: "<strong>The Fix:</strong> We bypass the SDK completely and write a custom HTTP POST relay to send flat JSON instead."
+    },
+    'crash': {
+        1: "<strong>The Problem:</strong> The LLM streams an array of data chunk by chunk.",
+        2: "<strong>The Crash:</strong> React tries to run `.map()` on the array before it finishes loading, crashing the entire dashboard with a white screen.",
+        3: "<strong>The Fix:</strong> Defensive programming. We wrap the components in an `Array.isArray()` shield, keeping them safe until the data is fully formed."
+    },
+    'schema': {
+        1: "<strong>The Problem:</strong> We tell the AI to return engagement data as an 'object'.",
+        2: "<strong>The Crash:</strong> The Vercel SDK parser sees an Array of Objects, realizes it doesn't match the strict 'object' definition, and drops the data.",
+        3: "<strong>The Fix:</strong> We update the schema strictly to 'object[]' with explicit attributes, forcing perfect parsing."
+    }
+};
+
+let currentConcept = 'tools';
+
+function setConcept(concept) {
+    currentConcept = concept;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.scene').forEach(scene => scene.classList.remove('active'));
+    document.getElementById('scene-' + concept).classList.add('active');
+    setStep(1);
+}
+
+function setStep(step) {
+    document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('btn-step-' + step).classList.add('active');
+    document.getElementById('explanation-text').innerHTML = svgContent[currentConcept][step];
+    const scene = document.getElementById('scene-' + currentConcept);
+    scene.classList.remove('step-1', 'step-2', 'step-3');
+    scene.classList.add('step-' + step);
+}
+
+setStep(1);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+        root: null,
+        rootMargin: '-50% 0px -50% 0px', 
+        threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                
+                document.querySelectorAll('.toc-link').forEach(link => {
+                    link.classList.remove('text-emerald-700', 'font-bold', 'translate-x-2');
+                    link.classList.add('text-gray-500');
+                });
+
+                const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                if (activeLink) {
+                    activeLink.classList.remove('text-gray-500');
+                    activeLink.classList.add('text-emerald-700', 'font-bold', 'translate-x-2');
+                }
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('section[id]').forEach((section) => {
+        observer.observe(section);
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    // 1. Identify all links that want to be grouped
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    // 2. Build the dropdowns
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        // Create the wrapper
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        // Create the Trigger Button
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        // Create the Menu
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        // 3. THE KEY CHANGE: 
+        // Replace the FIRST link of the group in the DOM with our dropdown wrapper
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        // 4. Now move all items (including the first one) into the menu
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        // Click to toggle
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            // Close others
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    // Close when clicking document
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+
+</script>
+
+ <style>
+                            .tab-btn.active { border-bottom-color: #0077b5; color: #0077b5; background-color: #ffffff; }
+                            .step-btn.active { background-color: #0077b5; color: white; border-color: #0077b5; }
+                            .scene { display: none; }
+                            .scene.active { display: block; }
+                            
+                            /* Animations */
+                            #em-agent, #em-block1, #em-block2 { transition: transform 1s ease; }
+                            .step-2 #em-agent { transform: translate(130px, 0); }
+                            .step-3 #em-agent { transform: translate(290px, -140px); }
+                            .step-3 #em-block1 { transform: translate(110px, 0); }
+                            .step-3 #em-block2 { transform: translate(110px, -40px); }
+                            
+                            #sack-msg { transition: opacity 0.5s, transform 1s; opacity: 0; transform: translate(180px, 200px); }
+                            .step-2 #sack-msg { opacity: 1; transform: translate(180px, 150px); }
+                            .step-3 #sack-msg { opacity: 0; }
+                            #sack-hacker-packet { transition: opacity 0.5s, transform 1s; opacity: 0; transform: translate(0, 100px); }
+                            .step-3 #sack-hacker-packet { opacity: 1; transform: translate(0, 0); }
+                            .step-3 #sack-server { fill: #ef4444; transition: fill 0.5s 1s; }
+                            
+                            #sb-bridge { opacity: 0; transition: opacity 0.5s; }
+                            .step-2 #sb-bridge { opacity: 1; }
+                            #sb-app { transition: transform 1s; }
+                            .step-3 #sb-app { transform: translate(170px, 0); }
+                            
+                            #jb-mask { opacity: 0; transition: opacity 0.5s; }
+                            .step-2 #jb-mask { opacity: 1; }
+                            #jb-prompt { transition: transform 1s; }
+                            .step-3 #jb-prompt { transform: translate(250px, -20px); }
+                            .step-3 #jb-shield { stroke: #ef4444; transition: stroke 0.5s 0.8s; }
+                            
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+                        </style>
+
+    <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
