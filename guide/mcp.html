@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP: The Agentic Web Architecture| RawWeights</title>
+    <meta name="title" content="MCP: The Agentic Web Architecture | RawWeights">
+	<meta name="description" content="Discover the Agentic Web Architecture. An interactive guide to the Model Context Protocol (MCP), standardizing AI to end the manual copy-paste era.">
+    <meta name="keywords" content="MCP, RawWeights">
+    <meta name="author" content="RawWeights">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            600: '#0077b5',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0e1111',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+
+<header class="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-900 to-slate-900"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16 relative z-10">
+        <div class="lg:w-1/2 space-y-8">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                The <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Agentic Web</span> Architecture
+            </h1>
+            <p class="text-slate-300 text-lg md:text-xl max-w-xl leading-relaxed">
+                Standardizing AI architecture to end the manual copy-paste era and build seamless, self-evolving agents.
+            </p>
+            
+            <div class="bg-slate-800/80 p-6 rounded-2xl border border-slate-700 shadow-2xl backdrop-blur-md">
+                <p class="text-slate-400 text-xs uppercase tracking-widest font-bold mb-4">Select Your Persona Role</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="setPersona('app_dev')" id="btn-app_dev" class="persona-btn flex-1 py-3 px-4 rounded-xl font-bold transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-900/50 border border-blue-500">
+                        Application Developer
+                    </button>
+                    <button onclick="setPersona('tool_builder')" id="btn-tool_builder" class="persona-btn flex-1 py-3 px-4 rounded-xl font-bold transition-all duration-200 bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-600">
+                        Tool & API Provider
+                    </button>
+                    <button onclick="setPersona('enterprise')" id="btn-enterprise" class="persona-btn flex-1 py-3 px-4 rounded-xl font-bold transition-all duration-200 bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-600">
+                        Enterprise Architect
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+
+        <div class="lg:w-1/2 w-full">
+            <div class="relative w-full aspect-video bg-slate-950 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden group cursor-pointer flex items-center justify-center transition-transform hover:scale-[1.02] duration-300">
+                 <video 
+                    class="w-full h-full object-cover" 
+                    controls 
+                    playsinline 
+                    preload="metadata"
+                    poster="../images/mcp.png">
+                    <source src="../images/videos/mcp.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+</header>	
+	
+	
+<main class="w-full bg-slate-900 flex-grow">
+    <div class="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-16 relative">
+
+    <aside class="lg:w-1/4 flex-shrink-0 hidden lg:block">
+        <nav class="sticky top-8 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 border-b border-slate-700 pb-4">Table of Contents</h3>
+            <ul id="toc-nav" class="space-y-4 text-sm font-medium text-slate-400">
+                <li><a href="#sect-intro" class="block hover:text-white transition-colors">1. The N x M Problem</a></li>
+                <li><a href="#sect-interfaces" class="block hover:text-white transition-colors">2. Core MCP Interfaces & Flow</a></li>
+                <li><a href="#sect-adv" class="block hover:text-white transition-colors">3. Advanced Transports</a></li>
+                <li><a href="#sect-agent" class="block hover:text-white transition-colors">4. The Agent Loop</a></li>
+                <li><a href="#sect-usecase" class="block hover:text-white transition-colors">5. Java Use Case</a></li>
+                <li><a href="#sect-discovery" class="block hover:text-white transition-colors">6. Discovery & Future</a></li>
+                <li><a href="#sect-quiz" class="block hover:text-white transition-colors">7. Knowledge Check</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="lg:w-3/4 space-y-24 text-slate-300">
+        
+        <section id="sect-intro" class="scroll-mt-12">
+            <h2 class="text-3xl font-extrabold text-white border-b border-slate-800 pb-4 mb-8">1. Escaping the N x M Problem</h2>
+            <div class="bg-slate-800 border-l-4 border-blue-500 p-8 rounded-r-2xl shadow-lg">
+                <h3 class="text-white font-bold text-xl mb-4">The Digital Copy-Paste Experience</h3>
+                <p id="dyn-intro-1" class="mb-4 leading-relaxed text-slate-300 text-lg">Loading narrative...</p>
+                <p id="dyn-intro-2" class="font-semibold text-blue-400 text-lg leading-relaxed">Loading impact statement...</p>
+            </div>
+        </section>
+
+		<section id="sect-interfaces" class="scroll-mt-12">
+            <h2 class="text-3xl font-extrabold text-white border-b border-slate-800 pb-4 mb-6">2. Core MCP Interfaces & Interface Architecture Flow</h2>
+            <p class="mb-8 text-lg text-slate-400">
+                <strong class="text-white">Core MCP Interfaces:</strong> The three standardized pillars establishing a live wire into your data. Click the interactive nodes below to explore.
+            </p>
+            
+            <div class="bg-slate-950 p-8 rounded-2xl border border-slate-800 overflow-x-auto shadow-inner">
+                <svg viewBox="0 0 900 350" class="w-full min-w-[800px] font-sans">
+                    <defs>
+                        <marker id="arrow-right" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b" /></marker>
+                        <marker id="arrow-left" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#3b82f6" /></marker>
+                    </defs>
+
+                    <!-- MCP Host -->
+                    <rect x="40" y="40" width="380" height="280" rx="16" fill="transparent" stroke="#334155" stroke-width="2" stroke-dasharray="8 4"/>
+                    <text x="60" y="70" fill="#f8fafc" font-size="16" font-weight="bold">MCP Host</text>
+                    <text x="60" y="90" fill="#94a3b8" font-size="12">(e.g., IDE / Chat Application)</text>
+
+                    <!-- MCP Client Box -->
+                    <rect x="80" y="110" width="300" height="180" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="230" y="145" fill="#f8fafc" font-size="18" font-weight="bold" text-anchor="middle">MCP Client</text>
+                    
+                    <!-- MCP Server Box -->
+                    <rect x="580" y="110" width="280" height="180" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="720" y="145" fill="#f8fafc" font-size="18" font-weight="bold" text-anchor="middle">MCP Server</text>
+
+                    <!-- Interactive Nodes: Tools -->
+                    <g onclick="showDetail('tools')" class="cursor-pointer hover:opacity-70 transition-opacity">
+                        <rect x="110" y="170" width="240" height="30" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+                        <text x="230" y="190" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">Invokes Tools</text>
+                        <rect x="600" y="170" width="240" height="30" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+                        <text x="720" y="190" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">Exposes Tools</text>
+                    </g>
+
+                    <!-- Interactive Nodes: Resources -->
+                    <g onclick="showDetail('resources')" class="cursor-pointer hover:opacity-70 transition-opacity">
+                        <rect x="110" y="210" width="240" height="30" rx="6" fill="#0f172a" stroke="#3b82f6" stroke-width="1"/>
+                        <text x="230" y="230" fill="#3b82f6" font-size="12" font-weight="bold" text-anchor="middle">Queries for Resources</text>
+                        <rect x="600" y="210" width="240" height="30" rx="6" fill="#0f172a" stroke="#3b82f6" stroke-width="1"/>
+                        <text x="720" y="230" fill="#3b82f6" font-size="12" font-weight="bold" text-anchor="middle">Exposes Resources</text>
+                    </g>
+
+                    <!-- Interactive Nodes: Prompts -->
+                    <g onclick="showDetail('prompts')" class="cursor-pointer hover:opacity-70 transition-opacity">
+                        <rect x="110" y="250" width="240" height="30" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1"/>
+                        <text x="230" y="270" fill="#a78bfa" font-size="12" font-weight="bold" text-anchor="middle">Interpolates Prompts</text>
+                        <rect x="600" y="250" width="240" height="30" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1"/>
+                        <text x="720" y="270" fill="#a78bfa" font-size="12" font-weight="bold" text-anchor="middle">Exposes Prompts</text>
+                    </g>
+
+                    <!-- Connections -->
+                    <path d="M 390 185 L 560 185" stroke="#64748b" stroke-width="2" stroke-dasharray="4 2" marker-end="url(#arrow-right)"/>
+                    <text x="475" y="175" fill="#94a3b8" font-size="11" text-anchor="middle">Standardized JSON-RPC</text>
+                    <path d="M 570 245 L 400 245" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-left)"/>
+                    <text x="485" y="265" fill="#3b82f6" font-size="11" text-anchor="middle">Capabilities & Schema</text>
+                </svg>
+            </div>
+            
+            <!-- Dynamic Details Panel -->
+            <div id="svg-details-panel" class="mt-6 bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-xl hidden">
+                <h3 id="panel-title" class="text-2xl font-bold mb-3 text-white">Select an interface above</h3>
+                <p id="panel-desc" class="text-slate-400 mb-6 text-lg"></p>
+                <ul id="panel-list" class="list-none space-y-3 text-slate-300 font-medium"></ul>
+            </div>
+        </section>
+
+        <section id="sect-adv" class="scroll-mt-12">
+            <h2 class="text-3xl font-extrabold text-white border-b border-slate-800 pb-4 mb-6">3. Advanced Transports & Composability</h2>
+            <p id="dyn-adv-1" class="mb-10 text-lg text-slate-300 leading-relaxed">Loading...</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-800 p-8 rounded-2xl border-t-4 border-slate-700 hover:border-emerald-500 transition-colors shadow-lg">
+                    <h3 class="text-white font-bold text-xl mb-3 flex items-center gap-2"><span class="text-emerald-500">🌐</span> Remote SSE & OAuth</h3>
+                    <p class="text-slate-400 leading-relaxed">Standard I/O (stdio) works locally, but Server-Sent Events (SSE) host servers remotely. MCP natively handles OAuth 2.0 handshakes securely.</p>
+                </div>
+                <div class="bg-slate-800 p-8 rounded-2xl border-t-4 border-slate-700 hover:border-blue-500 transition-colors shadow-lg">
+                    <h3 class="text-white font-bold text-xl mb-3 flex items-center gap-2"><span class="text-blue-500">🔄</span> Sampling</h3>
+                    <p class="text-slate-400 leading-relaxed">Reversing the flow. A remote server can request LLM inference (completions) from the connected client, borrowing its intelligence without its own LLM.</p>
+                </div>
+                <div class="bg-slate-800 p-8 rounded-2xl border-t-4 border-slate-700 hover:border-purple-500 transition-colors shadow-lg">
+                    <h3 class="text-white font-bold text-xl mb-3 flex items-center gap-2"><span class="text-purple-500">🧩</span> Composability</h3>
+                    <p class="text-slate-400 leading-relaxed">Client and Server are logical separations. Sub-agents can act as both, creating deep hierarchical workflows and routing data securely.</p>
+                </div>
+                <div class="bg-slate-800 p-8 rounded-2xl border-t-4 border-slate-700 hover:border-amber-500 transition-colors shadow-lg">
+                    <h3 class="text-white font-bold text-xl mb-3 flex items-center gap-2"><span class="text-amber-500">👁️</span> Observability</h3>
+                    <p class="text-slate-400 leading-relaxed">The protocol does NOT enforce observability. Server builders must actively expose ergonomic metadata and logging for security.</p>
+                </div>
+            </div>
+            <div style="background: var(--bg-nav); padding: 3rem 1rem; border-radius: 16px; border: 1px solid var(--border-color); overflow-x: auto; display: flex; justify-content: center;">
+                <svg viewBox="0 0 850 350" width="100%" style="min-width: 700px; font-family: 'Inter', sans-serif;">
+                    <defs>
+                        <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#3b82f6"></path></marker>
+                        <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#10b981"></path></marker>
+                        <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"></path></marker>
+                    </defs>
+
+                    <!-- Nodes -->
+                    <rect x="50" y="140" width="160" height="70" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2"></rect>
+                    <text x="130" y="170" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">Main MCP Client</text>
+                    <text x="130" y="190" fill="#94a3b8" font-size="12" text-anchor="middle">(Hosts Local LLM)</text>
+
+                    <rect x="550" y="40" width="200" height="70" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,4"></rect>
+                    <text x="650" y="70" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">Remote MCP Server</text>
+                    <text x="650" y="90" fill="#94a3b8" font-size="12" text-anchor="middle">(e.g., Slack Integration)</text>
+
+                    <rect x="420" y="240" width="180" height="70" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"></rect>
+                    <text x="510" y="270" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">Composable Agent</text>
+                    <text x="510" y="290" fill="#94a3b8" font-size="12" text-anchor="middle">(Client AND Server)</text>
+
+                    <rect x="680" y="240" width="120" height="70" rx="8" fill="#1e293b" stroke="#94a3b8" stroke-width="2"></rect>
+                    <text x="740" y="270" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">Sub-Server</text>
+                    <text x="740" y="290" fill="#94a3b8" font-size="12" text-anchor="middle">(File System)</text>
+
+                    <!-- Connections -->
+                    <path d="M 210 160 Q 380 75 540 75" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-gray)"></path>
+                    <text x="380" y="65" fill="#f59e0b" font-size="12" text-anchor="middle">Tool Call over Remote SSE + OAuth</text>
+
+                    <path d="M 550 95 Q 380 180 220 180" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)"></path>
+                    <text x="380" y="160" fill="#10b981" font-size="12" text-anchor="middle">Sampling: Server requests LLM inference</text>
+
+                    <path d="M 180 210 Q 250 275 410 275" fill="none" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"></path>
+                    <text x="310" y="265" fill="#3b82f6" font-size="12" text-anchor="middle">Tool Call (stdio)</text>
+
+                    <path d="M 600 275 L 670 275" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow-gray)"></path>
+                    <text x="635" y="265" fill="#94a3b8" font-size="12" text-anchor="middle">Invokes</text>
+                </svg>
+            </div>
+        </section>
+
+        <section id="sect-agent" class="scroll-mt-12">
+            <h2 class="text-3xl font-extrabold text-white border-b border-slate-800 pb-4 mb-6">4. The Augmented Agent Loop</h2>
+            <p class="mb-10 text-lg text-slate-300">Frameworks shift AI from rigid, imperative manual workflows to autonomous, goal-oriented loops.</p>
+            
+            <div class="flex flex-col gap-6">
+                <div class="flex items-start gap-6 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                    <div class="w-12 h-12 shrink-0 bg-slate-900 rounded-full flex items-center justify-center text-xl font-bold text-amber-500 border border-slate-700">1</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-2">Web Researcher</h4>
+                        <p class="text-slate-400 leading-relaxed">Dynamically searches the web using the Brave search tool and fetch tools to scrape data without human guidance.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                    <div class="w-12 h-12 shrink-0 bg-slate-900 rounded-full flex items-center justify-center text-xl font-bold text-emerald-500 border border-slate-700">2</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-2">Fact-Checker</h4>
+                        <p class="text-slate-400 leading-relaxed">Acting as a client, it systematically verifies the claims made by the Researcher before passing data forward.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                    <div class="w-12 h-12 shrink-0 bg-slate-900 rounded-full flex items-center justify-center text-xl font-bold text-blue-500 border border-slate-700">3</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-2">Writer</h4>
+                        <p class="text-slate-400 leading-relaxed">Isolated from the open internet, it synthesizes the final report using only the validated file system context.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sect-usecase" class="scroll-mt-12">
+            <h2 class="text-3xl font-extrabold text-white border-b border-slate-800 pb-4 mb-6">5. The Real-Time Tech Pulse (Java Use Case)</h2>
+            <p class="mb-10 text-lg text-slate-300 leading-relaxed">
+                Transforming a static LLM into a live Technical Market Researcher by hooking it into developer communities via a custom Java server.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Capabilities Box -->
+                <div class="bg-slate-800 p-8 rounded-2xl border-t-4 border-purple-500 shadow-lg flex flex-col">
+                    <h3 class="text-white font-bold text-xl mb-4 flex items-center gap-2">
+                        <span class="text-purple-500">⚡</span> Core Capabilities
+                    </h3>
+                    <p id="dyn-usecase-1" class="text-slate-400 mb-8 leading-relaxed">Loading content...</p>
+                    
+                    <ul class="space-y-5 text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-purple-500 mt-1">▹</span>
+                            <div class="leading-relaxed"><strong class="text-white">Sentiment Auditing:</strong> Instantly analyze specific technical pushback on new API launches.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-purple-500 mt-1">▹</span>
+                            <div class="leading-relaxed"><strong class="text-white">Trend Validation:</strong> Ask the AI if framework shifts (e.g., Webpack to Rsbuild) are real trends or viral hype.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-purple-500 mt-1">▹</span>
+                            <div class="leading-relaxed"><strong class="text-white">Competitive Intelligence:</strong> Monitor what developers are complaining about regarding competitors to find market gaps.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-emerald-900/20 p-8 rounded-2xl border border-emerald-500/30 shadow-lg relative overflow-hidden flex flex-col">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl"></div>
+                    
+                    <h3 class="text-emerald-400 font-bold text-xl mb-3 relative z-10 flex items-center gap-2">
+                        <span>🛠️</span> In the Trenches: Java Server Lessons
+                    </h3>
+                    <p class="text-emerald-200/70 text-sm mb-8 relative z-10 border-b border-emerald-500/20 pb-4">
+                        Building from scratch teaches harsh realities of protocol strictness. Lessons to save 10 hours of debugging:
+                    </p>
+                    
+                    <ul class="space-y-6 relative z-10">
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-500 mt-1">✓</span>
+                            <div>
+                                <strong class="text-emerald-300">A. The "Jackson War" is Real</strong><br>
+                                <span class="text-slate-300 text-sm leading-relaxed block mt-1">The MCP Java SDK includes Jackson 3 hooks, but stacks like Javalin/Spring use Jackson 2. Manually exclude the <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">mcp-json-jackson3</code> adapter in Maven to avoid <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">NoSuchFieldError</code> crashes.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-500 mt-1">✓</span>
+                            <div>
+                                <strong class="text-emerald-300">B. Local vs. Cloud Connectivity</strong><br>
+                                <span class="text-slate-300 text-sm leading-relaxed block mt-1">Stdio is easy. Cloud web LLMs require a persistent SSE HTTP stream (<code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">ctx.req().startAsync()</code>) and a public tunnel (like ngrok) to bypass localhost limits.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-500 mt-1">✓</span>
+                            <div>
+                                <strong class="text-emerald-300">C. The CORS "Header" Trap</strong><br>
+                                <span class="text-slate-300 text-sm leading-relaxed block mt-1">Allowing the URL in CORS isn't enough. You must explicitly expose the <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">mcp-session-id</code> header or the browser blocks the handshake.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-500 mt-1">✓</span>
+                            <div>
+                                <strong class="text-emerald-300">D. Stdio is "Silent or Die"</strong><br>
+                                <span class="text-slate-300 text-sm leading-relaxed block mt-1">In Stdio, <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">System.out</code> is the data pipe. A single <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">println("Hello World")</code> corrupts the JSON-RPC. Use <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">System.err</code> for all logging.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-500 mt-1">✓</span>
+                            <div>
+                                <strong class="text-emerald-300">E. Schema Strictness"</strong><br>
+                                <span class="text-slate-300 text-sm leading-relaxed block mt-1">LLMs are picky. Even if optional, adding <code>List.of("topic")</code> to the required fields in your JSON schema makes tools significantly more reliable to invoke.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+
+
+        <section id="sect-discovery" class="scroll-mt-12">
+            <h2 class="text-3xl font-extrabold text-white border-b border-slate-800 pb-4 mb-6">6. Discovery & Future Roadmap</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-md">
+                    <h4 class="font-bold text-white mb-3 text-lg">The Registry API</h4>
+                    <p class="text-slate-400 leading-relaxed">An upcoming official hosted metadata service for verified servers. Allows agents to self-evolve mid-task.</p>
+                </div>
+                <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-md">
+                    <h4 class="font-bold text-white mb-3 text-lg">.mcp.json URIs</h4>
+                    <p class="text-slate-400 leading-relaxed">Domains can host well-known URIs (e.g., shopify.com/.well-known/mcp.json) to declare top-down tool access safely.</p>
+                </div>
+                <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-md">
+                    <h4 class="font-bold text-white mb-3 text-lg">Computer Use</h4>
+                    <p class="text-slate-400 leading-relaxed">For long-tail edge cases where APIs fail, agents seamlessly drop into Computer Use mode to visually click UIs.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="sect-quiz" class="scroll-mt-12 pb-12">
+            <h2 class="text-3xl font-extrabold text-white border-b border-slate-800 pb-4 mb-6">7. Persona Knowledge Check</h2>
+            <div class="bg-slate-800 border border-slate-700 p-10 rounded-3xl shadow-2xl">
+                <h3 id="quiz-q" class="text-2xl font-bold mb-8 text-white">Loading Question...</h3>
+                <div id="quiz-options" class="flex flex-col gap-4">
+                    <!-- Buttons injected via JS -->
+                </div>
+                <div id="quiz-feedback" class="mt-8 p-6 rounded-xl font-bold hidden border"></div>
+            </div>
+        </section>
+
+    </div>
+    
+    </div>
+</main>
+
+    <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+ /* --- DATA STRUCTURE --- */
+    const mcpData = {
+        app_dev: {
+            intro1: "In the past, bringing your context to an AI loop meant manually highlighting text, opening a chat window, pasting it, and copying the code back. Building custom hook-ins meant solving an N x M integration nightmare.",
+            intro2: "By building your app as an MCP Client, you instantly gain a live connection to any global context server. The manual copy-paste era is replaced by standardized autonomous retrieval.",
+            adv1: "Building complex chains used to mean rigid code passing variables. Composability ends this. Sub-agents can act as both clients and servers to route JSON-RPC data cleanly.",
+            usecase1: "Hooking your AI app into a custom Java Server turns a static LLM into a live intelligence tool. Instead of copy-pasting Hacker News, your app autonomously fetches current sentiment.",
+            quiz: {
+                q: "As an App Developer, why is the 'Sampling' feature beneficial?",
+                options: [
+                    "It automatically generates a Java server.",
+                    "It allows an external remote server to borrow my client's LLM to process logic, avoiding API costs.",
+                    "It restricts the client from using local file systems."
+                ],
+                correct: 1,
+                explanation: "Correct! Sampling reverses the flow. A server can request LLM completions from the connected client."
+            }
+        },
+        tool_builder: {
+            intro1: "Bringing your API to an LLM previously meant forcing users to manually copy JSON responses into chatbots, or writing 50 different integration plugins.",
+            intro2: "MCP ends fragmentation. Build one single Server, expose your tools via standard paths, and see adoption across all compatible clients instantly.",
+            adv1: "You no longer force users to install tools locally. Utilizing SSE transports lets you host securely on a public URL, while native OAuth 2.0 handles authentication.",
+            usecase1: "Providing an official MCP server instantly empowers downstream applications to perform Sentiment Auditing on your platform's live data without scraping.",
+            quiz: {
+                q: "As a Tool Builder, what is the best transport to expose your tool to a cloud-based web LLM?",
+                options: [
+                    "Use Stdio with System.out logging.",
+                    "Ask users to copy-paste API tokens into prompts.",
+                    "Host via persistent SSE (Server-Sent Events) HTTP stream with CORS headers like mcp-session-id."
+                ],
+                correct: 2,
+                explanation: "Correct! Cloud LLMs cannot see localhost. SSE with proper CORS maintains the remote handshake."
+            }
+        },
+        enterprise: {
+            intro1: "Data silos force employees to download secure PDFs and paste them into unvetted public chatbots. Or, infrastructure teams build fragile point-to-point connections.",
+            intro2: "MCP acts like a microservices architecture. Centralize Vector DBs and CRMs into a secure structure, eliminating manual data movement and solving integration sprawl.",
+            adv1: "Composability lets you structure agentic systems like your corporate hierarchy. An orchestrator delegates down to department nodes cleanly.",
+            usecase1: "Enterprise LLMs need live intelligence. Deploying an internal Java server highlights why strict schemas and careful error logging (System.err) are vital to stability.",
+            quiz: {
+                q: "As an Enterprise Architect, how does MCP handle observability logging by default?",
+                options: [
+                    "It strictly enforces tracking for all tool calls.",
+                    "It does not enforce observability; server builders must actively expose ergonomic logs and metadata.",
+                    "It utilizes the mcp-agent framework to handle all logs."
+                ],
+                correct: 1,
+                explanation: "Correct! The protocol acts like standard APIs. It does not enforce observability, placing responsibility on infrastructure teams."
+            }
+        }
+    };
+
+    /* --- INTERACTIVE SVG LOGIC --- */
+    const svgDetails = {
+        tools: {
+            title: "⚙️ Tools",
+            desc: "Model-controlled functions invoked by the model to take action.",
+            list: ["Retrieve / Search data", "Send a message via API", "Update database records"]
+        },
+        resources: {
+            title: "📂 Resources",
+            desc: "Application-controlled data exposed to the AI application.",
+            list: ["Read static files", "Expose database records", "Capture API responses"]
+        },
+        prompts: {
+            title: "💬 Prompts",
+            desc: "User-controlled pre-defined templates for AI interactions.",
+            list: ["Documents Q&A commands", "Transcript Summary formats", "Output to JSON structures"]
+        }
+    };
+
+    function showDetail(key) {
+        const panel = document.getElementById('svg-details-panel');
+        const title = document.getElementById('panel-title');
+        const desc = document.getElementById('panel-desc');
+        const list = document.getElementById('panel-list');
+        
+        panel.classList.remove('hidden');
+        title.innerText = svgDetails[key].title;
+        desc.innerText = svgDetails[key].desc;
+        
+        list.innerHTML = '';
+        svgDetails[key].list.forEach(item => {
+            const li = document.createElement('li');
+            li.className = "flex items-center gap-2 before:content-['✓'] before:text-white";
+            li.innerText = item;
+            list.appendChild(li);
+        });
+
+        // Ensure dark, high-contrast dynamic styling
+        panel.className = "mt-6 p-8 rounded-2xl shadow-xl transition-all duration-300 border ";
+        if(key === 'tools') panel.classList.add('bg-slate-800', 'border-emerald-500');
+        if(key === 'resources') panel.classList.add('bg-slate-800', 'border-blue-500');
+        if(key === 'prompts') panel.classList.add('bg-slate-800', 'border-purple-500');
+    }
+
+    /* --- PERSONA SELECTION LOGIC --- */
+    function setPersona(role) {
+        document.querySelectorAll('.persona-btn').forEach(btn => {
+            btn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-900/50', 'border-blue-500');
+            btn.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-600');
+        });
+        const activeBtn = document.getElementById(`btn-${role}`);
+        activeBtn.classList.remove('bg-slate-800', 'text-slate-300', 'border-slate-600');
+        activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-900/50', 'border-blue-500');
+
+        const data = mcpData[role];
+        const elementsToFade = [
+            document.getElementById('dyn-intro-1'),
+            document.getElementById('dyn-intro-2'),
+            document.getElementById('dyn-adv-1'),
+            document.getElementById('dyn-usecase-1')
+        ];
+
+        elementsToFade.forEach(el => el.style.opacity = '0');
+
+        setTimeout(() => {
+            document.getElementById('dyn-intro-1').innerText = data.intro1;
+            document.getElementById('dyn-intro-2').innerText = data.intro2;
+            document.getElementById('dyn-adv-1').innerText = data.adv1;
+            document.getElementById('dyn-usecase-1').innerText = data.usecase1;
+            
+            elementsToFade.forEach(el => {
+                el.style.transition = "opacity 0.3s ease";
+                el.style.opacity = '1';
+            });
+            buildQuiz(data.quiz);
+        }, 300);
+    }
+
+    function buildQuiz(quizData) {
+        document.getElementById('quiz-q').innerText = quizData.q;
+        const optionsContainer = document.getElementById('quiz-options');
+        const feedback = document.getElementById('quiz-feedback');
+        
+        optionsContainer.innerHTML = '';
+        feedback.classList.add('hidden');
+        feedback.className = "mt-8 p-6 rounded-xl font-bold hidden border";
+
+        quizData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.innerText = opt;
+            btn.className = "text-left w-full p-5 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-700 transition-colors text-slate-300 text-lg shadow-inner";
+            
+            btn.onclick = () => {
+                Array.from(optionsContainer.children).forEach(b => b.disabled = true);
+                feedback.classList.remove('hidden');
+                feedback.innerText = quizData.explanation;
+
+                if (idx === quizData.correct) {
+                    btn.classList.replace('bg-slate-900', 'bg-emerald-900/40');
+                    btn.classList.replace('hover:bg-slate-700', 'hover:bg-emerald-900/40');
+                    btn.classList.replace('border-slate-700', 'border-emerald-500');
+                    btn.classList.replace('text-slate-300', 'text-emerald-400');
+                    feedback.classList.add('bg-emerald-900/20', 'text-emerald-400', 'border-emerald-500');
+                } else {
+                    btn.classList.replace('bg-slate-900', 'bg-red-900/40');
+                    btn.classList.replace('hover:bg-slate-700', 'hover:bg-red-900/40');
+                    btn.classList.replace('border-slate-700', 'border-red-500');
+                    btn.classList.replace('text-slate-300', 'text-red-400');
+                    feedback.classList.add('bg-red-900/20', 'text-red-400', 'border-red-500');
+                    
+                    const correctBtn = optionsContainer.children[quizData.correct];
+                    correctBtn.classList.replace('bg-slate-900', 'bg-emerald-900/20');
+                    correctBtn.classList.replace('border-slate-700', 'border-emerald-500');
+                    correctBtn.classList.replace('text-slate-300', 'text-emerald-400');
+                }
+            };
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    /* --- SCROLLSPY LOGIC --- */
+    document.addEventListener("DOMContentLoaded", () => {
+        const sections = document.querySelectorAll("main section");
+        const navLinks = document.querySelectorAll("#toc-nav a");
+
+        const observerOptions = {
+            root: null,
+            rootMargin: "-20% 0px -60% 0px",
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach((link) => {
+                        link.classList.remove("text-white", "font-bold", "pl-3", "border-l-2", "border-blue-500");
+                        if (link.getAttribute("href") === `#${entry.target.id}`) {
+                            link.classList.add("text-white", "font-bold", "pl-3", "border-l-2", "border-blue-500");
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach((sec) => observer.observe(sec));
+        
+        // Initialize default persona
+        setPersona('app_dev');
+    });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+        
+    </script>
+    
+     <style>
+                            .tab-btn.active { border-bottom-color: #0077b5; color: #0077b5; background-color: #ffffff; }
+                            .step-btn.active { background-color: #0077b5; color: white; border-color: #0077b5; }
+                            .scene { display: none; }
+                            .scene.active { display: block; }
+                            
+                            /* Animations */
+                            #em-agent, #em-block1, #em-block2 { transition: transform 1s ease; }
+                            .step-2 #em-agent { transform: translate(130px, 0); }
+                            .step-3 #em-agent { transform: translate(290px, -140px); }
+                            .step-3 #em-block1 { transform: translate(110px, 0); }
+                            .step-3 #em-block2 { transform: translate(110px, -40px); }
+                            
+                            #sack-msg { transition: opacity 0.5s, transform 1s; opacity: 0; transform: translate(180px, 200px); }
+                            .step-2 #sack-msg { opacity: 1; transform: translate(180px, 150px); }
+                            .step-3 #sack-msg { opacity: 0; }
+                            #sack-hacker-packet { transition: opacity 0.5s, transform 1s; opacity: 0; transform: translate(0, 100px); }
+                            .step-3 #sack-hacker-packet { opacity: 1; transform: translate(0, 0); }
+                            .step-3 #sack-server { fill: #ef4444; transition: fill 0.5s 1s; }
+                            
+                            #sb-bridge { opacity: 0; transition: opacity 0.5s; }
+                            .step-2 #sb-bridge { opacity: 1; }
+                            #sb-app { transition: transform 1s; }
+                            .step-3 #sb-app { transform: translate(170px, 0); }
+                            
+                            #jb-mask { opacity: 0; transition: opacity 0.5s; }
+                            .step-2 #jb-mask { opacity: 1; }
+                            #jb-prompt { transition: transform 1s; }
+                            .step-3 #jb-prompt { transform: translate(250px, -20px); }
+                            .step-3 #jb-shield { stroke: #ef4444; transition: stroke 0.5s 0.8s; }
+                            
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+                        </style>
+                        
+                        
+</body>
+</html>
