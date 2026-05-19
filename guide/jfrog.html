@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JFrog Architecture Guide | The Liquid Software Platform</title>
+    <meta name="description" content="An interactive architectural guide to the JFrog Platform. Explore how Artifactory, Xray, AI Catalog, and Connect secure your software supply chain.">
+    <meta name="author" content="JFrog Architecture Guide">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            500: '#22c55e',
+                            600: '#16a34a', // JFrog Green
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d', // Deep Green
+                            950: '#0f172a', // Slate Dark
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; }
+        .persona-btn.active { background-color: #16a34a; color: white; border-color: #16a34a; }
+        
+        /* Architecture Map Tooltip Logic */
+        .arch-node { position: relative; transition: all 0.2s; }
+        .arch-node:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 50; }
+        .arch-tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s, transform 0.2s; transform: translateY(10px); }
+        .arch-node:hover .arch-tooltip { visibility: visible; opacity: 1; transform: translateY(0); }
+
+        /* Interactive Visualizer Styles */
+        .tab-btn.active { border-bottom-color: #16a34a; color: #16a34a; background-color: #ffffff; }
+        .step-btn.active { background-color: #16a34a; color: white; border-color: #16a34a; }
+        .scene { display: none; }
+        .scene.active { display: block; }
+
+        /* Vis 1: Curation Animations */
+        #curation-pkg { transition: transform 1s ease; }
+        .step-2 #curation-pkg { transform: translate(180px, 0); }
+        .step-3 #curation-pkg { transform: translate(180px, 0); opacity: 0; }
+        #curation-shield { transition: stroke 0.3s; }
+        .step-3 #curation-shield { stroke: #ef4444; }
+
+        /* Vis 2: Artifactory Animations */
+        #arti-source { transition: transform 1s; }
+        .step-2 #arti-source { transform: translate(150px, 0); opacity: 0; }
+        #arti-binary { opacity: 0; transition: opacity 0.5s 1s; }
+        .step-2 #arti-binary { opacity: 1; }
+        #arti-buildinfo { opacity: 0; transition: opacity 0.5s 1.5s, transform 0.5s 1.5s; transform: translateY(20px); }
+        .step-3 #arti-buildinfo { opacity: 1; transform: translateY(0); }
+
+        /* Vis 3: Xray Animations */
+        #xray-scan { stroke-dasharray: 600; stroke-dashoffset: 600; transition: stroke-dashoffset 1.5s ease-in-out; }
+        .step-2 #xray-scan { stroke-dashoffset: 0; }
+        #xray-context { opacity: 0; transition: opacity 0.5s; }
+        .step-3 #xray-context { opacity: 1; }
+        #xray-vuln { fill: #ef4444; transition: fill 0.5s; }
+        .step-3 #xray-vuln { fill: #94a3b8; } /* neutralized */
+
+        /* Vis 4: Connect Animations */
+        #connect-update { transition: transform 1.5s ease-in-out; }
+        .step-2 #connect-update { transform: translate(250px, 120px); }
+        .step-3 #connect-update { transform: translate(0px, 0px); opacity: 0; }
+        #connect-device { transition: stroke 0.5s; }
+        .step-2 #connect-device { stroke: #ef4444; }
+        .step-3 #connect-device { stroke: #16a34a; }
+        
+        
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800">
+
+	<nav>
+	    <a href="/" class="nav-brand">RawWeights</a>
+	    <div class="nav-links">
+	        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+	        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+			<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+			<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+			<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+			<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+			<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+			<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+			<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+			<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+			
+	        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+	    </div>
+	</nav>
+
+    <header class="bg-brand-950 text-white py-20 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-500 via-brand-950 to-brand-950"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+            
+            <div class="w-full lg:w-3/5">
+                <span class="text-brand-500 uppercase tracking-widest text-xs font-bold mb-3 block">Interactive Architecture Guide</span>
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">The Liquid Software Supply Chain</h1>
+                <p class="text-lg text-slate-300 font-light max-w-2xl">
+                    Discover how the JFrog Platform secures and distributes binaries from code to edge. Select your role to instantly tailor this guide's architecture insights, DevSecOps impacts, and checklists.
+                </p>
+
+                <div id="role-anchor" class="mt-10 min-h-[100px]">
+                    <div id="role-sticky-box" class="flex flex-col md:flex-row md:items-center gap-4 bg-white/5 p-5 rounded-xl border border-white/10 w-full backdrop-blur-md transition-all duration-300 z-50">
+                        <span class="font-semibold text-sm text-slate-300 min-w-max">Select Your Role:</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button id="btn-developer" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('developer')">Developer</button>
+                            <button id="btn-qa" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('qa')">QA</button>
+                            <button id="btn-architect" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('architect')">Architect</button>
+                            <button id="btn-manager" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('manager')">Manager</button>
+                            <button id="btn-mlops" class="persona-btn text-brand-100 border border-brand-600 hover:bg-brand-800 px-4 py-2 text-sm font-medium rounded-md transition" onclick="updatePersona('mlops')">AI MLOps</button>
+                        </div>
+                    </div>
+                    <p id="persona-desc" class="text-sm text-brand-200 mt-4 font-medium h-6"></p>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-2/5 relative">
+                <div class="absolute -inset-4 bg-brand-600/20 blur-3xl rounded-full z-0"></div>
+                <svg viewBox="0 0 400 400" class="w-full h-auto relative z-10 drop-shadow-2xl">
+                    <defs>
+                        <linearGradient id="pipeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#1e293b"/>
+                            <stop offset="100%" stop-color="#0f172a"/>
+                        </linearGradient>
+                        <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#22c55e" stop-opacity="0.2"/>
+                            <stop offset="50%" stop-color="#22c55e" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#22c55e" stop-opacity="0.2"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M 0 50 L 400 50 M 0 150 L 400 150 M 0 250 L 400 250 M 0 350 L 400 350" stroke="#334155" stroke-width="1" stroke-dasharray="4"/>
+                    
+                    <path d="M 50 100 C 150 100, 200 200, 300 200" fill="none" stroke="url(#glowGrad)" stroke-width="12" stroke-linecap="round"/>
+                    <path d="M 50 300 C 150 300, 200 200, 300 200" fill="none" stroke="url(#glowGrad)" stroke-width="12" stroke-linecap="round"/>
+                    
+                    <rect x="30" y="80" width="40" height="40" rx="8" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+                    <text x="50" y="105" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">&lt;/&gt;</text>
+                    
+                    <rect x="30" y="280" width="40" height="40" rx="8" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+                    <text x="50" y="305" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">OSS</text>
+
+                    <circle cx="300" cy="200" r="45" fill="url(#pipeGrad)" stroke="#22c55e" stroke-width="4"/>
+                    <path d="M 285 190 L 315 190 L 315 210 L 285 210 Z" fill="#22c55e"/>
+                    <circle cx="300" cy="200" r="10" fill="#0f172a"/>
+
+                    <path d="M 345 200 L 380 150 M 345 200 L 380 250" stroke="#475569" stroke-width="3" stroke-dasharray="6"/>
+                    <circle cx="380" cy="150" r="12" fill="#3b82f6"/>
+                    <circle cx="380" cy="250" r="12" fill="#8b5cf6"/>
+                </svg>
+            </div>
+        </div>
+    </header>	
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col lg:flex-row gap-12 relative">
+        
+        <aside class="lg:w-1/4 flex-shrink-0">
+            <div class="sticky top-8 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h5 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Table of Contents</h5>
+                <ul id="toc-menu" class="space-y-3 text-sm font-medium text-slate-500">
+                    <li><a href="#foundation" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Platform Philosophy</a></li>
+                    <li><a href="#industry-impact" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Architecture Map</a></li>
+                    <li><a href="#core-risks" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Supply Chain Risks</a></li>
+                    <li><a href="#interactive" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Flow Visualizer</a></li>
+                    <li><a href="#watch-report" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Strategic Mitigation</a></li>
+                    <li><a href="#checklist" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Action Checklist</a></li>
+                    <li><a href="#notable-cases" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Platform Features</a></li>
+					<li><a href="#competitors" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Market Comparison</a></li>
+					<li><a href="#pipelines" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Pipeline Integration</a></li>
+					<li><a href="#product-suite" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Core Product Suite</a></li>
+                    <li><a href="#sscs-phases" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">The 4 SSCS Phases</a></li>
+                    <li><a href="#devops-landscape" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">DevOps Landscape</a></li>
+					<li><a href="#acquisitions" class="toc-link block hover:text-brand-600 transition-all duration-300 flex items-center gap-2">Acquisition Strategy</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="lg:w-3/4 space-y-16">
+
+            <section id="foundation" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">The "Liquid Software" Philosophy</h2>
+                <div class="bg-brand-50 border-l-4 border-brand-600 p-6 rounded-r-xl">
+                    <p class="text-xl italic text-slate-800 font-serif mb-3">
+                        "Source code is for humans. Binaries are for machines. JFrog secure the software that actually runs."
+                    </p>
+                    <p id="dynamic-foundation-text" class="text-sm text-slate-700 leading-relaxed"></p>
+                </div>
+            </section>
+
+            <section id="industry-impact" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">The Platform Architecture</h2>
+                <p class="text-sm text-slate-500 mb-8">Hover over any component to understand its role in the end-to-end binary lifecycle.</p>
+                
+                <div class="bg-slate-900 rounded-2xl p-6 md:p-8 shadow-xl overflow-hidden relative border border-slate-800">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_24px_1fr_24px_1fr_24px_1fr] gap-4 md:gap-2 relative z-10">
+                        
+                        <div class="flex flex-col gap-2 h-full">
+                            <h4 class="text-slate-400 text-xs font-bold uppercase tracking-widest text-center mb-2">Inputs</h4>
+                            
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">Third Party Models</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">Hugging Face & OSS Models</strong>
+                                    <p class="text-xs">External AI models treated as standard binaries requiring security vetting before entry.</p>
+                                </div>
+                            </div>
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">Data Sources</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">Raw Training Data</strong>
+                                    <p class="text-xs">Data Lakes and DBs feeding the ML pipeline for fine-tuning.</p>
+                                </div>
+                            </div>
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">Agent Skills</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">AI Agent Tools</strong>
+                                    <p class="text-xs">Custom logic and APIs consumed by LLM agents.</p>
+                                </div>
+                            </div>
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">OSS Repositories</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">npm, Maven, PyPI</strong>
+                                    <p class="text-xs">Native proxy and caching for all major public package registries.</p>
+                                </div>
+                            </div>
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">Source Code</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">GitHub / GitLab</strong>
+                                    <p class="text-xs">Where developers write raw code before it is compiled into a binary.</p>
+                                </div>
+                            </div>
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">CI/CD Tools</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">Jenkins / Actions</strong>
+                                    <p class="text-xs">The orchestration engines pushing builds into the JFrog platform.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hidden md:flex flex-col justify-center items-center text-slate-600">
+                            <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+
+                        <div class="flex flex-col gap-2 h-full">
+                            <h4 class="text-brand-500 text-xs font-bold uppercase tracking-widest text-center mb-2">JFrog Core</h4>
+                            
+                            <div class="arch-node flex-1 bg-slate-800 border border-brand-500/50 rounded-xl p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-bold leading-tight">JFrog Connect (Edge)</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">IoT Fleet Management</strong>
+                                    <p class="text-xs">Push Over-The-Air (OTA) updates to physical Linux edge devices.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="arch-node flex-1 bg-slate-800 border border-brand-500/50 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-help">
+                                <span class="text-brand-200 text-xs md:text-sm font-bold mb-1 leading-tight">AI & ML</span>
+                                <span class="text-slate-300 text-[10px] md:text-xs">JFrog ML & AI Catalog</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">MLSecOps</strong>
+                                    <p class="text-xs">Version, secure, and deploy AI models side-by-side with your software.</p>
+                                </div>
+                            </div>
+
+                            <div class="arch-node flex-1 bg-slate-800 border border-brand-500/50 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-help">
+                                <span class="text-brand-500 text-xs md:text-sm font-bold mb-1 leading-tight">DevSecOps</span>
+                                <span class="text-slate-300 text-[10px] md:text-xs leading-tight">Curation • Xray<br>Adv Security • Runtime</span>
+                                <div class="arch-tooltip absolute left-full ml-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">The Inspector</strong>
+                                    <p class="text-xs">Block bad OSS at the gate, scan deep into Docker images, and remove false positives.</p>
+                                </div>
+                            </div>
+
+                            <div class="arch-node flex-[1.5] bg-slate-800 border border-brand-500/50 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-help shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+                                <span class="text-white text-sm font-bold leading-tight">JFrog Artifactory</span>
+                                <span class="text-slate-400 text-[10px] md:text-xs mt-1">Single Source of Truth</span>
+                                <div class="arch-tooltip absolute left-full ml-4 bottom-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">The Universal Vault</strong>
+                                    <p class="text-xs">The heart of the platform. Hosts 30+ package types and maintains immutable BuildInfo.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hidden md:flex flex-col justify-center items-center text-slate-600">
+                            <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+
+                        <div class="flex flex-col h-full">
+                            <h4 class="text-slate-400 text-xs font-bold uppercase tracking-widest text-center mb-2">Governance</h4>
+                            <div class="arch-node flex-grow bg-gradient-to-b from-brand-900 to-brand-800 border border-brand-500 rounded-xl p-4 flex items-center justify-center cursor-help min-h-[150px]">
+                                <span class="text-white font-black text-lg md:text-xl tracking-widest transform md:-rotate-90 whitespace-nowrap">JFrog APPTRUST</span>
+                                <div class="arch-tooltip absolute md:right-full md:mr-4 md:left-auto left-full ml-4 top-1/2 -translate-y-1/2 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">Cryptographic Proof</strong>
+                                    <p class="text-xs">Ensures the binary built in CI is the exact, untampered binary that reaches production.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hidden md:flex flex-col justify-center items-center text-slate-600">
+                            <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+
+                        <div class="flex flex-col gap-2 h-full">
+                            <h4 class="text-slate-400 text-xs font-bold uppercase tracking-widest text-center mb-2">Destinations</h4>
+                            
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">IoT Devices</span>
+                                <div class="arch-tooltip absolute right-full mr-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">The Edge</strong>
+                                    <p class="text-xs">Smart cars, POS kiosks, and industrial sensors updated via Connect.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">Multi-Cloud</span>
+                                <div class="arch-tooltip absolute right-full mr-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">AWS / Azure / GCP</strong>
+                                    <p class="text-xs">Seamless hybrid environment syncing without vendor lock-in.</p>
+                                </div>
+                            </div>
+
+                            <div class="arch-node flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2 flex items-center justify-center text-center cursor-help">
+                                <span class="text-white text-xs md:text-sm font-semibold leading-tight">Data Centers</span>
+                                <div class="arch-tooltip absolute right-full mr-4 top-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">On-Premises</strong>
+                                    <p class="text-xs">High-availability replication for isolated or highly secure corporate networks.</p>
+                                </div>
+                            </div>
+
+                            <div class="arch-node flex-1 bg-brand-950 border border-brand-500 border-dashed rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-help relative overflow-hidden">
+                                <div class="absolute inset-0 bg-brand-500/10"></div>
+                                <span class="text-brand-200 text-xs md:text-sm font-bold relative z-10 leading-tight">JFrog Distribution</span>
+                                <div class="arch-tooltip absolute right-full mr-4 bottom-0 w-64 bg-white text-slate-800 p-4 rounded-xl shadow-2xl border border-slate-200 z-50">
+                                    <strong class="block text-brand-700 mb-1">The Delivery Truck</strong>
+                                    <p class="text-xs">Pushes massive multi-gigabyte binaries to thousands of endpoints instantly using peer-to-peer tech.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="core-risks" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Supply Chain Risks For Your Role</h2>
+                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
+                    <table class="min-w-full text-left border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-sm font-bold text-slate-900 uppercase tracking-wider w-1/3">Concept</th>
+                                <th class="px-6 py-4 text-sm font-bold text-slate-900 uppercase tracking-wider w-2/3">The Core Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="risks-table-body" class="divide-y divide-slate-200">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="interactive" class="scroll-mt-24">
+                
+                <style>
+                    .scene { display: none !important; }
+                    .scene.active { display: flex !important; }
+                    
+                    /* Vis 1: Curation Animations */
+                    #curation-pkg { transition: transform 1s ease; }
+                    .step-2 #curation-pkg { transform: translate(180px, 0); }
+                    .step-3 #curation-pkg { transform: translate(180px, 0); opacity: 0; }
+                    #curation-shield { transition: stroke 0.3s; }
+                    .step-3 #curation-shield { stroke: #ef4444; }
+
+                    /* Vis 2: Artifactory Animations */
+                    #arti-source { transition: transform 1s; }
+                    .step-2 #arti-source { transform: translate(150px, 0); opacity: 0; }
+                    #arti-binary { opacity: 0; transition: opacity 0.5s 1s; }
+                    .step-2 #arti-binary { opacity: 1; }
+                    #arti-buildinfo { opacity: 0; transition: opacity 0.5s 1.5s, transform 0.5s 1.5s; transform: translateY(20px); }
+                    .step-3 #arti-buildinfo { opacity: 1; transform: translateY(0); }
+
+                    /* Vis 3: Xray Animations */
+                    #xray-scan { stroke-dasharray: 600; stroke-dashoffset: 600; transition: stroke-dashoffset 1.5s ease-in-out; }
+                    .step-2 #xray-scan { stroke-dashoffset: 0; }
+                    #xray-context { opacity: 0; transition: opacity 0.5s; }
+                    .step-3 #xray-context { opacity: 1; }
+                    #xray-vuln { fill: #ef4444; transition: fill 0.5s; }
+                    .step-3 #xray-vuln { fill: #94a3b8; } /* neutralized */
+
+                    /* Vis 4: Connect Animations */
+                    #connect-update { transition: transform 1.5s ease-in-out; }
+                    .step-2 #connect-update { transform: translate(250px, 120px); }
+                    .step-3 #connect-update { transform: translate(0px, 0px); opacity: 0; }
+                    #connect-device { transition: stroke 0.5s; }
+                    .step-2 #connect-device { stroke: #ef4444; }
+                    .step-3 #connect-device { stroke: #16a34a; }
+                </style>
+
+                <div class="bg-slate-900 rounded-2xl overflow-hidden shadow-xl border border-slate-800">
+                    <div class="p-8 text-center border-b border-slate-800">
+                        <h2 class="text-3xl font-bold text-white mb-3">Platform Mechanics Visualizer</h2>
+                        <p class="text-sm text-slate-400 max-w-2xl mx-auto">Select a module below and step through the animation to see how JFrog secures the pipeline in real-time.</p>
+                    </div>
+                    
+                    <div class="w-full bg-white">
+                        <div class="flex flex-wrap border-b border-slate-200 bg-slate-50">
+                            <button class="tab-btn active flex-1 py-4 px-2 text-sm font-semibold text-slate-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('curation')">Curation (Gate)</button>
+                            <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-slate-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('arti')">Artifactory (Vault)</button>
+                            <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-slate-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('xray')">Xray (Context)</button>
+                            <button class="tab-btn flex-1 py-4 px-2 text-sm font-semibold text-slate-600 hover:text-brand-600 transition border-b-2 border-transparent" onclick="setConcept('connect')">Connect (Edge)</button>
+                        </div>
+                        
+                        <div class="relative w-full h-72 bg-slate-50 overflow-hidden">
+                            
+                            <div id="scene-curation" class="scene active step-1 absolute inset-0 w-full h-full items-center justify-center">
+                                <svg viewBox="0 0 600 300" class="w-full h-full max-w-lg mx-auto">
+                                    <rect x="50" y="100" width="80" height="80" rx="8" fill="#3b82f6"/>
+                                    <text x="90" y="145" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Dev / NPM</text>
+                                    
+                                    <rect x="450" y="80" width="100" height="120" rx="8" fill="#16a34a"/>
+                                    <text x="500" y="145" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Artifactory</text>
+
+                                    <path id="curation-shield" d="M 300 80 Q 340 140 300 200" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round"/>
+                                    <text x="300" y="60" text-anchor="middle" fill="#475569" font-weight="bold">JFrog Curation</text>
+
+                                    <g id="curation-pkg" transform="translate(0,0)">
+                                        <rect x="150" y="125" width="30" height="30" fill="#ef4444" rx="4"/>
+                                        <text x="165" y="145" text-anchor="middle" fill="white" font-size="16">☣</text>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div id="scene-arti" class="scene step-1 absolute inset-0 w-full h-full items-center justify-center">
+                                <svg viewBox="0 0 600 300" class="w-full h-full max-w-lg mx-auto">
+                                    <rect x="50" y="120" width="80" height="60" rx="4" fill="#64748b"/>
+                                    <text x="90" y="155" text-anchor="middle" fill="white" font-weight="bold">Jenkins</text>
+                                    
+                                    <rect x="350" y="80" width="150" height="140" rx="12" fill="#1e293b" stroke="#16a34a" stroke-width="4"/>
+                                    <text x="425" y="110" text-anchor="middle" fill="white" font-weight="bold">Artifactory</text>
+
+                                    <g id="arti-source" transform="translate(0,0)">
+                                        <rect x="150" y="130" width="40" height="40" fill="#3b82f6" rx="4"/>
+                                        <text x="170" y="155" text-anchor="middle" fill="white" font-size="12">Code</text>
+                                    </g>
+
+                                    <g id="arti-binary" transform="translate(400, 130)">
+                                        <rect x="0" y="0" width="50" height="50" fill="#16a34a" rx="8"/>
+                                        <text x="25" y="30" text-anchor="middle" fill="white" font-size="12 font-bold">Image</text>
+                                    </g>
+                                    <g id="arti-buildinfo" transform="translate(320, 150)">
+                                        <rect x="0" y="0" width="100" height="30" fill="#f59e0b" rx="4"/>
+                                        <text x="50" y="20" text-anchor="middle" fill="white" font-size="10" font-weight="bold">BuildInfo (SBOM)</text>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div id="scene-xray" class="scene step-1 absolute inset-0 w-full h-full items-center justify-center">
+                                <svg viewBox="0 0 600 300" class="w-full h-full max-w-lg mx-auto">
+                                    <rect x="200" y="80" width="200" height="140" rx="8" fill="#1e293b"/>
+                                    <text x="300" y="110" text-anchor="middle" fill="white" font-weight="bold">Docker Image</text>
+
+                                    <path d="M 230 150 L 370 150" stroke="#475569" stroke-width="4" stroke-dasharray="4"/>
+                                    <circle cx="250" cy="150" r="15" fill="#3b82f6"/>
+                                    <circle id="xray-vuln" cx="350" cy="150" r="15" fill="#ef4444"/>
+                                    <text x="350" y="185" text-anchor="middle" fill="#ef4444" font-size="10">Log4j</text>
+
+                                    <rect x="250" y="30" width="100" height="20" fill="#f59e0b" rx="4"/>
+                                    <text x="300" y="44" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Xray Advanced</text>
+                                    <path id="xray-scan" d="M 300 50 L 300 250" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5"/>
+
+                                    <rect id="xray-context" x="380" y="120" width="140" height="60" fill="#dcfce7" stroke="#16a34a" rx="8"/>
+                                    <text id="xray-context-text1" x="450" y="145" text-anchor="middle" fill="#16a34a" font-size="10" font-weight="bold">Not Reachable!</text>
+                                    <text id="xray-context-text2" x="450" y="160" text-anchor="middle" fill="#16a34a" font-size="10">Ignored False Positive</text>
+                                </svg>
+                            </div>
+
+                            <div id="scene-connect" class="scene step-1 absolute inset-0 w-full h-full items-center justify-center">
+                                <svg viewBox="0 0 600 300" class="w-full h-full max-w-lg mx-auto">
+                                    <rect x="50" y="50" width="100" height="80" rx="8" fill="#1e293b"/>
+                                    <text x="100" y="95" text-anchor="middle" fill="white" font-weight="bold">HQ Vault</text>
+
+                                    <rect id="connect-device" x="400" y="180" width="120" height="80" rx="8" fill="white" stroke="#94a3b8" stroke-width="6"/>
+                                    <circle cx="460" cy="220" r="10" fill="#94a3b8"/>
+                                    <text x="460" y="165" text-anchor="middle" fill="#475569" font-weight="bold">IoT Sensor</text>
+
+                                    <path d="M 150 90 C 250 90, 300 220, 400 220" fill="none" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="8"/>
+
+                                    <g id="connect-update" transform="translate(0,0)">
+                                        <rect x="160" y="75" width="30" height="30" fill="#3b82f6" rx="4"/>
+                                        <text x="175" y="95" text-anchor="middle" fill="white" font-size="12">v2</text>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="p-8 bg-white border-t border-slate-200">
+                            <div class="flex justify-center space-x-3 mb-6">
+                                <button class="step-btn active px-6 py-2 text-sm font-semibold rounded-full border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" id="btn-step-1" onclick="setStep(1)">1. The Setup</button>
+                                <button class="step-btn px-6 py-2 text-sm font-semibold rounded-full border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" id="btn-step-2" onclick="setStep(2)">2. The Action</button>
+                                <button class="step-btn px-6 py-2 text-sm font-semibold rounded-full border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" id="btn-step-3" onclick="setStep(3)">3. The Result</button>
+                            </div>
+                            <div class="text-slate-800 text-sm md:text-base bg-brand-50/50 p-6 rounded-xl border border-brand-100 shadow-inner min-h-[120px] flex items-center" id="explanation-text"></div>
+                            
+                            <div id="dynamic-visualizer-tip" class="mt-4 text-sm font-medium text-brand-700 bg-brand-50 p-3 rounded-md border border-brand-200 text-center">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="watch-report" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Strategic Mitigation</h2>
+                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
+                    <table class="min-w-full text-left border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-sm font-bold text-slate-900 uppercase tracking-wider w-1/3">Threat Domain</th>
+                                <th class="px-6 py-4 text-sm font-bold text-slate-900 uppercase tracking-wider w-2/3">JFrog Mitigation Strategy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="watch-report-table-body" class="divide-y divide-slate-200">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="checklist" class="scroll-mt-24">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Action Checklist for Your Role</h2>
+                <div id="checklist-items" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    </div>
+            </section>
+
+            <section id="notable-cases" class="scroll-mt-24 mt-16 pt-8 border-t border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Platform Distinguishers</h2>
+                <p class="text-slate-700 text-sm mb-8 max-w-3xl">What separates JFrog from standard source-code repositories and disjointed security scanners.</p>
+                
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden relative">
+                    <div class="p-8 md:p-12 min-h-[250px] flex flex-col justify-center bg-slate-50">
+                        <div class="flex items-center gap-4 mb-6">
+                            <span id="case-letter" class="bg-brand-900 text-brand-100 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">1</span>
+                            <h3 id="case-title" class="text-2xl font-bold text-slate-900"></h3>
+                        </div>
+                        <p id="case-desc" class="text-slate-700 text-lg leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-slate-100 border-t border-slate-200 px-8 py-4 flex items-center justify-between">
+                        <button onclick="prevCase()" class="text-slate-500 hover:text-brand-600 font-semibold text-sm flex items-center transition">
+                            &larr; Previous
+                        </button>
+                        <div id="case-dots" class="flex gap-2"></div>
+                        <button onclick="nextCase()" class="text-slate-500 hover:text-brand-600 font-semibold text-sm flex items-center transition">
+                            Next &rarr;
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="competitors" class="scroll-mt-24 mt-16 pt-8 border-t border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">The Competitive Landscape</h2>
+                <p class="text-slate-700 text-sm mb-8 max-w-3xl">While many platforms offer artifact storage as a feature, JFrog's entire architecture is built around the binary. Here is how that philosophy contrasts with the rest of the market.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900">GitHub & GitLab</h3>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">The Code Giants</span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col gap-4">
+                            <div>
+                                <strong class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Their Focus</strong>
+                                <p class="text-sm text-slate-700"><strong>Source-Centric.</strong> Artifact registries are an add-on to keep developers inside their UI. Excellent for all-in-one simplicity.</p>
+                            </div>
+                            <div class="border-t border-slate-100 pt-4 mt-auto">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The JFrog Difference</strong>
+                                <p class="text-sm text-slate-800"><strong>Binary-Centric.</strong> JFrog secures the compiled artifact that actually runs, bypassing build-time malware injections. Offers vastly superior multi-site replication for global enterprise data centers.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900">Sonatype (Nexus)</h3>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">The Closest Rival</span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col gap-4">
+                            <div>
+                                <strong class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Their Focus</strong>
+                                <p class="text-sm text-slate-700"><strong>Project Health.</strong> Deeply rooted in the Java ecosystem (Maven Central). Excels at analyzing the behavioral intelligence and health of open-source projects.</p>
+                            </div>
+                            <div class="border-t border-slate-100 pt-4 mt-auto">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The JFrog Difference</strong>
+                                <p class="text-sm text-slate-800"><strong>Scale & Universality.</strong> Supports 30+ package types with equal depth. JFrog Distribution dominates edge-delivery, moving massive Docker/Helm binaries globally via peer-to-peer networks.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900">AWS / Azure / GCP</h3>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">The Hyperscalers</span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col gap-4">
+                            <div>
+                                <strong class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Their Focus</strong>
+                                <p class="text-sm text-slate-700"><strong>Compute-Centric.</strong> They offer artifact storage specifically to incentivize deploying your applications onto their proprietary cloud infrastructure.</p>
+                            </div>
+                            <div class="border-t border-slate-100 pt-4 mt-auto">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The JFrog Difference</strong>
+                                <p class="text-sm text-slate-800"><strong>Cloud-Agnostic.</strong> Zero vendor lock-in. JFrog allows seamless, bi-directional syncing of binaries between AWS, Azure, and your on-premise servers simultaneously.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900">Cloudsmith</h3>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">The Cloud-Native</span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col gap-4">
+                            <div>
+                                <strong class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Their Focus</strong>
+                                <p class="text-sm text-slate-700"><strong>SaaS-Only.</strong> A fully managed, modern alternative focusing heavily on zero maintenance and global edge-caching for package delivery.</p>
+                            </div>
+                            <div class="border-t border-slate-100 pt-4 mt-auto">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The JFrog Difference</strong>
+                                <p class="text-sm text-slate-800"><strong>Hybrid Flexibility.</strong> JFrog offers self-hosted, cloud, and hybrid deployment models, providing massive enterprises with stricter internal network control and no hard API rate limits.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900">Snyk</h3>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">The Point Scanner</span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col gap-4">
+                            <div>
+                                <strong class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Their Focus</strong>
+                                <p class="text-sm text-slate-700"><strong>Developer-First Scanning.</strong> Excellent at scanning source code and containers directly within the developer's IDE before committing.</p>
+                            </div>
+                            <div class="border-t border-slate-100 pt-4 mt-auto">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The JFrog Difference</strong>
+                                <p class="text-sm text-slate-800"><strong>Active Blocking.</strong> Snyk warns you, but because it doesn't host the packages, it can't physically cut off access. JFrog acts as the warehouse and physically breaks the chain before bad code is compiled.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900">Dependabot</h3>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">The PR Automator</span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col gap-4">
+                            <div>
+                                <strong class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Their Focus</strong>
+                                <p class="text-sm text-slate-700"><strong>Source Code Updates.</strong> Automatically generates pull requests in GitHub to update outdated or vulnerable dependencies found in manifest files (like <code>package.json</code>).</p>
+                            </div>
+                            <div class="border-t border-slate-100 pt-4 mt-auto">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The JFrog Difference</strong>
+                                <p class="text-sm text-slate-800"><strong>Binary Reality vs. Source Intent.</strong> Dependabot scans what the developer <em>intends</em> to build. JFrog scans the <em>actual</em> compiled binary, catching deeply nested transitive dependencies and build-time tampering.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+            
+            <section id="pipelines" class="scroll-mt-24 mt-16 pt-8 border-t border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Pipeline Integration: Two Scenarios</h2>
+                <p class="text-slate-700 text-sm mb-8 max-w-3xl">Architects rarely start with a blank slate. Here is how JFrog fits into your CI/CD machinery, whether you are integrating with existing tools or building natively.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-8 hover:shadow-lg transition">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="bg-slate-800 text-white w-8 h-8 rounded-md flex items-center justify-center font-bold">A</span>
+                            <h3 class="text-xl font-bold text-slate-900">The "Plug-and-Play" Approach</h3>
+                        </div>
+                        <p class="text-sm text-brand-600 font-semibold mb-4">Jenkins, GitHub Actions, GitLab CI</p>
+                        <p class="text-sm text-slate-700 mb-6">This is how 90% of the industry uses JFrog. You keep your existing CI/CD orchestration engine, but replace your artifact storage and security scanning with JFrog tools via dedicated plugins or the JFrog CLI.</p>
+                        <ul class="space-y-3 text-sm text-slate-600">
+                            <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="leading-tight"><strong>Best For:</strong> Teams with established CI/CD workflows.</span></li>
+                            <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="leading-tight"><strong>How it works:</strong> The CI tool pulls dependencies <em>through</em> Artifactory, builds the code, and pushes the binary + BuildInfo back to Artifactory using CLI wrappers.</span></li>
+                            <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="leading-tight"><strong>Maintenance:</strong> Higher. Requires managing API tokens, servers, and plugin updates.</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-2xl shadow-xl border border-brand-500/30 p-8 relative overflow-hidden hover:shadow-2xl transition">
+                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-brand-500/20 blur-3xl rounded-full"></div>
+                        <div class="flex items-center gap-3 mb-4 relative z-10">
+                            <span class="bg-brand-500 text-white w-8 h-8 rounded-md flex items-center justify-center font-bold">B</span>
+                            <h3 class="text-xl font-bold text-white">The "All-in-One Native" Approach</h3>
+                        </div>
+                        <p class="text-sm text-brand-200 font-semibold mb-4 relative z-10">JFrog Pipelines</p>
+                        <p class="text-sm text-slate-300 mb-6 relative z-10">For greenfield projects heavily invested in the JFrog ecosystem. JFrog Pipelines is natively aware of Artifactory and Xray, eliminating the need to write complex API scripts to pass context.</p>
+                        <ul class="space-y-3 text-sm text-slate-300 relative z-10">
+                            <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="leading-tight"><strong class="text-white">Best For:</strong> Teams wanting a unified DevOps platform without managing plugins.</span></li>
+                            <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="leading-tight"><strong class="text-white">How it works:</strong> Uses declarative YAML with "Native Steps" (e.g., <code>DockerPush</code> or <code>XrayScan</code>) that handle backend authentication and BuildInfo generation automatically.</span></li>
+                            <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="leading-tight"><strong class="text-white">Maintenance:</strong> Lower. Built-in context and authentication between pipeline and vault.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            
+            <section id="product-suite" class="scroll-mt-24 mt-16 pt-8 border-t border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Core Product Suite Breakdown</h2>
+                <p class="text-slate-700 text-sm mb-8 max-w-3xl">A straightforward breakdown of the "Big Three" tools, the exact problems they solve, and how they stand out.</p>
+                
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/4 shrink-0">
+                            <span class="bg-brand-100 text-brand-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">The Vault</span>
+                            <h3 class="text-xl font-bold text-slate-900 mt-3">JFrog Artifactory</h3>
+                        </div>
+                        <div class="md:w-3/4 space-y-3 text-sm">
+                            <p><strong class="text-slate-900">What it is:</strong> A Universal Artifact Repository Manager database built to store and version compiled code natively across 30+ formats.</p>
+                            <p><strong class="text-slate-900">Problem Solved:</strong> Prevents broken builds if public internet registries (like npm) go down. Acts as the Single Source of Truth for deployments.</p>
+                            <p><strong class="text-brand-600">How it stands out:</strong> BuildInfo. It doesn't just store a zip file; it permanently records who built it, the exact Git commit, and all environment variables.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/4 shrink-0">
+                            <span class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">The Inspector</span>
+                            <h3 class="text-xl font-bold text-slate-900 mt-3">JFrog Xray</h3>
+                        </div>
+                        <div class="md:w-3/4 space-y-3 text-sm">
+                            <p><strong class="text-slate-900">What it is:</strong> A Software Composition Analysis (SCA) tool designed to scan binaries for CVEs and license compliance.</p>
+                            <p><strong class="text-slate-900">Problem Solved:</strong> Stops vulnerable open-source code from reaching production and prevents illegal open-source licenses from entering your codebase.</p>
+                            <p><strong class="text-brand-600">How it stands out:</strong> Deep recursive scanning and Contextual Analysis. It unzips Docker images 10 layers deep to find hidden flaws and tells you if a flaw is actually reachable.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/4 shrink-0">
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">The Engine</span>
+                            <h3 class="text-xl font-bold text-slate-900 mt-3">JFrog Pipelines</h3>
+                        </div>
+                        <div class="md:w-3/4 space-y-3 text-sm">
+                            <p><strong class="text-slate-900">What it is:</strong> A CI/CD automation tool using declarative YAML files to define build, test, and release steps.</p>
+                            <p><strong class="text-slate-900">Problem Solved:</strong> Eliminates the tedious API scripting usually required to pass context between the "build", "security", and "deployment" phases.</p>
+                            <p><strong class="text-brand-600">How it stands out:</strong> Native awareness. It is natively integrated with Artifactory and Xray, meaning authentication, context passing, and SBOM creation happen automatically without plugins.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sscs-phases" class="scroll-mt-24 mt-16 pt-8 border-t border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Securing the Supply Chain (4 Phases)</h2>
+                <p class="text-slate-700 text-sm mb-8 max-w-3xl">JFrog tackles Software Supply Chain Security (SSCS) by treating it as a continuous pipeline of binaries. Here is the 4-phase philosophy.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+                        <span class="text-blue-500 font-black text-3xl opacity-20 absolute -right-2 -bottom-2">1</span>
+                        <h4 class="font-bold text-slate-900 mb-2 z-10 relative">The Front Door</h4>
+                        <span class="text-xs font-bold text-blue-600 uppercase mb-2 block">JFrog Curation</span>
+                        <p class="text-xs text-slate-600">Acts as a quarantine zone. It physically blocks malicious packages (like typosquatting attacks) from even entering your network.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-brand-500"></div>
+                        <span class="text-brand-500 font-black text-3xl opacity-20 absolute -right-2 -bottom-2">2</span>
+                        <h4 class="font-bold text-slate-900 mb-2 z-10 relative">The Factory Floor</h4>
+                        <span class="text-xs font-bold text-brand-600 uppercase mb-2 block">Artifactory</span>
+                        <p class="text-xs text-slate-600">Captures <em>Provenance</em> via BuildInfo. Cryptographically proves that the binary hasn't been tampered with since the exact millisecond it was built.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-500"></div>
+                        <span class="text-orange-500 font-black text-3xl opacity-20 absolute -right-2 -bottom-2">3</span>
+                        <h4 class="font-bold text-slate-900 mb-2 z-10 relative">The Inspector</h4>
+                        <span class="text-xs font-bold text-orange-600 uppercase mb-2 block">Xray & Adv. Security</span>
+                        <p class="text-xs text-slate-600">Scans the final binary for vulnerabilities and leaked secrets. Uses Contextual Analysis to reduce false positives.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-purple-500"></div>
+                        <span class="text-purple-500 font-black text-3xl opacity-20 absolute -right-2 -bottom-2">4</span>
+                        <h4 class="font-bold text-slate-900 mb-2 z-10 relative">Shipping Manifest</h4>
+                        <span class="text-xs font-bold text-purple-600 uppercase mb-2 block">Native SBOMs</span>
+                        <p class="text-xs text-slate-600">Automatically generates machine-readable ingredient lists (SPDX/CycloneDX) so you can instantly prove compliance to auditors.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="devops-landscape" class="scroll-mt-24 mt-16 pt-8 border-t border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">The Architect's Mental Map: DevOps Landscape</h2>
+                <p class="text-slate-700 text-sm mb-8 max-w-3xl">Understanding where JFrog fits requires mapping the 5 pillars of modern DevOps tools. JFrog dominates Pillar 3.</p>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="min-w-full text-left border-collapse">
+                        <thead class="bg-slate-800 text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-sm font-bold w-1/4">The Pillar</th>
+                                <th class="px-6 py-4 text-sm font-bold w-1/2">The Goal</th>
+                                <th class="px-6 py-4 text-sm font-bold w-1/4">Heavy Hitters</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-sm">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-bold text-slate-900">1. Source & Collaboration</td>
+                                <td class="px-6 py-4 text-slate-700">Where developers live, write code, review PRs, and manage version control.</td>
+                                <td class="px-6 py-4 text-brand-600 font-medium">GitHub, GitLab, Bitbucket</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-bold text-slate-900">2. CI/CD Orchestration</td>
+                                <td class="px-6 py-4 text-slate-700">The engine. Executes scripts to compile code. Does not store artifacts permanently.</td>
+                                <td class="px-6 py-4 text-brand-600 font-medium">Jenkins, Actions, CircleCI</td>
+                            </tr>
+                            <tr class="hover:bg-brand-50 bg-brand-50/30">
+                                <td class="px-6 py-4 font-bold text-brand-900">3. Artifacts & Security</td>
+                                <td class="px-6 py-4 text-brand-800">The warehouse. Stores compiled binaries securely and scans them for vulnerabilities.</td>
+                                <td class="px-6 py-4 text-brand-700 font-bold">JFrog, Sonatype, Snyk</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-bold text-slate-900">4. Infrastructure as Code</td>
+                                <td class="px-6 py-4 text-slate-700">The foundation. Packaging the app (containers) and automatically provisioning the servers.</td>
+                                <td class="px-6 py-4 text-brand-600 font-medium">Docker, Kubernetes, Terraform</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-bold text-slate-900">5. Observability</td>
+                                <td class="px-6 py-4 text-slate-700">The nervous system. Monitoring system health, logs, metrics, and distributed tracing.</td>
+                                <td class="px-6 py-4 text-brand-600 font-medium">Datadog, Prometheus, Splunk</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+ 			<section id="acquisitions" class="scroll-mt-24 mt-16 pt-8 border-t border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">M&A Strategy: Buying the Pipeline</h2>
+                
+                <div class="bg-brand-50 border-l-4 border-brand-600 p-6 rounded-r-xl mb-10">
+                    <p class="text-sm text-slate-800 leading-relaxed">
+                        JFrog didn't buy random tools; they bought the pipeline. From embedding native CI/CD, to pushing updates to the IoT edge, to treating massive AI models as software packages—every acquisition was a calculated move to own the entire binary lifecycle.
+                    </p>
+                </div>
+
+                <div class="relative border-l-2 border-slate-200 ml-4 md:ml-6 space-y-8 pb-4">
+                    
+                    <div class="relative pl-8 md:pl-12">
+                        <div class="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-brand-500 ring-4 ring-white"></div>
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">~$230M</div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">July 2024</span>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Qwak</h3>
+                            <p class="text-sm text-slate-700 mb-4"><strong>The Tech:</strong> An end-to-end AI and MLOps platform.</p>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The Strategy: "Model as a Package"</strong>
+                                <p class="text-sm text-slate-800">Brings AI natively into the DevSecOps pipeline. It allows JFrog to treat massive LLMs exactly like standard software binaries for versioning, security scanning, and trusted deployment.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-8 md:pl-12">
+                        <div class="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-slate-400 ring-4 ring-white"></div>
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition">
+                            <div class="absolute top-0 right-0 bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">~$300M (Vdoo)</div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">July & Sept 2021</span>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Vdoo & Upswift</h3>
+                            <p class="text-sm text-slate-700 mb-4"><strong>The Tech:</strong> Vdoo specialized in embedded device security; Upswift provided IoT edge management.</p>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The Strategy: Securing the Edge</strong>
+                                <p class="text-sm text-slate-800">Vdoo bolted deep embedded-scanning capabilities onto JFrog Xray. Upswift became <em>JFrog Connect</em>, allowing the platform to push Over-The-Air (OTA) updates directly to remote hardware.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-8 md:pl-12">
+                        <div class="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-slate-300 ring-4 ring-white"></div>
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">January 2020</span>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Waterway DevOps</h3>
+                            <p class="text-sm text-slate-700 mb-4"><strong>The Tech:</strong> Specialized DevOps productivity software.</p>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The Strategy: Integration</strong>
+                                <p class="text-sm text-slate-800">An acqui-hire and technology play aimed at streamlining internal platform efficiencies and deepening integrations with existing DevOps ecosystems.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-8 md:pl-12">
+                        <div class="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-slate-300 ring-4 ring-white"></div>
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">February 2019</span>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Shippable</h3>
+                            <p class="text-sm text-slate-700 mb-4"><strong>The Tech:</strong> A cloud-native CI/CD automation platform.</p>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The Strategy: Building the Engine</strong>
+                                <p class="text-sm text-slate-800">Before this, JFrog was strictly a vault and a bouncer. Shippable became <em>JFrog Pipelines</em>, giving them the native orchestration required to challenge all-in-one tools like GitLab CI.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-8 md:pl-12">
+                        <div class="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-slate-300 ring-4 ring-white"></div>
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">November 2016</span>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Conan</h3>
+                            <p class="text-sm text-slate-700 mb-4"><strong>The Tech:</strong> The premier open-source C/C++ package manager.</p>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                <strong class="text-xs text-brand-600 uppercase tracking-wider block mb-1">The Strategy: Capturing Legacy</strong>
+                                <p class="text-sm text-slate-800">JFrog natively integrated heavy C/C++ binary management into Artifactory—a massive strategic value-add for capturing enterprise, automotive, and gaming companies.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Data derived directly from the chat prompt context
+        const personaData = {
+            developer: {
+                desc: "Viewing as: Developer. Focus on IDE integration, dependency caching, and native pipeline tools.",
+                foundation: "As a developer, your workflow relies on fast, reliable builds. JFrog Artifactory acts as your local proxy—caching npm or Maven dependencies so your builds never fail if a public registry goes down. JFrog Pipelines native YAML syntax seamlessly connects your code to the vault.",
+                risks: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Public Registry Outages</td><td class="px-6 py-4 text-sm text-slate-700">Builds breaking because a public package (like left-pad) was deleted.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Vulnerability Fatigue</td><td class="px-6 py-4 text-sm text-slate-700">Wasting days fixing CVEs in libraries your code doesn't actually trigger.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Proxy Dependencies</td><td class="px-6 py-4 text-sm text-slate-700">Always pull dependencies through Artifactory, never directly from the public internet.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Contextual Analysis</td><td class="px-6 py-4 text-sm text-slate-700">Use Xray Advanced Security to check if a CVE is reachable before spending hours fixing it.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Shift Left in IDE</h4><p class="text-sm text-slate-700 mt-1">Install the JFrog IDE plugin to catch vulnerable packages as you type.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Automate BuildInfo</h4><p class="text-sm text-slate-700 mt-1">Ensure your CI tools are pushing BuildInfo metadata with every commit.</p></div></div>
+                `,
+                tip: "Developer Tip: Use the JFrog CLI. It abstracts away the complex REST API calls for pushing Docker images and BuildInfo."
+            },
+            qa: {
+                desc: "Viewing as: QA. Focus on immutable binaries, exact environment replication, and provenance.",
+                foundation: "As QA, you need to guarantee that the application you test is the exact same one the customer gets. JFrog's 'binary-centric' approach means you don't rebuild from source for production. You promote the exact immutable binary stored in Artifactory from a QA repo to a PROD repo.",
+                risks: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Environment Drift</td><td class="px-6 py-4 text-sm text-slate-700">Rebuilding code from Git for production pulls slightly different transitive dependencies than QA had.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Untracked Builds</td><td class="px-6 py-4 text-sm text-slate-700">Testing an artifact without knowing exactly which Git commit generated it.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Binary Promotion</td><td class="px-6 py-4 text-sm text-slate-700">Never recompile. Move the tested binary object directly via Artifactory promotion APIs.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">BuildInfo Verification</td><td class="px-6 py-4 text-sm text-slate-700">Check the Artifactory BuildInfo to verify the exact environment variables present during compilation.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Automate Xray Gates</h4><p class="text-sm text-slate-700 mt-1">Configure Xray to automatically block promotion if high-severity CVEs are found.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Traceability</h4><p class="text-sm text-slate-700 mt-1">Ensure every tested artifact can be traced back to a specific Jira ticket and Git commit via JFrog properties.</p></div></div>
+                `,
+                tip: "QA Tip: Leverage Artifactory's custom properties. Tag a Docker image with `qa.status=passed` to automate downstream pipelines."
+            },
+            architect: {
+                desc: "Viewing as: Architect. Focus on multi-site replication, edge delivery, and the Single Source of Truth.",
+                foundation: "As an Architect, you design for global scale. You need to move terabytes of data across global offices and ensure identical environments. JFrog Artifactory handles high-availability replication, while JFrog Distribution uses peer-to-peer tech to push massive binaries to the edge without crushing your network.",
+                risks: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Network Congestion</td><td class="px-6 py-4 text-sm text-slate-700">Pushing a 10GB Docker image to 5,000 retail stores simultaneously crashing the WAN.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Fragmented Silos</td><td class="px-6 py-4 text-sm text-slate-700">Using different artifact tools for AWS, Azure, and On-Premises, breaking the Single Source of Truth.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Edge Distribution</td><td class="px-6 py-4 text-sm text-slate-700">Implement JFrog Distribution (Private CDN) to orchestrate edge deployments.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Universal Formats</td><td class="px-6 py-4 text-sm text-slate-700">Standardize all 30+ package types (Docker, Helm, npm, PyPI) into one highly available Artifactory cluster.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Multi-Cloud Topology</h4><p class="text-sm text-slate-700 mt-1">Design Federated Repositories to sync binaries bi-directionally across AWS and GCP.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Device Management</h4><p class="text-sm text-slate-700 mt-1">Use JFrog Connect to monitor Linux-based IoT fleet health and execute OTA micro-updates.</p></div></div>
+                `,
+                tip: "Architect Tip: Use Federated Repositories to keep distributed teams in sync natively without writing complex replication scripts."
+            },
+            manager: {
+                desc: "Viewing as: Manager. Focus on Supply Chain Security (SSCS), native SBOMs, and license compliance.",
+                foundation: "As a Manager, governance and compliance are key. The supply chain is under attack. JFrog provides end-to-end security: Curation blocks malicious open-source packages at the front door, Xray scans the compiled artifacts, and the platform automatically generates machine-readable SBOMs for every release.",
+                risks: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Supply Chain Poisoning</td><td class="px-6 py-4 text-sm text-slate-700">Developers downloading a 'typosquatted' malicious package (e.g., 'reqeusts' instead of 'requests').</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">License Violations</td><td class="px-6 py-4 text-sm text-slate-700">Accidentally shipping strict GPL-licensed code, forcing your company to open-source proprietary IP.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Front Door Defense</td><td class="px-6 py-4 text-sm text-slate-700">Enable JFrog Curation to quarantine unapproved or highly vulnerable packages before entry.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">SBOM Mandates</td><td class="px-6 py-4 text-sm text-slate-700">Use native tools to generate SPDX/CycloneDX SBOMs instantly when clients/auditors request them.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Establish Governance Policies</h4><p class="text-sm text-slate-700 mt-1">Define strict Xray policies that automatically block builds containing banned open-source licenses.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Audit Dependencies</h4><p class="text-sm text-slate-700 mt-1">Use the Xray reporting dashboard to identify technical debt from abandoned open-source projects.</p></div></div>
+                `,
+                tip: "Manager Tip: Don't just scan code. Scan the binary. Malicious actors often inject malware during the build process, bypassing source-code scanners."
+            },
+            mlops: {
+                desc: "Viewing as: AI MLOps. Focus on Model Registries, Hugging Face proxying, and MLSecOps.",
+                foundation: "As an ML Engineer, you are bridging the gap between Data Science and DevOps. JFrog ML (following the Qwak acquisition) treats AI models exactly like standard software binaries. You can proxy Hugging Face through the AI Catalog, version your LLMs, and scan them for malicious payloads before deployment.",
+                risks: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Shadow AI</td><td class="px-6 py-4 text-sm text-slate-700">Data scientists pulling unvetted, massive models directly from public hubs into corporate networks.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">Malicious Models</td><td class="px-6 py-4 text-sm text-slate-700">Pickle files in third-party models containing hidden remote-code-execution (RCE) malware.</td></tr>
+                `,
+                watch: `
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">AI Cataloging</td><td class="px-6 py-4 text-sm text-slate-700">Use JFrog AI Catalog to host and version control internal and external models in Artifactory.</td></tr>
+                    <tr class="hover:bg-slate-50 transition"><td class="px-6 py-4 whitespace-nowrap font-semibold text-brand-600">ML Security</td><td class="px-6 py-4 text-sm text-slate-700">Integrate Xray to scan model files for CVEs and malicious code injections.</td></tr>
+                `,
+                checklist: `
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Unify the Silos</h4><p class="text-sm text-slate-700 mt-1">Force AI model deployments to use the exact same CI/CD pipelines as your standard web applications.</p></div></div>
+                    <div class="flex items-start bg-white p-5 rounded-lg border border-slate-200 shadow-sm"><div class="ml-3"><h4 class="text-md font-bold text-slate-900">Model Provenance</h4><p class="text-sm text-slate-700 mt-1">Attach BuildInfo to AI models to track exactly which training data slice produced which model version.</p></div></div>
+                `,
+                tip: "MLOps Tip: Treat Hugging Face just like npm. Proxy it through Artifactory to ensure high availability and security vetting."
+            }
+        };
+
+        let currentPersona = 'developer';
+
+        function updatePersona(role) {
+            currentPersona = role;
+            
+            document.querySelectorAll('.persona-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-brand-950');
+                btn.classList.add('text-brand-100', 'border-brand-600');
+            });
+            const activeBtn = document.getElementById('btn-' + role);
+            activeBtn.classList.remove('text-brand-100', 'border-brand-600');
+            activeBtn.classList.add('bg-white', 'text-brand-950');
+
+            const data = personaData[role];
+            document.getElementById('persona-desc').innerText = data.desc;
+            document.getElementById('dynamic-foundation-text').innerText = data.foundation;
+            document.getElementById('risks-table-body').innerHTML = data.risks;
+            document.getElementById('watch-report-table-body').innerHTML = data.watch;
+            document.getElementById('checklist-items').innerHTML = data.checklist;
+            document.getElementById('dynamic-visualizer-tip').innerText = data.tip;
+        }
+
+        // SVG Visualizer Logic
+        const svgContent = {
+            'curation': {
+                1: "<strong>1. The Request:</strong> A developer attempts to pull a public npm package that happens to contain malicious typosquatted code.",
+                2: "<strong>2. The Gate:</strong> JFrog Curation intercepts the request before it enters the network, checking the package metadata against security databases.",
+                3: "<strong>3. The Block:</strong> Curation identifies the malware and physically blocks it from entering Artifactory. The developer is protected."
+            },
+            'arti': {
+                1: "<strong>1. The Build:</strong> Your CI server (like Jenkins) finishes compiling the source code into a final Docker image.",
+                2: "<strong>2. The Push:</strong> The CI server pushes the compiled binary into the secure Artifactory vault.",
+                3: "<strong>3. The Provenance:</strong> Simultaneously, it attaches 'BuildInfo'—a permanent metadata record of the exact environment, Git commit, and dependencies used. Total traceability."
+            },
+            'xray': {
+                1: "<strong>1. Deep Scan:</strong> Xray recursively peels apart the Docker image, looking 10 layers deep to find a hidden Log4j vulnerability.",
+                2: "<strong>2. Contextual Analysis:</strong> Advanced Security analyzes the actual compiled code to see if the vulnerable function is ever called.",
+                3: "<strong>3. The Result:</strong> Xray determines the vulnerability is 'Not Reachable', filtering out the false positive so developers don't waste time."
+            },
+            'connect': {
+                1: "<strong>1. New Release:</strong> A newly secured firmware update is finalized and stored in the Artifactory vault.",
+                2: "<strong>2. The Push:</strong> JFrog Connect pushes the update Over-The-Air (OTA) to remote Linux-based IoT sensors in the field.",
+                3: "<strong>3. Safe Rollback:</strong> If the update causes a kernel panic on the device, Connect automatically rolls it back to the previous secure version."
+            }
+        };
+        
+        // 2. Dynamic text that changes based on the selected role
+        const roleContext = {
+            developer: {
+                curation: "Your local CLI or IDE is protected from accidentally pulling poisoned code.",
+                arti: "Your CI/CD pipeline uses native JFrog CLI steps to automate this entirely.",
+                xray: "You avoid spending 3 days fixing a bug that Xray proves can't be exploited.",
+                connect: "You can remote-debug the edge device directly from your local terminal."
+            },
+            qa: {
+                curation: "QA environments are shielded from testing poisoned release candidates.",
+                arti: "You test the EXACT immutable binary, verified by the BuildInfo metadata.",
+                xray: "You can automatically fail the staging deployment if Xray finds a critical CVE.",
+                connect: "You can simulate edge updates and test rollback triggers on QA devices."
+            },
+            architect: {
+                curation: "You enforce global governance policies across all development sites.",
+                arti: "This vault is replicated across your global multi-cloud architecture.",
+                xray: "Zero-trust is maintained by ensuring deep inspection before any deployment.",
+                connect: "You maintain fleet-wide consistency without crushing the corporate WAN."
+            },
+            manager: {
+                curation: "You mitigate legal liability and supply chain poisoning risk at the perimeter.",
+                arti: "You generate an instant, auditable SBOM (Software Bill of Materials) from this step.",
+                xray: "You drastically reduce alert fatigue, saving thousands of engineering hours.",
+                connect: "You ensure SLAs are met by minimizing edge device downtime."
+            },
+            mlops: {
+                curation: "Malicious Hugging Face models are blocked before poisoning your data lake.",
+                arti: "AI models are stored and versioned here alongside traditional software binaries.",
+                xray: "Xray detects malicious code hidden inside the pickled AI model files.",
+                connect: "You seamlessly deploy updated AI inference models to edge computing nodes."
+            }
+        };
+
+        let currentConcept = 'arti'; // Default
+
+        
+        function setConcept(concept) {
+            currentConcept = concept;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Match the button by the onclick attribute to set it active
+            const activeTab = document.querySelector(`.tab-btn[onclick="setConcept('${concept}')"]`);
+            if(activeTab) activeTab.classList.add('active');
+
+            document.querySelectorAll('.scene').forEach(scene => scene.classList.remove('active'));
+            document.getElementById('scene-' + concept).classList.add('active');
+            setStep(1);
+        }
+
+        function setStep(step) {
+            document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-step-' + step).classList.add('active');
+            
+            const baseData = svgContent[currentConcept][step];
+            const personaAngle = roleContext[currentPersona][currentConcept];
+            
+            // Inject both the core explanation AND the role-specific impact
+            document.getElementById('explanation-text').innerHTML = `
+                <div class="w-full">
+                    <p class="text-brand-700 text-sm pt-3 border-t border-brand-200/50">
+                        <strong>Role Impact (${currentPersona.toUpperCase()}):</strong> ${personaAngle}
+                    </p>
+                </div>
+            `;
+            
+            const scene = document.getElementById('scene-' + currentConcept);
+            scene.classList.remove('step-1', 'step-2', 'step-3');
+            scene.classList.add('step-' + step);
+        }
+
+        // Updated updatePersona function to auto-switch tabs
+        function updatePersona(role) {
+            currentPersona = role;
+            
+            // Update button styles
+            document.querySelectorAll('.persona-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-brand-950');
+                btn.classList.add('text-brand-100', 'border-brand-600');
+            });
+            const activeBtn = document.getElementById('btn-' + role);
+            activeBtn.classList.remove('text-brand-100', 'border-brand-600');
+            activeBtn.classList.add('bg-white', 'text-brand-950');
+
+            // Update main content
+            const data = personaData[role];
+            document.getElementById('persona-desc').innerText = data.desc;
+            document.getElementById('dynamic-foundation-text').innerText = data.foundation;
+            document.getElementById('risks-table-body').innerHTML = data.risks;
+            document.getElementById('watch-report-table-body').innerHTML = data.watch;
+            document.getElementById('checklist-items').innerHTML = data.checklist;
+            document.getElementById('dynamic-visualizer-tip').innerText = data.tip;
+
+            // Auto-switch the visualizer tab based on the selected role
+            const roleFocusMap = {
+                developer: 'arti',
+                qa: 'xray',
+                architect: 'connect',
+                manager: 'curation',
+                mlops: 'curation'
+            };
+            
+            setConcept(roleFocusMap[role]);
+        }
+
+        // Features Carousel Logic
+        const caseData = [
+            { letter: "1", title: "True Universality", desc: "Unlike source-centric tools that favor specific languages, Artifactory natively supports over 30+ package types (Maven, npm, PyPI, Docker, Helm, Conan, Go) with equal depth and metadata indexing." },
+            { letter: "2", title: "Native SBOM Generation", desc: "Because JFrog holds the compiled binary and the BuildInfo, it can instantly generate highly accurate SPDX or CycloneDX Software Bill of Materials, proving exactly what is inside your shipped product." },
+            { letter: "3", title: "Massive Scale Distribution", desc: "For extreme enterprise scale, JFrog Distribution uses peer-to-peer (P2P) and private CDN technology to push multi-gigabyte releases to thousands of global edge nodes without crashing corporate networks." },
+            { letter: "4", title: "Unified MLSecOps", desc: "With JFrog ML, the platform bridges the gap between Data Scientists and DevOps. AI Models are versioned, scanned for vulnerabilities, and delivered through the exact same pipelines as standard web applications." }
+        ];
+
+        let currentCaseIndex = 0;
+
+        function renderCaseCarousel() {
+            const data = caseData[currentCaseIndex];
+            document.getElementById('case-letter').innerText = data.letter;
+            document.getElementById('case-title').innerText = data.title;
+            document.getElementById('case-desc').innerText = data.desc;
+
+            const dotsContainer = document.getElementById('case-dots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < caseData.length; i++) {
+                const dot = document.createElement('button');
+                dot.onclick = () => { currentCaseIndex = i; renderCaseCarousel(); };
+                dot.className = `w-3 h-3 rounded-full transition ${i === currentCaseIndex ? 'bg-brand-600' : 'bg-slate-300 hover:bg-slate-400'}`;
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function nextCase() { currentCaseIndex = (currentCaseIndex + 1) % caseData.length; renderCaseCarousel(); }
+        function prevCase() { currentCaseIndex = (currentCaseIndex - 1 + caseData.length) % caseData.length; renderCaseCarousel(); }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePersona('developer');
+            setStep(1);
+            renderCaseCarousel();
+
+            // Scrollspy logic for sidebar
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        document.querySelectorAll('.toc-link').forEach(link => {
+                            link.classList.remove('text-brand-700', 'font-bold', 'translate-x-2');
+                            link.classList.add('text-slate-500');
+                        });
+                        const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                        if (activeLink) {
+                            activeLink.classList.remove('text-slate-500');
+                            activeLink.classList.add('text-brand-700', 'font-bold', 'translate-x-2');
+                        }
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
+        });
+        
+        document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+
+
+// Sticky Role Selector Logic
+            const roleAnchor = document.getElementById('role-anchor');
+            const roleBox = document.getElementById('role-sticky-box');
+
+            window.addEventListener('scroll', () => {
+                const anchorRect = roleAnchor.getBoundingClientRect();
+                
+                if (anchorRect.top <= 0) {
+                    // MOVE element directly to the <body> to escape all parent z-index traps
+                    if (roleBox.parentNode !== document.body) {
+                        document.body.appendChild(roleBox);
+                    }
+                    
+                    // Apply fixed styles
+                    roleBox.style.position = 'fixed';
+                    roleBox.style.top = '0';
+                    roleBox.style.left = '0';
+                    roleBox.style.width = '100%';
+                    roleBox.style.backgroundColor = '#0f172a'; // Solid dark slate
+                    roleBox.style.zIndex = '999999';           // Maximum z-index
+                    roleBox.style.padding = '1rem 1.5rem';
+                    roleBox.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+                    roleBox.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.5)';
+                    roleBox.style.justifyContent = 'center';
+                    
+                    // Remove hero styling
+                    roleBox.classList.remove('rounded-xl', 'p-5', 'bg-white/5');
+                } else {
+                    // MOVE element back into its original anchor in the header
+                    if (roleBox.parentNode !== roleAnchor) {
+                        roleAnchor.appendChild(roleBox);
+                    }
+                    
+                    // Clear fixed inline styles
+                    roleBox.style.cssText = '';
+                    
+                    // Restore hero styling
+                    roleBox.classList.add('rounded-xl', 'p-5', 'bg-white/5');
+                }
+            });
+        
+    </script>
+</body>
+</html>
