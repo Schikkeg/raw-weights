@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Architecture & Lifecycle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .role-transition { transition: opacity 0.3s ease-in-out; }
+        .toc-active { color: #2563eb; font-weight: 700; border-left-color: #2563eb; }
+        .svg-interactive:hover { filter: brightness(0.95); cursor: pointer; }
+        
+         /* Navigation */
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            600: '#0077b5', // LinkedIn Blue-ish
+                            900: '#0e1111',
+                        }
+                    }
+                }
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    // 1. Identify all links that want to be grouped
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    // 2. Build the dropdowns
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        // Create the wrapper
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        // Create the Trigger Button
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        // Create the Menu
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        // 3. THE KEY CHANGE: 
+        // Replace the FIRST link of the group in the DOM with our dropdown wrapper
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        // 4. Now move all items (including the first one) into the menu
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        // Click to toggle
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            // Close others
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    // Close when clicking document
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased leading-relaxed">
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+		<a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+    <!-- Hero Section & Role Selector -->
+	<header class="bg-brand-900 text-white py-20 relative overflow-hidden">
+	    <div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTAgMTBoNDBNMCAzMGg0ME0xMCAwdjQwTTMwIDB2NDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')]"></div>
+	    
+	    <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+	        <div class="w-full lg:w-1/2 text-left">
+	            <span class="text-brand-500 font-semibold tracking-wider uppercase text-sm mb-4 block">Guide</span>
+	            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight">The Architecture & Lifecycle of Custom LLMs</h1>
+	            <p class="text-lg md:text-xl text-gray-300 font-light mb-8">A definitive guide mapping the journey from raw text corpora to deployed multimodal AI systems. 
+                Select your role below to tailor the focus of each module to your specific engineering or management perspective.</p>
+	            <div class="header-persona bg-white/5 backdrop-blur-md border border-white/10 p-4 rounded-xl inline-block w-full sm:w-auto">
+	                <p class="text-xs text-brand-100 font-semibold uppercase tracking-wider mb-3">Select Your Persona:</p>
+	                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="selectRole('Architect')" data-role="Architect" class="role-btn px-6 py-2 rounded-full font-medium transition-all shadow-sm">Architect</button>
+                    <button onclick="selectRole('Developer')" data-role="Developer" class="role-btn px-6 py-2 rounded-full font-medium transition-all shadow-sm">Developer</button>
+                    <button onclick="selectRole('QA')" data-role="QA" class="role-btn px-6 py-2 rounded-full font-medium transition-all shadow-sm">QA Engineer</button>
+                    <button onclick="selectRole('Manager')" data-role="Manager" class="role-btn px-6 py-2 rounded-full font-medium transition-all shadow-sm">Manager</button>
+
+	                </div>
+	            </div>
+	        </div>	        
+	        
+	        <div class="w-full lg:w-1/3 flex justify-center relative group mx-auto">
+   				 <div class="absolute inset-0 bg-brand-500 blur-[50px] opacity-20 rounded-full transition duration-500 group-hover:opacity-40"></div>
+   					 <img src="../images/lifecycle.png" 
+         				onclick="openImageModal(this.src)" 
+         				alt="Full Life cycyle" 
+         				class="cursor-pointer relative z-10 h-48 md:h-64 w-auto object-contain rounded-xl shadow-xl border border-brand-700/50 hover:scale-[1.05] transition-transform duration-300 bg-white/5 backdrop-blur-sm p-2">
+				</div>
+		
+	    	</div>
+	</header>
+
+    
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col lg:flex-row gap-10">
+        
+        <!-- Sticky Sidebar / Table of Contents -->
+        <aside class="lg:w-1/4 hidden lg:block">
+            <nav class="sticky top-10 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider">Table of Contents</h3>
+                <ul class="space-y-3 text-sm text-slate-600" id="toc-menu">
+                    <li><a href="#section-1" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">1. How AI is Trained</a></li>
+                    <li><a href="#section-2" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">2. Neural Network & Backprop</a></li>
+                    <li><a href="#section-3" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">3. How AI Learns (Backpropagation)</a></li>
+                    <li><a href="#section-4" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">4. Prompt Engineering</a></li>
+                    <li><a href="#section-5" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">5. Tokenization</a></li>
+                    <li><a href="#section-6" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">6. Transformer Architecture</a></li>
+                    <li><a href="#section-7" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">7. Frontier Models</a></li>
+                    <li><a href="#section-8" class="toc-link block pl-3 border-l-2 border-transparent hover:text-blue-600 transition">8. Multimodal AI</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Chapters -->
+        <main class="lg:w-3/4 space-y-12">
+
+            <!-- Section 1: How AI is Trained -->
+            <section id="section-1" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">1. How AI is Trained</h2>
+                
+                <p class="text-slate-700 mb-6">
+                    Training large language models is a pipeline with three distinct phases. Understanding these phases changes how you evaluate models, interpret their failures (hallucinating, refusing, inconsistency), and make smarter deployment decisions.
+                </p>
+
+                <!-- SVG Visualizer for Training Phases -->
+                <div class="mb-8 p-4 bg-slate-50 border border-slate-200 rounded-xl overflow-x-auto">
+                    <svg viewBox="0 0 850 220" class="w-full min-w-[700px] h-auto font-sans" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+                            </marker>
+                        </defs>
+                        <!-- Phase 1 -->
+                        <rect x="10" y="20" width="240" height="180" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" class="svg-interactive"/>
+                        <text x="130" y="55" text-anchor="middle" font-weight="bold" font-size="18" fill="#1e3a8a">1. Pre-Training</text>
+                        <text x="130" y="85" text-anchor="middle" font-size="13" fill="#334155">• Learns a "World Model"</text>
+                        <text x="130" y="105" text-anchor="middle" font-size="13" fill="#334155">• Next token prediction task</text>
+                        <text x="130" y="125" text-anchor="middle" font-size="13" fill="#334155">• Trillions of tokens (Self-supervised)</text>
+                        <text x="130" y="145" text-anchor="middle" font-size="13" fill="#334155">• Internalizes grammar & facts</text>
+                        <text x="130" y="170" text-anchor="middle" font-size="12" font-style="italic" fill="#64748b">Massive compute / No safety</text>
+
+                        <!-- Arrow -->
+                        <line x1="250" y1="110" x2="280" y2="110" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrowhead)"/>
+
+                        <!-- Phase 2 -->
+                        <rect x="290" y="20" width="240" height="180" rx="12" fill="#faf5ff" stroke="#a855f7" stroke-width="2" class="svg-interactive"/>
+                        <text x="410" y="55" text-anchor="middle" font-weight="bold" font-size="18" fill="#581c87">2. Fine-Tuning</text>
+                        <text x="410" y="85" text-anchor="middle" font-size="13" fill="#334155">• Instruction Tuning</text>
+                        <text x="410" y="105" text-anchor="middle" font-size="13" fill="#334155">• RLHF (Human Preference)</text>
+                        <text x="410" y="125" text-anchor="middle" font-size="13" fill="#334155">• Reward model optimization</text>
+                        <text x="410" y="145" text-anchor="middle" font-size="13" fill="#334155">• Shapes behavior, not knowledge</text>
+                        <text x="410" y="170" text-anchor="middle" font-size="12" font-style="italic" fill="#64748b">Makes the base model useful</text>
+
+                        <!-- Arrow -->
+                        <line x1="530" y1="110" x2="560" y2="110" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrowhead)"/>
+
+                        <!-- Phase 3 -->
+                        <rect x="570" y="20" width="240" height="180" rx="12" fill="#f0fdf4" stroke="#22c55e" stroke-width="2" class="svg-interactive"/>
+                        <text x="690" y="55" text-anchor="middle" font-weight="bold" font-size="18" fill="#14532d">3. Alignment</text>
+                        <text x="690" y="85" text-anchor="middle" font-size="13" fill="#334155">• Safety & Honesty Focus</text>
+                        <text x="690" y="105" text-anchor="middle" font-size="13" fill="#334155">• Constitutional AI (Self-critique)</text>
+                        <text x="690" y="125" text-anchor="middle" font-size="13" fill="#334155">• Content filtering applied</text>
+                        <text x="690" y="145" text-anchor="middle" font-size="13" fill="#334155">• Creates final deployed API</text>
+                        <text x="690" y="170" text-anchor="middle" font-size="12" font-style="italic" fill="#64748b">Trade-off: Risk of over-refusal</text>
+                    </svg>
+                </div>
+
+                <div class="space-y-4 text-slate-700">
+                    <p><strong>Pre-training:</strong> This creates a base model built on a transformer architecture. The input is a massive corpus of web crawls, books, and code. To put this in perspective, the entire English Wikipedia is roughly 3 billion tokens—a rounding error at this scale. Because it solves for next-token prediction across human writing, it internalizes logic. This requires tens to hundreds of millions of dollars and months of GPU time.</p>
+                    <p><strong>Fine-tuning:</strong> Makes the base model useful. Through Instruction Tuning and Reinforcement Learning from Human Feedback (RLHF), human raters compare outputs so a reward model learns human preference. This optimization target differs from raw prediction. Note: Fine-tuning shapes behavior but does not update knowledge (which requires Retraining or RAG).</p>
+                    <p><strong>Alignment:</strong> Makes the model safe and honest. Anthropic's Constitutional AI trains the model to critique and revise its outputs against written principles. A major side-effect is <em>over-refusal</em>. Furthermore, models have a static knowledge cutoff; they determine confidence based on training data volume, not ground truth, which often leads to them being confidently wrong.</p>
+                </div>
+
+                <!-- Dynamic Role Content -->
+                <div class="mt-6 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg role-content role-architect transition-opacity">
+                    <h4 class="font-bold text-blue-800 flex items-center mb-1">Architect Perspective</h4>
+                    <p class="text-sm text-blue-900">Design systems assuming the model has a static knowledge cutoff. You must architecture RAG (Retrieval-Augmented Generation) pipelines to inject live retrieval data at inference time to supplement frozen knowledge.</p>
+                </div>
+                <div class="mt-6 border-l-4 border-emerald-500 bg-emerald-50 p-4 rounded-r-lg role-content role-developer hidden transition-opacity">
+                    <h4 class="font-bold text-emerald-800 flex items-center mb-1">Developer Perspective</h4>
+                    <p class="text-sm text-emerald-900">When debugging, isolate whether the failure is a reasoning error (pre-training limitation), an instruction failure (fine-tuning issue), or a safety trip (alignment). Knowing this changes how you structure your API system prompt.</p>
+                </div>
+                <div class="mt-6 border-l-4 border-amber-500 bg-amber-50 p-4 rounded-r-lg role-content role-qa hidden transition-opacity">
+                    <h4 class="font-bold text-amber-800 flex items-center mb-1">QA Perspective</h4>
+                    <p class="text-sm text-amber-900">Your test suites must aggressively target "over-refusal" edge cases caused by alignment tuning, and probe the model's knowledge boundaries to evaluate hallucination risk when answering out-of-distribution queries.</p>
+                </div>
+                <div class="mt-6 border-l-4 border-purple-500 bg-purple-50 p-4 rounded-r-lg role-content role-manager hidden transition-opacity">
+                    <h4 class="font-bold text-purple-800 flex items-center mb-1">Manager Perspective</h4>
+                    <p class="text-sm text-purple-900">Pre-training is the massive compute moat. Decide carefully between fine-tuning an open-source model versus utilizing RAG on a closed API. Retraining for knowledge updates is generally cost-prohibitive compared to prompt engineering.</p>
+                </div>
+            </section>
+
+            <!-- Section 2: Neural Network & Backpropagation -->
+            <section id="section-2" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">2. Neural Network & Backpropagation</h2>
+                <p class="text-slate-700 mb-4">
+                    Tokens map to integer IDs, which project into dense numerical vectors called <strong>embeddings</strong>. These form the input to a neural network—layers of interconnected neurons acting as a function approximator.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 mb-3">The Learning Loop</h3>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li><strong>Forward Pass:</strong> The neuron multiplies inputs by its weight, adds a bias, and passes it through an <em>activation function</em> to introduce nonlinearity. Without nonlinearity, stacking layers collapses into a single linear transformation.</li>
+                            <li><strong>Loss Function:</strong> Measures the error between the prediction and the correct answer.</li>
+                            <li><strong>Backpropagation:</strong> Applies calculus chain rules backward to compute a gradient for each weight.</li>
+                            <li><strong>Optimizer:</strong> Applies gradients via gradient descent. A learning rate that is too high causes instability; too low stalls convergence.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-5 text-slate-300 text-sm">
+                        <h4 class="text-white font-bold mb-2">Gradient Stability Interventions</h4>
+                        <p class="mb-2">Backpropagation requires differentiable operations. When networks scale deeply, two failure modes occur:</p>
+                        <ul class="list-disc pl-4 space-y-1 text-slate-400">
+                            <li><strong class="text-blue-300">Vanishing Gradients:</strong> Gradients shrink to zero, stalling early layers. Fixed by replacing hard step functions with smooth <strong>ReLU</strong> activations.</li>
+                            <li><strong class="text-blue-300">Exploding Gradients:</strong> Handled structurally via <strong>Residual Connections</strong> and <strong>Batch Normalization</strong> to stabilize gradient flow.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dynamic Role Content -->
+                <div class="role-content role-architect transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Architect:</strong> Understanding memory bandwidth required for storing gradients during backprop is crucial for sizing GPU clusters. Inference (forward pass) is vastly cheaper than training.
+                </div>
+                <div class="role-content role-developer hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Developer:</strong> You rarely code backprop from scratch today, but understanding why ReLU and residual layers exist helps you debug NaN outputs or stalled fine-tuning loops.
+                </div>
+                <div class="role-content role-qa hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>QA:</strong> Monitor the loss function graphs during fine-tuning. Unstable, spiking loss curves indicate your learning rate is too high for the dataset.
+                </div>
+                <div class="role-content role-manager hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Manager:</strong> The computational overhead of computing gradients backward is why training requires orders of magnitude more compute budget than simply querying the model.
+                </div>
+            </section>
+
+			<section id="section-3" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">3. The Big Picture: How AI Learns (Backpropagation)</h2>
+                
+                <p class="text-slate-700 mb-6 text-lg leading-relaxed">
+                    Imagine you are trying to teach a student (the AI model) a new skill by showing them examples. To learn, the student has to look at an answer, see how wrong they were, and then adjust their understanding for the next time. This process of figuring out how to adjust is called <strong>Backpropagation</strong>.
+                </p>
+
+                <!-- SVG Visualizing Gradients -->
+                <div class="mb-8 p-6 bg-slate-900 rounded-xl overflow-x-auto text-white">
+                    <h3 class="text-lg font-bold mb-4 text-center text-slate-300">Visualizing Gradient Failure Modes</h3>
+                    <svg viewBox="0 0 800 200" class="w-full h-auto font-sans" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Vanishing Gradient -->
+                        <text x="150" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#93c5fd">Vanishing Gradient (Fading Signal)</text>
+                        <circle cx="50" cy="80" r="25" fill="#3b82f6" opacity="1.0"></circle>
+                        <circle cx="110" cy="80" r="18" fill="#3b82f6" opacity="0.8"></circle>
+                        <circle cx="170" cy="80" r="12" fill="#3b82f6" opacity="0.5"></circle>
+                        <circle cx="230" cy="80" r="6" fill="#3b82f6" opacity="0.2"></circle>
+                        <text x="150" y="130" text-anchor="middle" font-size="12" fill="#cbd5e1">Early layers get stuck</text>
+
+                        <!-- Divider -->
+                        <line x1="400" y1="20" x2="400" y2="150" stroke="#475569" stroke-dasharray="4,4"></line>
+
+                        <!-- Exploding Gradient -->
+                        <text x="650" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#fca5a5">Exploding Gradient (Overwhelming Signal)</text>
+                        <circle cx="530" cy="80" r="6" fill="#ef4444" opacity="0.2"></circle>
+                        <circle cx="590" cy="80" r="12" fill="#ef4444" opacity="0.5"></circle>
+                        <circle cx="650" cy="80" r="18" fill="#ef4444" opacity="0.8"></circle>
+                        <circle cx="710" cy="80" r="25" fill="#ef4444" opacity="1.0"></circle>
+                        <text x="650" y="130" text-anchor="middle" font-size="12" fill="#cbd5e1">Signal grows into infinity</text>
+                        
+                        <text x="400" y="180" text-anchor="middle" font-size="14" font-weight="bold" fill="#22c55e">Solution: Residual Connections &amp; Batch Normalization act as Traffic Controllers</text>
+                    </svg>
+                </div>
+
+                <div class="space-y-6 text-slate-700">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">1. The Problem: Everything Must Be Smooth</h3>
+                        <p class="mb-2">For the AI to learn, the math inside it needs to flow smoothly, like water flowing gently, not jumping abruptly.</p>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><strong>Differentiable Operation:</strong> Think of this as needing a smooth ramp or slope on a hill. If you try to use a "hard step" (like an on/off switch—if the input is 0, output is 0; if input is 1, output is 1), the math breaks down when trying to learn.</li>
+                            <li><strong>The Fix:</strong> We use smooth functions (like ReLU) that create a gentle slope. This allows the error signal to flow back and forth smoothly through all layers.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">2. The Failure Modes: Gradient Problems</h3>
+                        <p class="mb-2">When the learning process runs through many layers, the "error signal" or "gradient" can get messed up in two ways:</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mt-4">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <h4 class="font-bold text-blue-800 mb-2">A. Vanishing Gradients</h4>
+                                <p class="text-sm">Imagine passing a message down a very long chain of people. If each person reduces the message slightly every time they pass it on, by the time it reaches the start of the line, it is almost zero. <strong>Result:</strong> The initial layers never get strong enough signals to learn.</p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                                <h4 class="font-bold text-red-800 mb-2">B. Exploding Gradients</h4>
+                                <p class="text-sm">Imagine every person in the chain decides to double the message. The signal doesn't fade; it gets ridiculously huge, exploding into infinity! <strong>Result:</strong> This massive error signal completely overwhelms the learning process and breaks the math.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 p-6 rounded-xl border border-slate-300">
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">3. The Solutions: Keeping Things Stable</h3>
+                        <p class="mb-3">We need special tools built into the AI structure to act like traffic controllers to keep the learning signal steady:</p>
+                        <ul class="list-disc pl-5 space-y-2 mb-4">
+                            <li><strong>Residual Connections &amp; Batch Normalization:</strong> Checkpoints that constantly check the flow of information and adjust it so the gradient stays in a healthy range.</li>
+                            <li><strong>Careful Weight Initialization:</strong> Setting up the initial starting values sensibly so the learning process has a better chance of staying stable.</li>
+                        </ul>
+                        <div class="bg-white p-3 border-l-4 border-blue-600 rounded">
+                            <p class="font-bold text-slate-800">Summary in One Sentence:</p>
+                            <p class="text-slate-600 italic">The goal of these techniques is to ensure that the learning signal (the gradient) flows smoothly and stays at a useful strength, no matter how deep the AI network gets.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Prompt Engineering -->
+            <section id="section-4" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">4. Prompt Engineering</h2>
+                <p class="text-slate-700 mb-6">Prompt engineering is a deliberate design skill, not a shortcut. It structures inputs to guide the model toward reliable, verifiable outputs instead of generic baselines.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">Zero Shot</h4>
+                        <p class="text-xs text-slate-600">Asking directly. Yields a generic, technically correct baseline.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">Role Prompting</h4>
+                        <p class="text-xs text-slate-600">Assigns a persona (e.g., Senior Engineer) anchoring perspective and vocabulary depth.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">Few-Shot</h4>
+                        <p class="text-xs text-slate-600">Provides Q&A examples. Enforces strict format, tone, and output length.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">Chain of Thought</h4>
+                        <p class="text-xs text-slate-600">Adds "think step by step". Surfaces intermediate logic, making answers verifiable.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">Self-Consistency</h4>
+                        <p class="text-xs text-slate-600">Runs prompt multiple times and uses majority voting to improve reliability.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">Tree of Thoughts</h4>
+                        <p class="text-xs text-slate-600">Explores reasoning paths simultaneously, pruning weak approaches to synthesize the best.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">ReAct</h4>
+                        <p class="text-xs text-slate-600">Interleaves reasoning with tool use (thought, action, observation loops) for autonomous agents.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-700 mb-1">Prompt Chaining</h4>
+                        <p class="text-xs text-slate-600">Decomposes tasks; one output feeds into the next prompt iteratively.</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 role-content role-architect transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Architect:</strong> ReAct is the foundational pattern underlying autonomous AI agent systems. Design your APIs to seamlessly intercept and fulfill ReAct tool-call requests.
+                </div>
+                <div class="role-content role-developer hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Developer:</strong> Combine these! Role prompting paired with Chain of Thought, or Few-shot paired with Chaining, consistently outperforms single techniques in production.
+                </div>
+                <div class="role-content role-qa hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>QA:</strong> Use self-consistency mechanisms to validate variance. If the model provides wildly different answers across 5 runs of the same prompt, the prompt needs tightening.
+                </div>
+                <div class="role-content role-manager hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Manager:</strong> Prompt engineering is highly leverageable. Standardizing effective few-shot templates across your team yields immediate ROI without the cost of fine-tuning.
+                </div>
+            </section>
+
+            <!-- Section 4: Tokenization -->
+            <section id="section-5" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">5. Tokenization</h2>
+                <div class="flex flex-col md:flex-row gap-6 mb-6">
+                    <div class="flex-1 text-slate-700">
+                        <p class="mb-3">Computers process numbers, not text. Text is converted to unique IDs via <strong>Byte Pair Encoding (BPE)</strong>, which iteratively merges frequent adjacent characters into single tokens to build the vocabulary (typically 30k-100k tokens).</p>
+                        <ul class="list-disc pl-5 space-y-2 text-sm">
+                            <li>Roughly <strong>75 words equal 100 tokens</strong> for English prose.</li>
+                            <li>Multilingual prose (Thai, Arabic) and code cost more tokens because they are underrepresented in training.</li>
+                            <li>Tokens are the unit of attention. The model cannot spell words character-by-character natively because tokens do not preserve character-level logic.</li>
+                        </ul>
+                    </div>
+                    <div class="md:w-1/3 bg-blue-50 border border-blue-200 rounded-xl p-5 flex flex-col justify-center items-center text-center">
+                        <span class="text-xs text-blue-600 font-bold uppercase tracking-wider mb-2">Context Window Limits</span>
+                        <p class="text-sm text-blue-900">Every model has a maximum token limit. If exceeded via system prompts, history, and docs, the model drops earlier content silently. Track it!</p>
+                    </div>
+                </div>
+
+                <!-- Dynamic Role Content -->
+                <div class="role-content role-architect transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Architect:</strong> JSON and XML formatting cost significantly more tokens than plain text for the same payload. Optimize your data structures for token density over network bandwidth.
+                </div>
+                <div class="role-content role-developer hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Developer:</strong> Prompt compression is a required skill. Shorter prompts reduce cost and latency. Use libraries like Tiktoken to count tokens locally before API dispatch.
+                </div>
+                <div class="role-content role-qa hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>QA:</strong> When debugging "forgotten instructions," your first step is verifying if the context window was breached and the model silently truncated the prompt.
+                </div>
+                <div class="role-content role-manager hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Manager:</strong> API pricing is denominated in tokens (input vs output). If you pass massive documents via RAG to thousands of users, consumption compounds radically.
+                </div>
+            </section>
+
+            <!-- Section 5: Transformer Architecture -->
+            <section id="section-6" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">6. Transformer Architecture</h2>
+                <p class="text-slate-700 mb-4">Introduced in "Attention Is All You Need", transformers replaced sequential bottleneck processing with <strong>Self-Attention</strong>, allowing every token to simultaneously reference every other token, making massive parallel training tractable.</p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 border-b pb-2">Layer Mechanics</h4>
+                        <p class="text-sm text-slate-600 mb-2">Built by stacking identical layers (dozens to >100). Each layer repeats:</p>
+                        <ol class="list-decimal pl-4 text-sm text-slate-700 space-y-1">
+                            <li><strong>Self-Attention:</strong> Tokens exchange context across the sequence.</li>
+                            <li><strong>Feed-Forward Network:</strong> Two linear transformations applied independently to each token.</li>
+                        </ol>
+                        <p class="text-xs text-slate-500 mt-2 italic">Stabilized by residual connections and layer normalization.</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 border-b pb-2">Architectural Variants</h4>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li><strong>Encoder-Only (e.g., BERT):</strong> Bidirectional attention for comprehension tasks (search, classification). Not for generation.</li>
+                            <li><strong>Decoder-Only (e.g., GPT, Claude):</strong> Autoregressive generation. Each token only sees what came before. Predicts next token, appends it, and loops.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dynamic Role Content -->
+                <div class="role-content role-architect transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Architect:</strong> The <strong>KV Cache</strong> stores intermediate attention values to speed up autoregressive generation. It is the dominant memory cost of inference. Long contexts severely limit concurrent user throughput.
+                </div>
+                <div class="role-content role-developer hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Developer:</strong> Autoregressive generation means fetching 100 tokens takes 100 forward passes. Optimizing TTFT (Time To First Token) and output length is crucial for UI responsiveness.
+                </div>
+                <div class="role-content role-qa hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>QA:</strong> Mismatching architectures—like using an encoder-only model for text generation—is a fundamental integration failure, not just a performance bug.
+                </div>
+                <div class="role-content role-manager hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Manager:</strong> Progress is driven by <strong>Scaling Laws</strong>—a predictable relationship between model size, data, and compute. This discipline ensures ROI on massive infrastructure investments.
+                </div>
+            </section>
+
+            <!-- Section 6: Frontier Models -->
+            <section id="section-7" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">7. Frontier Models</h2>
+                <p class="text-slate-700 mb-6">The frontier is a moving position, not a fixed product. Leadership changes frequently across benchmarks assessing fluid intelligence, scientific reasoning, coding, and long context recall.</p>
+
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <div class="flex-1 min-w-[250px] border-l-4 border-slate-800 bg-slate-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-slate-900">Closed Labs</h4>
+                        <p class="text-sm text-slate-600">Access via APIs. Typically lead on raw capability, reasoning, and multimodal. Vendor controls pricing and updates.</p>
+                    </div>
+                    <div class="flex-1 min-w-[250px] border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-blue-900">Open-Source</h4>
+                        <p class="text-sm text-blue-800">Publicly released weights. Allows self-hosting and specialized fine-tuning, rapidly closing the gap with closed labs.</p>
+                    </div>
+                </div>
+
+                <p class="text-slate-700 mb-4">
+                    <strong>Reasoning Models:</strong> These allocate more compute at inference time to generate internal chain-of-thought steps before answering. They trade latency and cost for significantly higher accuracy on hard math or logic problems.
+                </p>
+
+                <!-- Dynamic Role Content -->
+                <div class="role-content role-architect transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Architect:</strong> Systematically route requests. Use large reasoning models only for complex workflows and route standard tasks to the "efficient tier" to save cost and latency.
+                </div>
+                <div class="role-content role-developer hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Developer:</strong> Always evaluate new models on your *actual tasks* (real-world codebases), not synthetic, easily saturated leaderboards.
+                </div>
+                <div class="role-content role-qa hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>QA:</strong> Human preference evaluations are more reliable than automated metrics for testing writing and instruction-following quality on new frontier model integrations.
+                </div>
+                <div class="role-content role-manager hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Manager:</strong> The framework remains stable: Closed vs Open, Standard vs Reasoning, General vs Efficient. Use this taxonomy to cut through vendor hype and evaluate capability claims strictly.
+                </div>
+            </section>
+
+            <!-- Section 7: Multimodal AI -->
+            <section id="section-8" class="scroll-mt-10 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">8. Multimodal AI</h2>
+                <p class="text-slate-700 mb-6">Multimodal systems integrate text, images, audio, and video to achieve <strong>unified reasoning and shared semantic understanding</strong>. It moves computing toward general machine perception.</p>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 border border-slate-100 bg-slate-50 rounded-xl">
+                        <h4 class="font-bold text-slate-800">Image & Video (VQA)</h4>
+                        <p class="text-sm text-slate-600 mt-1">Interprets diagrams, screenshots, spatial relationships, and temporal events across frames.</p>
+                    </div>
+                    <div class="p-4 border border-slate-100 bg-slate-50 rounded-xl">
+                        <h4 class="font-bold text-slate-800">Audio & Speech</h4>
+                        <p class="text-sm text-slate-600 mt-1">Extends beyond transcription to detect tone, identify speakers, and recognize environmental sounds.</p>
+                    </div>
+                </div>
+
+                <p class="text-slate-700 text-sm mb-4">Training requires aligned cross-modal data (e.g., images paired with captions). The goal isn't just recognition—a screenshot becomes a debugging task; a video becomes a searchable summary.</p>
+
+                <!-- Dynamic Role Content -->
+                <div class="role-content role-architect transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Architect:</strong> Processing audio and video is computationally expensive compared to text alone. Architect pipelines that selectively utilize multimodal processing only when strictly required by the use case.
+                </div>
+                <div class="role-content role-developer hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Developer:</strong> You can now pass a screenshot of a bug, log files, and an audio explanation into a single unified API prompt for cross-modal debugging context.
+                </div>
+                <div class="role-content role-qa hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>QA:</strong> Multimodal models can still misinterpret spatial context or hallucinate visual details. Testing requires highly specific edge cases involving ambiguous or blurry cross-modal inputs.
+                </div>
+                <div class="role-content role-manager hidden transition-opacity bg-slate-100 p-4 rounded-lg text-sm text-slate-800">
+                    <strong>Manager:</strong> This expands product capabilities dramatically in healthcare (imaging + notes), education (handwritten diagrams + audio questions), and accessibility tools.
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript Interactivity -->
+    <script>
+        // 1. Role Selection Logic
+        function selectRole(role) {
+            // Hide all role content blocks
+            document.querySelectorAll('.role-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Show the selected role's blocks
+            document.querySelectorAll(`.role-${role.toLowerCase()}`).forEach(el => {
+                el.classList.remove('hidden');
+            });
+            
+            // Update button styles
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                if(btn.dataset.role === role) {
+                    btn.classList.add('bg-blue-600', 'text-white');
+                    btn.classList.remove('bg-slate-200', 'text-slate-800');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-slate-200', 'text-slate-800');
+                }
+            });
+        }
+
+        // Initialize default view
+        document.addEventListener("DOMContentLoaded", () => {
+            selectRole('Architect');
+        });
+
+        // 2. Scrollspy Logic for Navigation
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.toc-link');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -60% 0px', // Trigger when section hits middle of viewport
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('toc-active');
+                        if (link.getAttribute('href') === `#${entry.target.id}`) {
+                            link.classList.add('toc-active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(sec => observer.observe(sec));
+        
+        function openImageModal(src) {
+		    const modal = document.getElementById('imageModal');
+		    const modalImg = document.getElementById('modalImage');
+		    
+		    modalImg.src = src;
+		    modal.classList.remove('hidden');
+		    
+		    // Tiny delay to ensure CSS transition triggers correctly
+		    setTimeout(() => {
+		        modal.classList.remove('opacity-0');
+		        modalImg.classList.remove('scale-95');
+		        modalImg.classList.add('scale-100');
+		    }, 10);
+		    
+		    // Prevent background scrolling
+		    document.body.style.overflow = 'hidden'; 
+		}
+		
+		function closeImageModal() {
+		    const modal = document.getElementById('imageModal');
+		    const modalImg = document.getElementById('modalImage');
+		    
+		    modal.classList.add('opacity-0');
+		    modalImg.classList.remove('scale-100');
+		    modalImg.classList.add('scale-95');
+		    
+		    // Wait for transition to finish before hiding completely
+		    setTimeout(() => {
+		        modal.classList.add('hidden');
+		        document.body.style.overflow = ''; // Restore scrolling
+		    }, 300);
+		}
+    </script>
+<div id="imageModal" class="fixed inset-0 z-[51] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300" onclick="closeImageModal()">
+	    <button class="absolute top-6 right-6 text-white hover:text-gray-300 focus:outline-none transition-colors" aria-label="Close modal">
+    	    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    	</button>
+    	<img id="modalImage" src="" class="max-w-full max-h-[90vh] rounded-xl shadow-2xl transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()" />
+	</div>
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+    
+    
+</body>
+</html>
