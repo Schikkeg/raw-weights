@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Architecting Autonomy: A Strategic Framework for Agentic AI | RawWeights</title>
+	<meta name="description" content="A deep dive into the evolution of automation, the levels of AI autonomy, and the frameworks (LangChain, n8n, SDKs) required to build resilient autonomous systems.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            600: '#0077b5',
+                        }
+                    }
+                }
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    // 1. Identify all links that want to be grouped
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    // 2. Build the dropdowns
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        // Create the wrapper
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        // Create the Trigger Button
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        // Create the Menu
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        // 3. THE KEY CHANGE: 
+        // Replace the FIRST link of the group in the DOM with our dropdown wrapper
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        // 4. Now move all items (including the first one) into the menu
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        // Click to toggle
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            // Close others
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    // Close when clicking document
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+    </script>
+            <script type="text/javascript" async src="/includes/analytics.js"></script>
+	   <style>
+    	/* Navigation */
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+	<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+		<a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
+		
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+	
+
+    <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
+        
+      <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 py-12 font-sans bg-white text-slate-900">
+    
+    <header class="mb-20 max-w-4xl">
+        <div class="flex items-center gap-3 text-sm text-indigo-600 font-bold uppercase tracking-widest mb-4">
+            <span>Session 02</span>
+            <span>&bull;</span>
+            <span>Strategic Architecture</span>
+        </div>
+        <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-8">
+            The Evolution of Automation:<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">From Rules to Reasoning</span>
+        </h1>
+        <p class="text-xl text-slate-600 leading-relaxed">
+            Shifting from deterministic, rule-based scripts to goal-driven AI agents represents the next frontier in software engineering. This guide outlines the frameworks, autonomy levels, and architectural choices defining the agentic era.
+        </p>
+    </header>
+
+    <section class="mb-24">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-4">
+            <span class="bg-indigo-600 text-white px-3 py-1 rounded text-sm">I</span>
+            Automation Paradigms: Deterministic vs. Agentic
+        </h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="group p-8 bg-slate-50 border border-slate-200 rounded-2xl transition-all hover:shadow-md">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 tracking-tight">Traditional Automation (The "Fragile" Script)</h3>
+                <p class="text-slate-600 text-sm mb-8 leading-relaxed">Deterministic systems rely on predefined paths. They are highly efficient for volume but suffer from a "fragility gap"—failing immediately when encountering an unforeseen edge case.</p>
+                
+                <div class="py-4">
+                    <svg viewBox="0 0 400 80" class="w-full h-auto">
+                        <path d="M20 40 H380" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4" />
+                        <g transform="translate(0,0)">
+                            <rect x="20" y="25" width="80" height="30" rx="6" fill="#f1f5f9" stroke="#94a3b8" />
+                            <text x="60" y="44" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">TRIGGER</text>
+                            <path d="M100 40 L130 40" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow-slate)" />
+                        </g>
+                        <g transform="translate(130,0)">
+                            <rect x="0" y="25" width="100" height="30" rx="6" fill="#f1f5f9" stroke="#94a3b8" />
+                            <text x="50" y="44" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">IF/ELSE LOGIC</text>
+                            <path d="M100 40 L130 40" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow-slate)" />
+                        </g>
+                        <g transform="translate(260,0)">
+                            <rect x="0" y="25" width="80" height="30" rx="6" fill="#f1f5f9" stroke="#94a3b8" />
+                            <text x="40" y="44" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">OUTPUT</text>
+                        </g>
+                        <path d="M180 55 L180 75" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-red)" />
+                        <text x="190" y="72" font-size="9" font-weight="bold" fill="#ef4444">BRITTLE BREAKPOINT</text>
+                        <defs>
+                            <marker id="arrow-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" /></marker>
+                            <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" /></marker>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="group p-8 bg-indigo-50 border border-indigo-100 rounded-2xl transition-all hover:shadow-md">
+                <h3 class="text-lg font-bold text-indigo-900 mb-4 tracking-tight">Agentic Automation (The "Resilient" Goal)</h3>
+                <p class="text-slate-600 text-sm mb-8 leading-relaxed">Adaptive systems that focus on the "Goal" rather than the "Step." By employing reasoning and reflection, they can auto-recover from errors without manual intervention.</p>
+                
+                <div class="py-4">
+                    <svg viewBox="0 0 400 80" class="w-full h-auto">
+                        <circle cx="200" cy="40" r="35" fill="white" stroke="#4f46e5" stroke-width="2" stroke-dasharray="4 2" />
+                        <path d="M200 15 A 25 25 0 1 1 200 65 A 25 25 0 1 1 200 15" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow-indigo)" />
+                        <text x="200" y="44" text-anchor="middle" font-size="10" font-weight="bold" fill="#4f46e5">REASONING LOOP</text>
+                        
+                        <g transform="translate(10,25)">
+                            <rect x="0" y="0" width="80" height="30" rx="6" fill="#4f46e5" />
+                            <text x="40" y="19" text-anchor="middle" font-size="10" font-weight="bold" fill="white">GOAL</text>
+                            <path d="M80 15 L125 15" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow-indigo)" />
+                        </g>
+                        <g transform="translate(310,25)">
+                            <rect x="0" y="0" width="80" height="30" rx="6" fill="#10b981" />
+                            <text x="40" y="19" text-anchor="middle" font-size="10" font-weight="bold" fill="white">IMPACT</text>
+                            <path d="M-35 15 L-5 15" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)" />
+                        </g>
+                        <defs>
+                            <marker id="arrow-indigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4f46e5" /></marker>
+                            <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" /></marker>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 p-6 bg-slate-900 text-indigo-100 rounded-xl shadow-inner italic text-sm">
+            <strong>Strategic Takeaway:</strong> Traditional automation fails loudly; agentic systems fail quietly. By leveraging "Reasoning Loops," we build smarter systems that analyze snapshots of failure and auto-recover, increasing total system uptime.
+        </div>
+    </section>
+
+    <section class="mb-24">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-4">
+            <span class="bg-indigo-600 text-white px-3 py-1 rounded text-sm">II</span>
+            Levels of Autonomy: The Human-AI Partnership
+        </h2>
+        
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-200">
+                        <th class="p-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Autonomy Level</th>
+                        <th class="p-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Evolving Role</th>
+                        <th class="p-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Primary Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm">
+                    <tr>
+                        <td class="p-5"><span class="font-bold">Level 0: Manual</span></td>
+                        <td class="p-5 text-indigo-600 font-semibold">The Doer</td>
+                        <td class="p-5 text-slate-600">Performs all assigned manual tasks from end-to-end.</td>
+                    </tr>
+                    <tr class="bg-indigo-50/30">
+                        <td class="p-5"><span class="font-bold">Level 1-2: Monitored</span></td>
+                        <td class="p-5 text-indigo-600 font-semibold">The Supervisor</td>
+                        <td class="p-5 text-slate-600">Validates actions and intervenes only when roadblocks appear.</td>
+                    </tr>
+                    <tr>
+                        <td class="p-5"><span class="font-bold">Level 3-4: Directed</span></td>
+                        <td class="p-5 text-indigo-600 font-semibold">The Goal Setter</td>
+                        <td class="p-5 text-slate-600">Defines objectives and constraints; the system executes.</td>
+                    </tr>
+                    <tr class="bg-slate-900 text-white">
+                        <td class="p-5"><span class="font-bold">Level 5: Autonomous</span></td>
+                        <td class="p-5 text-indigo-400 font-semibold">Strategic Oversight</td>
+                        <td class="p-5 text-slate-300">Provides long-term vision, policy governance, and ethical review.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-8 p-6 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-xl">
+            <p class="text-indigo-900 text-sm italic">
+                <strong>Leadership Insight:</strong> This trajectory mirrors the growth of a professional—from junior execution (Doer) to executive leadership (Strategic Oversight). As AI handles the "doing," your value shifts toward defining the "what" and the "why."
+            </p>
+        </div>
+    </section>
+
+    <section class="mb-24">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-4">
+            <span class="bg-indigo-600 text-white px-3 py-1 rounded text-sm">III</span>
+            Architecting Your Agents: Framework Selection
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="flex flex-col p-6 border border-slate-200 rounded-2xl bg-white shadow-sm hover:border-indigo-200 transition-all">
+                <h3 class="text-xl font-bold text-slate-800 mb-2">n8n</h3>
+                <p class="text-xs font-bold text-indigo-500 uppercase mb-4">Workflow Simplicity</p>
+                <p class="text-slate-600 text-sm mb-6 flex-grow">Optimized for speed and linear SaaS integrations (Gmail, Slack). The LLM is a single node in a larger visual chain.</p>
+                <div class="text-xs font-bold text-slate-400">Best for: Non-Engineers & Linear SaaS tasks</div>
+            </div>
+
+            <div class="flex flex-col p-6 border-2 border-indigo-600 rounded-2xl bg-indigo-50 shadow-md transform scale-105 relative">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase">Industry Standard</div>
+                <h3 class="text-xl font-bold text-indigo-900 mb-2">LangChain / Graph</h3>
+                <p class="text-xs font-bold text-indigo-600 uppercase mb-4">Advanced Orchestration</p>
+                <p class="text-slate-700 text-sm mb-6 flex-grow">Designed for complex, stateful multi-step agents. Provides granular control over branching, RAG, and memory.</p>
+                <div class="text-xs font-bold text-indigo-700">Best for: Multi-step Agents & State Management</div>
+            </div>
+
+            <div class="flex flex-col p-6 border border-slate-200 rounded-2xl bg-white shadow-sm hover:border-slate-400 transition-all">
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Raw SDK</h3>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-4">Maximum Control</p>
+                <p class="text-slate-600 text-sm mb-6 flex-grow">Zero abstraction for high-performance production systems. Critical when latency and token-visibility are non-negotiable.</p>
+                <div class="text-xs font-bold text-slate-400">Best for: Latency-critical production systems</div>
+            </div>
+        </div>
+
+        <div class="mt-12 p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                Institutional Alignment (The Application Framework)
+            </h4>
+            <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                Successful Agentic AI mirrors organizational structure. From <strong>Domain Knowledge</strong> (understanding the area) and <strong>Workflow Process</strong> (defining the logic) to <strong>Decisions</strong> (judgment based on context) and <strong>Actions</strong> (tool execution), every department must collaborate to drive impact. 
+            </p>
+            <p class="text-indigo-800 text-sm font-bold m-0">
+                &bull; Decision Logic is the new Business Logic. TypeScript serves as the bridge between web logic and agentic action.
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-4">
+            <span class="bg-indigo-600 text-white px-3 py-1 rounded text-sm">IV</span>
+            The LangChain Ecosystem: Build, Orchestrate, Ship
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            <div class="p-5 bg-white border border-slate-200 rounded-xl hover:shadow-md transition-shadow">
+                <h4 class="font-bold text-slate-900 mb-1">LangChain</h4>
+                <p class="text-xs text-indigo-600 font-bold mb-3 uppercase">The Foundation</p>
+                <p class="text-xs text-slate-500 leading-relaxed">APIs for connecting models, data, and memory across 50+ providers.</p>
+            </div>
+            <div class="p-5 bg-white border border-slate-200 rounded-xl hover:shadow-md transition-shadow">
+                <h4 class="font-bold text-slate-900 mb-1">LangGraph</h4>
+                <p class="text-xs text-indigo-600 font-bold mb-3 uppercase">The Orchestrator</p>
+                <p class="text-xs text-slate-500 leading-relaxed">Adds stateful graph-based flow and persistence for complex agent loops.</p>
+            </div>
+            <div class="p-5 bg-white border border-slate-200 rounded-xl hover:shadow-md transition-shadow">
+                <h4 class="font-bold text-slate-900 mb-1">Deep Agents</h4>
+                <p class="text-xs text-indigo-600 font-bold mb-3 uppercase">The Harness</p>
+                <p class="text-xs text-slate-500 leading-relaxed">The highest level of abstraction for planning, delegation, and file interaction.</p>
+            </div>
+            <div class="p-5 bg-slate-900 text-white border border-slate-800 rounded-xl hover:shadow-md transition-shadow">
+                <h4 class="font-bold text-white mb-1">LangSmith</h4>
+                <p class="text-xs text-indigo-400 font-bold mb-3 uppercase">The Command Center</p>
+                <p class="text-xs text-slate-400 leading-relaxed">Unified tracing, testing, and monitoring for building reliable systems.</p>
+            </div>
+        </div>
+        
+        <footer class="bg-indigo-600 p-8 rounded-2xl text-center shadow-xl">
+            <h3 class="text-2xl font-bold text-white mb-2">Ready to ship robust, governable AI?</h3>
+            <p class="text-indigo-100 mb-0 opacity-80">We are moving beyond simple LLM calls into a new world of traceable autonomous systems.</p>
+        </footer>
+    </section>
+
+</main>
+
+        <aside class="w-full lg:w-1/3">
+            <div class="sticky top-24">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Related posts</h3>
+                    <div id="sidebar-feed" class="flex flex-col space-y-6">
+                        </div>
+                    <a href="/blog.html" class="block w-full text-center mt-6 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition">View All Articles</a>
+                </div>
+
+
+            </div>
+        </aside>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Same Data Source
+        const articles = [
+            {
+                title: "Agentic AI: Best Practices & Architecture",
+                excerpt: "A guide to the Agentic AI ecosystem, featuring tech stack breakdowns, model selection frameworks, and prompting best practices.",
+                date: "May 30, 2026",
+                image: "./images/agentic.png",
+                type:"Blog",
+                link: "https://rawweights.com/blog/ai-stack-practices.html"
+            }, 
+        	{
+                title: "From Auto-Complete to Custom Assistant: A Visual Guide to LLM Post-Training",
+                excerpt: "Discover how to move beyond basic RAG with our new interactive, visual guide to LLM post-training. Explore step-by-step infographics on data preparation, DPO training, model merging, and test-time compute, inspired by insights from Maxime Labonne's MIT lecture...",
+                date: "Apr 13, 2026",
+                type:"Blog",
+                image: "./images/ptl.jpg",
+                link: "https://rawweights.com/blog/from-auto-complete-to-custom-assistant.html"
+            },    
+            {
+                title: "The Architect's Illusion: Why AI is Transforming Jobs, Not Erasing Them",
+                excerpt: "A visual exploration of the shift from deterministic programming to probabilistic AI. Discover why the limitations of the Universal Approximation Theorem (UAT) are creating new opportunities for Developers, QA, Security, and Architects...",
+                date: "Apr 06, 2026",
+                type:"Blog",
+                image: "./images/uat.jpg",
+                link: "https://rawweights.com/blog/uat.html"
+            },        
+            {
+                title: "Guide to RAG (Retrieval-Augmented Generation)",
+                excerpt: "Learn the architecture, chunking strategies, limitations, and evaluation metrics for AI models. Tailored for Developers, PMs, and Beginners...",
+                date: "Apr 04, 2026",
+                type:"Blog",
+                image: "./images/rag.jpg",
+                link: "https://rawweights.com/guide/rag.html"
+            },        
+            {
+                title: "From Asset Selectors to Liquid Synthesis: How the Bicycle Math of Reinforcement Learning Drives the Next Digital Transformation",
+                excerpt: "Explore an interactive Deep Reinforcement Learning playground that teaches the math behind AI. Discover how continuous policy gradients could transform the web through real-time 'Liquid Synthesis'..",
+                date: "Mar 29, 2026",
+                type:"Blog",
+                image: "./images/rel.jpg",
+                link: "https://rawweights.com/blog/learning-bicycle-math-driving-ai-evolution.html"
+            },
+            {
+                title: "From Plato to Profile Pictures: Unpacking Deep Generative Models",
+                excerpt: "A comprehensive, interactive masterclass on Deep Generative Modeling. Explore Unsupervised Learning, Autoencoders, VAEs, GANs, and Cycle GANs with interactive architectures to understand how AI creates new data..",
+                date: "Mar 23, 2026",
+                type:"Blog",
+                image: "./images/dgm.jpg",
+                link: "https://rawweights.com/blog/variational_breakthrough.html"
+            },
+            {
+                title: "Why Computer Vision is the New Business Intelligence",
+                excerpt: "How do machines actually see? Explore the Tesla vs. Waymo pure vision debate and learn how B2B companies use CNNs to unlock powerful new business metrics..",
+                date: "Mar 15, 2026",
+                type:"Blog",
+                image: "./images/cnnarchi.jpeg",
+                link: "https://rawweights.com/blog/grayscale_logic.html"
+            },
+            {
+                title: "Teaching a Java App to Hear the Heartbeat of the Server",
+                excerpt: "Your own data is the best teacher. Discover why building a local neural network from scratch gives you the visibility needed to navigate the AI era...",
+                date: "Mar 08, 2026",
+                type:"Blog",
+                image: "./images/java_ai_exp.png",
+                link: "https://rawweights.com/blog/teaching-a-java-app-to-hear-the-heartbeat-of-the-server.html"
+            },
+            {
+                title: "Visualizing AI: An Interactive Journey from RNNs to Transformers",
+                excerpt: "Explore the evolution of sequence models. Understand the math and mechanics behind modern AI—from RNNs to Transformers—with 13 hands-on interactive visualizers...",
+                date: "Mar 01, 2026",
+                type:"Blog",
+                image: "./images/transformer.png",
+                link: "https://rawweights.com/blog/visualizing-ai-rnns-to-transformers.html"
+            },
+            {
+                title: "Bridging the Gap Between ML Theory and Intuition: An Interactive Sandbox)",
+                excerpt: "Learning Machine Learning is often a tale of two extremes: high-level conceptual fluff or dense, intimidating calculus. Discover how our new AI & ML Master Playground bridges the gap by turning static equations into dynamic, tactile experiences you can build, break, and manipulate in real-time...",
+                date: "Feb 22, 2026",
+                type:"Blog",
+                image: "./images/sandbox.png",
+                link: "https://rawweights.com/blog/bridging-the-gap-between-ml-theory-and-intuition-in-interactive-sandbox.html"
+            },
+            {
+                title: "Building a Tiny AI in Your Browser (No Python Required)",
+                excerpt: "We adopted micro-frontends two years ago. Here is the unvarnished truth about the bundle size and latency costs we incurred...",
+                date: "Feb 14, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+            },
+            {
+                title: "Why I paused the advanced AI rush to build a simple regression tool",
+                excerpt: "Management isn't about tracking tasks. It's about unblocking people. Here is my framework for effective weekly syncs.",
+                date: "Feb 8, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
+            }
+        ];
+
+        const sidebar = document.getElementById('sidebar-feed');
+
+		sidebar.innerHTML = articles.map(article => {
+		    const isBlog = article.type.toLowerCase() === 'blog';
+		    const iconText = isBlog ? 'Blog' : 'in';
+		    
+		    const excerpt = article.excerpt ? 
+		        `<p class="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+		            ${article.excerpt}
+		        </p>` : '';
+		
+		    return `
+		        <article class="relative group border-b border-gray-100 last:border-0 pb-4 mb-4">
+		            <a href="${article.link}" class="block focus:outline-none">
+		                <h4 class="font-bold text-sm text-gray-800 group-hover:text-brand-600 transition-colors duration-200 leading-snug mb-1">
+		                    ${article.title}
+		                </h4>
+		
+		                <div class="flex items-center space-x-2 text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+		                    <span class="inline-flex items-center justify-center bg-brand-600 text-white rounded-[2px] px-1.5 h-4 min-w-[16px] font-black italic shadow-sm" style="font-size: 7px;">
+		                        ${iconText}
+		                    </span>
+		                    <span>${article.type}</span>
+		                    <span class="text-gray-300">&bull;</span>
+		                    <time datetime="${article.date}">${article.date}</time>
+		                </div>
+		
+		                ${excerpt}
+		
+		                <div class="absolute -left-4 top-0 h-full w-0.5 bg-brand-600 scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-center rounded-full"></div>
+		            </a>
+		        </article>
+		    `;
+		}).join('');
+    </script>
+</body>
+</html>
