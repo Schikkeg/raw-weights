@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Agentic AI: Best Practices & Architecture | RawWeights</title>
+	<meta name="description" content="A guide to the Agentic AI ecosystem, featuring tech stack breakdowns, model selection frameworks, and prompting best practices.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            600: '#0077b5',
+                        }
+                    }
+                }
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    // 1. Identify all links that want to be grouped
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    // 2. Build the dropdowns
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        // Create the wrapper
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        // Create the Trigger Button
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        // Create the Menu
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        // 3. THE KEY CHANGE: 
+        // Replace the FIRST link of the group in the DOM with our dropdown wrapper
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        // 4. Now move all items (including the first one) into the menu
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        // Click to toggle
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            // Close others
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    // Close when clicking document
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+    </script>
+            <script type="text/javascript" async src="/includes/analytics.js"></script>
+	   <style>
+    	/* Navigation */
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+	<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+		<a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
+		
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+	
+
+    <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
+        
+       <main class="w-full lg:w-2/3">
+        
+        <article class="bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-gray-100 mb-8 relative overflow-hidden">
+            
+            <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-blue-50 rounded-full blur-3xl opacity-60 z-0"></div>
+
+            <header class="mb-12 relative z-10">
+                <div class="flex items-center gap-3 text-sm text-blue-600 font-bold uppercase tracking-widest mb-4">
+                    <span>Agentic AI Stack</span>
+                    <span>&bull;</span>
+                    <span>Best Practices</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">
+                    Workflows & Architecture
+                </h1>
+
+            </header>
+
+            <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed relative z-10">
+                <p class="text-xl text-gray-600 mb-10 leading-relaxed">
+                    The AI ecosystem is moving incredibly fast. Startups are consolidating, models are evolving daily, and building production-ready agents requires more than just API calls. Here is the stack of the Agentic AI landscape.
+                </p>
+
+                <h2 class="text-2xl font-bold text-gray-900 mt-12 mb-6 pb-2 border-b border-gray-200">
+                    I. The Agentic AI Tech Stack
+                </h2>
+                <p class="mb-6">Understanding where tools fit helps you make informed architectural decisions. Here is the lay of the land from hardware to UI.</p>
+                
+                <div class="overflow-x-auto rounded-xl shadow-sm border border-gray-200 mb-12">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                        <thead class="bg-gray-50 text-gray-600 uppercase tracking-wider text-xs font-semibold">
+                            <tr>
+                                <th scope="col" class="px-6 py-4">Layer</th>
+                                <th scope="col" class="px-6 py-4">Function</th>
+                                <th scope="col" class="px-6 py-4">Key Examples</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-100">
+                            <tr class="hover:bg-blue-50/50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">Harnesses & Apps</td>
+                                <td class="px-6 py-4 text-gray-600">Scaffolding giving AI autonomy, memory, and UI.</td>
+                                <td class="px-6 py-4">Claude Code, Codex, ChatGPT</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/50 transition-colors bg-gray-50/30">
+                                <td class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">Agentic Frameworks</td>
+                                <td class="px-6 py-4 text-gray-600">Structured templates defining how agents think/act.</td>
+                                <td class="px-6 py-4">LangChain, LlamaIndex</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">APIs & Automation</td>
+                                <td class="px-6 py-4 text-gray-600">External capabilities and trigger workflows.</td>
+                                <td class="px-6 py-4">Firecrawl, Perplexity, Zapier, n8n</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/50 transition-colors bg-gray-50/30">
+                                <td class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">Knowledge & Memory</td>
+                                <td class="px-6 py-4 text-gray-600">Vector DBs storing context and history.</td>
+                                <td class="px-6 py-4">Pinecone, Weaviate, Mem0</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">Routing Platforms</td>
+                                <td class="px-6 py-4 text-gray-600">UI/API layers routing to various models.</td>
+                                <td class="px-6 py-4">OpenRouter, Hugging Face</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/50 transition-colors bg-gray-50/30">
+                                <td class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">Model Providers</td>
+                                <td class="px-6 py-4 text-gray-600">The core intelligence engines (LLMs).</td>
+                                <td class="px-6 py-4">OpenAI, Anthropic, Google, Meta</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">Cross-Stack Tools</td>
+                                <td class="px-6 py-4 text-gray-600">Observability, monitoring, and safety rails.</td>
+                                <td class="px-6 py-4">LangSmith, Portkey</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-900 mt-12 mb-6 pb-2 border-b border-gray-200">
+                    II. Model Selection Framework
+                </h2>
+                <p class="mb-6">When picking a model for a specific use case, evaluate your options across these four primary dimensions.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    <div class="p-6 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Capability</h3>
+                        <p class="text-sm text-gray-600 m-0">Does the task require top-tier reasoning (Opus/GPT-4) or simple text processing (open-weight)?</p>
+                    </div>
+                    
+                    <div class="p-6 rounded-xl border border-green-100 bg-gradient-to-br from-green-50 to-white shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Privacy</h3>
+                        <p class="text-sm text-gray-600 m-0">Are you handling sensitive, regulated data that requires an on-premise or localized open-weight model?</p>
+                    </div>
+
+                    <div class="p-6 rounded-xl border border-purple-100 bg-gradient-to-br from-purple-50 to-white shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Cost</h3>
+                        <p class="text-sm text-gray-600 m-0">Can your budget support expensive API calls per million tokens, or do you need a scalable cheaper alternative?</p>
+                    </div>
+
+                    <div class="p-6 rounded-xl border border-orange-100 bg-gradient-to-br from-orange-50 to-white shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Latency</h3>
+                        <p class="text-sm text-gray-600 m-0">Does your application require instant real-time responses (Time to First Token), or is a slight delay acceptable?</p>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-900 mt-12 mb-6 pb-2 border-b border-gray-200">
+                    III. Prompting & Agentic Strategies
+                </h2>
+                <p class="mb-6">The only way to steer an LLM is through prompting. Swipe through the core techniques below.</p>
+
+                <div class="relative w-full mb-12">
+                    <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 hide-scrollbar cursor-grab active:cursor-grabbing">
+                        
+                        <div class="snap-center shrink-0 w-80 bg-gray-900 text-white p-8 rounded-2xl shadow-md">
+                            <div class="text-brand-400 font-mono text-sm mb-4">01</div>
+                            <h3 class="text-xl font-bold mb-3 text-white">System vs User</h3>
+                            <p class="text-gray-400 text-sm m-0"><strong>System Prompts:</strong> Set persistent rules, domain expertise, and constraints. <br><br><strong>User Prompts:</strong> The dynamic, task-specific input from the user.</p>
+                        </div>
+
+                        <div class="snap-center shrink-0 w-80 bg-white border border-gray-200 p-8 rounded-2xl shadow-sm">
+                            <div class="text-blue-500 font-mono text-sm mb-4">02</div>
+                            <h3 class="text-xl font-bold mb-3 text-gray-900">Chain of Thought</h3>
+                            <p class="text-gray-600 text-sm m-0">Force the model to "think" step-by-step before outputting an answer. Decomposing the problem vastly improves reasoning accuracy for complex logic or math.</p>
+                        </div>
+
+                        <div class="snap-center shrink-0 w-80 bg-white border border-gray-200 p-8 rounded-2xl shadow-sm">
+                            <div class="text-blue-500 font-mono text-sm mb-4">03</div>
+                            <h3 class="text-xl font-bold mb-3 text-gray-900">The ReAct Pattern</h3>
+                            <p class="text-gray-600 text-sm m-0"><strong>Reason + Act:</strong> The foundation of modern agents. The model reasons about a problem, observes available tools, acts by calling an API, and loops until complete.</p>
+                        </div>
+
+                        <div class="snap-center shrink-0 w-80 bg-white border border-gray-200 p-8 rounded-2xl shadow-sm">
+                            <div class="text-blue-500 font-mono text-sm mb-4">04</div>
+                            <h3 class="text-xl font-bold mb-3 text-gray-900">Avoid Ambiguity</h3>
+                            <p class="text-gray-600 text-sm m-0">Treat the LLM like a literal-minded junior employee. Provide extremely clear, non-conflicting instructions and use structured output formats (like JSON) to avoid conversational fluff.</p>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-1">
+                        <div class="w-8 h-1 bg-gray-300 rounded-full"></div>
+                        <div class="w-2 h-1 bg-gray-200 rounded-full"></div>
+                        <div class="w-2 h-1 bg-gray-200 rounded-full"></div>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-900 mt-12 mb-8 pb-2 border-b border-gray-200">
+                    IV. The "Bytecoding" Workflow
+                </h2>
+                <p class="mb-10">This is the practical, step-by-step workflow for building applications using an AI coding assistant (like Claude Code or Codex).</p>
+
+                <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-blue-200 before:via-gray-200 before:to-transparent">
+                    
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-blue-600 text-white font-bold text-sm shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10">
+                            1
+                        </div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl bg-gray-50 border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-gray-900 text-lg mb-1">Define Vision & Architecture</h4>
+                            <p class="text-sm text-gray-600 m-0">Before touching the coding agent, map out your idea. Know the frameworks (e.g., Streamlit, UV) and the general file structure.</p>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-blue-600 text-white font-bold text-sm shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10">
+                            2
+                        </div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl bg-gray-50 border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-gray-900 text-lg mb-1">Brainstorm with the Agent</h4>
+                            <p class="text-sm text-gray-600 m-0">Do not let the AI write code immediately. Use a prompt to force it to brainstorm, propose an architecture, and detail its plan.</p>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-gray-300 text-gray-700 font-bold text-sm shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10">
+                            3
+                        </div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl bg-white border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-gray-900 text-lg mb-1">Review the Plan</h4>
+                            <p class="text-sm text-gray-600 m-0">Act as the technical lead. Review the proposed file structure and interfaces. Make adjustments before giving the green light.</p>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-gray-300 text-gray-700 font-bold text-sm shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10">
+                            4
+                        </div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl bg-white border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-gray-900 text-lg mb-1">Incremental Implementation</h4>
+                            <p class="text-sm text-gray-600 m-0">Instruct the agent to build the application in stages (e.g., "Build the data upload tab first, then we will test it").</p>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-gray-300 text-gray-700 font-bold text-sm shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10">
+                            5
+                        </div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl bg-white border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-gray-900 text-lg mb-1">Execute, Test, & Heal</h4>
+                            <p class="text-sm text-gray-600 m-0">Run code locally. If you hit an error, copy the exact terminal message, paste it into a fresh context window, and ask the agent to fix it.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </article>
+
+        <aside class="bg-gray-900 text-white p-8 sm:p-10 rounded-2xl shadow-lg text-center font-sans relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+            
+            <div class="relative z-10">
+                <h3 class="text-2xl font-bold mb-4">Start Building Your Agents</h3>
+                <p class="text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed">
+                    Now that you have the mental model and the workflow, it's time to put it to the test.
+                </p>
+            </div>
+        </aside>
+
+    </main>
+
+        <aside class="w-full lg:w-1/3">
+            <div class="sticky top-24">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Related posts</h3>
+                    <div id="sidebar-feed" class="flex flex-col space-y-6">
+                        </div>
+                    <a href="/blog.html" class="block w-full text-center mt-6 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition">View All Articles</a>
+                </div>
+
+
+            </div>
+        </aside>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Same Data Source
+        const articles = [
+        	{
+                title: "From Auto-Complete to Custom Assistant: A Visual Guide to LLM Post-Training",
+                excerpt: "Discover how to move beyond basic RAG with our new interactive, visual guide to LLM post-training. Explore step-by-step infographics on data preparation, DPO training, model merging, and test-time compute, inspired by insights from Maxime Labonne's MIT lecture...",
+                date: "Apr 13, 2026",
+                type:"Blog",
+                image: "./images/ptl.jpg",
+                link: "https://rawweights.com/blog/from-auto-complete-to-custom-assistant.html"
+            },    
+            {
+                title: "The Architect's Illusion: Why AI is Transforming Jobs, Not Erasing Them",
+                excerpt: "A visual exploration of the shift from deterministic programming to probabilistic AI. Discover why the limitations of the Universal Approximation Theorem (UAT) are creating new opportunities for Developers, QA, Security, and Architects...",
+                date: "Apr 06, 2026",
+                type:"Blog",
+                image: "./images/uat.jpg",
+                link: "https://rawweights.com/blog/uat.html"
+            },        
+            {
+                title: "Guide to RAG (Retrieval-Augmented Generation)",
+                excerpt: "Learn the architecture, chunking strategies, limitations, and evaluation metrics for AI models. Tailored for Developers, PMs, and Beginners...",
+                date: "Apr 04, 2026",
+                type:"Blog",
+                image: "./images/rag.jpg",
+                link: "https://rawweights.com/guide/rag.html"
+            },        
+            {
+                title: "From Asset Selectors to Liquid Synthesis: How the Bicycle Math of Reinforcement Learning Drives the Next Digital Transformation",
+                excerpt: "Explore an interactive Deep Reinforcement Learning playground that teaches the math behind AI. Discover how continuous policy gradients could transform the web through real-time 'Liquid Synthesis'..",
+                date: "Mar 29, 2026",
+                type:"Blog",
+                image: "./images/rel.jpg",
+                link: "https://rawweights.com/blog/learning-bicycle-math-driving-ai-evolution.html"
+            },
+            {
+                title: "From Plato to Profile Pictures: Unpacking Deep Generative Models",
+                excerpt: "A comprehensive, interactive masterclass on Deep Generative Modeling. Explore Unsupervised Learning, Autoencoders, VAEs, GANs, and Cycle GANs with interactive architectures to understand how AI creates new data..",
+                date: "Mar 23, 2026",
+                type:"Blog",
+                image: "./images/dgm.jpg",
+                link: "https://rawweights.com/blog/variational_breakthrough.html"
+            },
+            {
+                title: "Why Computer Vision is the New Business Intelligence",
+                excerpt: "How do machines actually see? Explore the Tesla vs. Waymo pure vision debate and learn how B2B companies use CNNs to unlock powerful new business metrics..",
+                date: "Mar 15, 2026",
+                type:"Blog",
+                image: "./images/cnnarchi.jpeg",
+                link: "https://rawweights.com/blog/grayscale_logic.html"
+            },
+            {
+                title: "Teaching a Java App to Hear the Heartbeat of the Server",
+                excerpt: "Your own data is the best teacher. Discover why building a local neural network from scratch gives you the visibility needed to navigate the AI era...",
+                date: "Mar 08, 2026",
+                type:"Blog",
+                image: "./images/java_ai_exp.png",
+                link: "https://rawweights.com/blog/teaching-a-java-app-to-hear-the-heartbeat-of-the-server.html"
+            },
+            {
+                title: "Visualizing AI: An Interactive Journey from RNNs to Transformers",
+                excerpt: "Explore the evolution of sequence models. Understand the math and mechanics behind modern AI—from RNNs to Transformers—with 13 hands-on interactive visualizers...",
+                date: "Mar 01, 2026",
+                type:"Blog",
+                image: "./images/transformer.png",
+                link: "https://rawweights.com/blog/visualizing-ai-rnns-to-transformers.html"
+            },
+            {
+                title: "Bridging the Gap Between ML Theory and Intuition: An Interactive Sandbox)",
+                excerpt: "Learning Machine Learning is often a tale of two extremes: high-level conceptual fluff or dense, intimidating calculus. Discover how our new AI & ML Master Playground bridges the gap by turning static equations into dynamic, tactile experiences you can build, break, and manipulate in real-time...",
+                date: "Feb 22, 2026",
+                type:"Blog",
+                image: "./images/sandbox.png",
+                link: "https://rawweights.com/blog/bridging-the-gap-between-ml-theory-and-intuition-in-interactive-sandbox.html"
+            },
+            {
+                title: "Building a Tiny AI in Your Browser (No Python Required)",
+                excerpt: "We adopted micro-frontends two years ago. Here is the unvarnished truth about the bundle size and latency costs we incurred...",
+                date: "Feb 14, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+            },
+            {
+                title: "Why I paused the advanced AI rush to build a simple regression tool",
+                excerpt: "Management isn't about tracking tasks. It's about unblocking people. Here is my framework for effective weekly syncs.",
+                date: "Feb 8, 2026",
+                type:"Linkedin",
+                image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+                link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
+            }
+        ];
+
+        const sidebar = document.getElementById('sidebar-feed');
+
+		sidebar.innerHTML = articles.map(article => {
+		    const isBlog = article.type.toLowerCase() === 'blog';
+		    const iconText = isBlog ? 'Blog' : 'in';
+		    
+		    const excerpt = article.excerpt ? 
+		        `<p class="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+		            ${article.excerpt}
+		        </p>` : '';
+		
+		    return `
+		        <article class="relative group border-b border-gray-100 last:border-0 pb-4 mb-4">
+		            <a href="${article.link}" class="block focus:outline-none">
+		                <h4 class="font-bold text-sm text-gray-800 group-hover:text-brand-600 transition-colors duration-200 leading-snug mb-1">
+		                    ${article.title}
+		                </h4>
+		
+		                <div class="flex items-center space-x-2 text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+		                    <span class="inline-flex items-center justify-center bg-brand-600 text-white rounded-[2px] px-1.5 h-4 min-w-[16px] font-black italic shadow-sm" style="font-size: 7px;">
+		                        ${iconText}
+		                    </span>
+		                    <span>${article.type}</span>
+		                    <span class="text-gray-300">&bull;</span>
+		                    <time datetime="${article.date}">${article.date}</time>
+		                </div>
+		
+		                ${excerpt}
+		
+		                <div class="absolute -left-4 top-0 h-full w-0.5 bg-brand-600 scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-center rounded-full"></div>
+		            </a>
+		        </article>
+		    `;
+		}).join('');
+    </script>
+</body>
+</html>
