@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Digital Colleague: Professional Automation with Coding Agents | RawWeights</title>
+    <meta name="description" content="Explore the evolution of AI agents from simple autocomplete tools to independent digital colleagues capable of 100-hour autonomous projects . Join Dominik Kundel from OpenAI to break down the technical architecture of Flash Goals and the three essential pillars of successful agentic automation: Context, Validation, and Verification.">
+	<meta name="keywords" content="OpenAI Codex, Coding Agents, Digital Colleague, Agentic Automation, Flash Goals, Context Gathering, Linters, Vail.sh, Dominik Kundel, Developer Experience, Professional Automation, AI SDK, Task Delegation, Chronicle Screen Memory">
+	<meta name="author" content="RawWeights">
+	<meta property="og:image" content="https://rawweights.com/images/codex.png">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://www.rawweights.com/blog/digital-colleague-masterclass.html">
+	<meta property="og:title" content="The Digital Colleague: Professional Automation with Coding Agents ">
+	<meta property="og:description" content="Explore the evolution of AI agents from simple autocomplete tools to independent digital colleagues capable of 100-hour autonomous projects . Join Dominik Kundel from OpenAI to break down the technical architecture of Flash Goals and the three essential pillars of successful agentic automation: Context, Validation, and Verification.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; }
+        
+        .svg-box { 
+            cursor: pointer; 
+        }
+
+        .svg-box rect,
+        .svg-box circle,
+        .svg-box ellipse {
+            transition: all 0.2s ease;
+            transform-origin: center;
+            pointer-events: all;
+        }
+        
+        .svg-box:hover rect,
+        .svg-box:hover circle,
+        .svg-box:hover ellipse { 
+            stroke: #EB1000 !important; 
+            stroke-width: 2.5 !important; 
+            filter: brightness(0.95);
+            transform: scale(0.98); 
+        }
+        
+        .svg-box.no-click { 
+            cursor: default; 
+        }
+        
+        .svg-box.no-click:hover rect,
+        .svg-box.no-click:hover circle,
+        .svg-box.no-click:hover ellipse {
+            stroke: inherit !important;
+            stroke-width: inherit !important;
+            filter: none;
+            transform: none;
+        }
+        
+        #tooltip {
+            pointer-events: none !important; 
+            position: absolute;
+            background: rgba(17, 24, 39, 0.95);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            max-width: 300px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 50;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .svg-box text, 
+        .svg-box path, 
+        .svg-box line,
+        .svg-box polyline {
+            pointer-events: none !important; 
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+
+/* Layout Fixes */
+.main-grid { display: flex; flex-direction: column; gap: 3rem; }
+@media (min-width: 1024px) {
+    .main-grid { flex-direction: row; align-items: start; }
+}
+.sticky-sidebar { position: sticky; top: 5rem; z-index: 10; }
+
+/* Beautification */
+.pillar-card { border-left: 4px solid #6366f1; background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); transition: transform 0.2s; }
+.pillar-card:hover { transform: translateX(8px); }
+.tech-tag { font-family: 'Inter', monospace; font-size: 0.7rem; background: #e0e7ff; color: #4338ca; padding: 0.2rem 0.5rem; border-radius: 0.25rem; }
+
+
+    </style>
+
+</head>
+<body class="antialiased">
+
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+		<a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
+		
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+
+
+<header class="bg-slate-900 text-white py-24 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+        <!-- Left: Title & Description -->
+        <div class="lg:w-1/2 text-center lg:text-left">
+            <div class="inline-block mb-6 p-4 bg-[#F7DF1E] rounded-xl shadow-[0_0_40px_rgba(247,223,30,0.3)]">
+                <svg class="w-12 h-12 text-slate-900" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 3h18v18H3V3zm15.54 14.69c-.12-.81-.53-1.42-1.44-1.66-.46-.11-1.04-.21-1.42-.31-.41-.11-.53-.29-.53-.51 0-.27.23-.46.65-.46.39 0 .66.15.89.47l1.3-.84c-.39-.61-1.01-.98-1.99-.98-1.29 0-2.16.81-2.16 1.95 0 1.15.74 1.71 1.93 2.01.62.15 1.16.27 1.48.39.26.09.39.26.39.53 0 .33-.29.56-.79.56-.56 0-.96-.24-1.24-.69l-1.35.84c.42.75 1.25 1.24 2.5 1.24 1.56 0 2.54-.78 2.54-2.07zm-5.83-4.32h-1.63v5.18c0 .88-.39 1.41-1.25 1.41-.53 0-.9-.23-1.12-.59l-1.22.78c.39.75 1.13 1.2 2.3 1.2 2.07 0 2.92-1.18 2.92-2.8v-5.18z"/>
+                </svg>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-tight">
+                The Digital <span class="text-indigo-400">Colleague</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-400 leading-relaxed font-light">
+                How AI evolved from finishing sentences to independent delegation . Explore the architecture of <span class="text-indigo-400 font-mono">Flash Goals</span> and <span class="text-indigo-400 font-mono">Agentic Automation</span> .
+            </p>
+        </div>
+        <!-- Right: Beautiful Image/Visual -->
+        <div class="lg:w-1/2 relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+            <div class="relative bg-slate-800 rounded-2xl p-8 border border-white/10 shadow-2xl">
+                <!-- Abstract coding/agent graphic -->
+                <svg viewBox="0 0 400 300" class="w-full h-auto text-indigo-400">
+                    <rect x="50" y="50" width="300" height="200" rx="20" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="200" cy="150" r="40" fill="currentColor" fill-opacity="0.2"/>
+                    <path d="M100 150 Q200 50 300 150" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="8"/>
+                    <path d="M100 150 Q200 250 300 150" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="8"/>
+                </svg>
+                <div class="mt-4 text-center text-xs font-mono text-slate-500 uppercase tracking-widest">
+                    System Protocol: Task-Based Delegation
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="tooltip"></div>
+
+<main class="max-w-7xl mx-auto px-6 py-16 w-full main-grid">
+    
+    <!-- Left Column: The Story Feed -->
+    <div class="w-full lg:w-3/4 space-y-24">
+        
+        <section id="delegation">
+            <h2 class="text-4xl font-bold mb-6">01. Autocomplete to Delegation</h2>
+            <p class="text-lg text-slate-600 leading-relaxed mb-6">
+                In 2023, coding agents were glorified <strong>Autocomplete</strong> tools—they just finished your line of code. Today, we have entered the era of <strong>Task-based Delegation</strong>. Modern agents like Codex work on <span class="tech-tag">Flash Goals</span>, allowing them to pursue a specific objective autonomously for over <strong>100 hours</strong> without constant human monitoring.
+            </p>
+<div class="py-8 flex justify-center bg-slate-50 rounded-3xl border border-slate-200 shadow-inner overflow-x-auto">
+    <svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" class="max-w-full h-auto">
+        <!-- Central Hub -->
+        <circle cx="400" cy="200" r="60" fill="#4f46e5" fill-opacity="0.1" stroke="#4f46e5" stroke-width="2" />
+        <text x="400" y="195" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="14" fill="#1e1b4b">DIGITAL</text>
+        <text x="400" y="215" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="14" fill="#1e1b4b">COLLEAGUE</text>
+
+        <!-- Connecting Lines -->
+        <g stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4">
+            <line x1="400" y1="140" x2="400" y2="60" /> <!-- Evolution -->
+            <line x1="340" y1="200" x2="150" y2="200" /> <!-- Context -->
+            <line x1="460" y1="200" x2="650" y2="200" /> <!-- Validation -->
+            <line x1="400" y1="260" x2="400" y2="340" /> <!-- Verification -->
+        </g>
+
+        <!-- Node: Evolution -->
+        <rect x="320" y="20" width="160" height="40" rx="8" fill="#fff" stroke="#4f46e5" stroke-width="2" />
+        <text x="400" y="45" text-anchor="middle" font-family="Inter, sans-serif" font-weight="bold" font-size="12" fill="#4f46e5">Evolution: Flash Goals</text>
+        <text x="400" y="75" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">100+ Hour Autonomy</text>
+
+        <!-- Node: Context -->
+        <rect x="20" y="180" width="130" height="40" rx="8" fill="#fff" stroke="#4f46e5" stroke-width="2" />
+        <text x="85" y="205" text-anchor="middle" font-family="Inter, sans-serif" font-weight="bold" font-size="12" fill="#4f46e5">Context Gathering</text>
+        <text x="85" y="235" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">Chronicle & Plugins</text>
+
+        <!-- Node: Validation -->
+        <rect x="650" y="180" width="130" height="40" rx="8" fill="#fff" stroke="#4f46e5" stroke-width="2" />
+        <text x="715" y="205" text-anchor="middle" font-family="Inter, sans-serif" font-weight="bold" font-size="12" fill="#4f46e5">Self-Validation</text>
+        <text x="715" y="235" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">Linters (Vail) & Compilers</text>
+
+        <!-- Node: Verification -->
+        <rect x="320" y="340" width="160" height="40" rx="8" fill="#fff" stroke="#4f46e5" stroke-width="2" />
+        <text x="400" y="365" text-anchor="middle" font-family="Inter, sans-serif" font-weight="bold" font-size="12" fill="#4f46e5">Human Verification</text>
+        <text x="400" y="395" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">Visual Proof & Agent Reviews</text>
+    </svg>
+</div>        </section>
+
+        <section id="pillars" class="space-y-8">
+            <h2 class="text-4xl font-bold mb-8">02. The Three Pillars of Success</h2>
+            
+            <div class="pillar-card">
+                <h3 class="text-xl font-bold text-indigo-700 mb-2">Context: Giving the Agent a "Workspace"</h3>
+                <p class="text-slate-600 mb-4">Instead of hand-crafting prompts (<span class="tech-tag">Context Engineering</span>), we now use <strong>Context Gathering</strong> . You simply give the agent access to your "workspace"—Google Drive, Slack, and your screen. Tools like <span class="tech-tag">Chronicle</span> record screen content to generate "memories," allowing the agent to find a "needle in a haystack" across deeply nested folders independently.</p>
+            </div>
+
+            <div class="pillar-card">
+                <h3 class="text-xl font-bold text-indigo-700 mb-2">Validation: The Automated Self-Check</h3>
+                <p class="text-slate-600 mb-4">An agent shouldn't just do work; it must ensure it is correct. We equip agents with <strong>Linters</strong>—tools that ensure output conforms to specific standards . For example, the linter <span class="tech-tag">Vail</span> ensures technical content follows a specific brand voice . Advanced validation even includes <span class="tech-tag">Computer Use</span>, where the agent takes over a cursor to manually verify tasks in a web browser.</p>
+            </div>
+
+            <div class="pillar-card">
+                <h3 class="text-xl font-bold text-indigo-700 mb-2">Verification: The Human Review</h3>
+                <p class="text-slate-600">You shouldn't have to read every line of code to know the AI did well. The agent provides visual proof—like screenshots or preview links—so you can approve work from your phone . This often involves <span class="tech-tag">Multi-Agent Review</span>, where a second agent reviews the first agent's work against updated guidelines.</p>
+            </div>
+            
+            
+        </section>
+
+        <section id="climax" class="bg-slate-900 text-white p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+            <h2 class="text-3xl font-black mb-6 italic">The Climax: The Weekend Promotion</h2>
+            <p class="text-lg text-slate-300 leading-relaxed mb-6">
+                On a Friday, Dom told Codex to handle a marketing promotion deadline of <strong>12:01 AM Monday</strong> . The agent scheduled its own work, monitored Slack for strategy changes, and verified human code approvals over the weekend . While Dom was away from his computer, the agent replied to colleagues on Slack and <strong>automatically deployed</strong> the changes at exactly midnight .
+            </p>
+            <div class="p-4 border border-white/10 rounded-xl bg-white/5">
+                <p class="text-xs font-mono text-indigo-400">// Foundation: Codex App Server SDK</p>
+                <p class="text-sm text-slate-400 mt-2">Built on an open-source SDK, this intelligence integrates into CLIs, VS Code, and even video games like <strong>Doom</strong>.</p>
+                <!-- SDK Architecture SVG -->
+<div class="p-8 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-x-auto">
+    <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" class="max-w-full h-auto mx-auto">
+        <!-- Client Layer -->
+        <rect x="50" y="50" width="150" height="200" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" />
+        <text x="125" y="40" text-anchor="middle" font-family="Inter, sans-serif" font-weight="bold" font-size="12" fill="#64748b">CLIENTS</text>
+        <g font-family="monospace" font-size="10" fill="#94a3b8">
+            <text x="125" y="100" text-anchor="middle">VS Code / IDE</text>
+            <text x="125" y="130" text-anchor="middle">CLI Terminal</text>
+            <text x="125" y="160" text-anchor="middle">Custom Desktop App</text>
+            <text x="125" y="190" text-anchor="middle">Doom Integration</text>
+        </g>
+
+        <!-- Communication: Events Based Protocol -->
+        <g stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)">
+            <path d="M200 120 H350" fill="none" stroke-dasharray="4" />
+            <path d="M350 180 H200" fill="none" stroke-dasharray="4" />
+        </g>
+        <text x="275" y="110" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="bold" fill="#6366f1">UI Events</text>
+        <text x="275" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="bold" fill="#6366f1">Agent State</text>
+
+        <!-- SDK Server Layer -->
+        <rect x="350" y="50" width="200" height="200" rx="12" fill="#4f46e5" fill-opacity="0.05" stroke="#4f46e5" stroke-width="3" />
+        <text x="450" y="40" text-anchor="middle" font-family="Inter, sans-serif" font-weight="bold" font-size="12" fill="#4f46e5">CODEX APP SERVER (SDK)</text>
+        
+        <!-- SDK Internal Components -->
+        <rect x="375" y="80" width="150" height="30" rx="4" fill="#fff" stroke="#4f46e5" stroke-width="1" />
+        <text x="450" y="100" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="bold" fill="#1e1b4b">Events-Based Protocol</text>
+        
+        <rect x="375" y="130" width="150" height="30" rx="4" fill="#fff" stroke="#4f46e5" stroke-width="1" />
+        <text x="450" y="150" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="bold" fill="#1e1b4b">UI Primitives</text>
+        
+        <rect x="375" y="180" width="150" height="30" rx="4" fill="#fff" stroke="#4f46e5" stroke-width="1" />
+        <text x="450" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="bold" fill="#1e1b4b">ChatGPT Auth</text>
+
+        <!-- Marker Definition -->
+        <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#6366f1" />
+            </marker>
+        </defs>
+    </svg>
+    <p class="text-center text-[10px] text-slate-400 mt-4 font-mono uppercase tracking-widest">Architecture: Distributed Agentic SDK Protocol</p>
+</div>
+            </div>
+        </section>
+    </div>
+
+
+    <!-- Right Column: Sticky Sidebar -->
+<aside class="w-full lg:w-1/4 shrink-0">
+    <div class="sticky-sidebar space-y-8">
+        <!-- Speaker Bio -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h4 class="text-xs font-black uppercase text-indigo-500 mb-4 tracking-widest">The Architect</h4>
+            <div class="flex items-center gap-4 mb-4">
+                <!-- Professional image replacement for 'DK' placeholder -->
+                <img src="https://media.licdn.com/dms/image/v2/D5603AQFBFCclXSM_aQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1731087511423?e=1781740800&v=beta&t=5BVWu9jWJ23rBlxMsZu0EEyf6DnVvBwMivDmuI-8XXE" 
+                     alt="Dominik Kundel" 
+                     class="w-12 h-12 rounded-full object-cover shadow-lg border border-indigo-100">
+                <div>
+                    <p class="font-bold text-slate-900 leading-tight">Dominik Kundel</p>
+                    <p class="text-[10px] font-mono text-slate-500">OpenAI | Codex Team</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed italic">
+                A <strong>developer and product leader</strong> at <strong>OpenAI</strong> specializing in Developer Experience and SDKs. With over <strong>10 years of experience</strong>, he previously led Product & Design for Twilio's Emerging Tech division, focusing on customer-aware AI agents. Dominik is a passionate tinkerer of anything that runs <strong>JavaScript</strong>, from front-end servers to coffee machines.
+            </p>
+        </div>
+
+        <!-- Stats/Metrics Graph -->
+        <div class="bg-indigo-600 p-6 rounded-2xl text-white shadow-xl">
+            <p class="text-[10px] font-bold opacity-80 uppercase mb-2 tracking-widest">Model Velocity</p>
+            <div class="text-3xl font-black mb-1">17 Days</div>
+            <p class="text-[10px] opacity-70 mb-4">Avg. time between major model releases.</p>
+            <div class="flex items-end gap-1 h-12">
+                <div class="w-full bg-white/20 h-4 rounded"></div>
+                <div class="w-full bg-white/40 h-8 rounded"></div>
+                <div class="w-full bg-white/60 h-10 rounded"></div>
+                <div class="w-full bg-white h-12 rounded"></div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+</main>
+
+   <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm">© 2026 RawWeights. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+ 
+        
+        document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+
+    links.forEach(link => {
+        const name = link.getAttribute('data-group');
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(link);
+    });
+
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.className = 'nav-dropdown';
+        dropdownWrapper.style.position = 'relative';
+        dropdownWrapper.style.display = 'inline-block';
+
+        const triggerBtn = document.createElement('button');
+        triggerBtn.className = 'nav-btn';
+        triggerBtn.type = 'button';
+        triggerBtn.innerHTML = `${groupName} ▾`;
+
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+            flex-direction: column;
+            gap: 5px;
+        `;
+
+        const firstItem = groupItems[0];
+        if (firstItem.parentNode) {
+            firstItem.replaceWith(dropdownWrapper);
+        }
+
+        groupItems.forEach(link => {
+            link.style.display = 'block';
+            link.style.margin = '0';
+            const btn = link.querySelector('button');
+            if (btn) {
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.border = 'none';
+            }
+            menu.appendChild(link);
+        });
+
+        dropdownWrapper.appendChild(triggerBtn);
+        dropdownWrapper.appendChild(menu);
+
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isVisible = menu.style.display === 'flex';
+            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+            menu.style.display = isVisible ? 'none' : 'flex';
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
+    });
+});
+        
+    </script>
+</body>
+</html>
