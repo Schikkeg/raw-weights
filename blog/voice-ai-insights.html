@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Voice AI Gets Right — Insights from Building at Scale | RawWeights</title>
+    <meta name="description" content="11 insights that shift how you think about product metrics, latency, data flywheels, and building with AI — drawn from the engineering reality of a 1M-user voice AI product.">
+    <meta name="author" content="RawWeights">
+    <meta property="og:image" content="https://rawweights.com/images/voice_slide.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.rawweights.com/blog/voice-ai-insights.html">
+    <meta property="og:title" content="What Voice AI Gets Right — Insights from Building at Scale">
+    <meta property="og:description" content="11 insights that shift how you think about product metrics, latency, data flywheels, and building with AI — drawn from the engineering reality of a 1M-user voice AI product.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], serif: ['Merriweather','serif'] } } }
+        }
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+
+<header class="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-emerald-900/25 via-slate-900 to-slate-900"></div>
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16 relative z-10">
+        <div class="lg:w-1/2 space-y-7">
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Key Insights</span>
+                <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">#VoiceAI</span>
+                <span class="bg-teal-500/15 border border-teal-500/40 text-teal-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                What Voice AI<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Gets Right</span><br>That You Haven't<br>Thought About
+            </h1>
+            <p class="text-slate-300 text-lg max-w-xl leading-relaxed">
+                11 insights that shift how you think about product metrics, latency, data flywheels, and building with AI — drawn from the engineering reality of a product used by a million people.
+            </p>
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">Product Thinking</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">ML Engineering</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">Latency</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">Data Flywheels</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">AI Agents</span>
+            </div>
+            <a href="https://whisperflow.com" target="_blank" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Try Whisper Flow →</a>
+        </div>
+        <div class="lg:w-1/2 w-full space-y-4">
+            <!-- Insight preview cards -->
+            <div class="grid grid-cols-1 gap-3">
+                <div class="bg-slate-800/80 rounded-2xl border border-emerald-900/40 p-5 flex items-center gap-4">
+                    <span class="text-3xl font-black text-emerald-400 flex-shrink-0">01</span>
+                    <p class="text-slate-200 text-sm font-medium leading-relaxed">The metric every speech product optimizes for is the wrong one.</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-2xl border border-teal-900/40 p-5 flex items-center gap-4">
+                    <span class="text-3xl font-black text-teal-400 flex-shrink-0">05</span>
+                    <p class="text-slate-200 text-sm font-medium leading-relaxed">A protocol swap with zero new features drove a dramatic overnight usage jump.</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-2xl border border-cyan-900/40 p-5 flex items-center gap-4">
+                    <span class="text-3xl font-black text-cyan-400 flex-shrink-0">09</span>
+                    <p class="text-slate-200 text-sm font-medium leading-relaxed">AI coding agents are trained to be polite. That's a serious engineering problem.</p>
+                </div>
+            </div>
+            <!-- Stats -->
+            <div class="grid grid-cols-4 gap-3">
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-emerald-400">11</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Insights</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-teal-400">~1M</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Users</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-cyan-400">5mo</p>
+                    <p class="text-slate-400 text-xs mt-0.5">To habit shift</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-green-400">80%</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Voice after 5mo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<main class="w-full bg-slate-900 flex-grow">
+<div class="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-16">
+
+    <!-- TOC -->
+    <aside class="lg:w-1/4 flex-shrink-0 hidden lg:block">
+        <nav class="sticky top-8 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 border-b border-slate-700 pb-4">11 Insights</h3>
+            <ul id="toc-nav" class="space-y-3 text-sm font-medium text-slate-400">
+                <li><a href="#i1"  class="block hover:text-white transition-colors py-0.5">01 — The Wrong Metric</a></li>
+                <li><a href="#i2"  class="block hover:text-white transition-colors py-0.5">02 — Separate Your Models</a></li>
+                <li><a href="#i3"  class="block hover:text-white transition-colors py-0.5">03 — Context Before Transcription</a></li>
+                <li><a href="#i4"  class="block hover:text-white transition-colors py-0.5">04 — The 23-Year-Old API</a></li>
+                <li><a href="#i5"  class="block hover:text-white transition-colors py-0.5">05 — Latency Is the Product</a></li>
+                <li><a href="#i6"  class="block hover:text-white transition-colors py-0.5">06 — Counter-Intuitive UX</a></li>
+                <li><a href="#i7"  class="block hover:text-white transition-colors py-0.5">07 — The 20→80 Signal</a></li>
+                <li><a href="#i8"  class="block hover:text-white transition-colors py-0.5">08 — Build vs Buy, Simplified</a></li>
+                <li><a href="#i9"  class="block hover:text-white transition-colors py-0.5">09 — Agent Blind Spots</a></li>
+                <li><a href="#i10" class="block hover:text-white transition-colors py-0.5">10 — Human Judgment Upstream</a></li>
+                <li><a href="#i11" class="block hover:text-white transition-colors py-0.5">11 — Voice as an AI Superpower</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Content -->
+    <div class="lg:w-3/4 space-y-16 text-slate-300">
+
+
+        <!-- ── Insight 01 ─────────────────────────────────────────────────── -->
+        <section id="i1" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-emerald-500/30 leading-none flex-shrink-0 -mt-1">01</span>
+                <div>
+                    <p class="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2">Product Thinking</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">The metric every speech product optimizes for is the wrong one</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+                    <p class="text-slate-500 text-xs uppercase tracking-widest font-bold mb-3">Industry standard metric</p>
+                    <p class="text-4xl font-black text-slate-400 mb-2">WER</p>
+                    <p class="text-white font-semibold text-sm mb-2">Word Error Rate</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">% of transcribed words that differ from ground truth. Every leaderboard, every benchmark, every product announcement leads with this number.</p>
+                    <div class="mt-4 bg-slate-900 rounded-xl p-3">
+                        <p class="text-red-400 text-xs font-semibold">The problem</p>
+                        <p class="text-slate-400 text-xs mt-1">A model can have excellent WER and still leave users editing every single output. Accuracy ≠ trust.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-800 border border-emerald-900/50 rounded-2xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-28 h-28 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                    <p class="text-emerald-400 text-xs uppercase tracking-widest font-bold mb-3">The better metric</p>
+                    <p class="text-4xl font-black text-emerald-400 mb-2">ZER</p>
+                    <p class="text-white font-semibold text-sm mb-2">Zero Edit Rate</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">% of dictations a user sends without editing. Measures whether they trusted the output enough to use it as-is.</p>
+                    <div class="mt-4 bg-slate-900 rounded-xl p-3">
+                        <p class="text-emerald-400 text-xs font-semibold">Why it's right</p>
+                        <p class="text-slate-400 text-xs mt-1">It directly measures the thing that creates habit: trust. And trust is the only thing that makes a dictation tool sticky.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border-l-4 border-emerald-500 p-5 rounded-r-2xl">
+                <p class="text-white font-semibold text-sm">The takeaway you can apply today</p>
+                <p class="text-slate-400 text-sm mt-1 leading-relaxed">Whatever product you're building — find the metric that measures user trust, not model capability. They are almost never the same metric.</p>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 02 ─────────────────────────────────────────────────── -->
+        <section id="i2" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-teal-500/30 leading-none flex-shrink-0 -mt-1">02</span>
+                <div>
+                    <p class="text-teal-400 text-xs font-bold uppercase tracking-widest mb-2">Architecture</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">Never combine your transcription model with your formatting model</h2>
+                </div>
+            </div>
+
+            <p class="text-lg leading-relaxed mb-6">The instinct is to build one model that does everything — takes audio in, produces clean formatted text out. That instinct is wrong. Keeping them separate is one of the most consequential architectural decisions in the stack.</p>
+
+            <div class="bg-slate-950 rounded-2xl border border-slate-800 p-6 mb-6 font-mono text-sm">
+                <p class="text-slate-500 text-xs uppercase tracking-wide mb-4">Two separate models, two separate jobs</p>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-4">
+                        <span class="text-teal-400 font-bold w-24 flex-shrink-0">ASR Model</span>
+                        <span class="text-slate-400">→ "um let's meet at 5 o'clock oh actually let's meet at 3 o'clock"</span>
+                    </div>
+                    <div class="pl-28 text-slate-600 text-xs">raw, unfiltered, high-speed, optimized for accuracy only</div>
+                    <div class="flex items-start gap-4 mt-3">
+                        <span class="text-emerald-400 font-bold w-24 flex-shrink-0">Format Model</span>
+                        <span class="text-slate-300">→ "Let's meet at 3 o'clock."</span>
+                    </div>
+                    <div class="pl-28 text-slate-600 text-xs">backtracking · filler removal · style · email/slack format · emoji</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-center">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <p class="text-white text-xs font-semibold mb-1">Iterate independently</p>
+                    <p class="text-slate-500 text-xs">Improve formatting without touching the transcription model and vice versa. No coupling, no regression risk across the boundary.</p>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-center">
+                    <div class="text-2xl mb-2">🎯</div>
+                    <p class="text-white text-xs font-semibold mb-1">Train on the right signal</p>
+                    <p class="text-slate-500 text-xs">ASR trains on audio-to-text accuracy. Formatter trains on edit pairs. Conflating these produces a model that's mediocre at both.</p>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-center">
+                    <div class="text-2xl mb-2">⚡</div>
+                    <p class="text-white text-xs font-semibold mb-1">Run in parallel</p>
+                    <p class="text-slate-500 text-xs">Intermediate ASR passes can start while the user is still speaking. The formatter runs on the final transcript. Sequential only where it must be.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 03 ─────────────────────────────────────────────────── -->
+        <section id="i3" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-cyan-500/30 leading-none flex-shrink-0 -mt-1">03</span>
+                <div>
+                    <p class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-2">System Design</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">Context collection happens before a word is spoken — and it changes everything downstream</h2>
+                </div>
+            </div>
+
+            <p class="text-lg leading-relaxed mb-8">The same spoken sentence produces completely different ideal output depending on where the cursor is. A voice product that doesn't know its context is transcribing in the dark.</p>
+
+            <!-- Context examples -->
+            <div class="space-y-3 mb-8">
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-700">
+                        <div class="p-4">
+                            <p class="text-slate-500 text-xs uppercase tracking-widest font-bold mb-2">You say</p>
+                            <p class="text-white text-sm italic">"Hey, it was great to meet you. Let's connect soon."</p>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-cyan-400 text-xs uppercase tracking-widest font-bold mb-2">In Gmail</p>
+                            <p class="text-slate-300 text-sm">Hi [Name],<br><br>It was great to meet you. Let's connect soon.<br><br>Best,<br>[Signature]</p>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-purple-400 text-xs uppercase tracking-widest font-bold mb-2">In Slack</p>
+                            <p class="text-slate-300 text-sm">hey, great to meet you! let's connect soon</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-slate-500 text-xs text-center">Same words. Different app. Completely different correct output. Without context, there's no right answer.</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-cyan-900/20 to-slate-900 border border-cyan-800/30 rounded-2xl p-6">
+                <p class="text-cyan-300 font-bold mb-3">Context also solves the homophone problem</p>
+                <p class="text-slate-300 text-sm leading-relaxed">When dictating into an email thread, the app knows which names are already in the conversation. "Brian" vs "Bryan" vs "Brayan" — the correct spelling is already on screen. The system traverses the surrounding text to surface those proper nouns and passes them to the ASR model <em>before</em> transcription. The raw transcript comes out correct, not just close.</p>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 04 ─────────────────────────────────────────────────── -->
+        <section id="i4" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-blue-500/30 leading-none flex-shrink-0 -mt-1">04</span>
+                <div>
+                    <p class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">Engineering Reality</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">The AI context layer everyone is building on top of was designed for blind people in 2001</h2>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-900/20 to-slate-900 border border-blue-800/30 rounded-2xl p-7 mb-6">
+                <div class="flex items-start gap-4">
+                    <div class="text-4xl flex-shrink-0">♿</div>
+                    <div>
+                        <p class="text-white font-bold text-lg mb-2">The Accessibility API is 23 years old and has not been modernized</p>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">Every modern AI desktop app that reads surrounding context — what app you're in, what text is on screen, what element is focused — is using the OS accessibility layer. It was built for screen readers. It is the de facto standard because there's nothing else.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="bg-slate-800/60 rounded-xl p-3 text-center">
+                                <p class="text-red-400 font-bold text-sm">Hundreds of ms</p>
+                                <p class="text-slate-500 text-xs mt-1">Response latency — per request</p>
+                            </div>
+                            <div class="bg-slate-800/60 rounded-xl p-3 text-center">
+                                <p class="text-orange-400 font-bold text-sm">App crashes</p>
+                                <p class="text-slate-500 text-xs mt-1">Too many requests → receiving app can crash</p>
+                            </div>
+                            <div class="bg-slate-800/60 rounded-xl p-3 text-center">
+                                <p class="text-yellow-400 font-bold text-sm">OS throttling</p>
+                                <p class="text-slate-500 text-xs mt-1">Battery + perf impact leads to API rate limits</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5">
+                <p class="text-white font-semibold text-sm mb-3">How to work with it properly</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="flex items-start gap-2 text-sm"><span class="text-emerald-400 flex-shrink-0">✓</span><span class="text-slate-300"><strong class="text-white">Event-driven, not polling</strong> — trigger lookups on app switch and dictation start, not continuously</span></div>
+                    <div class="flex items-start gap-2 text-sm"><span class="text-emerald-400 flex-shrink-0">✓</span><span class="text-slate-300"><strong class="text-white">Cache node paths</strong> — once you know where an important node lives in the tree, cache the path not the value</span></div>
+                    <div class="flex items-start gap-2 text-sm"><span class="text-emerald-400 flex-shrink-0">✓</span><span class="text-slate-300"><strong class="text-white">Always async</strong> — never block the UI thread waiting on an accessibility response</span></div>
+                    <div class="flex items-start gap-2 text-sm"><span class="text-yellow-400 flex-shrink-0">⚠</span><span class="text-slate-300"><strong class="text-white">Short dictations will miss context</strong> — there simply wasn't enough time to finish the lookup before the user was done</span></div>
+                </div>
+            </div>
+
+            <div class="mt-4 bg-slate-800/40 border border-slate-700 rounded-xl p-4">
+                <p class="text-slate-400 text-sm"><span class="text-white font-semibold">The underrated CS skill this requires:</span> tree traversal under performance constraints — breadth-first vs depth-first over a live, mutating accessibility tree. This is classic algorithms coursework applied to a genuinely hard production problem.</p>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 05 ─────────────────────────────────────────────────── -->
+        <section id="i5" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-red-500/30 leading-none flex-shrink-0 -mt-1">05</span>
+                <div>
+                    <p class="text-red-400 text-xs font-bold uppercase tracking-widest mb-2">The Insight That Changes Everything</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">A protocol swap with zero new features drove a dramatic overnight usage jump</h2>
+                </div>
+            </div>
+
+            <blockquote class="border-l-4 border-red-500 pl-6 mb-8">
+                <p class="text-2xl font-light text-white italic leading-relaxed">"We refactored from WebSockets to gRPC. P50 latency dropped significantly. Usage jumped overnight — measurably, unambiguously. No new features. Just infrastructure."</p>
+            </blockquote>
+
+            <!-- Latency story timeline -->
+            <div class="space-y-3 mb-8">
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 flex gap-5 items-center">
+                    <div class="text-center flex-shrink-0 w-20">
+                        <p class="text-2xl font-black text-slate-500">~2s</p>
+                        <p class="text-slate-600 text-xs">HTTP</p>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-white text-sm font-semibold">Wait for user to finish → upload entire audio → wait for response</p>
+                        <p class="text-slate-500 text-xs mt-1">Result: nobody used it. The team didn't even know latency was the reason.</p>
+                    </div>
+                    <span class="bg-red-900/30 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">dead</span>
+                </div>
+                <div class="flex items-center justify-center text-slate-600 text-sm">↓ stream audio while speaking</div>
+                <div class="bg-slate-800 rounded-2xl border border-yellow-900/40 p-5 flex gap-5 items-center">
+                    <div class="text-center flex-shrink-0 w-20">
+                        <p class="text-2xl font-black text-yellow-400">~1s</p>
+                        <p class="text-slate-600 text-xs">WebSockets</p>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-white text-sm font-semibold">Latency halved by streaming audio before recording ends</p>
+                        <p class="text-slate-500 text-xs mt-1">The "dopamine hit" of watching text appear in real time. Usage exploded. The team learned what latency actually meant for this product.</p>
+                    </div>
+                    <span class="bg-yellow-900/30 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">usage ↑↑</span>
+                </div>
+                <div class="flex items-center justify-center text-slate-600 text-sm">↓ refactor transport layer</div>
+                <div class="bg-slate-800 rounded-2xl border border-emerald-900/40 p-5 flex gap-5 items-center">
+                    <div class="text-center flex-shrink-0 w-20">
+                        <p class="text-2xl font-black text-emerald-400">gRPC</p>
+                        <p class="text-slate-600 text-xs">transport</p>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-white text-sm font-semibold">P50 latency dropped significantly. Usage jumped overnight.</p>
+                        <p class="text-slate-500 text-xs mt-1">No UI change. No new feature. A protocol refactor invisible to every user — but felt by all of them.</p>
+                    </div>
+                    <span class="bg-emerald-900/30 text-emerald-400 text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">usage ↑↑</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border-l-4 border-red-500 p-5 rounded-r-2xl">
+                <p class="text-white font-semibold text-sm">The principle</p>
+                <p class="text-slate-400 text-sm mt-1 leading-relaxed">For any product where the output appears on screen — AI, search, autocomplete — latency isn't a quality of life concern. It's the product. Users don't consciously notice 300ms. But they feel it, form habits around it, and churn because of it.</p>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 06 ─────────────────────────────────────────────────── -->
+        <section id="i6" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-violet-500/30 leading-none flex-shrink-0 -mt-1">06</span>
+                <div>
+                    <p class="text-violet-400 text-xs font-bold uppercase tracking-widest mb-2">Counter-Intuitive UX</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">The UX decisions that seem wrong — and why they're exactly right</h2>
+                </div>
+            </div>
+
+            <p class="text-lg leading-relaxed mb-8">Two design choices that go against instinct, both driven by the same principle: keep people in the application they were already in.</p>
+
+            <div class="space-y-4">
+                <!-- No streaming -->
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+                    <div class="bg-violet-900/20 border-b border-slate-700 px-6 py-4 flex items-center gap-3">
+                        <span class="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full">Decision</span>
+                        <p class="text-white font-bold">Do NOT stream text back while the user is speaking</p>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-red-400 text-xs uppercase font-bold tracking-widest mb-3">Why streaming seems right</p>
+                            <div class="space-y-2 text-sm text-slate-400">
+                                <p>→ Users can see progress and trust the system is working</p>
+                                <p>→ Feels more responsive and alive</p>
+                                <p>→ Every other dictation tool does it</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-emerald-400 text-xs uppercase font-bold tracking-widest mb-3">Why it's actually wrong</p>
+                            <div class="space-y-2 text-sm text-slate-400">
+                                <p>→ <strong class="text-white">You lose your train of thought</strong> watching words appear mid-sentence</p>
+                                <p>→ <strong class="text-white">Backtracking breaks</strong> — text is already inserted before you correct it</p>
+                                <p>→ Forces the product into a text editor mindset, which breaks the "stay in your app" principle</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No document editor -->
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+                    <div class="bg-violet-900/20 border-b border-slate-700 px-6 py-4 flex items-center gap-3">
+                        <span class="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full">Decision</span>
+                        <p class="text-white font-bold">Do NOT pull users into a dedicated document editing UI</p>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-red-400 text-xs uppercase font-bold tracking-widest mb-3">The obvious alternative</p>
+                            <div class="space-y-2 text-sm text-slate-400">
+                                <p>→ Every competing dictation tool at launch made you dictate into their UI</p>
+                                <p>→ Easier to build (you control the surface)</p>
+                                <p>→ Easier to add editing features (formatting bar, playback, etc.)</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-emerald-400 text-xs uppercase font-bold tracking-widest mb-3">Why the harder path wins</p>
+                            <div class="space-y-2 text-sm text-slate-400">
+                                <p>→ <strong class="text-white">The whole value proposition is staying in flow</strong> — switching to another window destroys that</p>
+                                <p>→ Users don't want to manage two places where their text lives</p>
+                                <p>→ This interaction model has since been copied across the industry. First mover advantage in UX paradigm.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 07 ─────────────────────────────────────────────────── -->
+        <section id="i7" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-green-500/30 leading-none flex-shrink-0 -mt-1">07</span>
+                <div>
+                    <p class="text-green-400 text-xs font-bold uppercase tracking-widest mb-2">PMF Signal</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">The 20→80 shift is what product-market fit actually looks like</h2>
+                </div>
+            </div>
+
+            <!-- The big visual -->
+            <div class="bg-slate-800/80 rounded-2xl border border-slate-700 p-8 mb-6">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-6">
+                    <div class="text-center">
+                        <p class="text-slate-500 text-xs uppercase tracking-widest mb-2">Day 1 user</p>
+                        <p class="text-6xl font-black text-slate-500">20%</p>
+                        <p class="text-slate-500 text-sm mt-1">of typed words are dictated</p>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="w-16 sm:w-24 h-0.5 bg-gradient-to-r from-slate-500 to-emerald-500"></div>
+                        <p class="text-slate-500 text-xs">5 months</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-emerald-400 text-xs uppercase tracking-widest mb-2">Same user</p>
+                        <p class="text-6xl font-black text-emerald-400">80%</p>
+                        <p class="text-slate-400 text-sm mt-1">of typed words are dictated</p>
+                    </div>
+                </div>
+                <p class="text-slate-400 text-sm text-center leading-relaxed max-w-xl mx-auto">A habit that took decades to form — keyboard typing — replaced by voice for 4 in every 5 words. That's not product engagement. That's behaviour change at the deepest level.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-gradient-to-br from-green-900/20 to-slate-800 border border-green-900/30 rounded-xl p-5">
+                    <p class="text-green-400 font-semibold text-sm mb-2">What makes this remarkable</p>
+                    <p class="text-slate-400 text-xs leading-relaxed">Typing has been the dominant human-computer interface for over 40 years. People learned it in school, reinforced it daily for their entire adult lives. Replacing 80% of that input modality in 5 months is a behavioural change that most consumer apps never come close to.</p>
+                </div>
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-5">
+                    <p class="text-white font-semibold text-sm mb-2">The caveat to keep in mind</p>
+                    <p class="text-slate-400 text-xs leading-relaxed">Users come back from vacation and reach for their keyboard first. The habit regresses. Retention is partly a growth and lifecycle problem — behavioral nudges, re-engagement email, habit reminders. PMF doesn't mean the product works itself.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 08 ─────────────────────────────────────────────────── -->
+        <section id="i8" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-orange-500/30 leading-none flex-shrink-0 -mt-1">08</span>
+                <div>
+                    <p class="text-orange-400 text-xs font-bold uppercase tracking-widest mb-2">Strategy</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">Build vs Buy comes down to one question — and it's not cost</h2>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-orange-900/20 to-slate-900 border border-orange-800/30 rounded-2xl p-8 mb-6">
+                <p class="text-orange-300 text-xs font-bold uppercase tracking-widest mb-4">The question that decides everything</p>
+                <p class="text-4xl font-extrabold text-white leading-tight mb-4">Does this component have a <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">data flywheel</span>?</p>
+                <p class="text-slate-300 text-base leading-relaxed">If usage generates training data that makes the model better — and if better performance drives more usage — you own it. If not, you pay for an API indefinitely, and that's the right call.</p>
+            </div>
+
+            <!-- Decision grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-slate-800 border border-orange-900/40 rounded-2xl p-5">
+                    <p class="text-orange-400 text-xs uppercase tracking-widest font-bold mb-4">Own it when</p>
+                    <div class="space-y-2.5 text-sm">
+                        <div class="flex items-start gap-2"><span class="text-orange-400 flex-shrink-0">→</span><span class="text-slate-300">Your usage data is a training asset (edit pairs, corrections, context)</span></div>
+                        <div class="flex items-start gap-2"><span class="text-orange-400 flex-shrink-0">→</span><span class="text-slate-300">You need behavioral control a third party won't prioritize (emoji, backtracking, formatting)</span></div>
+                        <div class="flex items-start gap-2"><span class="text-orange-400 flex-shrink-0">→</span><span class="text-slate-300">Vendor failure means your product fails (core inference path)</span></div>
+                        <div class="flex items-start gap-2"><span class="text-orange-400 flex-shrink-0">→</span><span class="text-slate-300">Latency or reliability requirements exceed what off-the-shelf provides</span></div>
+                    </div>
+                </div>
+                <div class="bg-slate-800 border border-blue-900/40 rounded-2xl p-5">
+                    <p class="text-blue-400 text-xs uppercase tracking-widest font-bold mb-4">Pay the API forever when</p>
+                    <div class="space-y-2.5 text-sm">
+                        <div class="flex items-start gap-2"><span class="text-blue-400 flex-shrink-0">→</span><span class="text-slate-300">It's a generic capability — any LLM can do it, you have no differentiation</span></div>
+                        <div class="flex items-start gap-2"><span class="text-blue-400 flex-shrink-0">→</span><span class="text-slate-300">You're still prototyping — prove PMF first, optimize cost second</span></div>
+                        <div class="flex items-start gap-2"><span class="text-blue-400 flex-shrink-0">→</span><span class="text-slate-300">Unit economics aren't broken — "maybe in 5 years" is not a reason to build in-house today</span></div>
+                        <div class="flex items-start gap-2"><span class="text-blue-400 flex-shrink-0">→</span><span class="text-slate-300">There's no training signal — your data doesn't make the model better for your use case</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border-l-4 border-orange-500 p-5 rounded-r-2xl">
+                <p class="text-white font-semibold text-sm">Prototype with APIs. Build conviction. Then own it.</p>
+                <p class="text-slate-400 text-sm mt-1 leading-relaxed">Serving your own models correctly takes months and real money even for off-the-shelf open source. Do not start that project until a feature has proven PMF. And sometimes the answer stays "no" for years. Both are valid outcomes.</p>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 09 ─────────────────────────────────────────────────── -->
+        <section id="i9" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-red-500/30 leading-none flex-shrink-0 -mt-1">09</span>
+                <div>
+                    <p class="text-red-400 text-xs font-bold uppercase tracking-widest mb-2">AI Agent Reality</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">AI coding agents are trained to be polite — and that's a serious engineering problem</h2>
+                </div>
+            </div>
+
+            <p class="text-lg leading-relaxed mb-8">Models have been trained not to tell you your code is bad. They are trained to be agreeable and helpful. In a code review context, this creates predictable failure modes that compound over time if you don't know to watch for them.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-800 rounded-2xl border border-red-900/40 p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">🦾</span>
+                        <p class="text-red-400 text-xs uppercase tracking-widest font-bold">Anti-pattern perpetuation</p>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">Agents follow the patterns already in the codebase. Existing tech debt gets copied and propagated. They see the pattern, they match it. They will not question whether the pattern should exist.</p>
+                </div>
+                <div class="bg-slate-800 rounded-2xl border border-red-900/40 p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">🔧</span>
+                        <p class="text-red-400 text-xs uppercase tracking-widest font-bold">Patching over problems</p>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">Given a broken thing, agents will add a conditional, add a try/catch, add a fallback. They won't say "this should be redesigned." Restructuring and questioning architecture requires explicit prompting.</p>
+                </div>
+                <div class="bg-slate-800 rounded-2xl border border-yellow-900/40 p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">🛑</span>
+                        <p class="text-yellow-400 text-xs uppercase tracking-widest font-bold">Stops at plausibly correct</p>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">The agent stops when the code looks like it should work. Not when it's verified to work. There is a meaningful gap between those two states in production systems.</p>
+                </div>
+                <div class="bg-slate-800 rounded-2xl border border-yellow-900/40 p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">📋</span>
+                        <p class="text-yellow-400 text-xs uppercase tracking-widest font-bold">Won't refactor unless pushed</p>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">Agents are unlikely to restructure, rename, or question the existing architecture. They'll work within whatever they find. You have to explicitly ask for a refactor — it won't volunteer one.</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5">
+                <p class="text-white font-semibold text-sm mb-2">The counter-move</p>
+                <p class="text-slate-400 text-sm leading-relaxed">Use a <em>second</em> model to review the first model's work — adversarially. One model generates the plan or code. A different model tries to break it. Models catch different things, and an adversarial reviewer is not trying to be polite. This is multi-model review as a discipline, not a one-off trick.</p>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 10 ─────────────────────────────────────────────────── -->
+        <section id="i10" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-purple-500/30 leading-none flex-shrink-0 -mt-1">10</span>
+                <div>
+                    <p class="text-purple-400 text-xs font-bold uppercase tracking-widest mb-2">Engineering Process</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">Move human judgment upstream — not out of the loop</h2>
+                </div>
+            </div>
+
+            <p class="text-lg leading-relaxed mb-8">Coding agents are now very good at mechanical correctness. That's the part that <em>used</em> to require careful human attention. The implication is not "humans are no longer needed" — it's that human judgment becomes most valuable earlier in the process.</p>
+
+            <!-- The reframe -->
+            <div class="bg-gradient-to-br from-purple-900/20 to-slate-900 border border-purple-800/30 rounded-2xl p-7 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-slate-500 text-xs uppercase tracking-widest font-bold mb-3">Old model: human reviews code</p>
+                        <div class="space-y-2 text-sm text-slate-400">
+                            <p>1. Write a spec (rough)</p>
+                            <p>2. Agent writes code</p>
+                            <p>3. Human reviews implementation details</p>
+                            <p>4. Catch logic errors in the diff</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-purple-400 text-xs uppercase tracking-widest font-bold mb-3">New model: human reviews the plan</p>
+                        <div class="space-y-2 text-sm text-slate-300">
+                            <p>1. Agent interviews you about assumptions</p>
+                            <p>2. Sub-agents analyze blast radius, security, contracts</p>
+                            <p>3. <strong class="text-white">Human reviews the plan</strong></p>
+                            <p>4. Second model reviews the plan adversarially</p>
+                            <p>5. Agent implements. Plan is the PR rubric.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">🎯</p>
+                    <p class="text-white text-xs font-semibold mb-1">Interview first</p>
+                    <p class="text-slate-500 text-xs">Force the model to surface all assumptions and ambiguities before it starts planning — not mid-implementation</p>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">🔍</p>
+                    <p class="text-white text-xs font-semibold mb-1">Define done upfront</p>
+                    <p class="text-slate-500 text-xs">The plan must specify verification criteria before any code is written. If you don't define the finish line, the agent won't cross it</p>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">📋</p>
+                    <p class="text-white text-xs font-semibold mb-1">Plan as PR contract</p>
+                    <p class="text-slate-500 text-xs">Review PRs against the agreed plan — not in a vacuum. The plan already had human eyes on it. The implementation just has to conform</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border-l-4 border-purple-500 p-5 rounded-r-2xl">
+                <p class="text-white font-semibold text-sm">Where human judgment is irreplaceable</p>
+                <p class="text-slate-400 text-sm mt-1">Design, taste, architecture, naming, whether the feature should exist at all. These are not things models do well. They are exactly the things that separate a product people love from one that technically works.</p>
+            </div>
+        </section>
+
+
+        <!-- ── Insight 11 ─────────────────────────────────────────────────── -->
+        <section id="i11" class="scroll-mt-12">
+            <div class="flex items-start gap-4 mb-8">
+                <span class="text-5xl font-black text-teal-500/30 leading-none flex-shrink-0 -mt-1">11</span>
+                <div>
+                    <p class="text-teal-400 text-xs font-bold uppercase tracking-widest mb-2">The Compounding Habit</p>
+                    <h2 class="text-3xl font-extrabold text-white leading-tight">Using your voice to prompt AI agents makes them dramatically more effective</h2>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-teal-900/20 to-slate-900 border border-teal-800/30 rounded-2xl p-8 mb-6">
+                <div class="text-4xl mb-4">🎙️</div>
+                <p class="text-2xl font-light text-white italic leading-relaxed mb-4">
+                    "Agents don't care about precision communication. But they don't know what they don't know. Voice naturally makes you give more context — and that changes the quality of the output."
+                </p>
+                <p class="text-slate-400 text-sm">When you type a prompt you compress. When you speak you elaborate. The agent needs the elaboration.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5">
+                    <p class="text-slate-500 text-xs uppercase tracking-widest font-bold mb-3">A typed prompt</p>
+                    <div class="bg-slate-950 rounded-xl p-4 font-mono text-sm text-slate-300 mb-3">
+                        <p>"Add error handling to the API client"</p>
+                    </div>
+                    <p class="text-slate-400 text-xs">12 words. No context about what kinds of errors matter, what the retry policy should be, what the user sees, what's already handled elsewhere.</p>
+                </div>
+                <div class="bg-slate-800 border border-teal-900/40 rounded-2xl p-5">
+                    <p class="text-teal-400 text-xs uppercase tracking-widest font-bold mb-3">The same prompt spoken</p>
+                    <div class="bg-slate-950 rounded-xl p-4 text-sm text-slate-300 mb-3 italic">
+                        <p>"Add error handling to the API client — we need to handle 429s with exponential backoff because the AbuseIPDB free tier has strict limits, network errors should silently retry twice then surface a user-visible message, and 401s should clear the session and redirect to the key entry screen"</p>
+                    </div>
+                    <p class="text-slate-400 text-xs">Speaking naturally adds context you'd have trimmed when typing. The agent now has everything it needs.</p>
+                </div>
+            </div>
+
+            <div class="bg-emerald-900/20 border border-emerald-800/30 rounded-2xl p-6">
+                <p class="text-emerald-300 font-bold mb-2">The meta-insight</p>
+                <p class="text-slate-300 text-sm leading-relaxed">Voice AI and coding AI form a feedback loop. Voice makes you better at prompting agents. Better prompts make agents more effective. More effective agents produce more things worth using voice for. This is the compounding habit that transforms how you work — and it starts with one dictated prompt.</p>
+            </div>
+
+
+            <!-- Closing thoughts -->
+            <div class="mt-12 pt-8 border-t border-slate-800">
+                <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-8">
+                    <p class="text-white font-bold text-lg mb-4">The through-line across all 11</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-start gap-2"><span class="text-emerald-400 flex-shrink-0 mt-0.5">→</span><span class="text-slate-300">The right metric is the one that measures trust, not capability</span></div>
+                        <div class="flex items-start gap-2"><span class="text-emerald-400 flex-shrink-0 mt-0.5">→</span><span class="text-slate-300">Infrastructure changes move the product needle as much as features do</span></div>
+                        <div class="flex items-start gap-2"><span class="text-emerald-400 flex-shrink-0 mt-0.5">→</span><span class="text-slate-300">Separation of concerns in ML systems is as important as in software</span></div>
+                        <div class="flex items-start gap-2"><span class="text-emerald-400 flex-shrink-0 mt-0.5">→</span><span class="text-slate-300">The unglamorous details are the moat — vibe coding the surface is not the same as owning it</span></div>
+                        <div class="flex items-start gap-2"><span class="text-emerald-400 flex-shrink-0 mt-0.5">→</span><span class="text-slate-300">A flywheel is not marketing language — it is the actual reason to build in-house</span></div>
+                        <div class="flex items-start gap-2"><span class="text-emerald-400 flex-shrink-0 mt-0.5">→</span><span class="text-slate-300">Human judgment moves upstream, not out of the loop</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Try Whisper CTA -->
+            <div class="mt-10 bg-gradient-to-r from-emerald-900/20 to-slate-800 border border-emerald-800/30 rounded-2xl p-8 text-center">
+                <p class="text-white font-bold text-xl mb-2">Want to feel what these insights describe?</p>
+                <p class="text-slate-400 text-sm mb-6">Whisper Flow is free to start — no account needed for the first few dictations.</p>
+                <a href="https://whisperflow.com" target="_blank" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 py-3 rounded-xl transition-colors text-sm">Try Whisper Flow →</a>
+            </div>
+
+            <!-- Thanks -->
+            <div class="mt-10 bg-slate-800/40 border border-slate-700 rounded-2xl p-8">
+                <p class="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-4">Thank you</p>
+                <p class="text-slate-300 text-sm leading-relaxed mb-4">These insights exist because of a genuinely generous session. Thank you to the engineering lead at Whisper Flow for sharing this level of candour about what's actually working — the metrics, the failures, the architectural opinions, and the honest build-vs-buy framework. It's rare to get this kind of inside view.</p>
+                <p class="text-slate-300 text-sm leading-relaxed mb-4">Thank you to <span class="text-white font-semibold">Aishwarya</span> and <span class="text-white font-semibold">Arvind</span> for hosting and keeping the conversation grounded — the questions from the floor made the session twice as good.</p>
+                <p class="text-slate-300 text-sm leading-relaxed">And thank you to <span class="text-white font-semibold">GenAcademy</span> for the framework that makes sessions like this possible. The understand-and-orchestrate framing is the right lens for this era, and it shows in every cohort discussion.</p>
+            </div>
+
+            <div class="mt-8 text-center space-y-4">
+                <div class="flex flex-wrap justify-center gap-2">
+                    <span class="bg-slate-800 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#VoiceAI</span>
+                    <span class="bg-slate-800 text-teal-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#ProductThinking</span>
+                    <span class="bg-slate-800 text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#MLEngineering</span>
+                    <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#AIAgents</span>
+                    <span class="bg-slate-800 text-orange-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+                    <span class="bg-slate-800 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#LearningInPublic</span>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+</div>
+</main>
+
+
+<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+        </div>
+        <div class="flex space-x-6 text-sm">
+            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const sections = document.querySelectorAll("main section");
+        const navLinks = document.querySelectorAll("#toc-nav a");
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach((link) => {
+                        link.classList.remove("text-white", "font-bold", "pl-3", "border-l-2", "border-blue-500");
+                        if (link.getAttribute("href") === `#${entry.target.id}`) {
+                            link.classList.add("text-white", "font-bold", "pl-3", "border-l-2", "border-blue-500");
+                        }
+                    });
+                }
+            });
+        }, { root: null, rootMargin: "-20% 0px -60% 0px", threshold: 0 });
+        sections.forEach((sec) => observer.observe(sec));
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const navLinksContainer = document.querySelector('.nav-links');
+        if (!navLinksContainer) return;
+        const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+        const groups = {};
+        links.forEach(link => {
+            const name = link.getAttribute('data-group');
+            if (!groups[name]) groups[name] = [];
+            groups[name].push(link);
+        });
+        Object.keys(groups).forEach(groupName => {
+            const groupItems = groups[groupName];
+            const dropdownWrapper = document.createElement('div');
+            dropdownWrapper.style.cssText = 'position:relative;display:inline-block;';
+            const triggerBtn = document.createElement('button');
+            triggerBtn.className = 'nav-btn';
+            triggerBtn.innerHTML = `${groupName} ▾`;
+            const menu = document.createElement('div');
+            menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
+            const firstItem = groupItems[0];
+            if (firstItem.parentNode) firstItem.replaceWith(dropdownWrapper);
+            groupItems.forEach(link => {
+                link.style.cssText = 'display:block;padding:.4rem .75rem;border-radius:4px;color:#333;text-decoration:none;font-size:.85rem;white-space:nowrap;';
+                link.onmouseenter = () => link.style.background = '#f0f9ff';
+                link.onmouseleave = () => link.style.background = '';
+                menu.appendChild(link);
+            });
+            dropdownWrapper.appendChild(triggerBtn);
+            dropdownWrapper.appendChild(menu);
+            triggerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = menu.style.display === 'flex';
+                document.querySelectorAll('.nav-dropdown > div, [style*="display: flex"]').forEach(m => m.style.display = 'none');
+                menu.style.display = isOpen ? 'none' : 'flex';
+            });
+        });
+        document.addEventListener('click', () => {
+            document.querySelectorAll('nav div > div').forEach(m => { if(m.style.display==='flex') m.style.display='none'; });
+        });
+    });
+</script>
+
+<style>
+    nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+    .nav-links { display:flex; gap:1rem; }
+    .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.5rem 1rem; border-radius:6px; cursor:pointer; font-size:.9rem; transition:all .2s; }
+    .nav-btn:hover { background:#0077b5; color:white; }
+</style>
+</body>
+</html>
