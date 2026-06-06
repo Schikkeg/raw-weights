@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Classical RL: How LLMs Are Actually Trained | RawWeights</title>
+    <meta name="description" content="What classical RL doesn't cover when training frontier LLMs — RLVR, reward hacking, multi-environment training, GRPO, and RLHF explained with interactive sandboxes. Based on NVIDIA guest lecture by Chris Alexiuk.">
+    <meta name="author" content="RawWeights">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.rawweights.com/blog/nvidia-llm-post-training.html">
+    <meta property="og:title" content="Beyond Classical RL: How LLMs Are Actually Trained">
+    <meta property="og:description" content="RLVR, reward hacking, GRPO, and multi-environment RL — with interactive analogies. Based on NVIDIA guest lecture by Chris Alexiuk.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], mono: ['JetBrains Mono','monospace'] } } }
+        }
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <style>
+        nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
+        .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+        .nav-links { display:flex; gap:.6rem; flex-wrap:wrap; }
+        .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.35rem .8rem; border-radius:6px; cursor:pointer; font-size:.82rem; transition:all .2s; }
+        .nav-btn:hover { background:#0077b5; color:white; }
+
+        .sb-tab { padding:.5rem 1rem; border-radius:8px 8px 0 0; cursor:pointer; font-size:.78rem; font-weight:600; color:#64748b; background:#0f172a; border:1px solid #1e293b; border-bottom:none; transition:all .2s; white-space:nowrap; }
+        .sb-tab.active { background:#1e293b; color:#34d399; border-color:#34d399; border-bottom:1px solid #1e293b; }
+        .sb-tab:hover:not(.active) { color:#cbd5e1; background:#1e293b; }
+
+        .pipe-phase { transition:all .5s; }
+        .pipe-phase.lit { border-color:#34d399 !important; background:#064e3b !important; }
+        .pipe-phase.lit .ph-label { color:#34d399 !important; }
+
+        .g-card { transition:all .35s; border:1px solid #334155; border-radius:10px; padding:.65rem; text-align:center; background:#1e293b; }
+        .g-card.culled { opacity:.25; transform:scale(.88); border-color:#ef4444; }
+        .g-card.winner { border-color:#34d399; background:#064e3b; transform:scale(1.05); }
+
+        .toc-link.toc-active { color:#34d399; }
+        html { scroll-behavior:smooth; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture &amp; Lifecycle</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+<header class="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-green-900/20 via-slate-900 to-slate-900"></div>
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16 relative z-10">
+        <div class="lg:w-1/2 space-y-7">
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-green-500/15 border border-green-500/40 text-green-400 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Guest Lecture</span>
+                <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">#LLMTraining</span>
+                <span class="bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                Beyond Classical RL:<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">How LLMs Are Actually Trained</span>
+            </h1>
+            <p class="text-slate-300 text-lg max-w-xl leading-relaxed">
+                Chris Alexiuk, Product Research Engineer at NVIDIA, explains what it takes to go from a pre-trained model to a frontier reasoning system — and why classical RL is just the starting point.
+            </p>
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">RLVR</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">Reward Hacking</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">GRPO</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">Multi-Env RL</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">Nemotron</span>
+            </div>
+        </div>
+        <div class="lg:w-1/2 w-full space-y-4">
+            <div class="relative w-full bg-slate-800/80 rounded-2xl border border-slate-700 shadow-2xl p-8">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-green-500/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                <div class="text-4xl mb-4">🧠</div>
+                <blockquote class="text-slate-200 text-lg font-light leading-relaxed italic mb-4">
+                    "There's no wall in post-training. Classical RL gives you the vocabulary — but how you apply it to make a model smarter? That's an open problem. Anyone can contribute."
+                </blockquote>
+                <footer class="text-slate-500 text-sm">— Chris Alexiuk, Product Research Engineer, NVIDIA</footer>
+            </div>
+            <div class="grid grid-cols-4 gap-3">
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-green-400">4</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Training phases</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-emerald-400">70+</p>
+                    <p class="text-slate-400 text-xs mt-0.5">RL environments</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-teal-400">8</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Responses/GRPO</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-cyan-400">7</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Lessons below</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="w-full bg-slate-900 flex-grow">
+<div class="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-16">
+
+    <!-- TOC -->
+    <aside class="lg:w-1/4 flex-shrink-0 hidden lg:block">
+        <nav class="sticky top-8 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-5 border-b border-slate-700 pb-4">Contents</h3>
+            <ul class="space-y-2 text-sm font-medium text-slate-400">
+                <li><a href="#sect-prereqs" class="toc-link block hover:text-white transition-colors py-0.5">Prerequisites</a></li>
+                <li><a href="#sect-gaps" class="toc-link block hover:text-white transition-colors py-0.5">What's New</a></li>
+                <li><a href="#sect-sandbox" class="toc-link block hover:text-white transition-colors py-0.5">Interactive Sandbox</a></li>
+            </ul>
+            <div class="mt-4 pt-4 border-t border-slate-700 space-y-1.5">
+                <p class="text-slate-600 text-xs uppercase tracking-widest mb-2">Sandbox tabs</p>
+                <a href="#sect-sandbox" onclick="showTab(1);return false;" class="block text-slate-500 hover:text-green-400 text-xs transition-colors py-0.5">① The Pipeline</a>
+                <a href="#sect-sandbox" onclick="showTab(2);return false;" class="block text-slate-500 hover:text-green-400 text-xs transition-colors py-0.5">② SFT Bootstrap</a>
+                <a href="#sect-sandbox" onclick="showTab(3);return false;" class="block text-slate-500 hover:text-green-400 text-xs transition-colors py-0.5">③ RLVR</a>
+                <a href="#sect-sandbox" onclick="showTab(4);return false;" class="block text-slate-500 hover:text-green-400 text-xs transition-colors py-0.5">④ Reward Hacking</a>
+                <a href="#sect-sandbox" onclick="showTab(5);return false;" class="block text-slate-500 hover:text-green-400 text-xs transition-colors py-0.5">⑤ Multi-Env RL</a>
+                <a href="#sect-sandbox" onclick="showTab(6);return false;" class="block text-slate-500 hover:text-green-400 text-xs transition-colors py-0.5">⑥ GRPO</a>
+                <a href="#sect-sandbox" onclick="showTab(7);return false;" class="block text-slate-500 hover:text-green-400 text-xs transition-colors py-0.5">⑦ RLHF vs RLVR</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Content -->
+    <div class="lg:w-3/4 space-y-20 text-slate-300">
+
+        <!-- PREREQUISITES -->
+        <section id="sect-prereqs" class="scroll-mt-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-slate-700 text-slate-300 font-black text-sm w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">→</span>
+                <h2 class="text-2xl font-extrabold text-white">Before you start</h2>
+            </div>
+            <p class="text-lg leading-relaxed mb-6">This page covers what classical RL <em>doesn't</em> teach you about how frontier LLMs are built. It builds directly on the pages below — start there if anything here is unfamiliar.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="/tools/deep_reinforcement.html" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-green-500/50 transition-colors">
+                    <p class="text-green-400 font-bold text-xs uppercase tracking-widest mb-2">Start here if new to RL</p>
+                    <p class="text-white font-semibold mb-1">Classical Reinforcement Learning</p>
+                    <p class="text-slate-400 text-sm">Agent, environment, Q-functions, DQN, policy gradients — the bicycle analogy explained interactively.</p>
+                    <p class="text-green-500 text-sm mt-3 font-medium">Explore →</p>
+                </a>
+                <a href="/tools/limitations-and-frontiers.html" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-green-500/50 transition-colors">
+                    <p class="text-emerald-400 font-bold text-xs uppercase tracking-widest mb-2">LLM fundamentals</p>
+                    <p class="text-white font-semibold mb-1">Limitations &amp; Frontiers</p>
+                    <p class="text-slate-400 text-sm">Hallucinations, emergent abilities, cross-entropy, adversarial examples — where LLMs break.</p>
+                    <p class="text-emerald-500 text-sm mt-3 font-medium">Explore →</p>
+                </a>
+                <a href="/guide/llm-post-training-guide.html" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-green-500/50 transition-colors">
+                    <p class="text-teal-400 font-bold text-xs uppercase tracking-widest mb-2">Fine-tuning basics</p>
+                    <p class="text-white font-semibold mb-1">Custom LLMs Guide</p>
+                    <p class="text-slate-400 text-sm">SFT, data preparation, algorithm selection, evaluation — the practitioner's playbook.</p>
+                    <p class="text-teal-500 text-sm mt-3 font-medium">Read guide →</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- WHAT'S NEW -->
+        <section id="sect-gaps" class="scroll-mt-12">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="bg-green-500/20 text-green-400 font-black text-sm w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">★</span>
+                <h2 class="text-3xl font-extrabold text-white">What classical RL doesn't cover</h2>
+            </div>
+            <p class="text-lg leading-relaxed mb-8">Classical RL gives you the vocabulary: agent, environment, reward, policy. But training a frontier language model adds seven ideas that classical RL never had to solve. Each one below has an interactive lesson you can run yourself.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-green-400 font-black text-lg leading-none mt-0.5">①</span>
+                    <div><p class="text-white font-semibold text-sm">The 4-Phase Pipeline</p><p class="text-slate-400 text-xs mt-0.5">SFT → RLVR → SWE-RLVR → RLHF — and why that exact order matters</p></div>
+                </div>
+                <div class="flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-green-400 font-black text-lg leading-none mt-0.5">②</span>
+                    <div><p class="text-white font-semibold text-sm">SFT as RL Bootstrap</p><p class="text-slate-400 text-xs mt-0.5">RL can't start from zero reward — the math teacher analogy</p></div>
+                </div>
+                <div class="flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-green-400 font-black text-lg leading-none mt-0.5">③</span>
+                    <div><p class="text-white font-semibold text-sm">RLVR — Verifiable Rewards</p><p class="text-slate-400 text-xs mt-0.5">Only train on tasks where "correct" is computable — tic-tac-toe vs poetry</p></div>
+                </div>
+                <div class="flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-green-400 font-black text-lg leading-none mt-0.5">④</span>
+                    <div><p class="text-white font-semibold text-sm">Reward Hacking</p><p class="text-slate-400 text-xs mt-0.5">Models learn the shortcut, not the goal — the cheese vs banana problem</p></div>
+                </div>
+                <div class="flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-green-400 font-black text-lg leading-none mt-0.5">⑤</span>
+                    <div><p class="text-white font-semibold text-sm">Multi-Environment RL</p><p class="text-slate-400 text-xs mt-0.5">70+ simultaneous environments — the anti-hacking fix</p></div>
+                </div>
+                <div class="flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-green-400 font-black text-lg leading-none mt-0.5">⑥</span>
+                    <div><p class="text-white font-semibold text-sm">GRPO</p><p class="text-slate-400 text-xs mt-0.5">Generate 8, keep the above-average — the floor keeps rising</p></div>
+                </div>
+                <div class="flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700 sm:col-span-2 lg:col-span-1">
+                    <span class="text-green-400 font-black text-lg leading-none mt-0.5">⑦</span>
+                    <div><p class="text-white font-semibold text-sm">RLHF vs RLVR — Order Matters</p><p class="text-slate-400 text-xs mt-0.5">Capability first, pleasantness last — and why reversing it fails</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SANDBOX -->
+        <section id="sect-sandbox" class="scroll-mt-12">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-emerald-500/20 text-emerald-400 font-black text-sm w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">⚡</span>
+                <h2 class="text-3xl font-extrabold text-white">Interactive Sandbox</h2>
+            </div>
+            <p class="text-slate-400 mb-6 text-sm">Seven lessons, each building on the last. Work through them in order — or jump to any tab.</p>
+
+            <!-- Tab bar -->
+            <div class="flex flex-wrap gap-1 border-b border-green-500/30">
+                <button class="sb-tab active" id="tab-1" onclick="showTab(1)">① Pipeline</button>
+                <button class="sb-tab" id="tab-2" onclick="showTab(2)">② SFT Bootstrap</button>
+                <button class="sb-tab" id="tab-3" onclick="showTab(3)">③ RLVR</button>
+                <button class="sb-tab" id="tab-4" onclick="showTab(4)">④ Reward Hacking</button>
+                <button class="sb-tab" id="tab-5" onclick="showTab(5)">⑤ Multi-Env RL</button>
+                <button class="sb-tab" id="tab-6" onclick="showTab(6)">⑥ GRPO</button>
+                <button class="sb-tab" id="tab-7" onclick="showTab(7)">⑦ RLHF vs RLVR</button>
+            </div>
+
+            <div class="bg-slate-950 border border-slate-700 border-t-0 rounded-b-2xl p-6 min-h-96">
+
+                <!-- ── TAB 1: PIPELINE ── -->
+                <div id="sb-1" class="sb-content">
+                    <h3 class="text-white font-bold text-xl mb-1">The 4-Phase Post-Training Pipeline</h3>
+                    <p class="text-slate-400 text-sm mb-5">Click <strong class="text-white">Next Phase →</strong> to walk through how Nemotron goes from raw pre-trained weights to a reasoning system. Watch capability fill as each phase completes.</p>
+
+                    <div class="mb-5">
+                        <div class="flex justify-between text-xs text-slate-500 mb-1.5"><span>Model Capability</span><span id="pipe-pct" class="text-white font-bold">0%</span></div>
+                        <div class="h-3 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="pipe-bar" class="h-full rounded-full transition-all duration-700" style="width:0%;background:#1d4ed8"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-5">
+                        <div id="pp-0" class="pipe-phase rounded-xl p-3 border-2 border-slate-700 bg-slate-900 text-center">
+                            <div class="text-xl mb-1.5">🏫</div>
+                            <p class="ph-label text-slate-500 font-bold text-xs uppercase tracking-wide">Pre-trained</p>
+                            <p class="text-slate-600 text-xs mt-1">Raw token predictor. Smart autocomplete, nothing more.</p>
+                        </div>
+                        <div id="pp-1" class="pipe-phase rounded-xl p-3 border-2 border-slate-700 bg-slate-900 text-center">
+                            <div class="text-xl mb-1.5">📚</div>
+                            <p class="ph-label text-slate-500 font-bold text-xs uppercase tracking-wide">① SFT</p>
+                            <p class="text-slate-600 text-xs mt-1">Learns the shape of a good answer from curated examples.</p>
+                        </div>
+                        <div id="pp-2" class="pipe-phase rounded-xl p-3 border-2 border-slate-700 bg-slate-900 text-center">
+                            <div class="text-xl mb-1.5">🎯</div>
+                            <p class="ph-label text-slate-500 font-bold text-xs uppercase tracking-wide">② RLVR</p>
+                            <p class="text-slate-600 text-xs mt-1">Practices on tasks where correctness is computable.</p>
+                        </div>
+                        <div id="pp-3" class="pipe-phase rounded-xl p-3 border-2 border-slate-700 bg-slate-900 text-center">
+                            <div class="text-xl mb-1.5">💻</div>
+                            <p class="ph-label text-slate-500 font-bold text-xs uppercase tracking-wide">② SWE-RLVR</p>
+                            <p class="text-slate-600 text-xs mt-1">Parallel code track — slow verification needs its own loop.</p>
+                        </div>
+                        <div id="pp-4" class="pipe-phase rounded-xl p-3 border-2 border-slate-700 bg-slate-900 text-center">
+                            <div class="text-xl mb-1.5">💬</div>
+                            <p class="ph-label text-slate-500 font-bold text-xs uppercase tracking-wide">③ RLHF</p>
+                            <p class="text-slate-600 text-xs mt-1">Human preferences polish tone, safety, and style.</p>
+                        </div>
+                    </div>
+
+                    <div id="pipe-desc" class="bg-slate-800 rounded-xl p-5 border border-slate-700 mb-5 text-sm text-slate-300 leading-relaxed">
+                        Press <strong class="text-white">Next Phase →</strong> to begin. The model starts as a powerful autocomplete engine with no ability to reason, follow instructions, or solve tasks.
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="pipeNext()" class="bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Next Phase →</button>
+                        <button onclick="pipeReset()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Reset</button>
+                    </div>
+                </div>
+
+                <!-- ── TAB 2: SFT BOOTSTRAP ── -->
+                <div id="sb-2" class="sb-content hidden">
+                    <h3 class="text-white font-bold text-xl mb-1">SFT Bootstrap — The Math Teacher Analogy</h3>
+                    <p class="text-slate-400 text-sm mb-5">A teacher who jumps straight to calculus with a student who has never seen addition will get nowhere — the student is never correct, so there's nothing to praise or build on. RL has the same problem: if the model never produces a correct answer, the reward is always zero and learning stalls. SFT is the addition warmup. Move the slider, then press <strong class="text-white">Train</strong>.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div>
+                            <label class="text-slate-400 text-sm block mb-2">SFT warmup — initial success rate: <strong id="sft-label" class="text-white">0%</strong></label>
+                            <input type="range" id="sft-slider" min="0" max="80" value="0" step="5" class="w-full accent-green-400 mb-3" oninput="document.getElementById('sft-label').textContent=this.value+'%'">
+                            <p class="text-slate-600 text-xs">← No SFT (pure RL from scratch) &nbsp;&nbsp; Heavy SFT warmup →</p>
+                        </div>
+                        <div class="space-y-2.5 text-xs text-slate-400">
+                            <div class="flex gap-2 items-center"><div class="w-5 h-2 rounded bg-red-500 flex-shrink-0"></div><span><strong class="text-slate-300">Red:</strong> RL from scratch — model never gets signal, stays flat</span></div>
+                            <div class="flex gap-2 items-center"><div class="w-5 h-2 rounded bg-green-400 flex-shrink-0"></div><span><strong class="text-slate-300">Green:</strong> With SFT warmup — RL amplifies from the starting point</span></div>
+                            <p class="text-slate-500 mt-2">Key: SFT only needs to get you to <em class="text-slate-300">"sometimes correct"</em> — RL does the heavy lifting from there.</p>
+                        </div>
+                    </div>
+
+                    <canvas id="sft-canvas" width="640" height="210" class="w-full rounded-xl border border-slate-700 mb-4" style="display:block"></canvas>
+                    <div id="sft-msg" class="bg-slate-800 rounded-xl p-4 border border-slate-700 text-sm mb-4 hidden"></div>
+
+                    <div class="flex gap-3">
+                        <button onclick="trainSFT()" class="bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Train</button>
+                        <button onclick="resetSFTFull()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Reset</button>
+                    </div>
+                </div>
+
+                <!-- ── TAB 3: RLVR ── -->
+                <div id="sb-3" class="sb-content hidden">
+                    <h3 class="text-white font-bold text-xl mb-1">RLVR — Verifiable vs Subjective Rewards</h3>
+                    <p class="text-slate-400 text-sm mb-5">Ask five people to rate a poem and you get five different scores — the training signal is noisy, inconsistent, unreliable. Ask a computer whether tic-tac-toe was won — you get a clean binary 1 or 0. RLVR means only training on tasks where a computer can verify correctness. Press <strong class="text-white">Sample Attempt →</strong> to run examples and watch the quality signals diverge.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div class="bg-slate-900 rounded-xl p-5 border border-slate-700">
+                            <p class="text-red-400 font-bold text-xs uppercase tracking-widest mb-3">✗ Subjective — "Write a poem"</p>
+                            <div id="rlvr-poems" class="space-y-2 min-h-28 mb-4">
+                                <p class="text-slate-600 text-xs italic">Press Sample to generate attempts...</p>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-500 mb-1"><span>Signal quality</span><span id="subj-pct" class="text-white">0%</span></div>
+                            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="subj-bar" class="h-full rounded-full bg-red-500 transition-all duration-700" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 rounded-xl p-5 border border-slate-700">
+                            <p class="text-green-400 font-bold text-xs uppercase tracking-widest mb-3">✓ Verifiable — "Win tic-tac-toe"</p>
+                            <div id="rlvr-games" class="space-y-2 min-h-28 mb-4">
+                                <p class="text-slate-600 text-xs italic">Press Sample to generate attempts...</p>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-500 mb-1"><span>Signal quality</span><span id="verif-pct" class="text-white">0%</span></div>
+                            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="verif-bar" class="h-full rounded-full bg-green-400 transition-all duration-700" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p id="rlvr-status" class="text-slate-500 text-xs mb-4">Attempt 0 of 5</p>
+
+                    <div class="flex gap-3">
+                        <button onclick="rlvrSample()" class="bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Sample Attempt →</button>
+                        <button onclick="rlvrReset()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Reset</button>
+                    </div>
+                </div>
+
+                <!-- ── TAB 4: REWARD HACKING ── -->
+                <div id="sb-4" class="sb-content hidden">
+                    <h3 class="text-white font-bold text-xl mb-1">Reward Hacking — Cheese vs Banana</h3>
+                    <p class="text-slate-400 text-sm mb-5">A mouse is rewarded for reaching the cheese. But there's a banana on the path — also yellow, also rewarding, much closer. In a single fixed environment, the mouse learns to go to the banana every time and stops there. Change the environment layout each time (as 70+ simultaneous envs do) and the banana shortcut stops working — the mouse must find the actual goal. Try both modes below.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div class="bg-slate-900 rounded-xl p-4 border border-red-900/40">
+                            <p class="text-red-400 font-bold text-xs uppercase tracking-widest mb-3">Single environment — shortcut wins</p>
+                            <canvas id="maze-hack" width="250" height="250" class="block mx-auto rounded-lg border border-slate-700 mb-3"></canvas>
+                            <button onclick="startMaze('hack')" class="w-full bg-red-900/40 hover:bg-red-800/50 text-red-300 text-sm font-bold py-2 rounded-lg transition-colors">Train (1 env) →</button>
+                        </div>
+                        <div class="bg-slate-900 rounded-xl p-4 border border-green-900/40">
+                            <p class="text-green-400 font-bold text-xs uppercase tracking-widest mb-3">70+ environments — shortcut disappears</p>
+                            <canvas id="maze-multi" width="250" height="250" class="block mx-auto rounded-lg border border-slate-700 mb-3"></canvas>
+                            <button onclick="startMaze('multi')" class="w-full bg-green-900/40 hover:bg-green-800/50 text-green-300 text-sm font-bold py-2 rounded-lg transition-colors">Train (70+ envs) →</button>
+                        </div>
+                    </div>
+
+                    <div id="maze-msg" class="bg-slate-800 rounded-xl p-4 border border-slate-700 text-sm text-slate-400 hidden"></div>
+                </div>
+
+                <!-- ── TAB 5: MULTI-ENV ── -->
+                <div id="sb-5" class="sb-content hidden">
+                    <h3 class="text-white font-bold text-xl mb-1">Multi-Environment RL — The School Exam Analogy</h3>
+                    <p class="text-slate-400 text-sm mb-5">A student who only studies one subject can cram it and ace that exam — but learns nothing transferable. Examine across 12 subjects simultaneously and cramming one becomes useless. Toggle environments on or off below, then press <strong class="text-white">Train →</strong> to see what happens.</p>
+
+                    <div id="env-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-5"></div>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs text-slate-500 mb-1.5"><span>Hackability (lower is better)</span><span id="hack-pct" class="font-bold text-white">100%</span></div>
+                        <div class="h-3 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="hack-bar" class="h-full rounded-full transition-all duration-700 bg-red-500" style="width:100%"></div>
+                        </div>
+                    </div>
+
+                    <div id="env-msg" class="bg-slate-800 rounded-xl p-4 border border-slate-700 text-sm text-slate-400 mb-4">Toggle environments on (green) or off (grey), then press Train to see the effect. With 1 active environment, the model finds one shortcut. With all 12, there's nowhere to hide.</div>
+
+                    <div class="flex gap-3 flex-wrap">
+                        <button onclick="envAll(true)" class="bg-green-700 hover:bg-green-600 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">All On</button>
+                        <button onclick="envAll(false)" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-bold px-4 py-2 rounded-xl transition-colors">All Off</button>
+                        <button onclick="envTrain()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">Train →</button>
+                    </div>
+                </div>
+
+                <!-- ── TAB 6: GRPO ── -->
+                <div id="sb-6" class="sb-content hidden">
+                    <h3 class="text-white font-bold text-xl mb-1">GRPO — Group Relative Policy Optimization</h3>
+                    <p class="text-slate-400 text-sm mb-5">A writing teacher asks 8 students to draft an answer. She keeps only the above-average ones and has everyone learn from those. Next round, the average is higher — so the bar rises again. GRPO does exactly this with LLM outputs. Work through all 3 rounds to watch the floor rise.</p>
+
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-slate-400 text-xs">Round <span id="g-round" class="text-white font-bold">1</span> of 3 &nbsp;·&nbsp; Median: <span id="g-median" class="text-white font-bold">—</span></p>
+                        <div class="flex gap-3 items-center text-xs text-slate-500">
+                            <span class="flex gap-1 items-center"><span class="inline-block w-3 h-3 rounded-full bg-green-400"></span> Kept</span>
+                            <span class="flex gap-1 items-center"><span class="inline-block w-3 h-3 rounded-full bg-red-500"></span> Culled</span>
+                        </div>
+                    </div>
+
+                    <div id="g-cards" class="grid grid-cols-4 gap-2 mb-5"></div>
+
+                    <!-- Floor chart -->
+                    <p class="text-slate-500 text-xs mb-2">Average score of kept responses per round</p>
+                    <div class="flex gap-3 items-end mb-1" style="height:70px">
+                        <div id="gb-1" class="flex-1 rounded-t transition-all duration-700" style="height:0px;background:rgba(52,211,153,.35)"></div>
+                        <div id="gb-2" class="flex-1 rounded-t transition-all duration-700" style="height:0px;background:rgba(52,211,153,.55)"></div>
+                        <div id="gb-3" class="flex-1 rounded-t transition-all duration-700" style="height:0px;background:rgba(52,211,153,.75)"></div>
+                    </div>
+                    <div class="flex gap-3 mb-5">
+                        <p class="flex-1 text-center text-xs text-slate-600">R1</p>
+                        <p class="flex-1 text-center text-xs text-slate-600">R2</p>
+                        <p class="flex-1 text-center text-xs text-slate-600">R3</p>
+                    </div>
+
+                    <div id="g-msg" class="bg-slate-800 rounded-xl p-4 border border-slate-700 text-sm text-slate-400 mb-4">Press <strong class="text-white">Generate 8</strong> to have the model produce 8 candidate responses to the same prompt.</div>
+
+                    <div class="flex gap-2 flex-wrap">
+                        <button id="g-gen" onclick="grpoGen()" class="bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">Generate 8</button>
+                        <button id="g-cull" onclick="grpoCull()" disabled class="bg-slate-700 text-slate-500 text-sm font-bold px-4 py-2 rounded-xl cursor-not-allowed">Cull Below Median</button>
+                        <button id="g-next" onclick="grpoNext()" disabled class="bg-slate-700 text-slate-500 text-sm font-bold px-4 py-2 rounded-xl cursor-not-allowed">Next Round →</button>
+                        <button onclick="grpoReset()" class="bg-slate-800 hover:bg-slate-700 text-slate-400 text-sm font-bold px-4 py-2 rounded-xl transition-colors">Reset</button>
+                    </div>
+                </div>
+
+                <!-- ── TAB 7: RLHF VS RLVR ── -->
+                <div id="sb-7" class="sb-content hidden">
+                    <h3 class="text-white font-bold text-xl mb-1">RLHF vs RLVR — Order Changes Everything</h3>
+                    <p class="text-slate-400 text-sm mb-5">RLVR makes the model <em>capable</em> — it can actually solve hard tasks. RLHF makes the model <em>pleasant</em> — humans prefer its tone, it refuses gracefully. Both matter. But if you do RLHF first, you train the model to give polished refusals before it learns to actually help. Then RLVR has to fight that already-baked preference. Press <strong class="text-white">Run Both Orders →</strong> to see the difference.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div class="bg-slate-900 rounded-xl p-5 border border-green-900/40">
+                            <p class="text-green-400 font-bold text-xs uppercase tracking-widest mb-4">✓ Correct: RLVR → RLHF</p>
+                            <div class="space-y-3 mb-3">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Capability (task correctness)</span><span id="a-cap-n" class="text-white">0%</span></div>
+                                    <div class="h-2.5 bg-slate-800 rounded-full overflow-hidden"><div id="a-cap" class="h-full rounded-full bg-green-400 transition-none" style="width:0%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Pleasantness (human preference)</span><span id="a-pls-n" class="text-white">0%</span></div>
+                                    <div class="h-2.5 bg-slate-800 rounded-full overflow-hidden"><div id="a-pls" class="h-full rounded-full bg-blue-400 transition-none" style="width:0%"></div></div>
+                                </div>
+                            </div>
+                            <p id="a-verdict" class="text-slate-600 text-xs italic">Waiting...</p>
+                        </div>
+                        <div class="bg-slate-900 rounded-xl p-5 border border-red-900/40">
+                            <p class="text-red-400 font-bold text-xs uppercase tracking-widest mb-4">✗ Wrong: RLHF → RLVR</p>
+                            <div class="space-y-3 mb-3">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Capability (task correctness)</span><span id="b-cap-n" class="text-white">0%</span></div>
+                                    <div class="h-2.5 bg-slate-800 rounded-full overflow-hidden"><div id="b-cap" class="h-full rounded-full bg-green-400 transition-none" style="width:0%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Pleasantness (human preference)</span><span id="b-pls-n" class="text-white">0%</span></div>
+                                    <div class="h-2.5 bg-slate-800 rounded-full overflow-hidden"><div id="b-pls" class="h-full rounded-full bg-blue-400 transition-none" style="width:0%"></div></div>
+                                </div>
+                            </div>
+                            <p id="b-verdict" class="text-slate-600 text-xs italic">Waiting...</p>
+                        </div>
+                    </div>
+
+                    <div id="order-insight" class="bg-slate-800 rounded-xl p-4 border border-slate-700 text-sm text-slate-300 mb-4 hidden leading-relaxed"></div>
+
+                    <div class="flex gap-3">
+                        <button onclick="runOrders()" class="bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Run Both Orders →</button>
+                        <button onclick="resetOrders()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Reset</button>
+                    </div>
+                </div>
+
+            </div><!-- /sandbox panel -->
+        </section>
+
+    </div><!-- /content -->
+</div><!-- /flex -->
+</main>
+
+<!-- Wrap-up -->
+<div class="bg-slate-900 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 py-12 text-center space-y-2">
+        <p class="text-white font-semibold">Thanks to Chris Alexiuk and GenAcademy 🙏</p>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">This session covered the full post-training stack — SFT, RLVR, reward hacking, multi-environment RL, GRPO, and RLHF — grounded in how Nemotron Ultra was actually built. As Chris put it: there's no wall here. Anyone can contribute.</p>
+        <div class="flex flex-wrap justify-center gap-2 mt-4">
+            <span class="bg-slate-800 text-green-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#LLMTraining</span>
+            <span class="bg-slate-800 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#NVIDIA</span>
+            <span class="bg-slate-800 text-teal-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+            <span class="bg-slate-800 text-cyan-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GuestLecture</span>
+            <span class="bg-slate-800 text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RLVR</span>
+            <span class="bg-slate-800 text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#ReinforcementLearning</span>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+        </div>
+        <div class="flex space-x-6 text-sm">
+            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// TAB SWITCHER
+// ═══════════════════════════════════════════════════════════════════════
+function showTab(n) {
+    document.querySelectorAll('.sb-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.sb-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('sb-' + n).classList.remove('hidden');
+    document.getElementById('tab-' + n).classList.add('active');
+    if (n === 2) initSFTCanvas();
+    if (n === 4) initMazes();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TAB 1 — PIPELINE
+// ═══════════════════════════════════════════════════════════════════════
+const PIPE_DATA = [
+    { pct: 15, col: '#475569', phase: 0, msg: '<strong class="text-slate-300">Pre-trained baseline:</strong> The model is trained on vast amounts of text and can predict the next token extremely well. It has seen most of the world\'s knowledge — but it has no concept of tasks, instructions, or what a "correct" answer looks like. It is a very powerful autocomplete engine and nothing more.' },
+    { pct: 40, col: '#7c3aed', phase: 1, msg: '<strong class="text-purple-300">① SFT (Supervised Fine-Tuning):</strong> The model sees thousands of curated question → answer pairs written by humans. It rapidly learns the format, tone, and structure of a good response. Think of this as showing a brilliant student what the answer sheet is supposed to look like — they quickly adapt. Capability jumps, but not because the model is reasoning better; it now knows what "good" looks like.' },
+    { pct: 68, col: '#059669', phase: 2, msg: '<strong class="text-green-300">② RLVR (Reinforcement Learning from Verifiable Rewards):</strong> Now the model practices on tasks with computable correct answers — math, code, logic puzzles. It generates answers and gets clean binary correct/incorrect feedback from a computer. RL amplifies the patterns that lead to correct answers. This is where actual reasoning capability emerges — the model gets genuinely smarter, not just better formatted.' },
+    { pct: 80, col: '#0891b2', phase: 3, msg: '<strong class="text-cyan-300">② SWE-RLVR (Software Engineering bucket — runs in parallel with RLVR):</strong> Code tasks need their own training track. Why? Verifying that code is correct requires running it, compiling, testing — this takes seconds to minutes, not milliseconds. Mixing slow-verification tasks with fast-verification ones degrades both. So code tasks train in a separate, slower-paced RL loop running alongside the main RLVR phase.' },
+    { pct: 95, col: '#d97706', phase: 4, msg: '<strong class="text-amber-300">③ RLHF (Reinforcement Learning from Human Feedback):</strong> Now that the model is highly capable, human raters compare response pairs and express preferences. The model learns to produce outputs humans find helpful, safe, and pleasant. Critically — if you did this step first, you would get a model that beautifully and warmly says "I\'m sorry, I cannot help with that." Capability first, polish last.' },
+];
+let pipeStep = -1;
+
+function pipeNext() {
+    if (pipeStep >= PIPE_DATA.length - 1) return;
+    pipeStep++;
+    const d = PIPE_DATA[pipeStep];
+    document.getElementById('pipe-bar').style.cssText = `width:${d.pct}%;background:${d.col};transition:width .7s,background .7s`;
+    document.getElementById('pipe-pct').textContent = d.pct + '%';
+    document.getElementById('pipe-desc').innerHTML = '<p class="leading-relaxed">' + d.msg + '</p>' +
+        (pipeStep === PIPE_DATA.length - 1 ? '<p class="text-green-400 font-semibold mt-3">Pipeline complete. Nemotron Ultra was built using exactly this sequence.</p>' : '');
+    for (let i = 0; i < 5; i++) {
+        const el = document.getElementById('pp-' + i);
+        i === d.phase ? el.classList.add('lit') : el.classList.remove('lit');
+    }
+}
+
+function pipeReset() {
+    pipeStep = -1;
+    document.getElementById('pipe-bar').style.cssText = 'width:0%;background:#1d4ed8;transition:width .7s,background .7s';
+    document.getElementById('pipe-pct').textContent = '0%';
+    document.getElementById('pipe-desc').innerHTML = 'Press <strong class="text-white">Next Phase →</strong> to begin. The model starts as a powerful autocomplete engine with no ability to reason, follow instructions, or solve tasks.';
+    for (let i = 0; i < 5; i++) document.getElementById('pp-' + i).classList.remove('lit');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TAB 2 — SFT BOOTSTRAP
+// ═══════════════════════════════════════════════════════════════════════
+let sftAF = null;
+
+function initSFTCanvas() {
+    if (sftAF) { cancelAnimationFrame(sftAF); sftAF = null; }
+    document.getElementById('sft-msg').classList.add('hidden');
+    drawSFTAxes();
+}
+
+function resetSFTFull() {
+    document.getElementById('sft-slider').value = 0;
+    document.getElementById('sft-label').textContent = '0%';
+    initSFTCanvas();
+}
+
+function drawSFTAxes() {
+    const c = document.getElementById('sft-canvas');
+    const ctx = c.getContext('2d');
+    const W = c.width, H = c.height;
+    const P = { t: 20, r: 20, b: 38, l: 52 };
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+        const y = P.t + (H - P.t - P.b) * (1 - i / 4);
+        ctx.beginPath(); ctx.moveTo(P.l, y); ctx.lineTo(W - P.r, y); ctx.stroke();
+        ctx.fillStyle = '#475569'; ctx.font = '11px Inter'; ctx.textAlign = 'right';
+        ctx.fillText((i * 25) + '%', P.l - 6, y + 4);
+    }
+    ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(P.l, P.t); ctx.lineTo(P.l, H - P.b); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(P.l, H - P.b); ctx.lineTo(W - P.r, H - P.b); ctx.stroke();
+    ctx.fillStyle = '#64748b'; ctx.font = '11px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('Training steps →', W / 2, H - 6);
+    ctx.save(); ctx.translate(13, H / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Success rate', 0, 0); ctx.restore();
+}
+
+function trainSFT() {
+    if (sftAF) { cancelAnimationFrame(sftAF); sftAF = null; }
+    const w = parseInt(document.getElementById('sft-slider').value) / 100;
+    const c = document.getElementById('sft-canvas');
+    const ctx = c.getContext('2d');
+    const W = c.width, H = c.height;
+    const P = { t: 20, r: 20, b: 38, l: 52 };
+    const CW = W - P.l - P.r, CH = H - P.t - P.b;
+    const N = 100;
+    // Pre-compute curves
+    const noise1 = [.02,-.03,.01,.02,-.01,.03,.01,-.02,.02,.01,-.02,.03,.01,.02,-.01,.01,.02,.03,-.01,.02,.01,-.01,.02,.01,.02,.03,-.01,.02,.01,.02,.01,-.01,.02,.03,.01,-.02,.02,.01,.02,.01,.03,-.01,.02,.01,.02,.03,.01,-.01,.02,.01,.02,.01,.02,.03,-.01,.02,.01,.02,.01,.02,.01,.03,-.01,.02,.01,.02,.01,.02,.03,.01,-.01,.02,.01,.02,.01,.02,.03,.01,.02,.01,.02,.01,.03,.01,.02,.01,.02,.01,.02,.03,.01,.02,.01,.02,.01,.02,.01,.03,.01];
+    const noise2 = [.01,.02,-.01,.02,.01,-.02,.01,.02,.01,.02,-.01,.01,.02,.01,.02,.01,-.01,.02,.01,.02,.01,.02,-.01,.01,.02,.01,.02,.01,.02,-.01,.01,.02,.01,.02,.01,.02,-.01,.01,.02,.01,.02,.01,.01,.02,-.01,.01,.02,.01,.02,.01,.02,.01,-.01,.02,.01,.02,.01,.02,.01,.02,-.01,.01,.02,.01,.02,.01,.02,.01,.02,.01,.02,-.01,.01,.02,.01,.02,.01,.02,.01,.02,.01,.02,-.01,.01,.02,.01,.02,.01,.02,.01,.02,.01,.02,.01,.02];
+    const red = [], grn = [];
+    for (let i = 0; i < N; i++) {
+        const t = i / N;
+        red.push(Math.max(0, Math.min(.1, .01 + t * .07 + (noise1[i] || 0) * .02)));
+        const learn = w > 0 ? 1 - Math.exp(-5 * t * Math.sqrt(w + .05)) : 0;
+        grn.push(Math.max(0, Math.min(1, w + (1 - w) * learn * .92 + (noise2[i] || 0) * .015)));
+    }
+    let drawn = 0;
+    function frame() {
+        drawSFTAxes();
+        const draw = (arr, color) => {
+            ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
+            for (let i = 0; i <= Math.min(drawn, N - 1); i++) {
+                const x = P.l + (i / N) * CW;
+                const y = P.t + CH * (1 - arr[i]);
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        };
+        draw(red, '#ef4444'); draw(grn, '#34d399');
+        drawn += 2;
+        if (drawn < N) { sftAF = requestAnimationFrame(frame); }
+        else {
+            const msg = document.getElementById('sft-msg');
+            const pct = Math.round(grn[N - 1] * 100);
+            msg.innerHTML = w === 0
+                ? '<span class="text-red-400 font-semibold">Zero warmup:</span> Both curves stay flat — RL from scratch gets no gradient because the model never produces a correct answer. There is nothing to reinforce. <span class="text-green-400 font-semibold">Move the slider to see how any SFT warmup changes this.</span>'
+                : `<span class="text-green-400 font-semibold">With ${Math.round(w * 100)}% SFT warmup:</span> RL training converges to <strong class="text-white">${pct}%</strong> success. The red baseline (no SFT) plateaus near 0%. The gap is the entire case for SFT as an RL bootstrap — it only needs to reach "sometimes correct."`;
+            msg.classList.remove('hidden');
+        }
+    }
+    sftAF = requestAnimationFrame(frame);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TAB 3 — RLVR
+// ═══════════════════════════════════════════════════════════════════════
+const POEMS = [
+    { txt: '"Moonlight on still water, silence sings..."', scores: [3,7,4,8,2] },
+    { txt: '"Roses, gradients, eternal loops..."', scores: [5,5,6,3,8] },
+    { txt: '"In silicon dreams the weights converge..."', scores: [7,2,9,4,5] },
+    { txt: '"The loss descends toward morning dew..."', scores: [4,8,3,7,5] },
+    { txt: '"Infinite recursion blooms in spring..."', scores: [6,4,7,3,9] },
+];
+const GAMES = [
+    { txt: 'Game #1: Corner strategy → WIN ✓', result: 'WIN', r: '+1' },
+    { txt: 'Game #2: Random moves → LOSE ✗', result: 'LOSE', r: '0' },
+    { txt: 'Game #3: Center + fork → WIN ✓', result: 'WIN', r: '+1' },
+    { txt: 'Game #4: Diagonal blocked → DRAW ~', result: 'DRAW', r: '+0.5' },
+    { txt: 'Game #5: Optimal play → WIN ✓', result: 'WIN', r: '+1' },
+];
+let rlvrIdx = 0, sS = 0, vS = 0;
+
+function rlvrSample() {
+    if (rlvrIdx >= 5) return;
+    const p = POEMS[rlvrIdx], g = GAMES[rlvrIdx];
+    const sc = p.scores.map(s => `<span class="text-yellow-400">${s}</span>`).join(' ');
+    const range = Math.max(...p.scores) - Math.min(...p.scores);
+    const pEl = document.getElementById('rlvr-poems');
+    if (rlvrIdx === 0) pEl.innerHTML = '';
+    pEl.innerHTML += `<div class="bg-slate-800 rounded-lg p-2 text-xs mb-1"><p class="text-slate-300 mb-0.5">${p.txt}</p><p class="text-slate-500">Judges: ${sc} → <span class="text-red-400">Range: ${range} pts</span> &mdash; noisy signal</p></div>`;
+    const gEl = document.getElementById('rlvr-games');
+    if (rlvrIdx === 0) gEl.innerHTML = '';
+    const gc = g.result === 'WIN' ? 'text-green-400' : g.result === 'LOSE' ? 'text-red-400' : 'text-yellow-400';
+    gEl.innerHTML += `<div class="bg-slate-800 rounded-lg p-2 text-xs mb-1"><p class="${gc} font-semibold mb-0.5">${g.txt}</p><p class="text-slate-500">Reward: <span class="${gc} font-bold">${g.r}</span> &mdash; deterministic, no ambiguity</p></div>`;
+    sS = Math.min(sS + 10 + rlvrIdx * 2, 58);
+    vS = Math.min(vS + 17 + rlvrIdx * 3, 94);
+    document.getElementById('subj-bar').style.width = sS + '%';
+    document.getElementById('subj-pct').textContent = sS + '%';
+    document.getElementById('verif-bar').style.width = vS + '%';
+    document.getElementById('verif-pct').textContent = vS + '%';
+    rlvrIdx++;
+    document.getElementById('rlvr-status').textContent = rlvrIdx < 5
+        ? `Attempt ${rlvrIdx} of 5 — notice the signal gap growing`
+        : 'All 5 attempts done. Verifiable tasks give 94% training signal quality; subjective tasks plateau at 58%. RLVR only uses the right column.';
+}
+
+function rlvrReset() {
+    rlvrIdx = 0; sS = 0; vS = 0;
+    document.getElementById('rlvr-poems').innerHTML = '<p class="text-slate-600 text-xs italic">Press Sample to generate attempts...</p>';
+    document.getElementById('rlvr-games').innerHTML = '<p class="text-slate-600 text-xs italic">Press Sample to generate attempts...</p>';
+    ['subj-bar','verif-bar'].forEach(id => document.getElementById(id).style.width = '0%');
+    ['subj-pct','verif-pct'].forEach(id => document.getElementById(id).textContent = '0%');
+    document.getElementById('rlvr-status').textContent = 'Attempt 0 of 5';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TAB 4 — MAZE
+// ═══════════════════════════════════════════════════════════════════════
+const CS = 50, MN = 5;
+const PATH_HACK  = [{x:0,y:0},{x:1,y:0},{x:2,y:0},{x:2,y:1},{x:2,y:2}];
+const PATH_MULTI = [{x:0,y:0},{x:0,y:1},{x:0,y:2},{x:0,y:3},{x:1,y:3},{x:2,y:3},{x:3,y:3},{x:4,y:3},{x:4,y:4}];
+let mT = { hack: null, multi: null };
+let mDone = { hack: false, multi: false };
+
+function initMazes() {
+    ['hack','multi'].forEach(m => {
+        if (mT[m]) clearInterval(mT[m]);
+        mT[m] = null;
+    });
+    mDone = { hack: false, multi: false };
+    drawMaze(getCtx('maze-hack'), [], -1, false);
+    drawMaze(getCtx('maze-multi'), [], -1, false);
+    document.getElementById('maze-msg').classList.add('hidden');
+}
+
+function getCtx(id) { return document.getElementById(id).getContext('2d'); }
+
+function drawMaze(ctx, path, step, hackMode) {
+    const W = MN * CS;
+    ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, W, W);
+    for (let r = 0; r < MN; r++) for (let c = 0; c < MN; c++) {
+        ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+        ctx.strokeRect(c * CS + 1, r * CS + 1, CS - 2, CS - 2);
+    }
+    // Trail
+    path.slice(0, step + 1).forEach(p => {
+        ctx.fillStyle = 'rgba(52,211,153,.18)';
+        ctx.fillRect(p.x * CS + 2, p.y * CS + 2, CS - 4, CS - 4);
+    });
+    // Banana at 2,2
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath(); ctx.arc(2*CS+CS/2, 2*CS+CS/2, CS/2-10, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#78350f'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('BANANA', 2*CS+CS/2, 2*CS+CS/2+3);
+    // Cheese at 4,4
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(4*CS+7, 4*CS+7, CS-14, CS-14);
+    ctx.fillStyle = '#1e293b'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('CHEESE', 4*CS+CS/2, 4*CS+CS/2+3);
+    // Start
+    ctx.fillStyle = '#64748b'; ctx.font = '9px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('START', CS/2, CS/2+3);
+    // Mouse
+    if (step >= 0 && step < path.length) {
+        const p = path[step];
+        ctx.fillStyle = '#34d399';
+        ctx.beginPath(); ctx.arc(p.x*CS+CS/2, p.y*CS+CS/2, CS/2-14, 0, Math.PI*2); ctx.fill();
+    }
+}
+
+function startMaze(mode) {
+    if (mT[mode]) clearInterval(mT[mode]);
+    const path = mode === 'hack' ? PATH_HACK : PATH_MULTI;
+    const id = mode === 'hack' ? 'maze-hack' : 'maze-multi';
+    const ctx = getCtx(id);
+    mDone[mode] = false;
+    document.getElementById('maze-msg').classList.add('hidden');
+    let step = 0;
+    drawMaze(ctx, path, 0, mode === 'hack');
+    mT[mode] = setInterval(() => {
+        step++;
+        drawMaze(ctx, path, step, mode === 'hack');
+        if (step >= path.length - 1) {
+            clearInterval(mT[mode]); mT[mode] = null;
+            mDone[mode] = true;
+            setTimeout(() => {
+                const msg = document.getElementById('maze-msg');
+                if (mDone.hack && mDone.multi) {
+                    msg.innerHTML = '<strong class="text-white">Compare the two paths:</strong> Single-environment training found the banana — yellow, rewarding, far closer. Multi-environment training used different maze layouts each episode. The banana shortcut only existed in one layout, so it was useless across 70 environments. The mouse was forced to find the actual goal. This is exactly why Nemotron trained across 70+ simultaneous RL environments.';
+                } else if (mode === 'hack') {
+                    msg.innerHTML = '<strong class="text-yellow-400">Banana reached — wrong goal learned.</strong> The model received reward and stopped. It has no idea the cheese exists. Now try the 70+ environments version.';
+                } else {
+                    msg.innerHTML = '<strong class="text-green-400">Cheese reached — real goal learned.</strong> With varied maze layouts, no single shortcut worked consistently. Real capability was the only reliable strategy.';
+                }
+                msg.classList.remove('hidden');
+            }, 300);
+        }
+    }, 420);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TAB 5 — MULTI-ENV
+// ═══════════════════════════════════════════════════════════════════════
+const ENV_LIST = ['Math','Code','Logic','Science','Language','Reasoning','Strategy','Ethics','Creativity','Facts','Planning','Debate'];
+let envActive = [];
+
+function initEnvGrid() {
+    envActive = ENV_LIST.map((_, i) => i < 2);
+    renderEnvGrid();
+    updateHack();
+}
+
+function renderEnvGrid() {
+    document.getElementById('env-grid').innerHTML = envActive.map((on, i) =>
+        `<button onclick="toggleEnv(${i})" class="rounded-xl p-2.5 text-center text-xs font-semibold border transition-all ${on ? 'bg-green-900/40 border-green-500 text-green-300' : 'bg-slate-800 border-slate-700 text-slate-500'}">${ENV_LIST[i]}</button>`
+    ).join('');
+}
+
+function toggleEnv(i) { envActive[i] = !envActive[i]; renderEnvGrid(); updateHack(); }
+
+function envAll(on) { envActive = envActive.map(() => on); renderEnvGrid(); updateHack(); }
+
+function updateHack() {
+    const n = envActive.filter(Boolean).length;
+    const h = n === 0 ? 100 : Math.max(6, Math.round(100 / n));
+    document.getElementById('hack-pct').textContent = h + '%';
+    const bar = document.getElementById('hack-bar');
+    bar.style.width = h + '%';
+    bar.style.background = h > 60 ? '#ef4444' : h > 30 ? '#f59e0b' : '#22c55e';
+}
+
+function envTrain() {
+    const n = envActive.filter(Boolean).length;
+    const names = ENV_LIST.filter((_, i) => envActive[i]).join(', ');
+    const msg = document.getElementById('env-msg');
+    if (n === 0) { msg.innerHTML = '<strong class="text-red-400">No environments active.</strong> Nothing to train on.'; return; }
+    if (n === 1) { msg.innerHTML = `<strong class="text-red-400">Only 1 environment (${names}).</strong> The model finds a shortcut immediately and learns nothing general. Generalization: zero.`; return; }
+    if (n <= 3) { msg.innerHTML = `<strong class="text-yellow-400">${n} environments (${names}).</strong> Some generalization, but the model can still find patterns specific to these ${n} tasks. Hackability stays high.`; return; }
+    if (n <= 7) { msg.innerHTML = `<strong class="text-emerald-400">${n} environments.</strong> Getting harder to hack. The model starts developing genuinely general capabilities rather than task-specific shortcuts.`; return; }
+    msg.innerHTML = `<strong class="text-green-400">All ${n} environments active — approaching real scale.</strong> At 70+, shortcuts become mathematically impossible. Every "cheat" that boosts one environment hurts in others. Real capability is the only winning strategy.`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TAB 6 — GRPO
+// ═══════════════════════════════════════════════════════════════════════
+const GRPO_ROUNDS = [
+    [3,7,2,8,5,4,9,1],
+    [6,8,5,9,7,6,8,7],
+    [8,9,7,9,8,9,8,9],
+];
+const GRPO_CONTEXT = ['Initial responses to the same prompt', 'Floor raised — model learned from round 1 winners', 'Convergence — quality concentrated near the ceiling'];
+let gRound = 0, gPhase = 'idle';
+
+function grpoReset() {
+    gRound = 0; gPhase = 'idle';
+    document.getElementById('g-round').textContent = '1';
+    document.getElementById('g-median').textContent = '—';
+    document.getElementById('g-cards').innerHTML = Array(8).fill('<div class="g-card opacity-20"><p class="text-slate-500 text-xs">—</p></div>').join('');
+    document.getElementById('g-msg').innerHTML = 'Press <strong class="text-white">Generate 8</strong> to have the model produce 8 candidate responses to the same prompt.';
+    ['gb-1','gb-2','gb-3'].forEach(id => document.getElementById(id).style.height = '0px');
+    btnState('g-gen', true); btnState('g-cull', false); btnState('g-next', false);
+}
+
+function btnState(id, enabled) {
+    const el = document.getElementById(id);
+    el.disabled = !enabled;
+    el.className = enabled
+        ? (id === 'g-cull' ? 'bg-red-700 hover:bg-red-600' : 'bg-green-600 hover:bg-green-500') + ' text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors'
+        : 'bg-slate-700 text-slate-500 text-sm font-bold px-4 py-2 rounded-xl cursor-not-allowed';
+}
+
+function grpoGen() {
+    const scores = GRPO_ROUNDS[gRound];
+    const sorted = [...scores].sort((a, b) => a - b);
+    const med = (sorted[3] + sorted[4]) / 2;
+    document.getElementById('g-median').textContent = med;
+    document.getElementById('g-cards').innerHTML = scores.map((s, i) =>
+        `<div id="gc-${i}" class="g-card"><p class="text-slate-500 text-xs mb-0.5">Draft ${i+1}</p><p class="text-2xl font-black text-white">${s}</p><p class="text-slate-600 text-xs">/10</p></div>`
+    ).join('');
+    document.getElementById('g-msg').innerHTML = `<strong class="text-slate-200">${GRPO_CONTEXT[gRound]}.</strong> Scores range ${Math.min(...scores)}–${Math.max(...scores)}. Median: <strong class="text-green-400">${med}</strong>. Press <strong class="text-white">Cull Below Median</strong>.`;
+    gPhase = 'gen';
+    btnState('g-gen', false); btnState('g-cull', true);
+}
+
+function grpoCull() {
+    const scores = GRPO_ROUNDS[gRound];
+    const sorted = [...scores].sort((a, b) => a - b);
+    const med = (sorted[3] + sorted[4]) / 2;
+    let kept = [];
+    scores.forEach((s, i) => {
+        const card = document.getElementById('gc-' + i);
+        if (s < med) card.classList.add('culled');
+        else { card.classList.add('winner'); kept.push(s); }
+    });
+    const avg = +(kept.reduce((a, b) => a + b, 0) / kept.length).toFixed(1);
+    document.getElementById('gb-' + (gRound + 1)).style.height = Math.round(avg / 10 * 62) + 'px';
+    document.getElementById('g-msg').innerHTML = `<strong class="text-red-400">${scores.filter(s => s < med).length} drafts culled.</strong> <strong class="text-green-400">${kept.length} kept</strong> — average of survivors: <strong class="text-white">${avg}/10</strong>. The model learns only from these.` +
+        (gRound === 2 ? ' <br><br><strong class="text-green-400">All 3 rounds done!</strong> The floor rose: avg ~' + [GRPO_ROUNDS[0],GRPO_ROUNDS[1],GRPO_ROUNDS[2]].map((r,ri) => { const s=[...r].sort((a,b)=>a-b); const m=(s[3]+s[4])/2; return r.filter(x=>x>=m).reduce((a,b)=>a+b,0)/r.filter(x=>x>=m).length; }).map(v=>v.toFixed(1)).join(' → ') + '. This is GRPO in action.' : '');
+    gPhase = 'culled';
+    btnState('g-cull', false);
+    if (gRound < 2) btnState('g-next', true);
+}
+
+function grpoNext() {
+    gRound++;
+    document.getElementById('g-round').textContent = gRound + 1;
+    document.getElementById('g-median').textContent = '—';
+    document.getElementById('g-cards').innerHTML = Array(8).fill('<div class="g-card opacity-20"><p class="text-slate-500 text-xs">waiting...</p></div>').join('');
+    document.getElementById('g-msg').innerHTML = `Round ${gRound + 1}: ${GRPO_CONTEXT[gRound]}. Press <strong class="text-white">Generate 8</strong>.`;
+    gPhase = 'idle';
+    btnState('g-gen', true); btnState('g-next', false);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TAB 7 — RLHF vs RLVR ORDER
+// ═══════════════════════════════════════════════════════════════════════
+let orderBusy = false;
+
+function runOrders() {
+    if (orderBusy) return;
+    orderBusy = true;
+    resetOrderBars();
+    // Scenario A: RLVR first → capability rises, then RLHF polishes
+    animBar('a-cap', 'a-cap-n', 91, 1400, '#34d399', () => {
+        document.getElementById('a-verdict').textContent = 'RLVR done — capability at 91%. Now RLHF...';
+        document.getElementById('a-verdict').className = 'text-slate-400 text-xs';
+        setTimeout(() => animBar('a-pls', 'a-pls-n', 87, 1200, '#60a5fa', () => {
+            document.getElementById('a-verdict').textContent = 'Result: Highly capable AND pleasant. This is Nemotron.';
+            document.getElementById('a-verdict').className = 'text-green-400 text-xs font-semibold';
+        }), 300);
+    });
+    // Scenario B: RLHF first → pleasantness rises, but capability is stunted
+    setTimeout(() => animBar('b-pls', 'b-pls-n', 84, 1400, '#60a5fa', () => {
+        document.getElementById('b-verdict').textContent = 'RLHF done — pleasant at 84%. Now RLVR...';
+        document.getElementById('b-verdict').className = 'text-slate-400 text-xs';
+        setTimeout(() => animBar('b-cap', 'b-cap-n', 38, 1200, '#f87171', () => {
+            document.getElementById('b-verdict').textContent = 'Result: Politely says "I\'m afraid I cannot help with that."';
+            document.getElementById('b-verdict').className = 'text-red-400 text-xs font-semibold';
+            const ins = document.getElementById('order-insight');
+            ins.innerHTML = '<strong class="text-white">Why does order matter?</strong> RLHF optimizes the model toward responses humans <em>prefer in the moment</em> — which includes well-worded refusals. Once that preference is baked in, RLVR has to fight against it. The model has already learned that "politely declining" scores well with humans, so it resists learning to actually solve hard tasks. Capability must be established first, then polished.';
+            ins.classList.remove('hidden');
+            orderBusy = false;
+        }), 300);
+    }), 500);
+}
+
+function animBar(barId, numId, target, ms, color, cb) {
+    const bar = document.getElementById(barId);
+    const num = document.getElementById(numId);
+    bar.style.background = color;
+    const t0 = performance.now();
+    (function step(now) {
+        const p = Math.min((now - t0) / ms, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        const v = Math.round(target * ease);
+        bar.style.width = v + '%';
+        num.textContent = v + '%';
+        p < 1 ? requestAnimationFrame(step) : (cb && cb());
+    })(t0);
+}
+
+function resetOrderBars() {
+    ['a-cap','a-pls','b-cap','b-pls'].forEach(id => { const el=document.getElementById(id); el.style.width='0%'; el.style.background=''; });
+    ['a-cap-n','a-pls-n','b-cap-n','b-pls-n'].forEach(id => document.getElementById(id).textContent='0%');
+    ['a-verdict','b-verdict'].forEach(id => { const el=document.getElementById(id); el.textContent='Waiting...'; el.className='text-slate-600 text-xs italic'; });
+    document.getElementById('order-insight').classList.add('hidden');
+}
+
+function resetOrders() { orderBusy = false; resetOrderBars(); }
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+    drawSFTAxes();
+    initEnvGrid();
+    grpoReset();
+    drawMaze(getCtx('maze-hack'), [], -1, true);
+    drawMaze(getCtx('maze-multi'), [], -1, false);
+
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('toc-active'));
+            const a = document.querySelector(`.toc-link[href="#${e.target.id}"]`);
+            if (a) a.classList.add('toc-active');
+        });
+    }, { threshold: 0.35 });
+    document.querySelectorAll('section[id]').forEach(s => obs.observe(s));
+});
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const navLinksContainer = document.querySelector('.nav-links');
+        if (!navLinksContainer) return;
+        const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+        const groups = {};
+        links.forEach(link => {
+            const name = link.getAttribute('data-group');
+            if (!groups[name]) groups[name] = [];
+            groups[name].push(link);
+        });
+        Object.keys(groups).forEach(groupName => {
+            const groupItems = groups[groupName];
+            const dropdownWrapper = document.createElement('div');
+            dropdownWrapper.style.cssText = 'position:relative;display:inline-block;';
+            const triggerBtn = document.createElement('button');
+            triggerBtn.className = 'nav-btn';
+            triggerBtn.innerHTML = `${groupName} ▾`;
+            const menu = document.createElement('div');
+            menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
+            const firstItem = groupItems[0];
+            if (firstItem.parentNode) firstItem.replaceWith(dropdownWrapper);
+            groupItems.forEach(link => {
+                link.style.cssText = 'display:block;padding:.4rem .75rem;border-radius:4px;color:#333;text-decoration:none;font-size:.85rem;white-space:nowrap;';
+                link.onmouseenter = () => link.style.background = '#f0f9ff';
+                link.onmouseleave = () => link.style.background = '';
+                menu.appendChild(link);
+            });
+            dropdownWrapper.appendChild(triggerBtn);
+            dropdownWrapper.appendChild(menu);
+            triggerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = menu.style.display === 'flex';
+                document.querySelectorAll('nav div > div').forEach(m => m.style.display = 'none');
+                menu.style.display = isOpen ? 'none' : 'flex';
+            });
+        });
+        document.addEventListener('click', () => {
+            document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display === 'flex') m.style.display = 'none'; });
+        });
+    });
+</script>
+
+<style>
+    nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+    .nav-links { display:flex; gap:1rem; }
+    .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.5rem 1rem; border-radius:6px; cursor:pointer; font-size:.9rem; transition:all .2s; }
+    .nav-btn:hover { background:#0077b5; color:white; }
+</style>
+</body>
+</html>
