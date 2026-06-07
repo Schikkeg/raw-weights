@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Pipeline Toolkit — Design, Tune & Debug | RawWeights</title>
+    <meta name="description" content="Interactive RAG pipeline toolkit. Configure chunk size, top-K, embedding models, and retrieval strategy — then run a 20-point pre-launch checklist before you ship.">
+    <meta name="author" content="RawWeights">
+	<meta property="og:image" content="https://rawweights.com/images/rag_slide.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.rawweights.com/blog/rag-pipeline-toolkit.html">
+    <meta property="og:title" content="RAG Pipeline Toolkit — Design, Tune & Debug | RawWeights">
+    <meta property="og:description" content="Interactive RAG pipeline toolkit — chunk size, top-K, embedding model picker, retrieval strategy, 12 debug signals, and a 20-point pre-launch checklist.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
+        }
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <style>
+        /* ── nav ── */
+        nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
+        .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+        .nav-links { display:flex; gap:.6rem; flex-wrap:wrap; }
+        .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.35rem .8rem; border-radius:6px; cursor:pointer; font-size:.82rem; transition:all .2s; }
+        .nav-btn:hover { background:#0077b5; color:white; }
+        /* ── tabs ── */
+        .sb-tab { padding:.5rem 1rem; border-radius:8px 8px 0 0; cursor:pointer; font-size:.78rem; font-weight:600; color:#64748b; background:#0f172a; border:1px solid #1e293b; border-bottom:none; transition:all .2s; white-space:nowrap; }
+        .sb-tab.active { background:#1e293b; color:#34d399; border-color:#34d399; border-bottom:1px solid #1e293b; }
+        .sb-tab:hover:not(.active) { color:#cbd5e1; background:#1e293b; }
+        /* ── misc ── */
+        html { scroll-behavior:smooth; }
+        .toc-link.toc-active { color:#34d399; }
+        .param-card { transition:border-color .25s; }
+        .param-card:hover { border-color:#34d399; }
+        input[type=range] { accent-color:#34d399; }
+        .check-item { cursor:pointer; transition:all .2s; }
+        .pill { display:inline-block; padding:.2rem .65rem; border-radius:999px; font-size:.7rem; font-weight:700; }
+        .flow-arrow { color:#34d399; font-size:1.25rem; line-height:1; }
+        .model-row:hover { background:#1e293b; }
+        /* hero grid card */
+        .diag-cell { border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:.5rem; }
+        /* failure dot */
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+        .dot-blink { animation:blink 2s infinite; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture &amp; Lifecycle</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+<!-- HEADER -->
+<header class="bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-emerald-900/25 via-slate-900 to-slate-900 pointer-events-none"></div>
+    <!-- subtle grid lines -->
+    <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image:linear-gradient(#34d399 1px,transparent 1px),linear-gradient(90deg,#34d399 1px,transparent 1px);background-size:60px 60px;"></div>
+
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-14 relative z-10">
+
+        <!-- LEFT: title + copy -->
+        <div class="lg:w-1/2 space-y-6 pt-4">
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-teal-500/15 border border-teal-500/40 text-teal-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Interactive Toolkit</span>
+                <span class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy · RAG</span>
+                <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Practitioner guide</span>
+            </div>
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]">
+                RAG Pipeline<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-cyan-400">Toolkit</span>
+            </h1>
+
+            <p class="text-slate-300 text-lg leading-relaxed max-w-lg">
+                When a RAG system answers incorrectly, the LLM is almost never the culprit. The bug lives upstream — in how the data was chunked, embedded, and retrieved. This toolkit gives you the levers to get every stage right, and the checklist to catch what you missed before users do.
+            </p>
+
+            <!-- quote strip — different style: left-border callout -->
+            <div class="border-l-4 border-teal-500 pl-4 py-1">
+                <p class="text-slate-200 text-base leading-relaxed italic">
+                    "The model reads exactly what you give it. Feed it noise, you get noise back dressed up as a confident answer."
+                </p>
+                <p class="text-slate-500 text-xs mt-2 font-medium">— A hard lesson every RAG team learns once</p>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+                <span class="bg-slate-800/80 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">Chunk Size</span>
+                <span class="bg-slate-800/80 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">Top-K</span>
+                <span class="bg-slate-800/80 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">Embedding Model</span>
+                <span class="bg-slate-800/80 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">Hybrid Retrieval</span>
+                <span class="bg-slate-800/80 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">Re-ranker</span>
+                <span class="bg-slate-800/80 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">12 Debug Signals</span>
+            </div>
+        </div>
+
+        <!-- RIGHT: diagnostic matrix card (replaces blockquote) -->
+        <div class="lg:w-1/2 w-full space-y-4 pt-4">
+            <div class="bg-slate-800/70 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
+                <div class="px-5 py-3 border-b border-slate-700 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-400 dot-blink"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+                    <span class="text-slate-400 text-xs font-mono ml-2">rag_diagnostics.py</span>
+                </div>
+                <div class="p-5">
+                    <p class="text-slate-400 text-xs uppercase tracking-widest font-bold mb-3">Where does RAG actually break?</p>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="diag-cell bg-red-950/40 border border-red-900/50">
+                            <div class="flex items-center gap-2">
+                                <span class="text-red-400 font-black text-xs">✗ RETRIEVAL</span>
+                                <span class="text-slate-500 text-xs">→</span>
+                                <span class="text-white text-xs font-semibold">Wrong chunks reach the LLM</span>
+                            </div>
+                            <p class="text-slate-400 text-xs">Causes: bad chunk size, mismatched embedding model, K too low, no metadata filtering.</p>
+                            <p class="text-teal-400 text-xs font-medium">Fix zone: Tabs ②③④⑤ in this toolkit</p>
+                        </div>
+                        <div class="diag-cell bg-amber-950/40 border border-amber-900/50">
+                            <div class="flex items-center gap-2">
+                                <span class="text-amber-400 font-black text-xs">✗ GENERATION</span>
+                                <span class="text-slate-500 text-xs">→</span>
+                                <span class="text-white text-xs font-semibold">Right chunks, wrong answer</span>
+                            </div>
+                            <p class="text-slate-400 text-xs">Causes: weak system prompt, LLM ignoring context, chunk order mattering more than you think.</p>
+                            <p class="text-teal-400 text-xs font-medium">Fix zone: Tab ⑥ Debug Checklist</p>
+                        </div>
+                        <div class="diag-cell bg-purple-950/40 border border-purple-900/50">
+                            <div class="flex items-center gap-2">
+                                <span class="text-purple-400 font-black text-xs">✗ DATA QUALITY</span>
+                                <span class="text-slate-500 text-xs">→</span>
+                                <span class="text-white text-xs font-semibold">Both stages work — source was wrong</span>
+                            </div>
+                            <p class="text-slate-400 text-xs">Causes: stale docs, poor OCR parse, duplicates, inconsistent terminology in source.</p>
+                            <p class="text-teal-400 text-xs font-medium">Fix zone: Tab ① Pipeline · Parse step</p>
+                        </div>
+                        <div class="diag-cell bg-slate-800/60 border border-slate-700">
+                            <div class="flex items-center gap-2">
+                                <span class="text-green-400 font-black text-xs">✓ ALL THREE</span>
+                                <span class="text-slate-500 text-xs">→</span>
+                                <span class="text-white text-xs font-semibold">Ship it.</span>
+                            </div>
+                            <p class="text-slate-400 text-xs">Good retrieval + strong prompt + clean data = a RAG system that doesn't embarrass you in production.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- stat row -->
+            <div class="grid grid-cols-4 gap-2">
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-teal-400">7</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Design levers</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-red-400">12</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Failure signals</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-emerald-400">20</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Pre-launch checks</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-cyan-400">0</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Code required</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main class="w-full bg-slate-900 flex-grow">
+<div class="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-16">
+
+    <!-- TOC sidebar -->
+    <aside class="lg:w-1/4 flex-shrink-0 hidden lg:block">
+        <nav class="sticky top-8 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-5 border-b border-slate-700 pb-4">On this page</h3>
+            <ul class="space-y-2 text-sm font-medium text-slate-400">
+                <li><a href="#sect-prereqs" class="toc-link block hover:text-white transition-colors py-0.5">Before you start</a></li>
+                <li><a href="#sect-params" class="toc-link block hover:text-white transition-colors py-0.5">The 7 Design Levers</a></li>
+                <li><a href="#sect-sandbox" class="toc-link block hover:text-white transition-colors py-0.5">Interactive Toolkit</a></li>
+            </ul>
+            <div class="mt-4 pt-4 border-t border-slate-700 space-y-1">
+                <p class="text-slate-600 text-xs uppercase tracking-widest mb-2">Toolkit tabs</p>
+                <a href="#sect-sandbox" onclick="showTab(1);return false;" class="block text-slate-500 hover:text-teal-400 text-xs transition-colors py-0.5">① Pipeline Planner</a>
+                <a href="#sect-sandbox" onclick="showTab(2);return false;" class="block text-slate-500 hover:text-teal-400 text-xs transition-colors py-0.5">② Chunk Size</a>
+                <a href="#sect-sandbox" onclick="showTab(3);return false;" class="block text-slate-500 hover:text-teal-400 text-xs transition-colors py-0.5">③ Embedding Model</a>
+                <a href="#sect-sandbox" onclick="showTab(4);return false;" class="block text-slate-500 hover:text-teal-400 text-xs transition-colors py-0.5">④ Top-K Tuner</a>
+                <a href="#sect-sandbox" onclick="showTab(5);return false;" class="block text-slate-500 hover:text-teal-400 text-xs transition-colors py-0.5">⑤ Retrieval Strategy</a>
+                <a href="#sect-sandbox" onclick="showTab(6);return false;" class="block text-slate-500 hover:text-teal-400 text-xs transition-colors py-0.5">⑥ Debug Checklist</a>
+                <a href="#sect-sandbox" onclick="showTab(7);return false;" class="block text-slate-500 hover:text-teal-400 text-xs transition-colors py-0.5">⑦ Pre-Launch Review</a>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-700">
+                <p class="text-slate-600 text-xs uppercase tracking-widest mb-3">Tools referenced</p>
+                <a href="https://chunkviz.up.railway.app/" target="_blank" class="flex items-center gap-2 text-xs text-slate-400 hover:text-teal-400 py-1 transition-colors">
+                    <span class="text-teal-500">↗</span> ChunkViz — visualise splits
+                </a>
+                <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" class="flex items-center gap-2 text-xs text-slate-400 hover:text-teal-400 py-1 transition-colors">
+                    <span class="text-teal-500">↗</span> MTEB Leaderboard
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- content -->
+    <div class="lg:w-3/4 space-y-20 text-slate-300">
+
+        <!-- PREREQUISITES -->
+        <section id="sect-prereqs" class="scroll-mt-12">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="bg-slate-700 text-slate-300 font-black text-sm w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">→</span>
+                <h2 class="text-2xl font-extrabold text-white">Before you start</h2>
+            </div>
+            <p class="text-lg leading-relaxed mb-6">This toolkit is a decision companion — it helps you configure and troubleshoot, not learn from scratch. If any term below is new to you, read the RAG guide first, then come back here to build.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="/guide/rag.html" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-teal-500/50 transition-colors">
+                    <p class="text-teal-400 font-bold text-xs uppercase tracking-widest mb-2">Prerequisite read</p>
+                    <p class="text-white font-semibold mb-1">Ultimate RAG Guide</p>
+                    <p class="text-slate-400 text-sm">Architecture, chunking strategies, vector databases, evaluation metrics, and limitations — the complete reference.</p>
+                    <p class="text-teal-500 text-sm mt-3 font-medium">Read the guide →</p>
+                </a>
+                <a href="https://chunkviz.up.railway.app/" target="_blank" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-teal-500/50 transition-colors">
+                    <p class="text-emerald-400 font-bold text-xs uppercase tracking-widest mb-2">Visualise your chunks</p>
+                    <p class="text-white font-semibold mb-1">ChunkViz</p>
+                    <p class="text-slate-400 text-sm">Paste any text, choose a splitter, and see exactly how your document gets broken apart before it hits the embedding model.</p>
+                    <p class="text-emerald-500 text-sm mt-3 font-medium">Open tool ↗</p>
+                </a>
+                <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-teal-500/50 transition-colors">
+                    <p class="text-cyan-400 font-bold text-xs uppercase tracking-widest mb-2">Pick your model</p>
+                    <p class="text-white font-semibold mb-1">MTEB Leaderboard</p>
+                    <p class="text-slate-400 text-sm">Filter by task, language, and model size. The authoritative benchmark for choosing an embedding model for your domain.</p>
+                    <p class="text-cyan-500 text-sm mt-3 font-medium">Open leaderboard ↗</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 7 LEVERS -->
+        <section id="sect-params" class="scroll-mt-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-teal-500/20 text-teal-400 font-black text-sm w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">★</span>
+                <h2 class="text-3xl font-extrabold text-white">The 7 design levers</h2>
+            </div>
+            <p class="text-lg leading-relaxed mb-8">A RAG pipeline has exactly seven parameters you make conscious decisions about. Get the defaults right and you have a working system. Tune them with evidence and you have a production one. Ignore them and you get confident-sounding nonsense.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                <div class="param-card flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-teal-400 font-black text-lg leading-none mt-0.5">①</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Chunk Size <span class="pill bg-teal-900/60 text-teal-300 border border-teal-800 ml-1">Default: 512 tokens</span></p>
+                        <p class="text-slate-400 text-xs mt-1">How many tokens each stored passage contains — smaller chunks give sharper matches, larger chunks give richer context per fetch.</p>
+                        <p class="text-slate-500 text-xs mt-1 italic">512 tokens ≈ two solid paragraphs from a policy document.</p>
+                    </div>
+                </div>
+
+                <div class="param-card flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-teal-400 font-black text-lg leading-none mt-0.5">②</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Chunk Overlap <span class="pill bg-slate-700 text-slate-300 border border-slate-600 ml-1">Default: 10–15%</span></p>
+                        <p class="text-slate-400 text-xs mt-1">Tokens shared between adjacent chunks so meaning doesn't vanish at a hard boundary cut.</p>
+                        <p class="text-slate-500 text-xs mt-1 italic">64-token overlap on a 512-token chunk: the closing sentence of chunk N opens chunk N+1.</p>
+                    </div>
+                </div>
+
+                <div class="param-card flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-teal-400 font-black text-lg leading-none mt-0.5">③</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Embedding Model <span class="pill bg-red-900/50 text-red-300 border border-red-800 ml-1">Must match ingestion ↔ query</span></p>
+                        <p class="text-slate-400 text-xs mt-1">The neural network that converts text to a dense vector — every vector in your database must live in the same coordinate space.</p>
+                        <p class="text-slate-500 text-xs mt-1 italic">Switching models mid-project means re-indexing everything. Lock it before you ingest a single document.</p>
+                    </div>
+                </div>
+
+                <div class="param-card flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-teal-400 font-black text-lg leading-none mt-0.5">④</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Top-K <span class="pill bg-teal-900/60 text-teal-300 border border-teal-800 ml-1">Default: 5</span></p>
+                        <p class="text-slate-400 text-xs mt-1">How many chunks are fetched from the vector database and placed into the LLM's context window on each query.</p>
+                        <p class="text-slate-500 text-xs mt-1 italic">K=5 narrows 100,000 stored chunks down to 5 paragraphs the model actually reads.</p>
+                    </div>
+                </div>
+
+                <div class="param-card flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-teal-400 font-black text-lg leading-none mt-0.5">⑤</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Retrieval Strategy <span class="pill bg-slate-700 text-slate-300 border border-slate-600 ml-1">Dense / Sparse / Hybrid</span></p>
+                        <p class="text-slate-400 text-xs mt-1">Whether you search by meaning (embedding similarity), by keyword overlap (BM25), or both fused together.</p>
+                        <p class="text-slate-500 text-xs mt-1 italic">"Refund policy" → dense finds semantic matches; BM25 catches exact phrase hits. Hybrid captures both.</p>
+                    </div>
+                </div>
+
+                <div class="param-card flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+                    <span class="text-teal-400 font-black text-lg leading-none mt-0.5">⑥</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Re-ranker <span class="pill bg-slate-700 text-slate-300 border border-slate-600 ml-1">Strongly recommended</span></p>
+                        <p class="text-slate-400 text-xs mt-1">A second-pass model that re-scores retrieved chunks by contextual relevance before the LLM sees them — eliminating near-miss noise.</p>
+                        <p class="text-slate-500 text-xs mt-1 italic">Vector search finds the neighbourhood. Re-ranker finds the right house on the right street.</p>
+                    </div>
+                </div>
+
+                <div class="param-card flex gap-3 bg-slate-800/60 rounded-xl p-4 border border-slate-700 sm:col-span-2 lg:col-span-1">
+                    <span class="text-teal-400 font-black text-lg leading-none mt-0.5">⑦</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">System Prompt Constraint <span class="pill bg-amber-900/50 text-amber-300 border border-amber-800 ml-1">Non-negotiable</span></p>
+                        <p class="text-slate-400 text-xs mt-1">The instruction that tells the LLM to answer only from retrieved context and say "I don't know" when the answer isn't there.</p>
+                        <p class="text-slate-500 text-xs mt-1 italic">Without this, the model will fill gaps with training knowledge — plausibly, confidently, wrongly.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TOOLKIT SANDBOX -->
+        <section id="sect-sandbox" class="scroll-mt-12">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-emerald-500/20 text-emerald-400 font-black text-sm w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">⚡</span>
+                <h2 class="text-3xl font-extrabold text-white">Interactive Toolkit</h2>
+            </div>
+            <p class="text-slate-400 text-sm mb-6">Configure your pipeline top to bottom across seven tabs, then use the debug signals and pre-launch checklist before shipping.</p>
+
+            <!-- tab bar -->
+            <div class="flex flex-wrap gap-1 border-b border-teal-500/30">
+                <button class="sb-tab active" id="tab-1" onclick="showTab(1)">① Pipeline</button>
+                <button class="sb-tab" id="tab-2" onclick="showTab(2)">② Chunk Size</button>
+                <button class="sb-tab" id="tab-3" onclick="showTab(3)">③ Embeddings</button>
+                <button class="sb-tab" id="tab-4" onclick="showTab(4)">④ Top-K</button>
+                <button class="sb-tab" id="tab-5" onclick="showTab(5)">⑤ Retrieval</button>
+                <button class="sb-tab" id="tab-6" onclick="showTab(6)">⑥ Debug</button>
+                <button class="sb-tab" id="tab-7" onclick="showTab(7)">⑦ Pre-Launch</button>
+            </div>
+
+            <div class="bg-slate-950 border border-slate-700 border-t-0 rounded-b-2xl p-6 min-h-96">
+
+<!-- ══ TAB 1: PIPELINE ══ -->
+<div id="sb-1" class="sb-content">
+    <h3 class="text-white font-bold text-xl mb-1">The Full RAG Pipeline — Offline vs Online</h3>
+    <p class="text-slate-400 text-sm mb-6">RAG splits into two distinct phases. The <strong class="text-white">offline phase</strong> runs once when you ingest data (and again when data changes). The <strong class="text-white">online phase</strong> runs on every user query. Click any step to see what it does and where it breaks.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        <!-- offline -->
+        <div class="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden">
+            <div class="bg-slate-800 px-4 py-2.5 flex items-center gap-2 border-b border-slate-700">
+                <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                <p class="text-yellow-300 font-bold text-xs uppercase tracking-widest">Offline — runs once</p>
+            </div>
+            <div class="p-4 space-y-2">
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('raw')">
+                    <p class="text-white font-semibold text-sm">📄 Raw Data</p>
+                    <p class="text-slate-500 text-xs">PDFs, Notion, Confluence, databases, Salesforce exports</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('parse')">
+                    <p class="text-white font-semibold text-sm">🔧 Parse &amp; Clean</p>
+                    <p class="text-slate-500 text-xs">Extract plain text, strip noise, preserve metadata</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('chunk')">
+                    <p class="text-white font-semibold text-sm">✂️ Chunk</p>
+                    <p class="text-slate-500 text-xs">Split into overlapping passages by size, structure, or semantic boundary</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('embed-offline')">
+                    <p class="text-white font-semibold text-sm">🔢 Embed</p>
+                    <p class="text-slate-500 text-xs">Convert each chunk to an n-dimensional vector via embedding model</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('store')">
+                    <p class="text-white font-semibold text-sm">🗄️ Store in Vector DB</p>
+                    <p class="text-slate-500 text-xs">Save vectors + raw text + metadata (Pinecone, Weaviate, Qdrant, Milvus)</p>
+                </button>
+            </div>
+        </div>
+        <!-- online -->
+        <div class="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden">
+            <div class="bg-slate-800 px-4 py-2.5 flex items-center gap-2 border-b border-slate-700">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <p class="text-green-300 font-bold text-xs uppercase tracking-widest">Online — every query</p>
+            </div>
+            <div class="p-4 space-y-2">
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('query')">
+                    <p class="text-white font-semibold text-sm">💬 User Query</p>
+                    <p class="text-slate-500 text-xs">Raw natural-language input — potentially vague, misspelled, or ambiguous</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('transform')">
+                    <p class="text-white font-semibold text-sm">🔄 Query Transform <span class="pill bg-slate-700 text-slate-400 border border-slate-600 ml-1">Optional</span></p>
+                    <p class="text-slate-500 text-xs">Rewrite or expand the query for a better retrieval signal</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('embed-online')">
+                    <p class="text-white font-semibold text-sm">🔢 Embed Query <span class="text-red-400 text-xs font-bold ml-1">⚠ Same model</span></p>
+                    <p class="text-slate-500 text-xs">Convert query to a vector using the identical embedding model as ingestion</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('retrieve')">
+                    <p class="text-white font-semibold text-sm">🔍 Retrieve Top-K Chunks</p>
+                    <p class="text-slate-500 text-xs">Cosine similarity search returns the K nearest vectors from the DB</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('rerank')">
+                    <p class="text-white font-semibold text-sm">📊 Re-rank <span class="pill bg-slate-700 text-slate-400 border border-slate-600 ml-1">Recommended</span></p>
+                    <p class="text-slate-500 text-xs">Sort retrieved chunks by true contextual relevance before generation</p>
+                </button>
+                <div class="flex justify-center"><span class="flow-arrow">↓</span></div>
+                <button class="pipe-step w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/50 rounded-xl px-4 py-3 transition-all" onclick="showPipeDetail('generate')">
+                    <p class="text-white font-semibold text-sm">🤖 LLM Generate</p>
+                    <p class="text-slate-500 text-xs">System prompt + retrieved context + user question → grounded answer</p>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="pipe-detail" class="bg-slate-800 rounded-xl p-5 border border-slate-700 text-sm text-slate-300 leading-relaxed">
+        <p class="text-slate-500 italic">Click any pipeline step above to see what it does, where it breaks, and the rule of thumb for that stage.</p>
+    </div>
+</div>
+
+<!-- ══ TAB 2: CHUNK SIZE ══ -->
+<div id="sb-2" class="sb-content hidden">
+    <h3 class="text-white font-bold text-xl mb-1">Chunk Size Calculator</h3>
+    <p class="text-slate-400 text-sm mb-6">Chunk size is the single most impactful configuration decision in a RAG pipeline. Too small and you lose the surrounding context that makes a fact interpretable. Too large and similarity search loses precision — and the LLM drowns in noise. Adjust the sliders and watch the tradeoffs update.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="space-y-5">
+            <div class="bg-slate-900 rounded-xl border border-slate-700 p-5">
+                <label class="text-slate-300 text-sm font-semibold block mb-1">Chunk size: <strong id="cs-val" class="text-teal-400">512</strong> tokens</label>
+                <p class="text-slate-500 text-xs mb-3">≈ <span id="cs-words">~384 words</span> · <span id="cs-pages">~0.8 pages</span></p>
+                <input type="range" id="cs-slider" min="64" max="2048" step="64" value="512" class="w-full mb-3" oninput="updateChunk()">
+                <div class="flex justify-between text-xs text-slate-600">
+                    <span>64 (sentence)</span><span>512 (paragraph)</span><span>2048 (page)</span>
+                </div>
+            </div>
+            <div class="bg-slate-900 rounded-xl border border-slate-700 p-5">
+                <label class="text-slate-300 text-sm font-semibold block mb-1">Overlap: <strong id="ov-val" class="text-teal-400">64</strong> tokens (<span id="ov-pct">12.5%</span>)</label>
+                <p class="text-slate-500 text-xs mb-3">Tokens shared between adjacent chunks to prevent meaning from being severed at boundaries.</p>
+                <input type="range" id="ov-slider" min="0" max="512" step="16" value="64" class="w-full mb-3" oninput="updateChunk()">
+                <div class="flex justify-between text-xs text-slate-600"><span>0</span><span>512</span></div>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <div class="bg-slate-900 rounded-xl border border-slate-700 p-5 space-y-3">
+                <p class="text-slate-300 font-semibold text-sm">Tradeoff Signals</p>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Retrieval precision</span><span id="prec-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="prec-bar" class="h-full rounded-full bg-teal-400 transition-all duration-500" style="width:50%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Context richness per chunk</span><span id="ctx-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="ctx-bar" class="h-full rounded-full bg-blue-400 transition-all duration-500" style="width:50%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Tokens sent to LLM (K=5)</span><span id="tok-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="tok-bar" class="h-full rounded-full bg-orange-400 transition-all duration-500" style="width:50%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Storage efficiency</span><span id="stor-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="stor-bar" class="h-full rounded-full bg-purple-400 transition-all duration-500" style="width:50%"></div></div>
+                </div>
+            </div>
+            <div id="chunk-advice" class="bg-slate-900 rounded-xl border border-teal-800/50 p-4 text-sm text-slate-300 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <div class="bg-slate-900 rounded-xl border border-slate-700 p-5">
+        <p class="text-slate-300 font-semibold text-sm mb-3">Recommended defaults by content type</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-slate-800 rounded-lg p-3 text-center">
+                <p class="text-teal-400 font-bold text-xs uppercase mb-1">Dense FAQs</p>
+                <p class="text-white font-black text-xl">128–256</p>
+                <p class="text-slate-500 text-xs">tokens</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-3 text-center">
+                <p class="text-teal-400 font-bold text-xs uppercase mb-1">Policy / Docs</p>
+                <p class="text-white font-black text-xl">256–512</p>
+                <p class="text-slate-500 text-xs">tokens</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-3 text-center">
+                <p class="text-teal-400 font-bold text-xs uppercase mb-1">Research Papers</p>
+                <p class="text-white font-black text-xl">512–1024</p>
+                <p class="text-slate-500 text-xs">tokens</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-3 text-center">
+                <p class="text-teal-400 font-bold text-xs uppercase mb-1">Legal / Narrative</p>
+                <p class="text-white font-black text-xl">1024–2048</p>
+                <p class="text-slate-500 text-xs">tokens</p>
+            </div>
+        </div>
+        <p class="text-slate-600 text-xs mt-3">Starting point: recursive character splitter, 512 tokens, 64-token overlap. Visualise your actual splits with <a href="https://chunkviz.up.railway.app/" target="_blank" class="text-teal-400 underline">ChunkViz ↗</a> before committing to an index.</p>
+    </div>
+</div>
+
+<!-- ══ TAB 3: EMBEDDINGS ══ -->
+<div id="sb-3" class="sb-content hidden">
+    <h3 class="text-white font-bold text-xl mb-1">Embedding Model Picker</h3>
+    <p class="text-slate-400 text-sm mb-2">The embedding model converts text into a vector. Everything depends on choosing one and sticking with it. <strong class="text-red-400">The same model must be used for ingestion and for querying.</strong> Different models produce incompatible vector spaces — mixing them makes cosine similarity meaningless.</p>
+    <p class="text-slate-500 text-xs mb-5">Model benchmarks from public sources: <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" class="text-teal-400 underline">MTEB Leaderboard ↗</a>, OpenAI docs, Cohere docs, HuggingFace model cards.</p>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+        <button onclick="filterModels('all')" id="mf-all" class="model-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-700 text-white transition-all">All</button>
+        <button onclick="filterModels('general')" id="mf-general" class="model-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all">General</button>
+        <button onclick="filterModels('enterprise')" id="mf-enterprise" class="model-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all">Enterprise</button>
+        <button onclick="filterModels('open')" id="mf-open" class="model-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all">Open Source</button>
+        <button onclick="filterModels('multilingual')" id="mf-multilingual" class="model-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all">Multilingual</button>
+    </div>
+
+    <div class="overflow-x-auto rounded-xl border border-slate-700">
+        <table class="w-full text-xs">
+            <thead>
+                <tr class="bg-slate-800 text-slate-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-left font-semibold">Model</th>
+                    <th class="px-4 py-3 text-left font-semibold">Dims</th>
+                    <th class="px-4 py-3 text-left font-semibold">Max Tokens</th>
+                    <th class="px-4 py-3 text-left font-semibold">Cost</th>
+                    <th class="px-4 py-3 text-left font-semibold">Best For</th>
+                    <th class="px-4 py-3 text-left font-semibold">Tag</th>
+                </tr>
+            </thead>
+            <tbody id="model-table" class="divide-y divide-slate-800 text-slate-300"></tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 bg-slate-900 rounded-xl border border-amber-800/40 p-4">
+        <p class="text-amber-400 font-bold text-xs uppercase tracking-wider mb-1.5">The one rule that breaks everything silently</p>
+        <p class="text-slate-300 text-sm">Index with <code class="bg-slate-800 px-1 rounded text-teal-300">text-embedding-3-small</code>, query with <code class="bg-slate-800 px-1 rounded text-teal-300">embed-english-v3.0</code>, and every similarity score your database returns is random noise — no errors thrown, no warnings, just consistently bad retrieval that's almost impossible to debug without knowing this rule.</p>
+    </div>
+</div>
+
+<!-- ══ TAB 4: TOP-K ══ -->
+<div id="sb-4" class="sb-content hidden">
+    <h3 class="text-white font-bold text-xl mb-1">Top-K Tuner</h3>
+    <p class="text-slate-400 text-sm mb-6">K controls how many chunks the vector database returns and the LLM must read. Low K = fast and focused but risks missing the answer. High K = thorough but expensive, slower, and the LLM starts hallucinating connections between loosely related chunks.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="space-y-5">
+            <div class="bg-slate-900 rounded-xl border border-slate-700 p-5">
+                <label class="text-slate-300 text-sm font-semibold block mb-1">Top-K: <strong id="k-val" class="text-teal-400 text-2xl">5</strong></label>
+                <input type="range" id="k-slider" min="1" max="20" step="1" value="5" class="w-full mb-3" oninput="updateTopK()">
+                <div class="flex justify-between text-xs text-slate-600"><span>1 (laser)</span><span>20 (broad net)</span></div>
+            </div>
+            <div class="bg-slate-900 rounded-xl border border-slate-700 p-5 space-y-3">
+                <p class="text-slate-400 text-sm font-semibold">At K = <span id="k-inline" class="text-white">5</span>:</p>
+                <div class="grid grid-cols-2 gap-3 text-center">
+                    <div class="bg-slate-800 rounded-lg p-3">
+                        <p class="text-xs text-slate-500 mb-1">Est. tokens to LLM</p>
+                        <p id="k-tokens" class="text-white font-black text-xl">~2,560</p>
+                        <p class="text-slate-600 text-xs">K × 512 chunk size</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-lg p-3">
+                        <p class="text-xs text-slate-500 mb-1">Approx. cost</p>
+                        <p id="k-cost" class="text-white font-black text-xl">~$0.001</p>
+                        <p class="text-slate-600 text-xs">per query (GPT-4o-mini)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <div class="bg-slate-900 rounded-xl border border-slate-700 p-5 space-y-3">
+                <p class="text-slate-300 font-semibold text-sm">Quality Signals</p>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Recall (right chunk included)</span><span id="recall-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="recall-bar" class="h-full rounded-full bg-green-400 transition-all duration-500" style="width:60%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Precision (no noise chunks)</span><span id="prec2-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="prec2-bar" class="h-full rounded-full bg-teal-400 transition-all duration-500" style="width:70%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Hallucination risk</span><span id="conf-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="conf-bar" class="h-full rounded-full bg-red-400 transition-all duration-500" style="width:20%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Latency &amp; cost</span><span id="lat-val" class="text-white font-bold">—</span></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="lat-bar" class="h-full rounded-full bg-orange-400 transition-all duration-500" style="width:25%"></div></div>
+                </div>
+            </div>
+            <div id="k-advice" class="bg-slate-900 rounded-xl border border-teal-800/50 p-4 text-sm text-slate-300 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <div class="bg-slate-900 rounded-xl border border-slate-700 p-5">
+        <p class="text-slate-300 font-semibold text-sm mb-3">K symptom guide — what are you seeing?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-slate-800 rounded-lg p-3">
+                <p class="text-red-400 font-bold text-xs uppercase mb-1">Hallucinating facts</p>
+                <p class="text-slate-400 text-xs">LLM is reading noise chunks and inventing plausible-sounding connections.</p>
+                <p class="text-teal-400 text-xs font-semibold mt-1">→ Lower K, add re-ranker</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-3">
+                <p class="text-yellow-400 font-bold text-xs uppercase mb-1">"I don't know" too often</p>
+                <p class="text-slate-400 text-xs">The right chunk isn't making it into the context window at all.</p>
+                <p class="text-teal-400 text-xs font-semibold mt-1">→ Raise K, fix chunking</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-3">
+                <p class="text-orange-400 font-bold text-xs uppercase mb-1">Slow &amp; expensive</p>
+                <p class="text-slate-400 text-xs">High K means large context — most tokens aren't helping the answer.</p>
+                <p class="text-teal-400 text-xs font-semibold mt-1">→ Re-rank, reduce K</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ TAB 5: RETRIEVAL STRATEGY ══ -->
+<div id="sb-5" class="sb-content hidden">
+    <h3 class="text-white font-bold text-xl mb-1">Retrieval Strategy Selector</h3>
+    <p class="text-slate-400 text-sm mb-6">How you search your vector database matters as much as what you store in it. Pick between semantic search (dense), keyword matching (sparse), or both combined (hybrid) — then decide whether a re-ranker is worth the overhead.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        <div class="bg-slate-900 rounded-xl border border-slate-700 p-5 hover:border-teal-500/50 transition-all cursor-pointer" onclick="selectStrategy('dense')">
+            <div class="flex items-center gap-2 mb-3"><span class="text-2xl">🧲</span><p class="text-white font-bold">Dense</p></div>
+            <p class="text-slate-400 text-xs mb-3">Converts query to a vector and finds closest stored vectors by cosine similarity — matches by meaning, not by words.</p>
+            <div class="space-y-1 text-xs">
+                <p class="text-green-400">✓ "refund" matches "money back guarantee"</p>
+                <p class="text-green-400">✓ Works across paraphrased queries</p>
+                <p class="text-red-400">✗ Misses exact-phrase critical matches</p>
+                <p class="text-red-400">✗ Embedding latency per query</p>
+            </div>
+            <p class="text-slate-500 text-xs mt-3 italic">Best for: conversational, multilingual, semantic search</p>
+        </div>
+        <div class="bg-slate-900 rounded-xl border border-slate-700 p-5 hover:border-teal-500/50 transition-all cursor-pointer" onclick="selectStrategy('sparse')">
+            <div class="flex items-center gap-2 mb-3"><span class="text-2xl">🔑</span><p class="text-white font-bold">Sparse (BM25)</p></div>
+            <p class="text-slate-400 text-xs mb-3">Scores chunks by keyword frequency (TF-IDF / BM25). Fast, no neural inference, deterministic.</p>
+            <div class="space-y-1 text-xs">
+                <p class="text-green-400">✓ Exact SKU, model number, legal citation hits</p>
+                <p class="text-green-400">✓ No GPU required</p>
+                <p class="text-red-400">✗ Synonyms are invisible to it</p>
+                <p class="text-red-400">✗ Paraphrased queries return nothing</p>
+            </div>
+            <p class="text-slate-500 text-xs mt-3 italic">Best for: product codes, structured IDs, exact references</p>
+        </div>
+        <div class="bg-slate-900 rounded-xl border border-teal-700/60 p-5 hover:border-teal-500 transition-all cursor-pointer" onclick="selectStrategy('hybrid')">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">⚡</span>
+                <p class="text-white font-bold">Hybrid</p>
+                <span class="pill bg-teal-900/60 text-teal-300 border border-teal-800">Recommended</span>
+            </div>
+            <p class="text-slate-400 text-xs mb-3">Runs dense + sparse in parallel, fuses the two ranked lists using Reciprocal Rank Fusion (RRF).</p>
+            <div class="space-y-1 text-xs">
+                <p class="text-green-400">✓ Captures meaning AND keywords</p>
+                <p class="text-green-400">✓ Robust across diverse query types</p>
+                <p class="text-red-400">✗ More infrastructure to maintain</p>
+                <p class="text-red-400">✗ Slightly higher latency</p>
+            </div>
+            <p class="text-slate-500 text-xs mt-3 italic">Best for: production systems, mixed or unknown query patterns</p>
+        </div>
+    </div>
+
+    <div id="strategy-detail" class="bg-slate-800 rounded-xl p-5 border border-slate-700 text-sm text-slate-300 leading-relaxed mb-5">
+        <p class="text-slate-500 italic">Click a strategy card above to see implementation details and when to use it.</p>
+    </div>
+
+    <div class="bg-slate-900 rounded-xl border border-slate-700 p-5">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <p class="text-white font-bold text-sm">Re-ranker</p>
+                <p class="text-slate-400 text-xs mt-0.5">A second-pass model that re-scores retrieved chunks by contextual relevance — narrows noise before the LLM sees anything.</p>
+            </div>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" id="rerank-toggle" onchange="updateReranker()" class="sr-only">
+                <div class="relative w-11 h-6 bg-slate-700 rounded-full transition-all" id="rerank-track">
+                    <div class="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-transform" id="rerank-dot"></div>
+                </div>
+                <span class="text-xs text-slate-400" id="rerank-label">Off</span>
+            </label>
+        </div>
+        <div id="rerank-detail" class="hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-slate-800 rounded-lg p-4">
+                    <p class="text-teal-400 font-bold text-xs uppercase mb-2">Bi-encoder</p>
+                    <p class="text-slate-400 text-xs">Independently embeds each chunk and compares to the query. Faster but less precise — good for large candidate sets.</p>
+                    <p class="text-slate-500 text-xs mt-1 italic">e.g. BAAI/bge-reranker-base</p>
+                </div>
+                <div class="bg-slate-800 rounded-lg p-4">
+                    <p class="text-teal-400 font-bold text-xs uppercase mb-2">Cross-encoder</p>
+                    <p class="text-slate-400 text-xs">Processes query + chunk jointly — reads them together rather than independently. Highest precision, slightly more latency.</p>
+                    <p class="text-slate-500 text-xs mt-1 italic">e.g. Cohere Rerank, ms-marco-MiniLM</p>
+                </div>
+            </div>
+            <div class="mt-3 bg-slate-800 rounded-lg p-3 border border-teal-800/40">
+                <p class="text-teal-400 text-xs font-semibold">The practical mental model</p>
+                <p class="text-slate-400 text-xs mt-1">Vector search casts a wide net. The re-ranker is a second person reviewing the catch and throwing back what doesn't belong before it reaches the kitchen.</p>
+            </div>
+        </div>
+        <div id="rerank-off-msg" class="text-slate-500 text-xs italic">Toggle on to see re-ranker options and guidance on when the overhead is justified.</div>
+    </div>
+</div>
+
+<!-- ══ TAB 6: DEBUG ══ -->
+<div id="sb-6" class="sb-content hidden">
+    <h3 class="text-white font-bold text-xl mb-1">Debug Signals — 12 Failure Patterns</h3>
+    <p class="text-slate-400 text-sm mb-2">The RAGAS evaluation framework and LlamaIndex's evaluation guide both make the same point: RAG failures decompose cleanly into <strong class="text-white">retrieval-side</strong> and <strong class="text-white">generation-side</strong> failures, and confusing the two wastes days of tuning in the wrong place. The two-metric approach below is how you locate the bug before you start fixing it.</p>
+
+    <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-5">
+        <p class="text-slate-400 text-xs uppercase font-bold tracking-widest mb-3">The two-metric localisation protocol <span class="text-slate-600 normal-case font-normal ml-1">(from RAGAS / LlamaIndex eval docs)</span></p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="border border-teal-800/40 rounded-lg p-3 bg-slate-800/40">
+                <p class="text-teal-400 font-bold text-xs uppercase mb-1.5">Measure Context Recall first</p>
+                <p class="text-slate-400 text-xs mb-2">Inspect the raw retrieved chunks for a failing query. Is the ground-truth answer present anywhere in the Top-K list?</p>
+                <p class="text-green-400 text-xs font-semibold">Present → retrieval is working, dig into generation</p>
+                <p class="text-red-400 text-xs font-semibold mt-0.5">Absent → chunking, K, embedding, or strategy issue</p>
+                <p class="text-slate-600 text-xs mt-2 italic">Metric: Context Recall (RAGAS), Retrieval Hit Rate (LlamaIndex)</p>
+            </div>
+            <div class="border border-teal-800/40 rounded-lg p-3 bg-slate-800/40">
+                <p class="text-teal-400 font-bold text-xs uppercase mb-1.5">Then measure Faithfulness</p>
+                <p class="text-slate-400 text-xs mb-2">With the correct chunks confirmed present, does the LLM produce a grounded answer — or does it stray outside the provided context?</p>
+                <p class="text-green-400 text-xs font-semibold">Grounded → check pipeline assembly (context passed correctly?)</p>
+                <p class="text-red-400 text-xs font-semibold mt-0.5">Strays → system prompt constraint too weak</p>
+                <p class="text-slate-600 text-xs mt-2 italic">Metric: Faithfulness (RAGAS), Hallucination score</p>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-slate-500 text-xs mb-3">Click any failure pattern below to see the documented root cause and fix.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="debug-cards"></div>
+
+    <div class="mt-5 bg-slate-900 rounded-xl border border-slate-700 p-4">
+        <p class="text-slate-400 text-xs uppercase font-bold tracking-widest mb-2">Further reading — public sources</p>
+        <div class="flex flex-wrap gap-3 text-xs">
+            <a href="https://docs.ragas.io/en/stable/" target="_blank" class="text-teal-400 hover:underline">RAGAS evaluation framework ↗</a>
+            <a href="https://docs.llamaindex.ai/en/stable/optimizing/evaluation/evaluation/" target="_blank" class="text-teal-400 hover:underline">LlamaIndex Evaluation Guide ↗</a>
+            <a href="https://www.pinecone.io/learn/retrieval-augmented-generation/" target="_blank" class="text-teal-400 hover:underline">Pinecone RAG Guide ↗</a>
+            <a href="https://python.langchain.com/docs/tutorials/rag/" target="_blank" class="text-teal-400 hover:underline">LangChain RAG Tutorial ↗</a>
+        </div>
+    </div>
+</div>
+
+<!-- ══ TAB 7: PRE-LAUNCH ══ -->
+<div id="sb-7" class="sb-content hidden">
+    <h3 class="text-white font-bold text-xl mb-1">Pre-Launch Review — 20 Checks</h3>
+    <p class="text-slate-400 text-sm mb-5">Run this before you open the pipeline to users. Covers ingestion, retrieval, generation, and production hardening. Progress is saved in this session.</p>
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <div class="flex justify-between text-xs text-slate-500 mb-1.5"><span>Progress</span><span id="launch-pct" class="text-white font-bold">0 / 20</span></div>
+            <div class="h-2 w-64 bg-slate-800 rounded-full overflow-hidden"><div id="launch-bar" class="h-full rounded-full bg-teal-400 transition-all duration-500" style="width:0%"></div></div>
+        </div>
+        <button onclick="resetLaunch()" class="text-slate-500 hover:text-slate-300 text-xs transition-colors">Reset all</button>
+    </div>
+    <div id="launch-checks" class="space-y-2 mb-6"></div>
+    <div id="launch-complete" class="hidden bg-slate-800 rounded-xl p-6 border border-teal-700 text-center">
+        <p class="text-4xl mb-3">🚀</p>
+        <p class="text-teal-400 font-bold text-lg">All checks passed.</p>
+        <p class="text-slate-400 text-sm mt-2">Keep running offline evals as your data grows — a well-tuned pipeline today can drift as documents are added or updated.</p>
+    </div>
+</div>
+
+            </div><!-- /sandbox panel -->
+        </section>
+
+    </div><!-- /content -->
+</div><!-- /flex container -->
+</main>
+
+<!-- page footer strip -->
+<div class="bg-slate-900 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 py-10 text-center space-y-3">
+        <p class="text-white font-semibold">RAG Pipeline Toolkit</p>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Built from hands-on experience with RAG in production — the failure modes, the debug workflows, and the configuration decisions that determine whether your pipeline answers well or confidently lies. Part of the <a href="/guide/rag.html" class="text-teal-400 hover:underline">RawWeights RAG Guide</a> series, informed by the GenAcademy agentic AI curriculum.</p>
+        <div class="flex flex-wrap justify-center gap-2 pt-1">
+            <span class="bg-slate-800 text-teal-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RAG</span>
+            <span class="bg-slate-800 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#VectorDB</span>
+            <span class="bg-slate-800 text-cyan-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#Embeddings</span>
+            <span class="bg-slate-800 text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#HybridRetrieval</span>
+            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+        </div>
+        <div class="flex space-x-6 text-sm">
+            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ── TAB SWITCHER ─────────────────────────────────────────────────────────
+function showTab(n) {
+    document.querySelectorAll('.sb-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.sb-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('sb-' + n).classList.remove('hidden');
+    document.getElementById('tab-' + n).classList.add('active');
+    if (n === 2) updateChunk();
+    if (n === 3) renderModels('all');
+    if (n === 4) updateTopK();
+    if (n === 6) renderDebug();
+    if (n === 7) renderLaunch();
+}
+
+// ── TAB 1 PIPELINE ────────────────────────────────────────────────────────
+const PIPE_DETAILS = {
+    raw: {
+        title:'📄 Raw Data',
+        body:'<strong class="text-white">What comes in:</strong> Any document format — PDFs, HTML pages, Markdown files, database exports, CRM records, transcripts, wikis.<br><br><strong class="text-amber-400">The ceiling principle:</strong> The quality of your RAG answers is bounded by the quality of your source data. A RAG pipeline cannot surface information that isn\'t there, and it will faithfully retrieve wrong information if your source contains it.<br><br><strong class="text-teal-400">Before you index anything:</strong> Audit for duplicates, outdated versions, contradictory entries, and content that exists only as scanned images. These all become retrieval time bombs.'
+    },
+    parse: {
+        title:'🔧 Parse & Clean',
+        body:'<strong class="text-white">What it does:</strong> Extracts plain text from structured formats, normalises whitespace and encoding, removes page headers/footers/watermarks, and captures metadata (title, source URL, date, author, section name).<br><br><strong class="text-red-400">Most common hidden failure:</strong> PDF documents where text is embedded in images. Standard PDF parsers return blank chunks from these pages — no error, just silence. You\'ll retrieve empty passages for months without noticing.<br><br><strong class="text-teal-400">Rule:</strong> Spot-check parsed output on a representative sample (especially scanned PDFs) before indexing at scale. Tools: LlamaParse, Unstructured.io, PyMuPDF. Metadata on every chunk is non-negotiable.'
+    },
+    chunk: {
+        title:'✂️ Chunk',
+        body:'<strong class="text-white">What it does:</strong> Splits each parsed document into smaller, overlapping passages sized to work well with your embedding model and retrieval precision targets.<br><br><strong class="text-white">Three main strategies:</strong><br>• <strong class="text-teal-400">Fixed-size with overlap</strong> — split every N tokens, keep M tokens of overlap. Simple, predictable, works well as a baseline.<br>• <strong class="text-teal-400">Recursive character splitter</strong> — tries to split at paragraphs first, then sentences, then words. Preserves natural text boundaries.<br>• <strong class="text-teal-400">Semantic chunking</strong> — uses embedding similarity to detect topic shifts and split there. Most accurate but slower.<br><br><strong class="text-amber-400">The boundary problem:</strong> If a sentence is cut in half, neither resulting chunk makes sense in isolation. Overlap exists specifically to prevent this. Visualise your actual output with <a href="https://chunkviz.up.railway.app/" target="_blank" class="text-teal-400 underline">ChunkViz ↗</a> before committing.'
+    },
+    'embed-offline': {
+        title:'🔢 Embed (Ingestion)',
+        body:'<strong class="text-white">What it does:</strong> Passes each chunk through a transformer-based embedding model that outputs a fixed-length vector representing the chunk\'s semantic content.<br><br><strong class="text-red-400">The lock-in decision:</strong> Whatever model you choose here, you are committed to it for the lifetime of this index. Changing models means discarding every stored vector and re-indexing from scratch — because vectors from different models live in different coordinate spaces and cannot be compared.<br><br><strong class="text-teal-400">Operationally:</strong> Store the model name and version as metadata on the index (or in a config file) so future engineers know exactly what was used. An undocumented embedding model is a future production incident waiting to happen.'
+    },
+    store: {
+        title:'🗄️ Store in Vector DB',
+        body:'<strong class="text-white">What gets stored per chunk:</strong> (1) the raw text, (2) the embedding vector, (3) metadata — source document, section, date, category, access level, document ID.<br><br><strong class="text-white">Why metadata matters:</strong> Without it, every query searches your entire corpus. With it, you can pre-filter by department, date range, document type, or user permission level before the similarity search even runs — dramatically improving both speed and relevance.<br><br><strong class="text-teal-400">Options:</strong> Pinecone (managed, fast to start), Weaviate (open-source, GraphQL API), Qdrant (Rust-based, high performance), Milvus (enterprise scale), ChromaDB (local prototyping). RBAC is not built-in to any of these — you must enforce it through metadata filtering.'
+    },
+    query: {
+        title:'💬 User Query',
+        body:'<strong class="text-white">What enters the pipeline:</strong> Free-form natural language from the user — potentially vague, conversational, misspelled, or phrased nothing like the documents you indexed.<br><br><strong class="text-amber-400">The vocabulary gap:</strong> Users say "my package hasn\'t arrived." Your documents say "shipment status" and "delivery confirmation." Dense retrieval bridges this. Sparse retrieval doesn\'t.<br><br><strong class="text-teal-400">What to log:</strong> Every query in production. Query patterns are a direct readout of where your pipeline is failing and what your users actually care about. They\'re also the best source of eval test cases you\'ll ever have.'
+    },
+    transform: {
+        title:'🔄 Query Transform (Optional)',
+        body:'<strong class="text-white">What it does:</strong> Uses a lightweight LLM call to rewrite, expand, or decompose the user\'s query before embedding — producing a better search signal than the raw input.<br><br><strong class="text-teal-400">Common techniques:</strong><br>• <strong>HyDE</strong> (Hypothetical Document Embedding) — generate a hypothetical answer to the question, embed that instead of the question itself. Works well when questions are short but documents are long.<br>• <strong>Multi-query</strong> — generate 3 paraphrased versions of the question, run all 3 retrievals, deduplicate and merge the results.<br>• <strong>Step-back prompting</strong> — rephrase at a higher abstraction level ("what general principle applies here?").<br><br><strong class="text-amber-400">Cost:</strong> One extra LLM call per query. Add it when baseline retrieval quality has hit a ceiling and you\'ve exhausted chunking and K tuning.'
+    },
+    'embed-online': {
+        title:'🔢 Embed Query',
+        body:'<strong class="text-white">What it does:</strong> Converts the (possibly transformed) query string into a vector using the same embedding model used during ingestion. This vector becomes the search key against the stored index.<br><br><strong class="text-red-400">The production incident waiting to happen:</strong> A team updates their embedding model mid-project and forgets to re-index. The index stores ada-002 vectors. New queries embed with text-embedding-3-large. Every cosine similarity score is now comparing vectors from different coordinate systems. Retrieval degrades silently — no exceptions thrown, just increasingly bad answers.<br><br><strong class="text-teal-400">Prevention:</strong> Pin the embedding model in your deployment config. Add a startup check that verifies the query model matches the index metadata. Re-index whenever the model changes.'
+    },
+    retrieve: {
+        title:'🔍 Retrieve Top-K Chunks',
+        body:'<strong class="text-white">What happens:</strong> The query vector is compared against every stored chunk vector using cosine similarity (or dot product for normalised vectors). The K chunks with the highest similarity scores are returned.<br><br><strong class="text-white">Cosine similarity:</strong> Measures the angle between two vectors regardless of magnitude. Score of 1.0 = pointing in the same direction (highly similar). Score of 0 = orthogonal (unrelated). Negative scores = opposite directions.<br><br><strong class="text-teal-400">Diagnostic signal:</strong> Print similarity scores alongside retrieved chunks during development. Top chunk score below ~0.70 usually indicates a chunking or embedding problem. Uniformly high scores but wrong answers indicates a generation problem.'
+    },
+    rerank: {
+        title:'📊 Re-rank',
+        body:'<strong class="text-white">What it does:</strong> Takes the Top-K results from similarity search and re-scores each one using a cross-encoder model that reads the query and chunk together — not independently. This joint reading produces a much more precise relevance score than cosine similarity alone.<br><br><strong class="text-white">Why add it:</strong> Vector search finds chunks in the right semantic neighbourhood. Re-ranking finds the right house in that neighbourhood. A cross-encoder understands that "the dog bit the man" and "the man bit the dog" have the same tokens but opposite meanings — cosine similarity cannot.<br><br><strong class="text-teal-400">Practical tradeoff:</strong> Adds 50–200ms per query depending on K and model size. Worth it in production for precision-sensitive use cases. Common options: Cohere Rerank, BAAI/bge-reranker-large, ms-marco-MiniLM-L-12-v2.'
+    },
+    generate: {
+        title:'🤖 LLM Generate',
+        body:'<strong class="text-white">What the LLM receives:</strong> (1) A system prompt constraining its answer to the provided context, (2) the retrieved and re-ranked chunks, (3) the original user question.<br><br><strong class="text-teal-400">The system prompt that actually works:</strong><br><code class="text-xs bg-slate-900 text-teal-300 block mt-2 p-3 rounded leading-relaxed">You are an assistant for [Company].<br>Answer using ONLY the documents provided below.<br>If the answer is not present, say "I don\'t have that information."<br>Do not guess, extrapolate, or use outside knowledge.<br>Cite which document your answer comes from.</code><br><br><strong class="text-amber-400">The most common failure mode here:</strong> A weak or absent constraint instruction. Without an explicit "use only the context" directive, the model defaults to its training knowledge whenever the retrieved chunks don\'t perfectly cover the question — and it does this confidently, with no indication that it stepped outside the provided documents.'
+    }
+};
+
+function showPipeDetail(key) {
+    const d = PIPE_DETAILS[key];
+    if (!d) return;
+    document.getElementById('pipe-detail').innerHTML = `<strong class="text-white text-base block mb-3">${d.title}</strong><p class="leading-relaxed">${d.body}</p>`;
+}
+
+// ── TAB 2 CHUNK SIZE ──────────────────────────────────────────────────────
+function updateChunk() {
+    const cs = parseInt(document.getElementById('cs-slider').value);
+    const ov = parseInt(document.getElementById('ov-slider').value);
+    document.getElementById('cs-val').textContent = cs;
+    document.getElementById('ov-val').textContent = ov;
+    document.getElementById('cs-words').textContent = `~${Math.round(cs * 0.75)} words`;
+    document.getElementById('cs-pages').textContent = `~${(cs / 600).toFixed(1)} pages`;
+    document.getElementById('ov-pct').textContent = cs > 0 ? Math.round(ov / cs * 100) + '%' : '0%';
+
+    const prec = Math.max(5, Math.round(100 - ((cs - 64) / (2048 - 64)) * 75));
+    const ctx  = Math.max(10, Math.round(10 + ((cs - 64) / (2048 - 64)) * 85));
+    const tok  = Math.min(100, Math.round((cs * 5) / (2048 * 5) * 100));
+    const stor = Math.max(10, Math.round(100 - ((cs - 64) / (2048 - 64)) * 80));
+
+    setBar('prec-bar', prec, 'prec-val');
+    setBar('ctx-bar',  ctx,  'ctx-val');
+    setBar('tok-bar',  tok,  'tok-val');
+    setBar('stor-bar', stor, 'stor-val');
+
+    let advice = '';
+    if (cs <= 128) advice = '<strong class="text-amber-400">Very small (≤128 tokens):</strong> Sentence-level precision, but high risk of context fragmentation — a fact divorced from its surrounding explanation becomes ambiguous. Good only for self-contained, short statements like FAQ answers.';
+    else if (cs <= 384) advice = '<strong class="text-teal-400">Small–medium (128–384):</strong> Solid balance for FAQ-style and policy content. Answers are specific without losing the paragraph context that makes them interpretable. Good starting point for most projects.';
+    else if (cs <= 768) advice = '<strong class="text-teal-400">Medium (384–768):</strong> Captures full paragraphs — well-suited to technical documentation, research summaries, and multi-step processes. Use at least 10% overlap. This is the most common production-tuned range.';
+    else if (cs <= 1536) advice = '<strong class="text-teal-400">Large (768–1536):</strong> Suitable for legal text or narrative content where meaning spans several paragraphs. Risk increases that the LLM receives noisy context — pair with a re-ranker to surface the most relevant sections.';
+    else advice = '<strong class="text-amber-400">Very large (>1536):</strong> Approaching the limit of useful granularity. Similarity search loses precision at this scale. Unless your documents are genuinely long and self-contained, split more aggressively and rely on re-ranking.';
+
+    document.getElementById('chunk-advice').innerHTML = advice;
+}
+
+function setBar(barId, pct, labelId) {
+    document.getElementById(barId).style.width = pct + '%';
+    if (labelId) document.getElementById(labelId).textContent = pct + '%';
+}
+
+// ── TAB 3 MODELS ─────────────────────────────────────────────────────────
+const MODELS = [
+    { name:'text-embedding-3-small', dims:1536, maxTok:8191, cost:'$0.02 / 1M tokens', best:'General RAG, fast prototyping', tag:'general', badge:'⭐ Great default' },
+    { name:'text-embedding-3-large', dims:3072, maxTok:8191, cost:'$0.13 / 1M tokens', best:'High-accuracy production search', tag:'general', badge:'High accuracy' },
+    { name:'text-embedding-ada-002', dims:1536, maxTok:8191, cost:'$0.10 / 1M tokens', best:'Legacy — replaced by 3-small', tag:'general', badge:'Legacy' },
+    { name:'embed-english-v3.0 (Cohere)', dims:1024, maxTok:512, cost:'~$0.10 / 1M tokens', best:'Enterprise search, pairs with Cohere Rerank', tag:'enterprise', badge:'Enterprise' },
+    { name:'embed-multilingual-v3.0 (Cohere)', dims:1024, maxTok:512, cost:'~$0.10 / 1M tokens', best:'Multi-language enterprise knowledge bases', tag:'multilingual', badge:'Multilingual' },
+    { name:'BAAI/bge-large-en-v1.5', dims:1024, maxTok:512, cost:'Free (self-host)', best:'Open-source production, top MTEB scores', tag:'open', badge:'Open Source' },
+    { name:'BAAI/bge-m3', dims:1024, maxTok:8192, cost:'Free (self-host)', best:'Multi-language + sparse+dense hybrid natively', tag:'open', badge:'Open · Hybrid' },
+    { name:'nomic-embed-text-v1.5', dims:768, maxTok:8192, cost:'Free (self-host)', best:'Long documents, 8K context window', tag:'open', badge:'Open Source' },
+    { name:'voyage-large-2-instruct', dims:1024, maxTok:16000, cost:'~$0.12 / 1M tokens', best:'Legal, code, instruction-following RAG', tag:'enterprise', badge:'High precision' },
+    { name:'multilingual-e5-large', dims:1024, maxTok:512, cost:'Free (self-host)', best:'50+ languages, open weights', tag:'multilingual', badge:'Multilingual' },
+];
+
+const TAG_COLORS = { general:'bg-teal-900/40 text-teal-300', enterprise:'bg-blue-900/40 text-blue-300', open:'bg-green-900/40 text-green-300', multilingual:'bg-purple-900/40 text-purple-300' };
+
+function renderModels(filter) {
+    const rows = filter === 'all' ? MODELS : MODELS.filter(m => m.tag === filter);
+    document.getElementById('model-table').innerHTML = rows.map(m => `
+        <tr class="model-row transition-colors">
+            <td class="px-4 py-3 font-mono text-xs text-teal-300 whitespace-nowrap">${m.name}</td>
+            <td class="px-4 py-3 text-slate-300 text-center">${m.dims.toLocaleString()}</td>
+            <td class="px-4 py-3 text-slate-300 text-center">${m.maxTok.toLocaleString()}</td>
+            <td class="px-4 py-3 text-slate-300 whitespace-nowrap">${m.cost}</td>
+            <td class="px-4 py-3 text-slate-400 text-xs">${m.best}</td>
+            <td class="px-4 py-3"><span class="pill ${TAG_COLORS[m.tag] || ''} border border-slate-600">${m.badge}</span></td>
+        </tr>`).join('');
+}
+
+function filterModels(f) {
+    document.querySelectorAll('.model-filter-btn').forEach(b => {
+        b.classList.remove('bg-teal-700','text-white');
+        b.classList.add('bg-slate-700','text-slate-300','hover:bg-slate-600');
+    });
+    const btn = document.getElementById('mf-' + f);
+    if (btn) { btn.classList.add('bg-teal-700','text-white'); btn.classList.remove('bg-slate-700','text-slate-300','hover:bg-slate-600'); }
+    renderModels(f);
+}
+
+// ── TAB 4 TOP-K ──────────────────────────────────────────────────────────
+function updateTopK() {
+    const k = parseInt(document.getElementById('k-slider').value);
+    document.getElementById('k-val').textContent = k;
+    document.getElementById('k-inline').textContent = k;
+    const tokens = k * 512;
+    document.getElementById('k-tokens').textContent = `~${tokens.toLocaleString()}`;
+    document.getElementById('k-cost').textContent = `~$${(tokens / 1_000_000 * 0.15 * 1000).toFixed(4)}`;
+
+    const recall = Math.min(98, Math.round(30 + k * 4.5 - Math.max(0, k - 10) * 2));
+    const prec   = Math.max(10, Math.round(97 - k * 4));
+    const conf   = Math.min(95, Math.round(k * 5 - 5));
+    const lat    = Math.min(99, Math.round(k * 5));
+
+    setBar('recall-bar', recall, 'recall-val');
+    setBar('prec2-bar',  prec,   'prec2-val');
+    setBar('conf-bar',   conf,   'conf-val');
+    setBar('lat-bar',    lat,    'lat-val');
+
+    let advice = '';
+    if (k <= 2) advice = '<strong class="text-amber-400">K=1–2:</strong> Ultra-focused but high miss rate. Use only when chunks are very large (>1K tokens) or retrieval quality is exceptionally well-calibrated. Most multi-part questions will miss relevant context.';
+    else if (k <= 5) advice = '<strong class="text-teal-400">K=3–5 — Recommended default.</strong> The sweet spot for most RAG applications. 5 chunks of 512 tokens = ~2,500 tokens of context, well within any modern LLM\'s window and well below the noise threshold.';
+    else if (k <= 10) advice = '<strong class="text-teal-400">K=6–10:</strong> Better recall for multi-faceted questions that span several documents or sections. Add a re-ranker here — without one, the bottom-ranked chunks in this range are likely noise.';
+    else advice = '<strong class="text-amber-400">K>10:</strong> The LLM is now reading a lot of loosely related context. Hallucination risk rises as the model attempts to synthesise fragments that don\'t fit together. Apply a cross-encoder re-ranker and consider increasing chunk size rather than K.';
+
+    document.getElementById('k-advice').innerHTML = advice;
+}
+
+// ── TAB 5 RETRIEVAL ───────────────────────────────────────────────────────
+const STRATEGY_DETAILS = {
+    dense: '<strong class="text-white">Dense retrieval in practice:</strong> Both query and chunks are converted to vectors by the same embedding model. Nearest-neighbour search (typically HNSW index) returns the K closest vectors.<br><br><strong class="text-teal-400">When it wins:</strong> Natural language queries where users paraphrase differently than the documents. "How do I cancel?" matches "termination procedure" because both map to a similar region of vector space.<br><br><strong class="text-amber-400">When it struggles:</strong> Exact-phrase queries like product codes, legal article references, or proper nouns. Semantic proximity doesn\'t help when you need an exact string match.<br><br>Implementation: <code class="text-xs bg-slate-900 text-teal-300 px-1 rounded">vectorstore.similarity_search(query, k=5)</code>',
+    sparse: '<strong class="text-white">BM25 scoring:</strong> Ranks chunks by how often the query terms appear in that chunk, normalised by document length and adjusted by how rare those terms are across the whole corpus. Common words ("the", "is") score near-zero; rare, specific terms score high.<br><br><strong class="text-teal-400">When it wins:</strong> Any query where the exact wording matters — SKU numbers, legal citations, product model names, error codes, technical identifiers. BM25 finds "NVL-4872-B" reliably where dense search might return loosely related hardware descriptions.<br><br><strong class="text-amber-400">When it struggles:</strong> Any query phrased differently than the source document. "How do I get my money back?" returns nothing if your document only says "refund policy."',
+    hybrid: '<strong class="text-white">How RRF fusion works:</strong> Both systems produce a ranked list of results. Each document gets a combined score = Σ 1/(rank + 60) across all lists. A document ranked #1 by both systems scores highest. A document ranked #200 by one and absent from the other contributes almost nothing.<br><br><strong class="text-teal-400">Why RRF is robust:</strong> It\'s rank-based, not score-based — so it doesn\'t matter that cosine similarity and BM25 use incompatible scoring scales. Any document both systems agree on rises to the top automatically.<br><br><strong class="text-teal-400">Native support:</strong> Pinecone (hybrid search API), Weaviate (BM25 + vector), Qdrant (sparse + dense), LlamaIndex hybrid retriever, LangChain EnsembleRetriever.<br><br><strong class="text-amber-400">When pure dense is fine:</strong> If your data is entirely natural language prose with no product codes or technical identifiers, and your users query conversationally, hybrid adds complexity without meaningful gain.'
+};
+
+function selectStrategy(s) {
+    document.getElementById('strategy-detail').innerHTML = STRATEGY_DETAILS[s] || '';
+}
+
+function updateReranker() {
+    const on = document.getElementById('rerank-toggle').checked;
+    document.getElementById('rerank-label').textContent = on ? 'On' : 'Off';
+    document.getElementById('rerank-track').style.background = on ? '#0d9488' : '';
+    document.getElementById('rerank-dot').style.transform = on ? 'translateX(20px)' : '';
+    document.getElementById('rerank-detail').classList.toggle('hidden', !on);
+    document.getElementById('rerank-off-msg').classList.toggle('hidden', on);
+}
+
+// ── TAB 6 DEBUG ──────────────────────────────────────────────────────────
+// Sources: RAGAS docs, LlamaIndex evaluation guide, Pinecone RAG blog,
+//          Weaviate production RAG guides, LangChain RAG tutorial
+const DEBUG_ITEMS = [
+    {
+        s: 'Low Faithfulness score — LLM answers drift from provided context',
+        l: 'Generation',
+        c: 'The LLM is generating statements not supported by the retrieved chunks. RAGAS defines Faithfulness as the fraction of the answer that can be attributed to the retrieved context. A low score means the model is using parametric (training) knowledge instead of the provided documents.',
+        f: 'Per LangChain RAG docs: add an unambiguous grounding instruction to your system prompt — "Answer using ONLY the documents below. If the answer is not there, say so." Verify the context is actually being passed to the model (log the full prompt, not just the query). Low Faithfulness with correct retrieval is almost always a system prompt issue.',
+        col: 'red'
+    },
+    {
+        s: 'Low Context Recall — correct answer absent from Top-K results',
+        l: 'Retrieval',
+        c: 'Per the RAGAS framework, Context Recall measures whether all ground-truth answer components appear in the retrieved context. A low score means the relevant chunk exists in the index but is not making it into the Top-K — it is being outranked by less relevant passages.',
+        f: 'From LlamaIndex retrieval eval guide: inspect the raw retrieved chunks for failing queries first. If the correct chunk is not present: (1) increase K, (2) reduce chunk size so the target fact has its own passage, (3) add metadata pre-filtering to reduce the search space, (4) switch from dense-only to hybrid retrieval.',
+        col: 'yellow'
+    },
+    {
+        s: 'Low Context Precision — irrelevant chunks dilute the answer',
+        l: 'Retrieval',
+        c: 'RAGAS Context Precision measures what fraction of retrieved chunks are actually relevant. A low score means the correct chunk is present, but so are many irrelevant ones — the LLM is reading noise alongside signal, which degrades answer quality and increases cost.',
+        f: 'From Pinecone RAG guide: add a re-ranker to filter retrieved chunks before generation. Cross-encoders (Cohere Rerank, ms-marco-MiniLM) substantially improve Context Precision by re-scoring chunk relevance using joint query+chunk inference rather than independent embedding similarity.',
+        col: 'yellow'
+    },
+    {
+        s: 'Answer Quality metric score (Answer Relevancy) consistently low',
+        l: 'Generation',
+        c: 'RAGAS Answer Relevancy measures whether the generated answer directly addresses the question — independent of factual correctness. Low scores usually mean the retrieved context is off-topic, or the system prompt allows verbose, tangential responses.',
+        f: 'Per LlamaIndex evaluation guide: evaluate retrieval and response separately. If Context Recall is fine but Answer Relevancy is low, the generation prompt needs tightening — instruct the model to be concise and directly address the question before citing supporting context.',
+        col: 'red'
+    },
+    {
+        s: 'Retrieval quality drops for paraphrased queries',
+        l: 'Retrieval',
+        c: 'Dense-only retrieval is sensitive to vocabulary shift — "cost to cancel" and "early termination fee" may map to different regions of the embedding space even though they mean the same thing. Documented in Weaviate\'s hybrid search guide as the primary motivation for adding BM25.',
+        f: 'From Weaviate hybrid search docs: combine dense (embedding) and sparse (BM25) retrieval using Reciprocal Rank Fusion. BM25 anchors exact-phrase matches while dense retrieval bridges the vocabulary gap. Alternatively, add a query rewrite step using HyDE or multi-query expansion (documented in LangChain RAG tutorial).',
+        col: 'yellow'
+    },
+    {
+        s: 'Key fact in source document never surfaces in retrieval',
+        l: 'Retrieval',
+        c: 'From Pinecone chunking guide: when chunk boundaries split a critical sentence, neither the preceding nor the following chunk carries a complete, retrievable statement. Cosine similarity against an incomplete fragment reliably returns low scores.',
+        f: 'Increase chunk overlap so boundary text appears in both adjacent chunks. Use ChunkViz (chunkviz.up.railway.app) to verify your critical facts are intact within a single chunk. LlamaIndex recommends recursive or semantic chunking for documents where paragraph boundaries matter.',
+        col: 'yellow'
+    },
+    {
+        s: 'Silent retrieval failure after updating the embedding model',
+        l: 'Retrieval',
+        c: 'Documented by Pinecone as one of the most common production incidents: if the embedding model used at query time differs from the model used during ingestion, every cosine similarity score is comparing vectors from incompatible coordinate spaces. No error is thrown — retrieval degrades silently.',
+        f: 'Re-index the entire corpus any time the embedding model changes. Pin the model name and version in your config. Add a startup assertion that verifies the query model matches the index metadata. This failure is entirely preventable with version control discipline.',
+        col: 'red'
+    },
+    {
+        s: 'High latency or cost per query in production',
+        l: 'Generation',
+        c: 'Per LangChain and LlamaIndex performance guides: LLM generation is typically 60–80% of end-to-end RAG latency. Context length (K × chunk size) has a linear relationship with both generation latency and per-query cost.',
+        f: 'Reduce K with a re-ranker — retrieve 10–20, re-rank, pass only the top 3–5 to the LLM. Switch to a smaller generation model (GPT-4o-mini vs GPT-4o for standard queries). Enable streaming output for perceived latency. Cache responses for common or repeated queries.',
+        col: 'orange'
+    },
+    {
+        s: 'Eval set passes in development, quality drops in production',
+        l: 'Infrastructure',
+        c: 'From LlamaIndex production deployment guide: eval sets built from a narrow slice of data at project start become unrepresentative as real user queries and document updates accumulate. This is data distribution drift — the pipeline was tuned for a different input distribution than it now receives.',
+        f: 'Build eval sets from actual production queries (with expected answers) rather than synthetic ones. Establish a continuous eval pipeline that runs on a rolling sample of live traffic. Log retrieval scores per query in production — a drift in average similarity score is an early signal before answer quality visibly degrades.',
+        col: 'purple'
+    },
+    {
+        s: 'Source documents contain contradictory or stale information',
+        l: 'Infrastructure',
+        c: 'From Weaviate\'s RAG data quality guide: the model cannot distinguish a correct document from an outdated one — it retrieves both with equal confidence. Contradictory chunks in the same Top-K result in hedged, inconsistent, or incorrect answers.',
+        f: 'Implement document versioning at ingestion: delete all chunks for a document before re-ingesting an updated version (use document ID as the deletion key). Tag chunks with a "valid_until" metadata field where applicable. Audit source data for superseded policies, duplicate entries, and conflicting definitions before initial indexing.',
+        col: 'purple'
+    },
+    {
+        s: 'Unauthorised users retrieve confidential documents',
+        l: 'Access',
+        c: 'From Pinecone and Weaviate security documentation: vector databases do not enforce role-based access control (RBAC) natively. Without application-level filtering, a similarity search returns all matching chunks regardless of the requesting user\'s permission level.',
+        f: 'Enforce access control through metadata filtering applied before the similarity search runs. At ingestion, tag every chunk with its access level (e.g. department, role, clearance). At query time, pre-filter the search namespace to chunks the user is permitted to see. RBAC is the application\'s responsibility, not the vector DB\'s.',
+        col: 'red'
+    },
+    {
+        s: 'Full re-index required every time any document changes',
+        l: 'Infrastructure',
+        c: 'A common architectural gap documented in both Pinecone and Weaviate production guides: teams that don\'t design for incremental updates end up with O(corpus) re-indexing cost for O(1) document changes, making frequent data refreshes impractical.',
+        f: 'Design incremental indexing from the start: assign a stable ID to each source document. On update: (1) query the vector DB for all chunk IDs belonging to that document ID, (2) delete them, (3) re-chunk and re-embed only the updated document, (4) insert the new chunks. Weaviate and Pinecone both support targeted deletion by metadata filter.',
+        col: 'orange'
+    },
+];
+
+const L_COLORS = { Retrieval:'bg-yellow-900/40 text-yellow-300 border-yellow-800', Generation:'bg-red-900/40 text-red-300 border-red-800', Infrastructure:'bg-purple-900/40 text-purple-300 border-purple-800', Access:'bg-orange-900/40 text-orange-300 border-orange-800' };
+
+function renderDebug() {
+    document.getElementById('debug-cards').innerHTML = DEBUG_ITEMS.map((d, i) => `
+        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden cursor-pointer" onclick="toggleDebug(${i})">
+            <div class="flex items-start gap-3 p-4">
+                <span class="text-lg mt-0.5">${{red:'🔴',yellow:'🟡',orange:'🟠',purple:'🟣'}[d.col]||'⚪'}</span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-white font-semibold text-sm leading-snug">${d.s}</p>
+                    <span class="pill ${L_COLORS[d.l]||''} border text-xs mt-1">${d.l}</span>
+                </div>
+                <span class="text-slate-500 text-xs mt-1 flex-shrink-0" id="dbg-arrow-${i}">▼</span>
+            </div>
+            <div id="dbg-body-${i}" style="display:none" class="px-4 pb-4 border-t border-slate-700 pt-3 space-y-2">
+                <p class="text-xs text-slate-400"><strong class="text-amber-400">Root cause:</strong> ${d.c}</p>
+                <p class="text-xs text-slate-400"><strong class="text-teal-400">Fix:</strong> ${d.f}</p>
+            </div>
+        </div>`).join('');
+}
+
+function toggleDebug(i) {
+    const b = document.getElementById('dbg-body-' + i);
+    const a = document.getElementById('dbg-arrow-' + i);
+    const open = b.style.display !== 'none';
+    b.style.display = open ? 'none' : 'block';
+    a.textContent = open ? '▼' : '▲';
+}
+
+// ── TAB 7 PRE-LAUNCH ─────────────────────────────────────────────────────
+const LAUNCH_ITEMS = [
+    { cat:'Ingestion', t:'Embedding model locked and version-pinned in requirements / config' },
+    { cat:'Ingestion', t:'Same model confirmed for both ingestion path and query path' },
+    { cat:'Ingestion', t:'Chunk output reviewed in ChunkViz or manually for 10+ representative docs' },
+    { cat:'Ingestion', t:'Overlap set to at least 10% of chunk size' },
+    { cat:'Ingestion', t:'Metadata (source, date, category, doc ID, access level) on every stored chunk' },
+    { cat:'Ingestion', t:'Duplicate and outdated documents removed from source data' },
+    { cat:'Ingestion', t:'PDF/HTML parse validated — no blank chunks from image-based PDFs (OCR confirmed)' },
+    { cat:'Retrieval', t:'Similarity scores logged for 20+ representative test queries' },
+    { cat:'Retrieval', t:'Top-K set and tested — correct answer appears in retrieved set for test cases' },
+    { cat:'Retrieval', t:'Retrieval strategy (dense / hybrid) chosen and justified for data type' },
+    { cat:'Retrieval', t:'Metadata pre-filtering applied where relevant to narrow search scope' },
+    { cat:'Retrieval', t:'Re-ranker enabled — or explicitly skipped with documented justification' },
+    { cat:'Generation', t:'System prompt includes explicit "use only provided context" constraint' },
+    { cat:'Generation', t:'System prompt includes "say I don\'t know if answer is absent" instruction' },
+    { cat:'Generation', t:'Manual test: top-K chunks pasted directly to LLM — correct answer produced' },
+    { cat:'Generation', t:'Source citations / document references included in LLM output' },
+    { cat:'Production', t:'Access control enforced via metadata filtering, not assumed from DB defaults' },
+    { cat:'Production', t:'Incremental indexing plan defined — no full re-index for single-document updates' },
+    { cat:'Production', t:'Offline eval set created: minimum 30 (question, expected answer) pairs' },
+    { cat:'Production', t:'Observability in place: query logs, retrieval scores, latency tracked per request' },
+];
+
+let launchState = {};
+
+function renderLaunch() {
+    const catColors = { Ingestion:'text-yellow-400', Retrieval:'text-teal-400', Generation:'text-blue-400', Production:'text-purple-400' };
+    let currentCat = '';
+    document.getElementById('launch-checks').innerHTML = LAUNCH_ITEMS.map((item, i) => {
+        let hdr = '';
+        if (item.cat !== currentCat) {
+            currentCat = item.cat;
+            hdr = `<p class="text-xs font-bold uppercase tracking-widest ${catColors[item.cat]||'text-slate-400'} mt-4 mb-2 px-1">${item.cat}</p>`;
+        }
+        const chk = launchState[i];
+        return `${hdr}<div class="check-item flex items-start gap-3 bg-slate-900 rounded-xl p-3.5 border border-slate-700 hover:border-slate-600 cursor-pointer" onclick="toggleLaunch(${i})">
+            <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${chk ? 'bg-teal-900/60 border-teal-500' : 'border-slate-600'}">
+                ${chk ? '<svg class="w-3 h-3 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+            </div>
+            <p class="text-sm ${chk ? 'text-slate-500 line-through' : 'text-slate-300'} leading-snug">${item.t}</p>
+        </div>`;
+    }).join('');
+    const done = Object.values(launchState).filter(Boolean).length;
+    document.getElementById('launch-pct').textContent = `${done} / ${LAUNCH_ITEMS.length}`;
+    document.getElementById('launch-bar').style.width = Math.round(done / LAUNCH_ITEMS.length * 100) + '%';
+    document.getElementById('launch-complete').classList.toggle('hidden', done < LAUNCH_ITEMS.length);
+}
+
+function toggleLaunch(i) { launchState[i] = !launchState[i]; renderLaunch(); }
+function resetLaunch() { launchState = {}; renderLaunch(); }
+
+// ── TOC OBSERVER ─────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+    updateChunk(); updateTopK(); renderModels('all'); renderDebug(); renderLaunch();
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('toc-active'));
+            const a = document.querySelector(`.toc-link[href="#${e.target.id}"]`);
+            if (a) a.classList.add('toc-active');
+        });
+    }, { threshold: 0.35 });
+    document.querySelectorAll('section[id]').forEach(s => obs.observe(s));
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+    links.forEach(link => { const n = link.getAttribute('data-group'); if (!groups[n]) groups[n] = []; groups[n].push(link); });
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:relative;display:inline-block;';
+        const trigger = document.createElement('button');
+        trigger.className = 'nav-btn';
+        trigger.innerHTML = `${groupName} ▾`;
+        const menu = document.createElement('div');
+        menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
+        const first = groupItems[0];
+        if (first.parentNode) first.replaceWith(wrapper);
+        groupItems.forEach(link => {
+            link.style.cssText = 'display:block;padding:.4rem .75rem;border-radius:4px;color:#333;text-decoration:none;font-size:.85rem;white-space:nowrap;';
+            link.onmouseenter = () => link.style.background = '#f0f9ff';
+            link.onmouseleave = () => link.style.background = '';
+            menu.appendChild(link);
+        });
+        wrapper.appendChild(trigger); wrapper.appendChild(menu);
+        trigger.addEventListener('click', e => { e.stopPropagation(); const open = menu.style.display === 'flex'; document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }); menu.style.display = open ? 'none' : 'flex'; });
+    });
+    document.addEventListener('click', () => document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }));
+});
+</script>
+
+</body>
+</html>
