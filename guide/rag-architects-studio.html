@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Architect's Studio — Context Budget & Pattern Matcher | RawWeights</title>
+    <meta name="description" content="Two interactive tools: allocate your context window like a budget, then match your use case to the right RAG pattern. Context engineering, agentic RAG, graph RAG, and evals.">
+    <meta name="author" content="RawWeights">
+    <meta property="og:type" content="website">
+	<meta property="og:image" content="https://rawweights.com/images/ragad_slide.png">
+    <meta property="og:url" content="https://www.rawweights.com/blog/rag-architects-studio.html">
+    <meta property="og:title" content="RAG Architect's Studio — Context Budget & Pattern Matcher">
+    <meta property="og:description" content="Context engineering, agentic RAG, graph RAG, and evals — turned into two interactive tools.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
+        }
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <style>
+        /* ── nav ── */
+        nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
+        .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+        .nav-links { display:flex; gap:.6rem; flex-wrap:wrap; }
+        .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.35rem .8rem; border-radius:6px; cursor:pointer; font-size:.82rem; transition:all .2s; }
+        .nav-btn:hover { background:#0077b5; color:white; }
+        /* ── tabs ── */
+        .sb-tab { padding:.5rem 1rem; border-radius:8px 8px 0 0; cursor:pointer; font-size:.78rem; font-weight:600; color:#64748b; background:#0f172a; border:1px solid #1e293b; border-bottom:none; transition:all .2s; white-space:nowrap; }
+        .sb-tab.active { background:#1e293b; color:#a78bfa; border-color:#7c3aed; border-bottom:1px solid #1e293b; }
+        .sb-tab:hover:not(.active) { color:#cbd5e1; background:#1e293b; }
+        /* ── misc ── */
+        html { scroll-behavior:smooth; }
+        input[type=range] { accent-color:#7c3aed; }
+        .eq-cell { cursor:pointer; transition:all .25s; }
+        .eq-cell:hover { transform:scale(1.02); }
+        .pm-btn { transition:all .2s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .fade-in { animation:fadeIn .35s ease forwards; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture &amp; Lifecycle</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+<!-- HEADER -->
+<header class="bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-violet-900/30 via-slate-900 to-slate-900 pointer-events-none"></div>
+    <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image:linear-gradient(#a78bfa 1px,transparent 1px),linear-gradient(90deg,#a78bfa 1px,transparent 1px);background-size:60px 60px;"></div>
+
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-14 relative z-10">
+
+        <!-- LEFT -->
+        <div class="lg:w-1/2 space-y-6 pt-2">
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-violet-500/15 border border-violet-500/40 text-violet-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Advanced RAG</span>
+                <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy · Week 2</span>
+                <span class="bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">2 Interactive Tools</span>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.06]">
+                RAG<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400">Architect's Studio</span>
+            </h1>
+            <p class="text-slate-300 text-lg leading-relaxed max-w-lg">
+                Context is your budget. Every token costs attention — and attention is finite. This studio gives you two instruments: <strong class="text-white">spend your context wisely</strong>, and <strong class="text-white">pick the right RAG pattern for your problem</strong>.
+            </p>
+            <div class="border-l-4 border-violet-500 pl-4 py-1">
+                <p class="text-slate-200 text-base leading-relaxed italic">"The model reads exactly what you give it — in exactly the order you give it. Placement is not decoration. It is signal strength."</p>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="lg:w-1/2 w-full space-y-4 pt-2">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-800/80 rounded-2xl p-5 border border-violet-500/30 shadow-xl">
+                    <div class="text-3xl mb-2">💰</div>
+                    <p class="text-violet-300 text-xs font-bold uppercase tracking-wider mb-1">Tool A</p>
+                    <p class="text-white font-bold text-lg mb-1">Context Budget</p>
+                    <p class="text-slate-400 text-sm">Allocate your context window like real estate. See what gets attention and what gets lost in the middle.</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-2xl p-5 border border-fuchsia-500/30 shadow-xl">
+                    <div class="text-3xl mb-2">🗺️</div>
+                    <p class="text-fuchsia-300 text-xs font-bold uppercase tracking-wider mb-1">Tool B</p>
+                    <p class="text-white font-bold text-lg mb-1">Pattern Matcher</p>
+                    <p class="text-slate-400 text-sm">3 questions about your problem → the right RAG pattern with trade-off breakdown.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-4 gap-3">
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-violet-400">7</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Context layers</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-purple-400">4</p>
+                    <p class="text-slate-400 text-xs mt-0.5">RAG patterns</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-fuchsia-400">3</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Compression modes</p>
+                </div>
+                <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+                    <p class="text-2xl font-black text-pink-400">2×2</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Eval quadrant</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main class="w-full bg-slate-900 flex-grow">
+<div class="max-w-7xl mx-auto px-6 py-14 flex flex-col lg:flex-row gap-14">
+
+    <!-- SIDEBAR TOC -->
+    <aside class="lg:w-64 flex-shrink-0 hidden lg:block">
+        <nav class="sticky top-8 bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl">
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-4 border-b border-slate-700 pb-3">Studio Tools</h3>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-violet-400 text-xs font-bold uppercase tracking-wider mb-2">💰 Context Budget</p>
+                    <ul class="space-y-1 text-xs text-slate-400 pl-2">
+                        <li><button onclick="showTab(1)" class="hover:text-violet-300 transition-colors py-0.5 text-left w-full">① Budget Planner</button></li>
+                        <li><button onclick="showTab(2)" class="hover:text-violet-300 transition-colors py-0.5 text-left w-full">② Attention Map</button></li>
+                        <li><button onclick="showTab(3)" class="hover:text-violet-300 transition-colors py-0.5 text-left w-full">③ Compression Lab</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="text-fuchsia-400 text-xs font-bold uppercase tracking-wider mb-2">🗺️ Pattern Matcher</p>
+                    <ul class="space-y-1 text-xs text-slate-400 pl-2">
+                        <li><button onclick="showTab(4)" class="hover:text-fuchsia-300 transition-colors py-0.5 text-left w-full">④ Pattern Match</button></li>
+                        <li><button onclick="showTab(5)" class="hover:text-fuchsia-300 transition-colors py-0.5 text-left w-full">⑤ Autonomy Dial</button></li>
+                        <li><button onclick="showTab(6)" class="hover:text-fuchsia-300 transition-colors py-0.5 text-left w-full">⑥ Graph Lens</button></li>
+                        <li><button onclick="showTab(7)" class="hover:text-fuchsia-300 transition-colors py-0.5 text-left w-full">⑦ Eval Clinic</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-5 pt-4 border-t border-slate-700 space-y-2">
+                <p class="text-slate-600 text-xs mb-1">Build on these first:</p>
+                <a href="/guide/rag.html" class="block text-slate-500 hover:text-violet-400 text-xs transition-colors">RAG Fundamentals →</a>
+                <a href="/guide/rag-pipeline-toolkit.html" class="block text-slate-500 hover:text-violet-400 text-xs transition-colors">Pipeline Toolkit →</a>
+                <a href="/blog/nvidia-llm-post-training.html" class="block text-slate-500 hover:text-violet-400 text-xs transition-colors">Post-Training →</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="flex-1 min-w-0 space-y-6 text-slate-300">
+
+        <!-- Intro cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-800/60 rounded-xl p-5 border border-violet-500/20">
+                <p class="text-violet-300 font-bold text-xs uppercase tracking-widest mb-2">The mental model shift</p>
+                <p class="text-sm text-slate-300 leading-relaxed">Basic RAG asks <em>"did I retrieve relevant chunks?"</em> Advanced RAG asks <em>"did I spend my context budget on the right things, in the right order, using the right pattern?"</em></p>
+            </div>
+            <div class="bg-slate-800/60 rounded-xl p-5 border border-fuchsia-500/20">
+                <p class="text-fuchsia-300 font-bold text-xs uppercase tracking-widest mb-2">How to use this studio</p>
+                <p class="text-sm text-slate-300 leading-relaxed">Start with the Budget Planner to understand context constraints. Use the Pattern Matcher to choose your architecture. Close the loop with the Eval Clinic.</p>
+            </div>
+        </div>
+
+        <!-- TAB BAR -->
+        <div class="flex flex-wrap gap-1 border-b border-violet-500/30">
+            <button class="sb-tab active" id="tab-1" onclick="showTab(1)">① Budget</button>
+            <button class="sb-tab" id="tab-2" onclick="showTab(2)">② Attention</button>
+            <button class="sb-tab" id="tab-3" onclick="showTab(3)">③ Compression</button>
+            <button class="sb-tab" id="tab-4" onclick="showTab(4)">④ Pattern Match</button>
+            <button class="sb-tab" id="tab-5" onclick="showTab(5)">⑤ Autonomy Dial</button>
+            <button class="sb-tab" id="tab-6" onclick="showTab(6)">⑥ Graph Lens</button>
+            <button class="sb-tab" id="tab-7" onclick="showTab(7)">⑦ Eval Clinic</button>
+        </div>
+
+        <!-- TAB PANELS -->
+        <div class="bg-slate-950 border border-slate-700 border-t-0 rounded-b-2xl p-6 min-h-96">
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- TAB 1: CONTEXT BUDGET PLANNER                  -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="sb-1" class="sb-content">
+                <h3 class="text-white font-bold text-xl mb-1">Context Budget Planner</h3>
+                <p class="text-slate-400 text-sm mb-5">Your context window is <strong class="text-white">real estate</strong>. Toggle each layer to see how your budget fills — and where risks appear. Every token you include competes for the model's finite attention.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+                    <!-- Layer toggles (3 cols) -->
+                    <div class="lg:col-span-3 space-y-2" id="ctx-layers"></div>
+
+                    <!-- Budget meter (2 cols) -->
+                    <div class="lg:col-span-2 space-y-3">
+                        <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
+                            <div class="flex justify-between text-xs mb-2">
+                                <span class="text-slate-400">Context used</span>
+                                <span id="ctx-pct" class="font-bold text-white">24%</span>
+                            </div>
+                            <!-- Visual window -->
+                            <div id="ctx-window" style="height:210px;display:flex;flex-direction:column;overflow:hidden;background:#0f172a;border-radius:8px;border:1px solid #1e293b;position:relative;margin-bottom:10px;"></div>
+                            <!-- Usage bar -->
+                            <div class="h-2 bg-slate-800 rounded-full overflow-hidden mb-1">
+                                <div id="ctx-bar" class="h-full rounded-full transition-all duration-500" style="width:24%;background:#7c3aed;"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-600 mt-1"><span>0%</span><span>100% (128K tokens)</span></div>
+                        </div>
+
+                        <div id="ctx-advice" class="bg-slate-900 rounded-xl p-4 border border-slate-700 text-xs leading-relaxed text-slate-400">
+                            Toggle layers on the left to fill your context window.
+                        </div>
+
+                        <div id="ctx-stack-order" class="bg-slate-900 rounded-xl p-4 border border-slate-700 hidden">
+                            <p class="text-violet-300 text-xs font-bold uppercase tracking-wider mb-2">Active stack order</p>
+                            <div class="space-y-1" id="stack-order-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- TAB 2: ATTENTION MAP                           -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="sb-2" class="sb-content hidden">
+                <h3 class="text-white font-bold text-xl mb-1">Attention Map — Lost in the Middle</h3>
+                <p class="text-slate-400 text-sm mb-5">LLMs pay strong attention to what's at the <strong class="text-white">start</strong> and <strong class="text-white">end</strong> of the context. The middle fades — like a long college group chat where you remember the first few messages and the latest one, but the ones in the middle blur. Drag the slider to see attention erode as context fills.</p>
+
+                <div class="mb-4">
+                    <label class="text-slate-400 text-sm block mb-2">Context fill: <strong id="attn-fill-label" class="text-white">20%</strong> of window used</label>
+                    <input type="range" id="attn-slider" min="10" max="95" value="20" step="5" class="w-full" oninput="updateAttention(this.value)">
+                    <div class="flex justify-between text-xs text-slate-600 mt-1"><span>Near empty</span><span>Nearly full</span></div>
+                </div>
+
+                <canvas id="attn-canvas" width="900" height="180" class="w-full rounded-xl border border-slate-700 mb-4 block"></canvas>
+
+                <div id="attn-msg" class="bg-slate-800 rounded-xl p-4 border border-slate-700 text-sm text-slate-300 leading-relaxed mb-4"></div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-green-900/40 text-center">
+                        <p class="text-green-400 font-bold text-xs mb-1">START</p>
+                        <p class="text-white text-2xl font-black">95%</p>
+                        <p class="text-slate-500 text-xs">attention retained</p>
+                        <p class="text-slate-400 text-xs mt-2">System prompt, few-shot examples</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-4 border border-red-900/40 text-center">
+                        <p class="text-red-400 font-bold text-xs mb-1">MIDDLE</p>
+                        <p id="attn-mid-pct" class="text-white text-2xl font-black">85%</p>
+                        <p class="text-slate-500 text-xs">attention retained</p>
+                        <p class="text-slate-400 text-xs mt-2">Drops as context grows ↓</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-4 border border-green-900/40 text-center">
+                        <p class="text-green-400 font-bold text-xs mb-1">END</p>
+                        <p class="text-white text-2xl font-black">90%</p>
+                        <p class="text-slate-500 text-xs">attention retained</p>
+                        <p class="text-slate-400 text-xs mt-2">User query always goes here</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-violet-500/10 border border-violet-500/30 rounded-xl p-4 text-sm text-violet-200">
+                    <strong>The fix:</strong> Put your most critical context at the start or end. Re-rank chunks so the highest-relevance chunk sits at position 1 (not buried in the middle). Use a needle-in-haystack test to verify your model actually finds it.
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- TAB 3: COMPRESSION LAB                         -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="sb-3" class="sb-content hidden">
+                <h3 class="text-white font-bold text-xl mb-1">Signal vs Noise Lab — 3 Compression Methods</h3>
+                <p class="text-slate-400 text-sm mb-5">Think of a college group chat after exam results — 80% noise, 20% signal. A retrieved chunk has the same problem: the fact you need is buried in filler. Pick your filter below and see what survives — and what the model never needed to read.</p>
+
+                <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-slate-500 text-xs uppercase tracking-wider">Original chunk</p>
+                        <span class="text-white font-mono font-bold text-xs">180 tokens</span>
+                    </div>
+                    <p id="comp-original" class="text-slate-300 text-xs leading-relaxed font-mono"></p>
+                    <p class="text-slate-600 text-xs mt-2">Source: College group chat — after Semester 4 results</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 mb-4">
+                    <button onclick="compress('extract')" id="btn-extract" class="bg-slate-800 hover:bg-violet-900/40 border border-slate-700 hover:border-violet-500 text-white text-sm font-bold py-3 px-3 rounded-xl transition-all text-left">
+                        🎯 Extract<br><span class="text-xs text-slate-400 font-normal">Pick best sentences</span>
+                    </button>
+                    <button onclick="compress('summarize')" id="btn-summarize" class="bg-slate-800 hover:bg-fuchsia-900/40 border border-slate-700 hover:border-fuchsia-500 text-white text-sm font-bold py-3 px-3 rounded-xl transition-all text-left">
+                        ✂️ Summarize<br><span class="text-xs text-slate-400 font-normal">Condense meaning</span>
+                    </button>
+                    <button onclick="compress('compress')" id="btn-compress" class="bg-slate-800 hover:bg-purple-900/40 border border-slate-700 hover:border-purple-500 text-white text-sm font-bold py-3 px-3 rounded-xl transition-all text-left">
+                        🗜️ Compress<br><span class="text-xs text-slate-400 font-normal">Drop low-value tokens</span>
+                    </button>
+                </div>
+
+                <div id="comp-result" class="bg-slate-900 rounded-xl p-4 border border-slate-700 mb-4 hidden fade-in">
+                    <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+                        <p id="comp-method-label" class="text-xs font-bold uppercase tracking-wider"></p>
+                        <div class="flex gap-3 text-xs">
+                            <span class="text-slate-400">Tokens: <strong id="comp-tokens" class="text-white"></strong></span>
+                            <span id="comp-saving" class="text-green-400 font-bold"></span>
+                        </div>
+                    </div>
+                    <p id="comp-text" class="text-slate-300 text-xs leading-relaxed font-mono mb-3"></p>
+                    <div id="comp-loss-badge" class="text-xs"></div>
+                    <p id="comp-how" class="text-slate-400 text-xs mt-2 leading-relaxed"></p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 text-xs">
+                    <div class="bg-slate-900 rounded-lg p-3 border border-violet-500/20">
+                        <p class="text-violet-300 font-bold mb-1">Extract — when?</p>
+                        <p class="text-slate-400">Chunk has a few golden sentences buried in filler. You need precision over brevity. No paraphrasing risk.</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-3 border border-fuchsia-500/20">
+                        <p class="text-fuchsia-300 font-bold mb-1">Summarize — when?</p>
+                        <p class="text-slate-400">Long chunk, qualitative content. Losing some nuance is acceptable. Best for narrative passages.</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-3 border border-purple-500/20">
+                        <p class="text-purple-300 font-bold mb-1">Compress — when?</p>
+                        <p class="text-slate-400">Many chunks, speed matters. Drop stop-words and filler. Preserves almost all facts telegraphically.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- TAB 4: PATTERN MATCHER                         -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="sb-4" class="sb-content hidden">
+                <h3 class="text-white font-bold text-xl mb-1">RAG Pattern Matcher</h3>
+                <p class="text-slate-400 text-sm mb-5">Answer 3 questions about your problem. The matcher recommends the right RAG pattern and shows you exactly what you're trading away.</p>
+
+                <div class="space-y-3 mb-5">
+                    <!-- Q1 -->
+                    <div id="pm-q1" class="bg-slate-900 rounded-xl p-5 border border-slate-700">
+                        <p class="text-slate-300 font-semibold mb-3 text-sm">① Are your data entities <strong class="text-white">interconnected</strong> — people, companies, products that reference each other?</p>
+                        <div class="flex gap-3">
+                            <button onclick="pmAnswer(1,'yes')" id="pm-q1-yes" class="pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300">Yes — relational data</button>
+                            <button onclick="pmAnswer(1,'no')" id="pm-q1-no" class="pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300">No — flat documents</button>
+                        </div>
+                    </div>
+                    <!-- Q2 -->
+                    <div id="pm-q2" class="bg-slate-900 rounded-xl p-5 border border-slate-700 opacity-40 pointer-events-none">
+                        <p class="text-slate-300 font-semibold mb-3 text-sm">② Does a single query often span <strong class="text-white">multiple data sources</strong> or require multi-step reasoning?</p>
+                        <div class="flex gap-3">
+                            <button onclick="pmAnswer(2,'yes')" id="pm-q2-yes" class="pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300">Yes — complex queries</button>
+                            <button onclick="pmAnswer(2,'no')" id="pm-q2-no" class="pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300">No — focused queries</button>
+                        </div>
+                    </div>
+                    <!-- Q3 -->
+                    <div id="pm-q3" class="bg-slate-900 rounded-xl p-5 border border-slate-700 opacity-40 pointer-events-none">
+                        <p class="text-slate-300 font-semibold mb-3 text-sm">③ Is <strong class="text-white">latency critical</strong> — does the answer need to return in under 2 seconds?</p>
+                        <div class="flex gap-3">
+                            <button onclick="pmAnswer(3,'yes')" id="pm-q3-yes" class="pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300">Yes — speed matters</button>
+                            <button onclick="pmAnswer(3,'no')" id="pm-q3-no" class="pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300">No — quality over speed</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pm-result" class="hidden fade-in">
+                    <div id="pm-card" class="rounded-2xl p-6 border-2 mb-4"></div>
+                    <button onclick="pmReset()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">← Try again</button>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- TAB 5: AUTONOMY DIAL                           -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="sb-5" class="sb-content hidden">
+                <h3 class="text-white font-bold text-xl mb-1">The Autonomy Dial</h3>
+                <p class="text-slate-400 text-sm mb-5">Every step toward agentic RAG gives you more intelligence but demands more in latency, cost, and failure management. Drag the dial and watch the trade-offs shift live.</p>
+
+                <div class="mb-5">
+                    <div class="flex justify-between text-xs mb-2">
+                        <span class="text-green-400 font-bold">← Deterministic / Naive</span>
+                        <span class="text-red-400 font-bold">Runaway Agent →</span>
+                    </div>
+                    <input type="range" id="auto-dial" min="0" max="100" value="0" step="10" class="w-full" oninput="updateDial(this.value)">
+                    <div id="dial-mode-label" class="text-center text-violet-300 font-bold text-base mt-3">Naive RAG</div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                    <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 text-center">
+                        <p class="text-slate-500 text-xs uppercase tracking-wider mb-2">Latency</p>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden mb-2"><div id="dial-lat" class="h-full rounded-full transition-all duration-500 bg-amber-400" style="width:5%"></div></div>
+                        <p id="dial-lat-n" class="text-white font-bold">~100ms</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 text-center">
+                        <p class="text-slate-500 text-xs uppercase tracking-wider mb-2">Cost / query</p>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden mb-2"><div id="dial-cost" class="h-full rounded-full transition-all duration-500 bg-red-400" style="width:4%"></div></div>
+                        <p id="dial-cost-n" class="text-white font-bold">$0.001</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 text-center">
+                        <p class="text-slate-500 text-xs uppercase tracking-wider mb-2">Accuracy ceiling</p>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden mb-2"><div id="dial-acc" class="h-full rounded-full transition-all duration-500 bg-green-400" style="width:30%"></div></div>
+                        <p id="dial-acc-n" class="text-white font-bold">60%</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 text-center">
+                        <p class="text-slate-500 text-xs uppercase tracking-wider mb-2">Failure modes</p>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden mb-2"><div id="dial-fail" class="h-full rounded-full transition-all duration-500 bg-orange-400" style="width:5%"></div></div>
+                        <p id="dial-fail-n" class="text-white font-bold">1</p>
+                    </div>
+                </div>
+
+                <div id="dial-desc" class="bg-slate-800 rounded-xl p-5 border border-slate-700 text-sm text-slate-300 leading-relaxed mb-4"></div>
+
+                <div id="dial-failures" class="hidden">
+                    <p class="text-orange-400 text-xs font-bold uppercase tracking-wider mb-2">Failure modes to guard against:</p>
+                    <div id="dial-failure-list" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- TAB 6: GRAPH LENS                              -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="sb-6" class="sb-content hidden">
+                <h3 class="text-white font-bold text-xl mb-1">Graph RAG Lens — Flat vs Rich Retrieval</h3>
+                <p class="text-slate-400 text-sm mb-5">Vector search finds <em>semantically similar</em> chunks. Graph RAG finds chunks AND traverses the relationships around them. Same query — radically different context depth. Toggle to compare.</p>
+
+                <div class="flex gap-3 mb-5">
+                    <button onclick="setGraphMode('flat')" id="g-flat-btn" class="flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all border-slate-600 text-slate-400">🔍 Flat Vector Search</button>
+                    <button onclick="setGraphMode('graph')" id="g-graph-btn" class="flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all border-slate-600 text-slate-400">🕸️ Graph RAG Enriched</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <p class="text-slate-500 text-xs uppercase tracking-wider mb-2">Graph structure</p>
+                        <canvas id="graph-canvas" width="460" height="290" class="w-full rounded-xl border border-slate-700 block"></canvas>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs uppercase tracking-wider mb-2">Context passed to LLM</p>
+                        <div id="graph-context" class="bg-slate-900 rounded-xl p-4 border border-slate-700 text-xs text-slate-300 space-y-2 min-h-64"></div>
+                    </div>
+                </div>
+
+                <div id="graph-desc" class="bg-slate-800 rounded-xl p-4 border border-slate-700 text-sm text-slate-300 leading-relaxed mb-4"></div>
+
+                <div class="bg-violet-500/10 border border-violet-500/30 rounded-xl p-4">
+                    <p class="text-violet-300 text-xs font-bold uppercase tracking-wider mb-3">Use Graph RAG when you can answer YES to all three:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+                        <div class="flex gap-2"><span class="text-violet-400 font-bold mt-0.5 flex-shrink-0">✓</span><span class="text-slate-300">Your data has named entities that connect to each other (people, companies, products)</span></div>
+                        <div class="flex gap-2"><span class="text-violet-400 font-bold mt-0.5 flex-shrink-0">✓</span><span class="text-slate-300">A query answer requires traversing 2+ hops across relationships</span></div>
+                        <div class="flex gap-2"><span class="text-violet-400 font-bold mt-0.5 flex-shrink-0">✓</span><span class="text-slate-300">You can tolerate the upfront cost of defining a graph schema (Neo4j/Cypher)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- TAB 7: EVAL CLINIC                             -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="sb-7" class="sb-content hidden">
+                <h3 class="text-white font-bold text-xl mb-1">Eval Clinic — Diagnose Your RAG</h3>
+                <p class="text-slate-400 text-sm mb-5">Every RAG failure lives in one of four quadrants. Click your quadrant — or pick a symptom — to get a diagnosis, the metrics that catch it, and the fix.</p>
+
+                <!-- Symptom picker -->
+                <div class="bg-slate-900 rounded-xl p-4 border border-violet-500/20 mb-5">
+                    <p class="text-violet-300 text-xs font-bold uppercase tracking-wider mb-3">Quick symptom check — what are you seeing?</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <button onclick="pickSymptom('wrong-confident',this)" class="symptom-btn bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs py-2 px-3 rounded-lg transition-colors text-left">😬 Wrong answer, said confidently</button>
+                        <button onclick="pickSymptom('wrong-uncertain',this)" class="symptom-btn bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs py-2 px-3 rounded-lg transition-colors text-left">🤔 Wrong answer, model seems unsure</button>
+                        <button onclick="pickSymptom('ignores-context',this)" class="symptom-btn bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs py-2 px-3 rounded-lg transition-colors text-left">⏱️ Correct chunks retrieved, bad answer</button>
+                        <button onclick="pickSymptom('refuses',this)" class="symptom-btn bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs py-2 px-3 rounded-lg transition-colors text-left">🚫 Refuses when it should answer</button>
+                    </div>
+                </div>
+
+                <!-- 2×2 grid -->
+                <div class="mb-2 grid grid-cols-2 gap-3">
+                    <div class="text-center text-xs text-slate-500">Generation Quality: <strong class="text-red-400">Low</strong></div>
+                    <div class="text-center text-xs text-slate-500">Generation Quality: <strong class="text-green-400">High</strong></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-5">
+                    <!-- High R / Low G -->
+                    <div id="eq-hl" class="eq-cell bg-slate-900 rounded-xl p-5 border-2 border-slate-700 relative" onclick="selectQuadrant('hl')">
+                        <div class="absolute top-2 left-2 text-xs text-slate-600 font-bold">Retrieval: ↑ High</div>
+                        <div class="mt-5 text-center">
+                            <div class="text-3xl mb-2">🧩</div>
+                            <p class="text-amber-400 font-bold text-sm">Good chunks, bad answer</p>
+                            <p class="text-slate-500 text-xs mt-1">LLM ignoring context</p>
+                        </div>
+                    </div>
+                    <!-- High R / High G -->
+                    <div id="eq-hh" class="eq-cell bg-slate-900 rounded-xl p-5 border-2 border-slate-700 relative" onclick="selectQuadrant('hh')">
+                        <div class="absolute top-2 right-2 text-xs text-green-500 font-bold">✓ TARGET</div>
+                        <div class="mt-5 text-center">
+                            <div class="text-3xl mb-2">🎯</div>
+                            <p class="text-green-400 font-bold text-sm">Healthy RAG</p>
+                            <p class="text-slate-500 text-xs mt-1">Both stages working</p>
+                        </div>
+                    </div>
+                    <!-- Low R / Low G -->
+                    <div id="eq-ll" class="eq-cell bg-slate-900 rounded-xl p-5 border-2 border-slate-700 relative" onclick="selectQuadrant('ll')">
+                        <div class="absolute top-2 left-2 text-xs text-slate-600 font-bold">Retrieval: ↓ Low</div>
+                        <div class="mt-5 text-center">
+                            <div class="text-3xl mb-2">🔥</div>
+                            <p class="text-red-400 font-bold text-sm">Both broken</p>
+                            <p class="text-slate-500 text-xs mt-1">Fix retrieval first</p>
+                        </div>
+                    </div>
+                    <!-- Low R / High G -->
+                    <div id="eq-lh" class="eq-cell bg-slate-900 rounded-xl p-5 border-2 border-slate-700 relative" onclick="selectQuadrant('lh')">
+                        <div class="absolute top-2 right-2 text-xs text-red-500 font-bold">⚠️ DANGER</div>
+                        <div class="mt-5 text-center">
+                            <div class="text-3xl mb-2">👻</div>
+                            <p class="text-red-400 font-bold text-sm">Hallucinating confidently</p>
+                            <p class="text-slate-500 text-xs mt-1">Most dangerous quadrant</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnosis panel -->
+                <div id="eq-diagnosis" class="bg-slate-800 rounded-xl p-5 border border-slate-700 hidden fade-in">
+                    <p id="eq-diag-title" class="font-bold text-white text-lg mb-4"></p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-violet-300 text-xs font-bold uppercase tracking-wider mb-2">What's broken</p>
+                            <p id="eq-broken" class="text-slate-300 text-xs leading-relaxed"></p>
+                        </div>
+                        <div>
+                            <p class="text-fuchsia-300 text-xs font-bold uppercase tracking-wider mb-2">Metrics to check</p>
+                            <p id="eq-metrics" class="text-slate-300 text-xs leading-relaxed"></p>
+                        </div>
+                        <div>
+                            <p class="text-green-300 text-xs font-bold uppercase tracking-wider mb-2">Fix strategy</p>
+                            <p id="eq-fix" class="text-slate-300 text-xs leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /tab panels -->
+    </div><!-- /content -->
+</div><!-- /flex container -->
+</main>
+
+<!-- PAGE FOOTER STRIP -->
+<div class="bg-slate-900 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 py-10 text-center space-y-3">
+        <p class="text-white font-semibold">RAG Architect's Studio · GenAcademy Week 2 Session 2</p>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">The leap from "my RAG works sometimes" to "my RAG works by design." Every token placed intentionally. Every pattern chosen deliberately.</p>
+        <div class="flex flex-wrap justify-center gap-2 pt-1">
+            <span class="bg-slate-800 text-violet-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#ContextEngineering</span>
+            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#AgenticRAG</span>
+            <span class="bg-slate-800 text-fuchsia-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GraphRAG</span>
+            <span class="bg-slate-800 text-pink-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RAGEvals</span>
+            <span class="bg-slate-800 text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+        </div>
+        <div class="flex space-x-6 text-sm">
+            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// TAB SWITCHER
+// ═══════════════════════════════════════════════════════════
+function showTab(n) {
+    document.querySelectorAll('.sb-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.sb-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('sb-' + n).classList.remove('hidden');
+    document.getElementById('tab-' + n).classList.add('active');
+    if (n === 1) updateBudget();
+    if (n === 2) { updateAttention(document.getElementById('attn-slider').value); }
+    if (n === 3) { document.getElementById('comp-original').textContent = COMP_ORIGINAL; }
+    if (n === 5) updateDial(parseInt(document.getElementById('auto-dial').value));
+    if (n === 6) { initGraphCanvas(); }
+    window.scrollTo({ top: document.getElementById('sb-' + n).getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 1: CONTEXT BUDGET PLANNER
+// ═══════════════════════════════════════════════════════════
+const CTX_LAYERS = [
+    { id:'sys',     label:'System Prompt',       emoji:'📋', pct:9,  color:'#7c3aed', tokenEst:'~800–2k', desc:'Persona, rules, format. Stable. Always read first.' },
+    { id:'few',     label:'Few-shot Examples',   emoji:'📖', pct:12, color:'#9333ea', tokenEst:'~1k–3k',  desc:'Teaches output shape. Only when consistency is critical.' },
+    { id:'hist',    label:'Conversation History',emoji:'💬', pct:19, color:'#6366f1', tokenEst:'~1.5k–5k',desc:'Compress! Summarise old turns. Keep recent verbatim only.' },
+    { id:'rag',     label:'RAG Chunks',          emoji:'📄', pct:28, color:'#0ea5e9', tokenEst:'~2k–6k',  desc:'Core value. Re-rank first. Best chunk at position 1.' },
+    { id:'tool',    label:'Tool Call Outputs',   emoji:'🔧', pct:16, color:'#14b8a6', tokenEst:'~500–3k', desc:'API results. Keep the answer only — strip headers/metadata.' },
+    { id:'refusal', label:'Refusal Reminder',    emoji:'🛡️', pct:2,  color:'#f59e0b', tokenEst:'~50–150', desc:'"If you lack context, say so." One sentence. Always include.' },
+    { id:'query',   label:'User Query',          emoji:'❓', pct:4,  color:'#34d399', tokenEst:'~50–300', desc:'Always last. Recency bias: model pays maximum attention here.' },
+];
+const CTX_ORDER = [
+    '① First — highest attention window',
+    '② Right after system prompt',
+    '③ Middle-upper (compress aggressively)',
+    '④ Middle — re-rank so best chunk is position 1',
+    '⑤ After chunks — results of agentic calls',
+    '⑥ Near end — recency reinforces refusal',
+    '⑦ Very last — maximum recency advantage',
+];
+
+let ctxActive = { sys:true, few:false, hist:false, rag:true, tool:false, refusal:true, query:true };
+
+function renderBudgetLayers() {
+    document.getElementById('ctx-layers').innerHTML = CTX_LAYERS.map(l => `
+        <div onclick="toggleCtx('${l.id}')"
+             class="flex items-center gap-3 rounded-xl p-3 border cursor-pointer transition-all ${ctxActive[l.id] ? 'bg-slate-800 border-slate-600' : 'bg-slate-900 border-slate-800 opacity-35'}">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0" style="background:${l.color}22;border:1px solid ${l.color}55">${l.emoji}</div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <p class="text-white font-semibold text-sm">${l.label}</p>
+                    <span class="text-xs px-1.5 py-0.5 rounded font-mono" style="background:${l.color}22;color:${l.color}">${l.tokenEst}</span>
+                </div>
+                <p class="text-slate-500 text-xs mt-0.5 truncate">${l.desc}</p>
+            </div>
+            <div class="w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center ${ctxActive[l.id] ? 'bg-violet-500 border-violet-500' : 'border-slate-600'}">
+                ${ctxActive[l.id] ? '<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>' : ''}
+            </div>
+        </div>`).join('');
+}
+
+function toggleCtx(id) {
+    ctxActive[id] = !ctxActive[id];
+    renderBudgetLayers();
+    updateBudget();
+}
+
+function updateBudget() {
+    const activeLayers = CTX_LAYERS.filter(l => ctxActive[l.id]);
+    const total = activeLayers.reduce((s, l) => s + l.pct, 0);
+
+    const bar = document.getElementById('ctx-bar');
+    document.getElementById('ctx-pct').textContent = total + '%';
+    bar.style.width = total + '%';
+    bar.style.background = total < 50 ? '#7c3aed' : total < 75 ? '#6366f1' : total < 88 ? '#f59e0b' : '#ef4444';
+
+    // Visual window
+    const win = document.getElementById('ctx-window');
+    if (activeLayers.length === 0) {
+        win.innerHTML = '<div style="color:#334155;font-size:11px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">Context window<br>empty</div>';
+    } else {
+        win.innerHTML = activeLayers.map(l =>
+            `<div style="flex:${l.pct};background:${l.color}28;border-top:1px solid ${l.color}55;display:flex;align-items:center;padding:0 10px;min-height:18px;transition:flex .4s">
+                <span style="font-size:11px;margin-right:4px">${l.emoji}</span>
+                <span style="color:${l.color};font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.label}</span>
+                <span style="color:${l.color}66;font-size:8px;margin-left:auto;flex-shrink:0">${l.pct}%</span>
+            </div>`
+        ).join('') + `<div style="flex:${Math.max(0,100-total)};min-height:0;"></div>`;
+    }
+
+    // Advice
+    const advice = document.getElementById('ctx-advice');
+    if (total === 0) {
+        advice.innerHTML = '<span class="text-slate-500">Toggle layers on the left to fill your context window.</span>';
+    } else if (total < 50) {
+        advice.innerHTML = '<span class="text-green-400 font-bold">✓ Healthy</span> — Plenty of room. Focus on quality of chunks over quantity.';
+    } else if (total < 75) {
+        advice.innerHTML = '<span class="text-violet-400 font-bold">◉ Balanced</span> — Good fill. Re-rank your RAG chunks so the most relevant sits at position 1.';
+    } else if (total < 88) {
+        advice.innerHTML = '<span class="text-amber-400 font-bold">⚠ Lost in the Middle risk</span> — At this density the model\'s attention fades in the middle layers. Move critical content to the very top or very bottom of your stack.';
+    } else {
+        advice.innerHTML = '<span class="text-red-400 font-bold">🔴 Context rot zone</span> — Performance degrades here. Remove non-essential layers, or apply aggressive compression to history and tool outputs.';
+    }
+
+    // Stack order
+    const orderEl = document.getElementById('ctx-stack-order');
+    if (activeLayers.length >= 2) {
+        orderEl.classList.remove('hidden');
+        document.getElementById('stack-order-list').innerHTML = activeLayers.map(l =>
+            `<div class="flex gap-2 items-center py-1 border-b border-slate-800 last:border-0">
+                <span style="color:${l.color}">${l.emoji}</span>
+                <span class="text-slate-300 text-xs">${l.label}</span>
+                <span class="text-slate-600 text-xs ml-auto">${CTX_ORDER[CTX_LAYERS.indexOf(l)]}</span>
+            </div>`
+        ).join('');
+    } else {
+        orderEl.classList.add('hidden');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 2: ATTENTION MAP
+// ═══════════════════════════════════════════════════════════
+function updateAttention(val) {
+    const fill = parseInt(val);
+    document.getElementById('attn-fill-label').textContent = fill + '%';
+    const midAttn = Math.max(10, Math.round(92 - (fill / 100) * 76));
+    document.getElementById('attn-mid-pct').textContent = midAttn + '%';
+
+    const msg = document.getElementById('attn-msg');
+    if (fill < 30) {
+        msg.innerHTML = '<span class="text-green-400 font-semibold">Low fill:</span> Middle attention is still reasonably strong. Even short contexts show the start/end bias — plan your stack order from day one.';
+    } else if (fill < 60) {
+        msg.innerHTML = `<span class="text-amber-400 font-semibold">Moderate fill:</span> Middle attention has dropped to ${midAttn}%. If your most relevant RAG chunk is buried here, the model may underweight it relative to your system prompt or user query.`;
+    } else {
+        msg.innerHTML = `<span class="text-red-400 font-semibold">High fill — Lost in the Middle active:</span> Middle attention is at ${midAttn}%. Any chunk buried in the centre of this context risks being treated as background noise. Re-rank: best chunk first, second-best last.`;
+    }
+
+    drawAttentionCanvas(fill);
+}
+
+function drawAttentionCanvas(fillPct) {
+    const canvas = document.getElementById('attn-canvas');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, W, H);
+
+    const N = 70;
+    const barW = W / N;
+    const maxH = H - 38;
+    const midDrop = (fillPct / 100) * 0.80;
+
+    for (let i = 0; i < N; i++) {
+        const t = i / (N - 1);
+        const distFromEdge = Math.min(t, 1 - t) * 2;
+        const attn = Math.max(0.07, 1 - midDrop * distFromEdge);
+        const r = Math.round(55 + 200 * (1 - attn));
+        const g = Math.round(210 * attn);
+        const b = 60;
+        const bH = attn * maxH;
+        ctx.fillStyle = `rgba(${r},${g},${b},0.88)`;
+        ctx.fillRect(i * barW + 0.5, H - 22 - bH, barW - 1, bH);
+    }
+
+    ctx.fillStyle = '#334155';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('← position in context window →', W / 2, H - 5);
+    ctx.fillStyle = '#34d399';
+    ctx.font = 'bold 10px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('START ▲', 6, 14);
+    ctx.textAlign = 'right';
+    ctx.fillText('END ▲', W - 6, 14);
+    ctx.fillStyle = '#ef4444';
+    ctx.textAlign = 'center';
+    ctx.font = '10px Inter, sans-serif';
+    ctx.fillText('← middle fades →', W / 2, 14);
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 3: COMPRESSION LAB
+// ═══════════════════════════════════════════════════════════
+const COMP_ORIGINAL = `Results are out guys!! So I finally checked — got 91 in CS which honestly shocked me, I was expecting way less. Was at the canteen when they posted it btw, the chicken curry today was actually really good for once lol. Physics was a total disaster though, barely scraped 65. Remember how we were all panicking about that Unit 4 derivation the night before? Math came out at 78, decent I think. Anyway who's coming to Ravi's tonight for the celebration? Sahil said he can't make it. My overall rank went up by 12 positions from last semester which is nice. If anyone needs the mark sheets for scholarship applications just message me.`;
+
+const COMP_METHODS = {
+    extract: {
+        label: '🎯 Contextual Extraction', labelColor: 'text-violet-300',
+        tokens: '68 tokens', saving: '↓ 55% saved',
+        loss: 'Info loss: Low', lossClass: 'text-green-400 bg-green-900/30 border border-green-800',
+        text: `CS: 91. Physics: 65. Math: 78. Overall rank improved by 12 positions from last semester. Mark sheets available for scholarship applications.`,
+        how: 'A smaller LLM scores each sentence by relevance to a target intent — here, "exam results." Only the score-bearing sentences survive, verbatim. The canteen curry, Ravi\'s party, and Sahil\'s plans are correctly dropped. Highest fidelity to facts.'
+    },
+    summarize: {
+        label: '✂️ Summarization', labelColor: 'text-fuchsia-300',
+        tokens: '40 tokens', saving: '↓ 74% saved',
+        loss: 'Info loss: Medium', lossClass: 'text-amber-400 bg-amber-900/30 border border-amber-800',
+        text: `Strong CS result (91), decent Math (78), weak Physics (65). Rank improved by 12 positions. Happy to share mark sheets for scholarship applications.`,
+        how: 'A smaller LLM rewrites the chunk in fewer sentences — synthesis, not selection. Lossy: "barely scraped" becomes "weak", the specific semester reference is gone. Good for narrative passages where gist matters more than exact phrasing.'
+    },
+    compress: {
+        label: '🗜️ Token Compression', labelColor: 'text-purple-300',
+        tokens: '102 tokens', saving: '↓ 34% saved',
+        loss: 'Info loss: Very Low', lossClass: 'text-blue-400 bg-blue-900/30 border border-blue-800',
+        text: `Results out: CS 91 shocked, canteen chicken curry good. Physics disaster 65, Unit 4 derivation panic. Math 78 decent. Ravi's tonight celebration, Sahil can't. Rank +12 positions last semester. Mark sheets available scholarship applications.`,
+        how: 'Removes articles, conjunctions, filler phrases — output is telegraphic but every fact survives intact. No LLM call needed; a simple NLP pipeline handles it. Fastest of the three, minimal information risk.'
+    }
+};
+
+function compress(method) {
+    const m = COMP_METHODS[method];
+    ['extract','summarize','compress'].forEach(k => {
+        const btn = document.getElementById('btn-' + k);
+        btn.classList.toggle('border-violet-500', k === method);
+        btn.classList.toggle('bg-violet-900/30', k === method);
+        btn.classList.toggle('border-slate-700', k !== method);
+    });
+    const result = document.getElementById('comp-result');
+    result.classList.remove('hidden');
+    document.getElementById('comp-method-label').innerHTML = `<span class="${m.labelColor} font-bold">${m.label}</span>`;
+    document.getElementById('comp-tokens').textContent = m.tokens;
+    document.getElementById('comp-saving').textContent = m.saving;
+    document.getElementById('comp-text').textContent = m.text;
+    document.getElementById('comp-loss-badge').innerHTML = `<span class="px-2 py-1 rounded text-xs font-bold ${m.lossClass}">${m.loss}</span>`;
+    document.getElementById('comp-how').textContent = m.how;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 4: PATTERN MATCHER
+// ═══════════════════════════════════════════════════════════
+const pmAnswers = { 1: null, 2: null, 3: null };
+
+const PATTERNS = {
+    naive: {
+        name:'Context-Engineered RAG', emoji:'⚡', tagColor:'text-green-400',
+        border:'border-green-500/60', bg:'bg-green-500/10',
+        cost:'Low', latency:'~100–300ms', accuracy:'Good for focused queries',
+        desc:'Your data is flat and queries are focused. You don\'t need agentic loops or a graph database. You need tight context engineering: re-ranking, compression, optimal stack ordering, and a well-crafted system prompt. This is where most teams should start.',
+        when:'Document Q&A, single-source lookup, FAQ bots, summarisation pipelines',
+        when_not:'Multi-hop reasoning, entity-relationship queries, multi-source synthesis',
+        metrics:'Context Relevance, Faithfulness, Answer Relevancy (RAGAS framework)'
+    },
+    agentic: {
+        name:'Agentic RAG', emoji:'🤖', tagColor:'text-violet-400',
+        border:'border-violet-500/60', bg:'bg-violet-500/10',
+        cost:'Medium–High', latency:'500ms–5s (multiple LLM calls)', accuracy:'High for complex queries',
+        desc:'Your queries cross multiple data sources or need multi-step reasoning. Give the LLM tools — each retriever as a callable — and let it route dynamically. Critical: set max_iterations = 3–5. Without it, loops run until timeout. Add structured observability from day one.',
+        when:'Multi-source enterprise Q&A, recruiter copilots, research assistants, decision support',
+        when_not:'Latency-critical real-time applications, simple lookup queries',
+        metrics:'Tool call accuracy, Iteration count, Faithfulness, End-to-end latency P95'
+    },
+    graph: {
+        name:'Graph RAG', emoji:'🕸️', tagColor:'text-amber-400',
+        border:'border-amber-500/60', bg:'bg-amber-500/10',
+        cost:'Medium (graph DB infra)', latency:'300ms–2s (graph traversal)', accuracy:'Excellent for relational queries',
+        desc:'Your data has meaningful entity relationships — people, companies, products, events that connect to each other. Graph RAG enriches each retrieved chunk with its neighbourhood of relationships, giving the LLM context that flat vector search can never surface.',
+        when:'CRM data, ATS systems, knowledge graphs, supply chains, social networks',
+        when_not:'Flat documents with no entity relationships, latency-critical chatbots',
+        metrics:'Graph traversal depth, Entity coverage, Faithfulness, Context richness'
+    },
+    agraph: {
+        name:'Agentic + Graph RAG', emoji:'🚀', tagColor:'text-pink-400',
+        border:'border-pink-500/60', bg:'bg-pink-500/10',
+        cost:'High', latency:'2–10s (graph hops + LLM loops)', accuracy:'Highest ceiling for complex relational queries',
+        desc:'Maximum power: graph traversal for relationship-rich retrieval PLUS agentic routing for complex multi-step queries. Use only when your domain genuinely demands it. Requires serious engineering: graph schema design, loop guardrails, and production observability.',
+        when:'Complex enterprise data, multi-hop medical reasoning, financial risk networks',
+        when_not:'Everything else — most problems don\'t warrant this complexity. Over-engineering is the enemy.',
+        metrics:'Full suite: Graph coverage, Tool accuracy, Faithfulness, Latency P95, Cost per query'
+    }
+};
+
+function pmAnswer(q, answer) {
+    pmAnswers[q] = answer;
+
+    // Highlight selected button for this question
+    ['yes','no'].forEach(a => {
+        const btn = document.getElementById(`pm-q${q}-${a}`);
+        btn.className = `pm-btn flex-1 py-2 rounded-lg border text-sm font-semibold transition-all ${a === answer ? 'border-fuchsia-500 bg-fuchsia-900/30 text-fuchsia-300' : 'border-slate-600 text-slate-400'}`;
+    });
+
+    // When Q1 changes: reset Q2 + Q3 state, re-lock Q3
+    if (q === 1) {
+        pmAnswers[2] = null; pmAnswers[3] = null;
+        ['yes','no'].forEach(a => {
+            document.getElementById('pm-q2-' + a).className = 'pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300';
+            document.getElementById('pm-q3-' + a).className = 'pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300';
+        });
+        document.getElementById('pm-q3').classList.add('opacity-40','pointer-events-none');
+    }
+
+    // When Q2 changes: reset Q3 state, re-lock Q3
+    if (q === 2) {
+        pmAnswers[3] = null;
+        ['yes','no'].forEach(a => {
+            document.getElementById('pm-q3-' + a).className = 'pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300';
+        });
+        document.getElementById('pm-q3').classList.add('opacity-40','pointer-events-none');
+    }
+
+    // Always hide result until Q3 is answered
+    document.getElementById('pm-result').classList.add('hidden');
+
+    // Unlock the next question
+    if (q < 3) document.getElementById(`pm-q${q+1}`).classList.remove('opacity-40','pointer-events-none');
+
+    // Show result once Q3 is picked
+    if (q === 3) setTimeout(showPmResult, 300);
+}
+
+function showPmResult() {
+    const q1 = pmAnswers[1], q2 = pmAnswers[2], q3 = pmAnswers[3];
+    let key;
+    if (q1 === 'yes') {
+        key = (q2 === 'yes' && q3 === 'no') ? 'agraph' : 'graph';
+    } else {
+        key = (q2 === 'yes') ? (q3 === 'yes' ? 'naive' : 'agentic') : 'naive';
+    }
+    const p = PATTERNS[key];
+    const card = document.getElementById('pm-card');
+    card.className = `rounded-2xl p-6 border-2 mb-4 ${p.border} ${p.bg}`;
+    card.innerHTML = `
+        <div class="flex items-start gap-4 mb-4">
+            <span class="text-4xl">${p.emoji}</span>
+            <div>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-0.5">Recommended pattern</p>
+                <h4 class="text-white font-black text-2xl">${p.name}</h4>
+            </div>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">${p.desc}</p>
+        <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="bg-slate-900/60 rounded-lg p-3 text-center">
+                <p class="text-slate-500 text-xs mb-1">Cost tier</p>
+                <p class="text-white font-bold text-xs">${p.cost}</p>
+            </div>
+            <div class="bg-slate-900/60 rounded-lg p-3 text-center">
+                <p class="text-slate-500 text-xs mb-1">Latency</p>
+                <p class="text-white font-bold text-xs">${p.latency}</p>
+            </div>
+            <div class="bg-slate-900/60 rounded-lg p-3 text-center">
+                <p class="text-slate-500 text-xs mb-1">Accuracy</p>
+                <p class="${p.tagColor} font-bold text-xs">${p.accuracy}</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-xs mb-3">
+            <div>
+                <p class="text-green-400 font-bold mb-1">✓ Use when</p>
+                <p class="text-slate-400">${p.when}</p>
+            </div>
+            <div>
+                <p class="text-red-400 font-bold mb-1">✗ Avoid when</p>
+                <p class="text-slate-400">${p.when_not}</p>
+            </div>
+        </div>
+        <div class="pt-3 border-t border-slate-700/60 text-xs">
+            <p class="text-violet-300 font-bold mb-1">Eval metrics to track</p>
+            <p class="text-slate-400">${p.metrics}</p>
+        </div>`;
+    document.getElementById('pm-result').classList.remove('hidden');
+}
+
+function pmReset() {
+    pmAnswers[1] = pmAnswers[2] = pmAnswers[3] = null;
+    [1,2,3].forEach(q => {
+        ['yes','no'].forEach(a => {
+            document.getElementById(`pm-q${q}-${a}`).className = 'pm-btn flex-1 py-2 rounded-lg border border-slate-600 text-slate-300 text-sm font-semibold hover:border-fuchsia-400 hover:text-fuchsia-300';
+        });
+    });
+    document.getElementById('pm-q2').classList.add('opacity-40','pointer-events-none');
+    document.getElementById('pm-q3').classList.add('opacity-40','pointer-events-none');
+    document.getElementById('pm-result').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 5: AUTONOMY DIAL
+// ═══════════════════════════════════════════════════════════
+const DIAL_STAGES = [
+    { label:'Naive RAG', r:[0,15],
+      lat:'~100ms', lW:5, cost:'$0.001', cW:4, acc:'60%', aW:30, fn:1, fW:8,
+      desc:'One-shot: retrieve top-K chunks, pass directly to LLM. No reflection, no re-routing. Fast, cheap, predictable. The right starting point for well-defined query domains.',
+      fails:['Retrieves irrelevant chunks with no self-correction'] },
+    { label:'Context-Engineered RAG', r:[16,30],
+      lat:'~200ms', lW:12, cost:'$0.003', cW:12, acc:'72%', aW:50, fn:2, fW:15,
+      desc:'Same one-shot pattern — but tuned. Re-ranking, chunk compression, optimal stack ordering, strong system prompt. Most teams should reach this level before considering anything more complex.',
+      fails:['Compression can lose critical details if tuned too aggressively','Re-ranker mis-scores with a weak embedding model'] },
+    { label:'Agentic RAG (guarded)', r:[31,55],
+      lat:'~1–3s', lW:40, cost:'$0.015', cW:38, acc:'82%', aW:65, fn:4, fW:35,
+      desc:'LLM decides which retriever or tool to call. Reflects on output quality. Can retry with a different source if unhappy. Critical: set max_iterations = 3–5. Add structured logging on every tool call before shipping.',
+      fails:['Tool hallucination — calls wrong retriever','Wrong tool selection for query type','Latency multiplies with each iteration','Missing max_iterations → infinite loop'] },
+    { label:'Agentic RAG (full)', r:[56,75],
+      lat:'~2–6s', lW:65, cost:'$0.05', cW:60, acc:'88%', aW:78, fn:6, fW:58,
+      desc:'Full ReAct loop: reason → act → observe → repeat. Multiple tools, multiple sources, multi-step reflection. Requires production-grade observability: structured logging, latency budgets per iteration, cost alerts per query.',
+      fails:['Tool hallucination','Wrong tool selection','Loop explosion without guardrails','Tool API failure mid-loop','Hallucinated tool parameters','Context overflow from stacked tool outputs'] },
+    { label:'Graph RAG', r:[76,90],
+      lat:'~1–3s', lW:45, cost:'$0.025', cW:42, acc:'90%', aW:82, fn:3, fW:28,
+      desc:'Graph traversal enriches retrieved chunks with entity relationships. Not agentic — deterministic graph hops. Requires upfront graph schema design (Neo4j/Cypher) and a semantic → graph retrieval pipeline.',
+      fails:['Wrong graph schema → key relationships not traversable','Too many hops → context overflow','Graph DB infrastructure and maintenance overhead'] },
+    { label:'⚠ Runaway Agent', r:[91,100],
+      lat:'∞', lW:100, cost:'$$$', cW:100, acc:'??', aW:85, fn:99, fW:100,
+      desc:'🚨 No max_iterations. No guardrails. No observability. The agent loops until it times out or exhausts your API budget. Tool calls cascade. Errors compound. This zone is a cautionary tale, not a pattern.',
+      fails:['Infinite loops — no iteration cap','Runaway API costs','No failure isolation between tool calls','Cascading errors with no recovery path'] }
+];
+
+function updateDial(val) {
+    val = parseInt(val);
+    const stage = DIAL_STAGES.find(s => val >= s.r[0] && val <= s.r[1]) || DIAL_STAGES[0];
+    document.getElementById('dial-mode-label').textContent = stage.label;
+    function setM(id, label, w, color) {
+        document.getElementById('dial-' + id + '-n').textContent = label;
+        const b = document.getElementById('dial-' + id);
+        b.style.width = w + '%'; b.style.background = color;
+    }
+    setM('lat', stage.lat, stage.lW, '#f59e0b');
+    setM('cost', stage.cost, stage.cW, '#ef4444');
+    setM('acc', stage.acc, stage.aW, '#34d399');
+    setM('fail', stage.fn === 99 ? '∞' : String(stage.fn), stage.fW, '#f97316');
+    document.getElementById('dial-desc').textContent = stage.desc;
+    const failEl = document.getElementById('dial-failures');
+    const failList = document.getElementById('dial-failure-list');
+    failEl.classList.toggle('hidden', stage.fails.length === 0);
+    failList.innerHTML = stage.fails.map(f =>
+        `<div class="flex gap-2 items-start bg-slate-900 rounded-lg p-2 border border-orange-900/30">
+            <span class="text-orange-400 text-xs mt-0.5 flex-shrink-0">⚡</span>
+            <span class="text-slate-300 text-xs">${f}</span>
+        </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 6: GRAPH LENS
+// ═══════════════════════════════════════════════════════════
+const GNODES = [
+    { id:'student',  label:'Arjun K.',    sub:'Student',      x:200, y:145, r:28, color:'#7c3aed' },
+    { id:'chunk1',   label:'Exam Scores', sub:'MATCHED',      x:62,  y:90,  r:20, color:'#0ea5e9', matched:true },
+    { id:'chunk2',   label:'Project Rpt', sub:'',             x:62,  y:155, r:18, color:'#0ea5e9' },
+    { id:'chunk3',   label:'Assignment',  sub:'',             x:62,  y:218, r:18, color:'#0ea5e9' },
+    { id:'subj1',    label:'CS 91%',      sub:'',             x:335, y:78,  r:16, color:'#34d399' },
+    { id:'subj2',    label:'Math 78%',    sub:'',             x:350, y:145, r:16, color:'#34d399' },
+    { id:'subj3',    label:'Phys 65%',    sub:'',             x:335, y:212, r:16, color:'#34d399' },
+    { id:'group',    label:'Team Alpha',  sub:'Study Group',  x:200, y:40,  r:20, color:'#f59e0b' },
+    { id:'college',  label:'RW Univ.',    sub:'College',      x:200, y:258, r:20, color:'#f472b6' },
+];
+const GEDGES = [
+    ['student','chunk1'],['student','chunk2'],['student','chunk3'],
+    ['student','subj1'],['student','subj2'],['student','subj3'],
+    ['student','group'],['student','college']
+];
+
+let gMode = 'flat', gAnimStep = -1, gAnimTimer = null;
+
+function setGraphMode(mode) {
+    gMode = mode;
+    const act = 'border-violet-500 bg-violet-900/30 text-violet-300';
+    const inact = 'border-slate-600 text-slate-400';
+    document.getElementById('g-flat-btn').className = `flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${mode==='flat'?act:inact}`;
+    document.getElementById('g-graph-btn').className = `flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${mode==='graph'?act:inact}`;
+    if (gAnimTimer) clearTimeout(gAnimTimer);
+    if (mode === 'flat') {
+        drawGraph(new Set(['chunk1']));
+        updateGraphContext('flat');
+        document.getElementById('graph-desc').innerHTML = '<strong class="text-slate-200">Flat vector search:</strong> The query "Which students excelled in CS and lead study groups?" fetches the most similar chunk — Arjun\'s exam scores. That\'s all the LLM gets. His subject breakdown, study group leadership, and college are invisible. The model answers on partial evidence.';
+    } else {
+        const seq = [new Set(['chunk1']), new Set(['chunk1','student']), new Set(['chunk1','student','subj1','subj2','subj3','group','college'])];
+        let step = 0;
+        const tick = () => { drawGraph(seq[step]); if (step < seq.length - 1) { gAnimTimer = setTimeout(() => { step++; tick(); }, 550); } };
+        tick();
+        updateGraphContext('graph');
+        document.getElementById('graph-desc').innerHTML = '<strong class="text-slate-200">Graph RAG enrichment:</strong> Same chunk matched — but now the pipeline traverses: exam chunk → Arjun → all three subjects → study group leadership → college. The LLM receives the full picture with zero extra vector searches. Context grew from 1 item to 5. Same query, dramatically richer answer.';
+    }
+}
+
+function drawGraph(litSet) {
+    const canvas = document.getElementById('graph-canvas');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, W, H);
+
+    GEDGES.forEach(([fId, tId]) => {
+        const f = GNODES.find(n => n.id === fId), t = GNODES.find(n => n.id === tId);
+        const lit = litSet.has(fId) && litSet.has(tId);
+        ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(t.x, t.y);
+        ctx.strokeStyle = lit ? f.color + '77' : '#1e293b';
+        ctx.lineWidth = lit ? 1.5 : 1;
+        ctx.stroke();
+    });
+
+    GNODES.forEach(n => {
+        const lit = litSet.has(n.id);
+        if (lit) {
+            ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 7, 0, Math.PI * 2);
+            ctx.fillStyle = n.color + '18'; ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = lit ? n.color + 'cc' : n.color + '1a';
+        ctx.fill();
+        ctx.strokeStyle = lit ? n.color : n.color + '22';
+        ctx.lineWidth = lit ? 2 : 1;
+        ctx.stroke();
+
+        ctx.fillStyle = lit ? '#fff' : '#334155';
+        ctx.font = `bold ${Math.round(n.r * 0.46)}px Inter, sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(n.label, n.x, n.y);
+        if (lit && n.sub) {
+            ctx.fillStyle = n.color; ctx.font = '8px Inter, sans-serif';
+            ctx.fillText(n.sub, n.x, n.y + n.r + 10);
+        }
+    });
+}
+
+function updateGraphContext(mode) {
+    const el = document.getElementById('graph-context');
+    if (mode === 'flat') {
+        el.innerHTML = `
+            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Context sent to LLM</p>
+            <div class="bg-slate-800 rounded-lg p-3 border border-blue-900/40">
+                <p class="text-blue-300 text-xs font-bold mb-1">📄 Matched chunk (score: 0.89)</p>
+                <p class="text-slate-400 text-xs leading-relaxed">"Arjun Kumar — Semester 4 results: CS 91, Math 78, Physics 65. Rank improved 12 positions..."</p>
+            </div>
+            <p class="text-slate-600 text-xs mt-3 italic">1 context item · ~65 tokens</p>
+            <p class="text-slate-600 text-xs mt-1 italic">Study group role, college, full subject history: not retrieved</p>`;
+    } else {
+        el.innerHTML = `
+            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Context sent to LLM</p>
+            <div class="bg-slate-800 rounded-lg p-2 border border-blue-900/40 mb-2">
+                <p class="text-blue-300 text-xs font-bold mb-0.5">📄 Matched chunk (score: 0.89)</p>
+                <p class="text-slate-400 text-xs">"Arjun Kumar — Semester 4: CS 91, Math 78, Physics 65..."</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-2 border border-violet-900/40 mb-2">
+                <p class="text-violet-300 text-xs font-bold mb-0.5">👤 Student: Arjun Kumar</p>
+                <p class="text-slate-500 text-xs">↳ via graph: chunk → student</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-2 border border-green-900/40 mb-2">
+                <p class="text-green-300 text-xs font-bold mb-0.5">📚 Subjects: CS 91%, Math 78%, Physics 65%</p>
+                <p class="text-slate-500 text-xs">↳ via graph: student → enrolled_in (3 edges)</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-2 border border-amber-900/40 mb-2">
+                <p class="text-amber-300 text-xs font-bold mb-0.5">👥 Study Group: Team Alpha (group leader, 5 members)</p>
+                <p class="text-slate-500 text-xs">↳ via graph: student → leads_group</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-2 border border-pink-900/40">
+                <p class="text-pink-300 text-xs font-bold mb-0.5">🎓 College: RawWeights University</p>
+                <p class="text-slate-500 text-xs">↳ via graph: student → attends</p>
+            </div>
+            <p class="text-slate-500 text-xs mt-2 italic">5 context items · ~280 tokens · Full picture</p>`;
+    }
+}
+
+function initGraphCanvas() {
+    setGraphMode('flat');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 7: EVAL CLINIC
+// ═══════════════════════════════════════════════════════════
+const EQ = {
+    hh: { title:'🎯 Healthy RAG — Both stages working', border:'border-green-500', bg:'bg-green-500/10',
+        broken:'Nothing critically broken. Watch for drift as your corpus grows or is updated. Establish baseline metrics now so you can detect regressions later.',
+        metrics:'Precision@K, Faithfulness, Context Relevance, Answer Relevancy — measured against a golden dataset of 50–200 query/answer/source triplets.',
+        fix:'Ship it — with observability. Set up offline eval on a schedule. Add an LLM-as-judge monitor for production queries. Build your golden dataset before corpus changes.' },
+    hl: { title:'🧩 Good Chunks, Bad Answer — LLM ignoring context', border:'border-amber-500', bg:'bg-amber-500/10',
+        broken:'Retrieval is working — the right chunks are fetched. But the LLM is defaulting to its training knowledge instead of the provided context. Or the generation prompt is too permissive.',
+        metrics:'Faithfulness (is the answer grounded in chunks?) and Context Utilisation (did the model reference the retrieved content?). Both will be low despite good retrieval.',
+        fix:'Tighten your system prompt: "Answer ONLY from the provided context. If the context does not contain the answer, say: I don\'t know." Add a refusal reminder. Also check for Lost in the Middle — your best chunk may be buried.' },
+    ll: { title:'🔥 Both Broken — Fix retrieval first, then generation', border:'border-red-500', bg:'bg-red-500/10',
+        broken:'Both stages failing. Most common cause: wrong embedding model for your domain, poor chunking strategy, missing documents in the knowledge base, or misspecified query preprocessing.',
+        metrics:'Start with Recall@K — are the correct documents retrieved at all? Manually inspect 20 failed queries to see what the retriever actually returned before debugging anything else.',
+        fix:'Treat as two separate problems and fix one at a time. Fix retrieval first (chunking, embedding model, metadata filters). Then fix generation. Debugging both simultaneously means 6 weeks of going in circles.' },
+    lh: { title:'👻 Hallucinating Confidently — Most dangerous quadrant', border:'border-red-600', bg:'bg-red-900/20',
+        broken:'The silent killer. Retrieval is failing — wrong or no relevant chunks. But the LLM answers confidently using parametric (training) knowledge. The answer sounds authoritative. It is fabricated. Users trust it.',
+        metrics:'Faithfulness is low — answers are not grounded in chunks. Answer Relevancy may still be high. This combination is the hallucination signature. Check both together.',
+        fix:'Emergency priority. Add a refusal instruction immediately: "If the context below does not answer the question, you MUST say: I don\'t have enough information." Then fix retrieval. Consider a guardrail layer that checks answer attribution before returning.' }
+};
+
+function selectQuadrant(id) {
+    ['hh','hl','ll','lh'].forEach(q => {
+        const cell = document.getElementById('eq-' + q);
+        cell.className = `eq-cell rounded-xl p-5 border-2 relative transition-all ${q === id ? EQ[q].border + ' ' + EQ[q].bg : 'bg-slate-900 border-slate-700'}`;
+    });
+    const d = EQ[id];
+    const diag = document.getElementById('eq-diagnosis');
+    diag.classList.remove('hidden');
+    document.getElementById('eq-diag-title').textContent = d.title;
+    document.getElementById('eq-broken').textContent = d.broken;
+    document.getElementById('eq-metrics').textContent = d.metrics;
+    document.getElementById('eq-fix').textContent = d.fix;
+}
+
+const SYMPTOM_MAP = { 'wrong-confident':'lh', 'wrong-uncertain':'ll', 'ignores-context':'hl', 'refuses':'hl' };
+
+function pickSymptom(sym, btn) {
+    document.querySelectorAll('.symptom-btn').forEach(b => b.className = b.className.replace('border-violet-500 bg-violet-900/30 text-violet-300','border-slate-600 text-slate-300'));
+    btn.classList.add('border-violet-500','bg-violet-900/30','text-violet-300');
+    btn.classList.remove('border-slate-600','text-slate-300');
+    selectQuadrant(SYMPTOM_MAP[sym]);
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    renderBudgetLayers();
+    updateBudget();
+    document.getElementById('comp-original').textContent = COMP_ORIGINAL;
+    updateDial(0);
+
+    // Warm attention canvas draw (tab 2 is hidden, but drawing anyway for fast reveal)
+    setTimeout(() => updateAttention(20), 100);
+
+    // Nav dropdown groups
+    const links = document.querySelectorAll('nav .nav-links a[data-group]');
+    const groups = {};
+    links.forEach(link => {
+        const g = link.getAttribute('data-group');
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(link);
+    });
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:relative;display:inline-block;';
+        const trigger = document.createElement('button');
+        trigger.className = 'nav-btn';
+        trigger.innerHTML = `${groupName} ▾`;
+        const menu = document.createElement('div');
+        menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
+        const first = groupItems[0];
+        if (first.parentNode) first.replaceWith(wrapper);
+        groupItems.forEach(link => {
+            link.style.cssText = 'display:block;padding:.4rem .75rem;border-radius:4px;color:#333;text-decoration:none;font-size:.85rem;white-space:nowrap;';
+            link.onmouseenter = () => link.style.background = '#f0f9ff';
+            link.onmouseleave = () => link.style.background = '';
+            menu.appendChild(link);
+        });
+        wrapper.appendChild(trigger); wrapper.appendChild(menu);
+        trigger.addEventListener('click', e => {
+            e.stopPropagation();
+            const open = menu.style.display === 'flex';
+            document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; });
+            menu.style.display = open ? 'none' : 'flex';
+        });
+    });
+    document.addEventListener('click', () => {
+        document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; });
+    });
+});
+</script>
+
+</body>
+</html>
