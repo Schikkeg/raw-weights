@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Retrieval Playbook — 6 RAG Search Strategies | RawWeights</title>
+    <meta name="description" content="Six query types. Six retrieval strategies. Know which play to call — explained simply with real healthcare examples.">
+    <meta name="author" content="RawWeights">
+    <meta property="og:image" content="https://www.rawweights.com/images/pinecone_slide.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.rawweights.com/guide/pinecone-retrieval-playbook.html">
+    <meta property="og:title" content="The Retrieval Playbook — 6 RAG Search Strategies | RawWeights">
+    <meta property="og:description" content="Six query types. Six retrieval strategies. Know which play to call — explained simply with real healthcare examples.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
+        }
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <style>
+        nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
+        .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+        .nav-links { display:flex; gap:.6rem; flex-wrap:wrap; }
+        .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.35rem .8rem; border-radius:6px; cursor:pointer; font-size:.82rem; transition:all .2s; }
+        .nav-btn:hover { background:#0077b5; color:white; }
+        html { scroll-behavior:smooth; }
+        .pill { display:inline-block; padding:.2rem .65rem; border-radius:999px; font-size:.7rem; font-weight:700; }
+        /* signal colors */
+        .sig-vocab  { background:rgba(56,189,248,.13); border-color:rgba(56,189,248,.4); color:#7dd3fc; }
+        .sig-exact  { background:rgba(251,146,60,.13); border-color:rgba(251,146,60,.4); color:#fdba74; }
+        .sig-visual { background:rgba(251,113,133,.13); border-color:rgba(251,113,133,.4); color:#fda4af; }
+        .sig-hybrid { background:rgba(192,132,252,.13); border-color:rgba(192,132,252,.4); color:#d8b4fe; }
+        .sig-scoped { background:rgba(45,212,191,.13); border-color:rgba(45,212,191,.4); color:#5eead4; }
+        .sig-agent  { background:rgba(251,191,36,.13); border-color:rgba(251,191,36,.4); color:#fcd34d; }
+        /* cards */
+        .play-card { transition: transform .2s, border-color .2s; }
+        .play-card:hover { transform: translateY(-3px); }
+        /* decoder */
+        .q-btn { transition: all .18s; }
+        .q-btn.active { background:rgba(56,189,248,.1); border-color:#38bdf8; color:#bae6fd; }
+        @keyframes pop { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        .pop-in { animation:pop .28s ease forwards; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture &amp; Lifecycle</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-sky-900/35 via-slate-900 to-slate-900 pointer-events-none"></div>
+    <div class="absolute inset-0 opacity-[.035] pointer-events-none" style="background-image:linear-gradient(#38bdf8 1px,transparent 1px),linear-gradient(90deg,#38bdf8 1px,transparent 1px);background-size:52px 52px;"></div>
+
+    <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-14 relative z-10">
+
+        <!-- left -->
+        <div class="lg:w-1/2 space-y-5">
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-sky-500/15 border border-sky-500/40 text-sky-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Pinecone · RAG</span>
+                <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">6 Search Strategies</span>
+            </div>
+
+            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.07]">
+                The Retrieval<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-blue-400">Playbook</span>
+            </h1>
+
+            <p class="text-slate-300 text-lg leading-relaxed max-w-md">
+                A doctor doesn't run the same test for every symptom. You shouldn't use the same search method for every query. Six plays. Know which to call.
+            </p>
+
+            <div class="border-l-4 border-sky-500 pl-4 py-0.5">
+                <p class="text-slate-200 text-base italic leading-relaxed">"The way you store your data determines what questions you can answer later."</p>
+                <p class="text-sky-400 text-sm mt-1 font-semibold">— Arjun, Pinecone</p>
+            </div>
+        </div>
+
+        <!-- right: signal → method map -->
+        <div class="lg:w-1/2 w-full max-w-sm mx-auto space-y-2.5">
+            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4 text-center">What's in the query → Which method wins</p>
+
+            <div class="flex items-center gap-2.5">
+                <div class="flex-1 bg-sky-900/25 border border-sky-700/40 rounded-xl px-3 py-2.5">
+                    <p class="text-sky-300 text-xs font-semibold">💬 Plain-language concept</p>
+                    <p class="text-sky-400/50 text-[11px]">"I feel dizzy when I stand up"</p>
+                </div>
+                <span class="text-sky-500 font-bold text-lg flex-shrink-0">→</span>
+                <div class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5">
+                    <p class="text-white text-xs font-semibold">Dense Semantic</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <div class="flex-1 bg-orange-900/25 border border-orange-700/40 rounded-xl px-3 py-2.5">
+                    <p class="text-orange-300 text-xs font-semibold">🔑 Exact drug / term</p>
+                    <p class="text-orange-400/50 text-[11px]">"Metformin HCl 500mg"</p>
+                </div>
+                <span class="text-sky-500 font-bold text-lg flex-shrink-0">→</span>
+                <div class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5">
+                    <p class="text-white text-xs font-semibold">Keyword Search</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <div class="flex-1 bg-rose-900/25 border border-rose-700/40 rounded-xl px-3 py-2.5">
+                    <p class="text-rose-300 text-xs font-semibold">👁 Visual appearance</p>
+                    <p class="text-rose-400/50 text-[11px]">"Bullseye ring rash pattern"</p>
+                </div>
+                <span class="text-sky-500 font-bold text-lg flex-shrink-0">→</span>
+                <div class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5">
+                    <p class="text-white text-xs font-semibold">Visual Search</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <div class="flex-1 bg-purple-900/25 border border-purple-700/40 rounded-xl px-3 py-2.5">
+                    <p class="text-purple-300 text-xs font-semibold">🔀 Appearance + location</p>
+                    <p class="text-purple-400/50 text-[11px]">"Red rash, tropical region"</p>
+                </div>
+                <span class="text-sky-500 font-bold text-lg flex-shrink-0">→</span>
+                <div class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5">
+                    <p class="text-white text-xs font-semibold">Hybrid Search</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <div class="flex-1 bg-teal-900/25 border border-teal-700/40 rounded-xl px-3 py-2.5">
+                    <p class="text-teal-300 text-xs font-semibold">🎯 Named + specific detail</p>
+                    <p class="text-teal-400/50 text-[11px]">"Metformin side effects"</p>
+                </div>
+                <span class="text-sky-500 font-bold text-lg flex-shrink-0">→</span>
+                <div class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5">
+                    <p class="text-white text-xs font-semibold">Scoped Search</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <div class="flex-1 bg-amber-900/25 border border-amber-700/40 rounded-xl px-3 py-2.5">
+                    <p class="text-amber-300 text-xs font-semibold">🤖 Multiple signals at once</p>
+                    <p class="text-amber-400/50 text-[11px]">"Chest pain, fatty foods, 45M"</p>
+                </div>
+                <span class="text-sky-500 font-bold text-lg flex-shrink-0">→</span>
+                <div class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5">
+                    <p class="text-white text-xs font-semibold">Agentic Search</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main class="bg-slate-900 text-white flex-1">
+
+    <!-- ── §1 THE 6 PLAYS ─────────────────────────────────────────────── -->
+    <section class="border-b border-slate-800 py-16">
+        <div class="max-w-6xl mx-auto px-6">
+
+            <div class="text-center mb-12">
+                <p class="text-sky-400 text-xs font-bold uppercase tracking-widest mb-3">The 6 Plays</p>
+                <h2 class="text-3xl font-extrabold text-white mb-3">Pick the Right Strategy for the Query</h2>
+                <p class="text-slate-400 max-w-xl mx-auto text-sm">Each method is designed for a specific kind of query signal. Using the wrong method is like ordering the wrong diagnostic test — you'll get results, just not the right ones.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                <!-- Play 1 -->
+                <div class="play-card bg-slate-800 border border-slate-700 border-l-4 border-l-sky-400 rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="pill border sig-vocab">💬 Vocab Gap</span>
+                            <p class="text-white font-bold text-lg mt-2 leading-snug">Dense Semantic Search</p>
+                        </div>
+                        <span class="text-3xl">🧠</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Converts your query into a vector and finds the closest-matching content — even when the words are completely different. Bridges the gap between how patients talk and how doctors write.</p>
+                    <div class="bg-slate-900/70 rounded-xl p-3.5 space-y-2">
+                        <div class="flex gap-2 text-xs"><span class="text-green-400 font-bold flex-shrink-0">✓ Win:</span><span class="text-slate-300">"I feel dizzy when I stand up quickly" → finds <em>orthostatic hypotension</em> — even though none of those words appear in the query.</span></div>
+                        <div class="flex gap-2 text-xs"><span class="text-red-400 font-bold flex-shrink-0">✗ Miss:</span><span class="text-slate-400">Exact drug names. "Losartan 50mg" might return related blood pressure drugs instead of the specific one.</span></div>
+                    </div>
+                </div>
+
+                <!-- Play 2 -->
+                <div class="play-card bg-slate-800 border border-slate-700 border-l-4 border-l-orange-400 rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="pill border sig-exact">🔑 Exact Keyword</span>
+                            <p class="text-white font-bold text-lg mt-2 leading-snug">Keyword (Full-Text) Search</p>
+                        </div>
+                        <span class="text-3xl">🔑</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Uses BM25 scoring — rare exact terms score highest. When the user knows the specific name, drug code, or clinical term, this method finds it with surgical precision.</p>
+                    <div class="bg-slate-900/70 rounded-xl p-3.5 space-y-2">
+                        <div class="flex gap-2 text-xs"><span class="text-green-400 font-bold flex-shrink-0">✓ Win:</span><span class="text-slate-300">"Metformin HCl 500mg" or "ICD-10 E11.9" → hits the exact article. One match out of thousands — found because the words exist verbatim.</span></div>
+                        <div class="flex gap-2 text-xs"><span class="text-red-400 font-bold flex-shrink-0">✗ Miss:</span><span class="text-slate-400">"Blood sugar medicine" → returns nothing useful if the database only uses clinical terminology.</span></div>
+                    </div>
+                </div>
+
+                <!-- Play 3 -->
+                <div class="play-card bg-slate-800 border border-slate-700 border-l-4 border-l-rose-400 rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="pill border sig-visual">👁 Visual</span>
+                            <p class="text-white font-bold text-lg mt-2 leading-snug">Visual (Multimodal) Search</p>
+                        </div>
+                        <span class="text-3xl">👁️</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Uses an embedding model that maps text descriptions and medical images into the same space. Patients can describe what they see — and the system finds matching images without knowing the diagnosis.</p>
+                    <div class="bg-slate-900/70 rounded-xl p-3.5 space-y-2">
+                        <div class="flex gap-2 text-xs"><span class="text-green-400 font-bold flex-shrink-0">✓ Win:</span><span class="text-slate-300">"Circular rash with a clear centre and red outer ring" → finds Lyme disease images. Patient didn't know the diagnosis; described what they saw.</span></div>
+                        <div class="flex gap-2 text-xs"><span class="text-red-400 font-bold flex-shrink-0">✗ Need:</span><span class="text-slate-400">Requires images to be embedded at storage time with a multimodal model (e.g. Gemini Embedding 2).</span></div>
+                    </div>
+                </div>
+
+                <!-- Play 4 -->
+                <div class="play-card bg-slate-800 border border-slate-700 border-l-4 border-l-purple-400 rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="pill border sig-hybrid">🔀 Visual + Filter</span>
+                            <p class="text-white font-bold text-lg mt-2 leading-snug">Hybrid Search</p>
+                        </div>
+                        <span class="text-3xl">🔀</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Applies a keyword filter first to narrow the field, then re-ranks what remains by visual or semantic similarity. Designed for queries carrying two different kinds of signals at once.</p>
+                    <div class="bg-slate-900/70 rounded-xl p-3.5 space-y-2">
+                        <div class="flex gap-2 text-xs"><span class="text-green-400 font-bold flex-shrink-0">✓ Win:</span><span class="text-slate-300">"Skin rash with raised red patches in tropical climates" — filter on <em>tropical</em>, re-rank by visual similarity to the rash description. Both signals used.</span></div>
+                        <div class="flex gap-2 text-xs"><span class="text-red-400 font-bold flex-shrink-0">✗ Miss:</span><span class="text-slate-400">If the filter keyword is too broad, it doesn't narrow enough. Too narrow, it filters out the correct result.</span></div>
+                    </div>
+                </div>
+
+                <!-- Play 5 -->
+                <div class="play-card bg-slate-800 border border-slate-700 border-l-4 border-l-teal-400 rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="pill border sig-scoped">🎯 Known + Detail</span>
+                            <p class="text-white font-bold text-lg mt-2 leading-snug">Scoped Dense Search</p>
+                        </div>
+                        <span class="text-3xl">🎯</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">User already knows the topic — they just want a specific detail inside it. Scope the search to the right document first, then do semantic search within only those chunks.</p>
+                    <div class="bg-slate-900/70 rounded-xl p-3.5 space-y-2">
+                        <div class="flex gap-2 text-xs"><span class="text-green-400 font-bold flex-shrink-0">✓ Win:</span><span class="text-slate-300">"What are the renal side effects of metformin?" — filter to the Metformin article, search inside it for kidney-related sections. The detail is buried mid-document.</span></div>
+                        <div class="flex gap-2 text-xs"><span class="text-red-400 font-bold flex-shrink-0">✗ Need:</span><span class="text-slate-400">Requires article name stored as metadata so the filter can scope the search correctly.</span></div>
+                    </div>
+                </div>
+
+                <!-- Play 6 -->
+                <div class="play-card bg-slate-800 border border-slate-700 border-l-4 border-l-amber-400 rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="pill border sig-agent">🤖 Compound</span>
+                            <p class="text-white font-bold text-lg mt-2 leading-snug">Agentic Search</p>
+                        </div>
+                        <span class="text-3xl">🤖</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">An LLM (like Claude) reads the query, decides which combination of search tools to call, runs them, merges the results, and generates the final answer. For queries too complex to hardcode.</p>
+                    <div class="bg-slate-900/70 rounded-xl p-3.5 space-y-2">
+                        <div class="flex gap-2 text-xs"><span class="text-green-400 font-bold flex-shrink-0">✓ Win:</span><span class="text-slate-300">"Chest pain after eating fatty foods, worse lying down, 45-year-old male" — visual + symptom pattern + demographic. Claude decomposes and calls multiple tools.</span></div>
+                        <div class="flex gap-2 text-xs"><span class="text-amber-400 font-bold flex-shrink-0">⚠ Note:</span><span class="text-slate-400">More powerful but less predictable — adds a layer of LLM decision-making. Build evals first.</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- core rule callout -->
+            <div class="mt-8 bg-sky-900/20 border border-sky-500/25 rounded-2xl p-5 flex gap-4 items-start">
+                <span class="text-2xl flex-shrink-0">💡</span>
+                <p class="text-slate-300 text-sm"><strong class="text-sky-300">The rule that governs all of this:</strong> How you store your data determines which plays are available. If you don't embed images at ingestion, visual search isn't possible later. If you don't chunk by article section, scoped search won't work. Storage decisions come first — retrieval decisions follow.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── §2 QUERY DECODER ───────────────────────────────────────────── -->
+    <section class="border-b border-slate-800 py-16">
+        <div class="max-w-6xl mx-auto px-6">
+
+            <div class="text-center mb-10">
+                <p class="text-sky-400 text-xs font-bold uppercase tracking-widest mb-3">Interactive</p>
+                <h2 class="text-3xl font-extrabold text-white mb-3">Try It: Query Decoder</h2>
+                <p class="text-slate-400 max-w-xl mx-auto text-sm">Six real healthcare queries — each carrying a different signal. Click any to see which method wins, why the others miss, and what the correct result looks like.</p>
+            </div>
+
+            <!-- query buttons -->
+            <div class="flex flex-wrap gap-3 justify-center mb-8">
+                <button class="q-btn bg-slate-800 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-sm font-medium hover:border-sky-500/50 hover:text-slate-100" onclick="decode('q1')" id="qbtn-q1">I feel dizzy when I stand up</button>
+                <button class="q-btn bg-slate-800 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-sm font-medium hover:border-sky-500/50 hover:text-slate-100" onclick="decode('q2')" id="qbtn-q2">Metformin HCl 500mg interactions</button>
+                <button class="q-btn bg-slate-800 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-sm font-medium hover:border-sky-500/50 hover:text-slate-100" onclick="decode('q3')" id="qbtn-q3">Circular rash, clear centre, red ring</button>
+                <button class="q-btn bg-slate-800 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-sm font-medium hover:border-sky-500/50 hover:text-slate-100" onclick="decode('q4')" id="qbtn-q4">Red raised skin patches, humid climate</button>
+                <button class="q-btn bg-slate-800 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-sm font-medium hover:border-sky-500/50 hover:text-slate-100" onclick="decode('q5')" id="qbtn-q5">Renal side effects of metformin</button>
+                <button class="q-btn bg-slate-800 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-sm font-medium hover:border-sky-500/50 hover:text-slate-100" onclick="decode('q6')" id="qbtn-q6">Chest pain after fatty food, worse lying down, 45M</button>
+            </div>
+
+            <!-- placeholder -->
+            <div id="ph" class="text-center py-10">
+                <p class="text-slate-600 text-sm">↑ Click a query to decode it</p>
+            </div>
+
+            <!-- result panel -->
+            <div id="panel" class="hidden bg-slate-800 rounded-2xl border border-sky-500/30 overflow-hidden">
+                <!-- query bar -->
+                <div class="bg-gradient-to-r from-sky-900/25 to-slate-800 px-6 py-4 border-b border-slate-700">
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Query</p>
+                    <p class="text-white font-semibold text-base" id="p-query"></p>
+                </div>
+
+                <!-- 4-column breakdown -->
+                <div class="grid md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-700/60">
+
+                    <div class="p-5">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">Signal</p>
+                        <div id="p-badge" class="pill border text-xs mb-3 inline-block"></div>
+                        <p class="text-slate-300 text-sm" id="p-sig"></p>
+                    </div>
+
+                    <div class="p-5">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">Best Method</p>
+                        <p class="text-white font-bold text-base leading-snug" id="p-method"></p>
+                        <p class="text-slate-400 text-sm mt-2" id="p-why"></p>
+                    </div>
+
+                    <div class="p-5">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">Why Others Fall Short</p>
+                        <ul id="p-fails" class="space-y-2.5"></ul>
+                    </div>
+
+                    <div class="p-5">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">Result</p>
+                        <p class="text-sky-300 font-bold text-base leading-snug" id="p-result"></p>
+                        <p class="text-slate-500 text-xs mt-2" id="p-note"></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── §3 BUILD YOUR EVAL ─────────────────────────────────────────── -->
+    <section class="py-16">
+        <div class="max-w-6xl mx-auto px-6">
+
+            <div class="text-center mb-10">
+                <p class="text-sky-400 text-xs font-bold uppercase tracking-widest mb-3">Before You Ship</p>
+                <h2 class="text-3xl font-extrabold text-white mb-3">Your Minimum Viable Eval</h2>
+                <p class="text-slate-400 max-w-lg mx-auto text-sm">You don't need 1,000 test cases. Start with 5–6 queries that reflect the real signal types your users will send. That's enough to know if you're improving.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-5 mb-8">
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 to-cyan-400"></div>
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center font-extrabold text-sky-400 text-xl mb-4">1</div>
+                    <p class="text-white font-bold mb-2">Write 5–6 test queries</p>
+                    <p class="text-slate-400 text-sm">Cover the signal types you expect — at least one vocab-gap query, one exact keyword, and one that would fool the obvious default method.</p>
+                </div>
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-teal-400"></div>
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center font-extrabold text-cyan-400 text-xl mb-4">2</div>
+                    <p class="text-white font-bold mb-2">Label what "correct" looks like</p>
+                    <p class="text-slate-400 text-sm">For each query, write down the article or passage you expect to surface. Three levels: did the right article appear? Did the right section appear? Was the answer answerable?</p>
+                </div>
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 to-green-400"></div>
+                    <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center font-extrabold text-teal-400 text-xl mb-4">3</div>
+                    <p class="text-white font-bold mb-2">Run after every change</p>
+                    <p class="text-slate-400 text-sm">Every time you swap a method, adjust chunking, or change an embedding model — run the same 5–6 queries. Are you rank 1 more often? That's your signal of progress.</p>
+                </div>
+            </div>
+
+            <!-- method match guide -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-700">
+                    <p class="text-white font-semibold">Which method to test first — a quick decision guide</p>
+                </div>
+                <div class="divide-y divide-slate-700/50">
+                    <div class="px-6 py-3.5 flex items-center gap-4 hover:bg-slate-700/20 transition-colors">
+                        <span class="pill border sig-vocab flex-shrink-0">💬 Vocab Gap</span>
+                        <p class="text-slate-300 text-sm flex-1">Non-experts asking questions in plain language, querying expert-written content (clinical notes, research papers, policy docs)</p>
+                        <span class="text-sky-400 text-xs font-bold flex-shrink-0">Start with Dense</span>
+                    </div>
+                    <div class="px-6 py-3.5 flex items-center gap-4 hover:bg-slate-700/20 transition-colors">
+                        <span class="pill border sig-exact flex-shrink-0">🔑 Exact Term</span>
+                        <p class="text-slate-300 text-sm flex-1">Drug names, ICD codes, clinical identifiers, product SKUs — anything with a unique string that must appear verbatim</p>
+                        <span class="text-orange-400 text-xs font-bold flex-shrink-0">Start with Keyword</span>
+                    </div>
+                    <div class="px-6 py-3.5 flex items-center gap-4 hover:bg-slate-700/20 transition-colors">
+                        <span class="pill border sig-visual flex-shrink-0">👁 Visual</span>
+                        <p class="text-slate-300 text-sm flex-1">Dermatology, radiology, wound care, pathology — anywhere users describe what they see before they know what it is</p>
+                        <span class="text-rose-400 text-xs font-bold flex-shrink-0">Start with Visual</span>
+                    </div>
+                    <div class="px-6 py-3.5 flex items-center gap-4 hover:bg-slate-700/20 transition-colors">
+                        <span class="pill border sig-scoped flex-shrink-0">🎯 Scoped</span>
+                        <p class="text-slate-300 text-sm flex-1">Users who know the document but need a detail from inside it — dosage sections, contraindications, specific procedure steps</p>
+                        <span class="text-teal-400 text-xs font-bold flex-shrink-0">Start with Scoped</span>
+                    </div>
+                    <div class="px-6 py-3.5 flex items-center gap-4 hover:bg-slate-700/20 transition-colors">
+                        <span class="pill border sig-agent flex-shrink-0">🤖 Compound</span>
+                        <p class="text-slate-300 text-sm flex-1">Symptom checkers, triage assistants, diagnostic support tools — where one query carries symptoms + demographics + context simultaneously</p>
+                        <span class="text-amber-400 text-xs font-bold flex-shrink-0">Start with Agentic</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- PAGE FOOTER STRIP -->
+<div class="bg-slate-900 border-t border-slate-800">
+    <div class="max-w-6xl mx-auto px-6 py-10 text-center space-y-3">
+        <p class="text-white font-semibold">The Retrieval Playbook</p>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Six retrieval strategies, explained plainly. Based on the GenAcademy guest lecture by Arjun (Pinecone). </p>
+        <div class="flex flex-wrap justify-center gap-2 pt-1">
+            <span class="bg-slate-800 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#Pinecone</span>
+            <span class="bg-slate-800 text-cyan-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RAGRetrieval</span>
+            <span class="bg-slate-800 text-teal-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#VectorSearch</span>
+            <span class="bg-slate-800 text-rose-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#HealthcareAI</span>
+            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
+        </div>
+        <div class="flex space-x-6 text-sm">
+            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ── QUERY DECODER DATA ─────────────────────────────────────────────────
+const Q = {
+    q1: {
+        query: "I feel dizzy when I stand up quickly",
+        signal: "💬 Vocabulary Gap",
+        sigClass: "sig-vocab",
+        sig: "The patient is describing a clinical condition in everyday language. They don't know the medical term — so keyword search will completely miss them.",
+        method: "Dense Semantic Search",
+        why: "The query maps to the same vector space as 'orthostatic hypotension', 'postural hypotension', and 'blood pressure drop on standing' — even though none of those words appear in what the patient typed.",
+        fails: [
+            "🔑 Keyword search: 'dizzy' and 'stand up' don't match the clinical terminology used in medical articles",
+            "🎯 Scoped search: no specific document is named — needs a broad semantic sweep first"
+        ],
+        result: "Orthostatic Hypotension",
+        note: "Found by meaning, not by words — the vocabulary gap was crossed by the vector embedding"
+    },
+    q2: {
+        query: "Metformin HCl 500mg drug interactions",
+        signal: "🔑 Exact Keyword",
+        sigClass: "sig-exact",
+        sig: "The user knows the exact drug name and formulation. This is a precise identifier — only one document in the database will match this specific term.",
+        method: "Keyword (Full-Text) Search",
+        why: "'Metformin HCl 500mg' is rare and specific. BM25 scores it extremely high because it appears in only one or a few articles. Exact string match is the only reliable way to find it.",
+        fails: [
+            "💬 Dense semantic: might return similar drugs (glipizide, sitagliptin) instead of this specific one",
+            "🧠 Dense search loses the precision of the exact formulation identifier"
+        ],
+        result: "Metformin HCl 500mg drug interactions article",
+        note: "The exact formulation string appears in only one entry — keyword precision found it where semantic search couldn't"
+    },
+    q3: {
+        query: "Circular rash with a clear centre and a red outer ring",
+        signal: "👁 Visual Description",
+        sigClass: "sig-visual",
+        sig: "The patient is describing what they see on their skin — no diagnosis, just a visual observation. This is a visual search query embedded in text.",
+        method: "Visual (Multimodal) Search",
+        why: "A multimodal embedding model (like Gemini Embedding 2) maps this text description into the same space as dermatology images. The description aligns with stored images of the bullseye rash pattern.",
+        fails: [
+            "🔑 Keyword search: 'clear centre red ring' doesn't match clinical descriptions like 'erythema migrans'",
+            "💬 Dense text: medical articles don't describe Lyme disease as having a 'red outer ring' — they use clinical terminology"
+        ],
+        result: "Lyme Disease — Erythema Migrans rash",
+        note: "Patient described the appearance; multimodal embedding connected the description to the clinical image"
+    },
+    q4: {
+        query: "Red raised skin patches in humid tropical climates",
+        signal: "🔀 Visual + Geographic Filter",
+        sigClass: "sig-hybrid",
+        sig: "Two signals at once: a visual description of the skin condition AND a geographic/environmental constraint. Neither alone is enough.",
+        method: "Hybrid Search",
+        why: "Filter the document set on 'tropical' or 'humid' to scope to climate-relevant conditions, then re-rank by visual similarity to 'red raised skin patches'. One method handles one signal; hybrid handles both.",
+        fails: [
+            "👁 Visual only: returns all red rash conditions globally — ignores the climate context entirely",
+            "🔑 Keyword only: 'red raised patches' is too generic without the visual re-ranking step"
+        ],
+        result: "Tinea Corporis (Ringworm) / Prickly Heat — climate-specific dermatitis conditions",
+        note: "Climate keyword narrowed the field; visual similarity ranked the correct conditions to the top"
+    },
+    q5: {
+        query: "What are the renal side effects of metformin?",
+        signal: "🎯 Named Drug + Specific Detail",
+        sigClass: "sig-scoped",
+        sig: "The user knows exactly which drug they're asking about — now they want a specific clinical detail buried deep in the drug monograph, not the overview.",
+        method: "Scoped Dense Search",
+        why: "Filter the chunk index to Metformin-related chunks only, then dense-search within those chunks for 'renal' and 'side effects'. The answer is in the adverse reactions section — not the intro.",
+        fails: [
+            "💬 Full corpus dense search: returns the Metformin article but ranks the overview section higher than the adverse effects section",
+            "🔑 Keyword search: 'renal side effects' appears in many drug articles — too broad without the drug-name scope"
+        ],
+        result: "Adverse Effects section: lactic acidosis risk in patients with renal impairment; contraindicated below GFR 30",
+        note: "The key clinical detail was mid-document — scoped chunking surfaced it; a general search would have missed it"
+    },
+    q6: {
+        query: "Chest pain after eating fatty foods, worse when lying down, 45-year-old male",
+        signal: "🤖 Compound Multi-Signal",
+        sigClass: "sig-agent",
+        sig: "Three simultaneous signals: symptom pattern (chest pain + postprandial), positional factor (worse lying down), and demographic context (45M). Too complex for any single retrieval method.",
+        method: "Agentic Search — LLM orchestrates tools",
+        why: "Claude decomposes the query: semantic search on symptom pattern, filter on 'postprandial' or 'reflux', demographic context applied as metadata filter. Results merged and normalized before generating the answer.",
+        fails: [
+            "Any single method: handles one signal well but misses the other two",
+            "💬 Dense semantic alone: might return generic 'chest pain' articles without using the positional or demographic signals"
+        ],
+        result: "GERD / Acid Reflux — gastroesophageal reflux disease with positional exacerbation",
+        note: "Claude called semantic + positional filter + demographic scope, merged results — the compound context ruled out cardiac causes and pointed to GI origin"
+    }
+};
+
+function decode(id) {
+    const q = Q[id];
+    if (!q) return;
+
+    document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('qbtn-' + id).classList.add('active');
+
+    document.getElementById('p-query').textContent = q.query;
+
+    const badge = document.getElementById('p-badge');
+    badge.textContent = q.signal;
+    badge.className = 'pill border text-xs mb-3 inline-block ' + q.sigClass;
+
+    document.getElementById('p-sig').textContent = q.sig;
+    document.getElementById('p-method').textContent = q.method;
+    document.getElementById('p-why').textContent = q.why;
+    document.getElementById('p-fails').innerHTML = q.fails.map(f =>
+        `<li class="flex items-start gap-2 text-xs leading-snug text-slate-400"><span class="text-red-400 flex-shrink-0 mt-px">✗</span><span>${f}</span></li>`
+    ).join('');
+    document.getElementById('p-result').textContent = q.result;
+    document.getElementById('p-note').textContent = q.note;
+
+    const panel = document.getElementById('panel');
+    document.getElementById('ph').classList.add('hidden');
+    panel.classList.remove('hidden');
+    panel.classList.remove('pop-in');
+    void panel.offsetWidth;
+    panel.classList.add('pop-in');
+}
+
+// ── setup tabs ─────────────────────────────────────────────────────────
+function showSetup(n) {
+    [1,2,3].forEach(i => {
+        document.getElementById('setup-' + i).classList.toggle('hidden', i !== n);
+        document.getElementById('stab-' + i).classList.toggle('active', i === n);
+    });
+}
+</script>
+
+<!-- Nav dropdown grouping (exact copy) -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+    links.forEach(link => { const n = link.getAttribute('data-group'); if (!groups[n]) groups[n] = []; groups[n].push(link); });
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:relative;display:inline-block;';
+        const trigger = document.createElement('button');
+        trigger.className = 'nav-btn';
+        trigger.innerHTML = `${groupName} ▾`;
+        const menu = document.createElement('div');
+        menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
+        const first = groupItems[0];
+        if (first.parentNode) first.replaceWith(wrapper);
+        groupItems.forEach(link => {
+            link.style.cssText = 'display:block;padding:.4rem .75rem;border-radius:4px;color:#333;text-decoration:none;font-size:.85rem;white-space:nowrap;';
+            link.onmouseenter = () => link.style.background = '#f0f9ff';
+            link.onmouseleave = () => link.style.background = '';
+            menu.appendChild(link);
+        });
+        wrapper.appendChild(trigger); wrapper.appendChild(menu);
+        trigger.addEventListener('click', e => { e.stopPropagation(); const open = menu.style.display === 'flex'; document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }); menu.style.display = open ? 'none' : 'flex'; });
+    });
+    document.addEventListener('click', () => document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }));
+});
+</script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1dbb923b06fe4997b8f6cdad1b22bc2d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
