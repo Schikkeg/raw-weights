@@ -1,0 +1,295 @@
+<svg width="1400" height="1060" viewBox="0 0 1400 1060" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',system-ui,-apple-system,sans-serif">
+
+  <!-- Background -->
+  <rect width="1400" height="1060" fill="#f6f8fa" rx="12"/>
+
+  <!-- Title -->
+  <rect x="0" y="0" width="1400" height="50" fill="#24292f" rx="0"/>
+  <rect x="0" y="44" width="1400" height="6" fill="#f6f8fa"/>
+  <text x="700" y="31" text-anchor="middle" font-size="17" font-weight="700" fill="#f0f6fc">&#x1F9F1;  Component Map — Imports, Classes &amp; Methods  (for new Python users)</text>
+
+  <!-- ── LEGEND ── -->
+  <rect x="20" y="58" width="1360" height="36" rx="6" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="36" y="73" font-size="9" font-weight="700" fill="#57606a">IMPORTS:</text>
+  <rect x="100" y="62" width="88" height="16" rx="8" fill="#dbeafe"/><text x="144" y="74" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain / langgraph</text>
+  <rect x="196" y="62" width="58" height="16" rx="8" fill="#dcfce7"/><text x="225" y="74" text-anchor="middle" font-size="8" fill="#15803d">neo4j</text>
+  <rect x="262" y="62" width="52" height="16" rx="8" fill="#fce7f3"/><text x="288" y="74" text-anchor="middle" font-size="8" fill="#be185d">pydantic</text>
+  <rect x="322" y="62" width="94" height="16" rx="8" fill="#f3e8ff"/><text x="369" y="74" text-anchor="middle" font-size="8" fill="#7c3aed">requests/feedparser</text>
+  <rect x="424" y="62" width="34" height="16" rx="8" fill="#fff7ed"/><text x="441" y="74" text-anchor="middle" font-size="8" fill="#c2410c">rich</text>
+  <rect x="466" y="62" width="52" height="16" rx="8" fill="#fee2e2"/><text x="492" y="74" text-anchor="middle" font-size="8" fill="#dc2626">streamlit</text>
+  <rect x="526" y="62" width="76" height="16" rx="8" fill="#e0f2fe"/><text x="564" y="74" text-anchor="middle" font-size="8" fill="#0369a1">concurrent.futures</text>
+  <rect x="610" y="62" width="80" height="16" rx="8" fill="#f1f5f9"/><text x="650" y="74" text-anchor="middle" font-size="8" fill="#475569">stdlib (json, pathlib…)</text>
+  <text x="730" y="74" font-size="9" fill="#57606a">  |  </text>
+  <text x="744" y="74" font-size="9" font-weight="700" fill="#57606a">CLASS:</text>
+  <text x="790" y="74" font-size="9" fill="#24292f">TypedDict  Pydantic BaseModel  context manager</text>
+  <text x="1000" y="74" font-size="9" font-weight="700" fill="#57606a">METHOD:</text>
+  <text x="1052" y="74" font-size="9" fill="#0969da">blue = callable function</text>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- ROW 1: config.py (full width, y=104–168) -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <rect x="20" y="104" width="1360" height="70" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="20" y="104" width="1360" height="26" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="0"/>
+  <rect x="20" y="120" width="1360" height="10" fill="#ffffff"/>
+  <text x="36" y="121" font-size="10" font-weight="700" fill="#24292f" font-family="'Courier New',monospace">sentinel/config.py</text>
+  <text x="220" y="121" font-size="9" fill="#57606a">Central settings — reads .env file, validates all credentials and RAG parameters</text>
+  <!-- imports -->
+  <rect x="36" y="132" width="90" height="16" rx="8" fill="#dbeafe"/><text x="81" y="144" text-anchor="middle" font-size="8" fill="#1d4ed8">pydantic_settings</text>
+  <rect x="132" y="132" width="52" height="16" rx="8" fill="#fce7f3"/><text x="158" y="144" text-anchor="middle" font-size="8" fill="#be185d">pydantic</text>
+  <rect x="190" y="132" width="80" height="16" rx="8" fill="#f1f5f9"/><text x="230" y="144" text-anchor="middle" font-size="8" fill="#475569">functools.lru_cache</text>
+  <!-- methods/classes -->
+  <text x="310" y="144" font-size="9" fill="#57606a">  |  </text>
+  <text x="328" y="144" font-size="9" fill="#24292f" font-weight="700">class Settings(BaseSettings):</text>
+  <text x="510" y="144" font-size="9" fill="#57606a">NEBIUS_API_KEY · NEO4J_URI · NEO4J_PASSWORD · CHROMA_PATH · RAG_CHUNK_SIZE · RAG_TOP_K</text>
+  <text x="36" y="162" font-size="9" fill="#0969da" font-weight="700">get_settings()</text>
+  <text x="114" y="162" font-size="9" fill="#57606a">— @lru_cache singleton: call once, reuse everywhere. Reads .env automatically via pydantic_settings.</text>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- ROW 2: Ingestion clients (y=182–310) -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <text x="36" y="200" font-size="10" font-weight="700" fill="#57606a" letter-spacing="1">DATA INGESTION LAYER</text>
+
+  <!-- fda_client.py -->
+  <rect x="20" y="208" width="442" height="112" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="20" y="208" width="442" height="24" rx="8" fill="#eff6ff" stroke="#d0d7de" stroke-width="0"/>
+  <rect x="20" y="224" width="442" height="8" fill="#ffffff"/>
+  <text x="36" y="224" font-size="10" font-weight="700" fill="#1d4ed8" font-family="'Courier New',monospace">ingestion/fda_client.py</text>
+  <text x="36" y="240" font-size="9" fill="#57606a">Fetches FDA food enforcement data — REST API and pre-downloaded bulk JSON</text>
+  <rect x="36" y="246" width="54" height="14" rx="7" fill="#f3e8ff"/><text x="63" y="257" text-anchor="middle" font-size="8" fill="#7c3aed">requests</text>
+  <rect x="96" y="246" width="54" height="14" rx="7" fill="#f3e8ff"/><text x="123" y="257" text-anchor="middle" font-size="8" fill="#7c3aed">tenacity</text>
+  <rect x="156" y="246" width="34" height="14" rx="7" fill="#f1f5f9"/><text x="173" y="257" text-anchor="middle" font-size="8" fill="#475569">json</text>
+  <rect x="196" y="246" width="38" height="14" rx="7" fill="#f1f5f9"/><text x="215" y="257" text-anchor="middle" font-size="8" fill="#475569">zipfile</text>
+  <line x1="36" y1="266" x2="446" y2="266" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="36" y="279" font-size="9" fill="#0969da" font-weight="700">fetch_food_recalls(days)</text>
+  <text x="180" y="279" font-size="9" fill="#57606a">— calls openFDA REST API with retry</text>
+  <text x="36" y="293" font-size="9" fill="#0969da" font-weight="700">load_local_bulk(file_path)</text>
+  <text x="180" y="293" font-size="9" fill="#57606a">— reads pre-downloaded JSON (fast, no network)</text>
+  <text x="36" y="307" font-size="9" fill="#0969da" font-weight="700">_normalize(record)</text>
+  <text x="180" y="307" font-size="9" fill="#57606a">— maps raw FDA fields to standard dict shape</text>
+
+  <!-- usda_client.py -->
+  <rect x="478" y="208" width="442" height="112" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="478" y="208" width="442" height="24" rx="8" fill="#eff6ff"/>
+  <rect x="478" y="224" width="442" height="8" fill="#ffffff"/>
+  <text x="494" y="224" font-size="10" font-weight="700" fill="#1d4ed8" font-family="'Courier New',monospace">ingestion/usda_client.py</text>
+  <text x="494" y="240" font-size="9" fill="#57606a">Fetches USDA FSIS recalls via undocumented JSON API (RSS is 404) — 1,759 Class I+II records</text>
+  <rect x="494" y="246" width="54" height="14" rx="7" fill="#f3e8ff"/><text x="521" y="257" text-anchor="middle" font-size="8" fill="#7c3aed">requests</text>
+  <rect x="554" y="246" width="30" height="14" rx="7" fill="#f1f5f9"/><text x="569" y="257" text-anchor="middle" font-size="8" fill="#475569">re</text>
+  <line x1="494" y1="266" x2="902" y2="266" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="494" y="279" font-size="9" fill="#0969da" font-weight="700">fetch_usda_recalls(filter_class, limit)</text>
+  <text x="678" y="279" font-size="9" fill="#57606a">— GET /fsis/api/recall/v/1, returns 1,759 Class I+II records (2,006 all classes)</text>
+  <text x="494" y="293" font-size="9" fill="#0969da" font-weight="700">_normalize_usda(rec)</text>
+  <text x="678" y="293" font-size="9" fill="#57606a">— maps API fields to standard dict; sets _is_fda_structured=True for fast path</text>
+  <text x="494" y="307" font-size="9" fill="#57606a" font-style="italic">Note: RSS feed returns 404. This JSON endpoint is used by the USDA website itself — undocumented but stable.</text>
+
+  <!-- cdc_client.py -->
+  <rect x="936" y="208" width="444" height="112" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="936" y="208" width="444" height="24" rx="8" fill="#eff6ff"/>
+  <rect x="936" y="224" width="444" height="8" fill="#ffffff"/>
+  <text x="952" y="224" font-size="10" font-weight="700" fill="#1d4ed8" font-family="'Courier New',monospace">ingestion/cdc_client.py</text>
+  <text x="952" y="240" font-size="9" fill="#57606a">Pulls CDC foodborne outbreak data — fail-fast on 404 (Socrata endpoint currently offline)</text>
+  <rect x="952" y="246" width="54" height="14" rx="7" fill="#f3e8ff"/><text x="979" y="257" text-anchor="middle" font-size="8" fill="#7c3aed">requests</text>
+  <line x1="952" y1="266" x2="1362" y2="266" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="952" y="279" font-size="9" fill="#0969da" font-weight="700">fetch_cdc_outbreaks()</text>
+  <text x="1070" y="279" font-size="9" fill="#57606a">— Socrata JSON API · no retry · returns [] immediately on 404</text>
+  <text x="952" y="293" font-size="9" fill="#0969da" font-weight="700">_normalize_cdc(record)</text>
+  <text x="1070" y="293" font-size="9" fill="#57606a">— maps CDC fields to standard dict</text>
+  <text x="952" y="307" font-size="9" fill="#e3b341" font-style="italic">&#x26A0; Offline: Socrata endpoint returns 404. Fail-fast — no retry wasted on a hard 404.</text>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- ROW 3: Processing (y=330–448) -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <text x="36" y="348" font-size="10" font-weight="700" fill="#57606a" letter-spacing="1">PROCESSING LAYER</text>
+
+  <!-- chunker.py -->
+  <rect x="20" y="356" width="676" height="112" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="20" y="356" width="676" height="24" rx="8" fill="#f0fff4"/>
+  <rect x="20" y="372" width="676" height="8" fill="#ffffff"/>
+  <text x="36" y="372" font-size="10" font-weight="700" fill="#15803d" font-family="'Courier New',monospace">processing/chunker.py</text>
+  <text x="36" y="388" font-size="9" fill="#57606a">Two deliberate semantic chunks per recall — no arbitrary splitting, every chunk self-contained and retrievable</text>
+  <rect x="36" y="394" width="78" height="14" rx="7" fill="#dbeafe"/><text x="75" y="405" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain_core</text>
+  <line x1="36" y1="414" x2="678" y2="414" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="36" y="427" font-size="9" fill="#0969da" font-weight="700">chunk_recall(recall, entities)</text>
+  <text x="210" y="427" font-size="9" fill="#57606a">— returns exactly 2 Documents per recall (chunk_type: "summary" + "detail")</text>
+  <text x="36" y="441" font-size="9" fill="#57606a">chunk_type "summary": product · manufacturer · hazard · reason  (WHAT — for semantic search)</text>
+  <text x="36" y="455" font-size="9" fill="#57606a">chunk_type "detail": states · lot numbers · dates · distribution  (WHERE/WHEN — no overlap needed)</text>
+
+  <!-- entity_extractor.py -->
+  <rect x="712" y="356" width="668" height="112" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="712" y="356" width="668" height="24" rx="8" fill="#f0fff4"/>
+  <rect x="712" y="372" width="668" height="8" fill="#ffffff"/>
+  <text x="728" y="372" font-size="10" font-weight="700" fill="#15803d" font-family="'Courier New',monospace">processing/entity_extractor.py</text>
+  <text x="728" y="388" font-size="9" fill="#57606a">Extracts product name, hazard, states, UPC codes from recall text — fast path skips LLM entirely</text>
+  <rect x="728" y="394" width="78" height="14" rx="7" fill="#dbeafe"/><text x="767" y="405" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain_core</text>
+  <rect x="812" y="394" width="82" height="14" rx="7" fill="#dbeafe"/><text x="853" y="405" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain_openai</text>
+  <rect x="900" y="394" width="52" height="14" rx="7" fill="#fce7f3"/><text x="926" y="405" text-anchor="middle" font-size="8" fill="#be185d">pydantic</text>
+  <line x1="728" y1="414" x2="1362" y2="414" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="728" y="427" font-size="9" fill="#24292f" font-weight="700">class RecallEntities(BaseModel):</text>
+  <text x="908" y="427" font-size="9" fill="#57606a">product_name · manufacturer · hazard_type · lot_numbers · upc_codes · severity</text>
+  <text x="728" y="441" font-size="9" fill="#0969da" font-weight="700">fast_extract_fda_entities(record)</text>
+  <text x="918" y="441" font-size="9" fill="#57606a">— direct field mapping, 0 LLM calls, used for all 27k FDA records</text>
+  <text x="728" y="455" font-size="9" fill="#0969da" font-weight="700">_openfoodfacts_image_url(upc)</text>
+  <text x="918" y="455" font-size="9" fill="#57606a">— builds product image URL from UPC barcode (EAN-13 split into 3-digit groups)</text>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- ROW 4: Storage (y=478–600) -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <text x="36" y="494" font-size="10" font-weight="700" fill="#57606a" letter-spacing="1">STORAGE LAYER</text>
+
+  <!-- vector_store.py -->
+  <rect x="20" y="502" width="676" height="118" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="20" y="502" width="676" height="24" rx="8" fill="#eff6ff"/>
+  <rect x="20" y="518" width="676" height="8" fill="#ffffff"/>
+  <text x="36" y="518" font-size="10" font-weight="700" fill="#1d4ed8" font-family="'Courier New',monospace">storage/vector_store.py</text>
+  <text x="36" y="534" font-size="9" fill="#57606a">Stores and searches 58k recall text chunks using semantic embeddings (meaning-based search)</text>
+  <rect x="36" y="540" width="90" height="14" rx="7" fill="#dbeafe"/><text x="81" y="551" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain_chroma</text>
+  <rect x="132" y="540" width="82" height="14" rx="7" fill="#dbeafe"/><text x="173" y="551" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain_openai</text>
+  <line x1="36" y1="560" x2="678" y2="560" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="36" y="573" font-size="9" fill="#24292f" font-weight="700">class VectorStore:</text>
+  <text x="126" y="573" font-size="9" fill="#57606a">wraps ChromaDB — a local vector database that stores text + its embedding</text>
+  <text x="36" y="587" font-size="9" fill="#0969da" font-weight="700">add_recall_chunks(docs, ids)</text>
+  <text x="206" y="587" font-size="9" fill="#57606a">— writes batches of 5,000 (ChromaDB max per call is 5,461)</text>
+  <text x="36" y="601" font-size="9" fill="#0969da" font-weight="700">search_for_profile(profile)</text>
+  <text x="206" y="601" font-size="9" fill="#57606a">— enriches query with household context before searching</text>
+  <text x="36" y="615" font-size="9" fill="#0969da" font-weight="700">search_with_score(query, k)</text>
+  <text x="206" y="615" font-size="9" fill="#57606a">— returns list of (Document, cosine_distance) tuples</text>
+
+  <!-- graph_store.py -->
+  <rect x="712" y="502" width="668" height="118" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="712" y="502" width="668" height="24" rx="8" fill="#f0fff4"/>
+  <rect x="712" y="518" width="668" height="8" fill="#ffffff"/>
+  <text x="728" y="518" font-size="10" font-weight="700" fill="#15803d" font-family="'Courier New',monospace">storage/graph_store.py</text>
+  <text x="728" y="534" font-size="9" fill="#57606a">Neo4j knowledge graph — stores supply-chain relationships between recalls, manufacturers, regions, users</text>
+  <rect x="728" y="540" width="34" height="14" rx="7" fill="#dcfce7"/><text x="745" y="551" text-anchor="middle" font-size="8" fill="#15803d">neo4j</text>
+  <line x1="728" y1="560" x2="1362" y2="560" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="728" y="573" font-size="9" fill="#24292f" font-weight="700">class GraphStore:  (context manager — use with "with GraphStore() as gs:")</text>
+  <text x="728" y="587" font-size="9" fill="#0969da" font-weight="700">upsert_recall(recall)</text>
+  <text x="828" y="587" font-size="9" fill="#57606a">— MERGE: writes without duplicates. Builds Manufacturer→Recall→Region links.</text>
+  <text x="728" y="601" font-size="9" fill="#0969da" font-weight="700">get_supply_chain_risk(mfr)</text>
+  <text x="828" y="601" font-size="9" fill="#57606a">— traverses graph to find ALL recalls from one manufacturer (supply-chain blindspot fix)</text>
+  <text x="728" y="615" font-size="9" fill="#0969da" font-weight="700">search_recalls_for_user(uid, kw)</text>
+  <text x="828" y="615" font-size="9" fill="#57606a">— follows User→Region←Recall path with keyword + severity filters</text>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- ROW 5: Profiles + Notifier (y=638–740) -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <text x="36" y="652" font-size="10" font-weight="700" fill="#57606a" letter-spacing="1">PROFILES &amp; NOTIFICATIONS</text>
+
+  <!-- user_profile.py -->
+  <rect x="20" y="660" width="676" height="100" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="20" y="660" width="676" height="24" rx="8" fill="#fffbeb"/>
+  <rect x="20" y="676" width="676" height="8" fill="#ffffff"/>
+  <text x="36" y="676" font-size="10" font-weight="700" fill="#92400e" font-family="'Courier New',monospace">profiles/user_profile.py</text>
+  <text x="36" y="692" font-size="9" fill="#57606a">Household profiles — stores dietary habits, location, and family context used for personalised matching</text>
+  <rect x="36" y="698" width="52" height="14" rx="7" fill="#fce7f3"/><text x="62" y="709" text-anchor="middle" font-size="8" fill="#be185d">pydantic</text>
+  <rect x="94" y="698" width="34" height="14" rx="7" fill="#f1f5f9"/><text x="111" y="709" text-anchor="middle" font-size="8" fill="#475569">json</text>
+  <rect x="134" y="698" width="50" height="14" rx="7" fill="#f1f5f9"/><text x="159" y="709" text-anchor="middle" font-size="8" fill="#475569">pathlib</text>
+  <line x1="36" y1="718" x2="678" y2="718" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="36" y="731" font-size="9" fill="#24292f" font-weight="700">class UserProfile(BaseModel):</text>
+  <text x="206" y="731" font-size="9" fill="#57606a">user_id · name · email · states · household_profile · has_children</text>
+  <text x="36" y="745" font-size="9" fill="#0969da" font-weight="700">load_profiles()</text>
+  <text x="116" y="745" font-size="9" fill="#57606a">— reads user_profiles.json, returns list[UserProfile]. Called by both pipelines.</text>
+
+  <!-- notifier.py -->
+  <rect x="712" y="660" width="668" height="100" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="712" y="660" width="668" height="24" rx="8" fill="#fff7ed"/>
+  <rect x="712" y="676" width="668" height="8" fill="#ffffff"/>
+  <text x="728" y="676" font-size="10" font-weight="700" fill="#c2410c" font-family="'Courier New',monospace">notifications/notifier.py</text>
+  <text x="728" y="692" font-size="9" fill="#57606a">Delivers AI-written alerts via console, JSON log — and future email/SMS/WhatsApp</text>
+  <rect x="728" y="698" width="34" height="14" rx="7" fill="#fff7ed"/><text x="745" y="709" text-anchor="middle" font-size="8" fill="#c2410c">rich</text>
+  <rect x="768" y="698" width="34" height="14" rx="7" fill="#f1f5f9"/><text x="785" y="709" text-anchor="middle" font-size="8" fill="#475569">json</text>
+  <rect x="808" y="698" width="58" height="14" rx="7" fill="#f1f5f9"/><text x="837" y="709" text-anchor="middle" font-size="8" fill="#475569">datetime</text>
+  <line x1="728" y1="718" x2="1362" y2="718" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="728" y="731" font-size="9" fill="#24292f" font-weight="700">class Notifier:</text>
+  <text x="800" y="731" font-size="9" fill="#57606a">channel router — currently console + JSON, stubs for email/SMS ready</text>
+  <text x="728" y="745" font-size="9" fill="#0969da" font-weight="700">deliver(user_id, message, severity, image_url)</text>
+  <text x="988" y="745" font-size="9" fill="#57606a">— routes to console print + appends to alerts_log.json</text>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- ROW 6: Agent Pipelines (y=770–910) -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <text x="36" y="784" font-size="10" font-weight="700" fill="#57606a" letter-spacing="1">AGENT PIPELINES (LangGraph)</text>
+
+  <!-- ingestion_pipeline.py -->
+  <rect x="20" y="792" width="442" height="146" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="20" y="792" width="442" height="24" rx="8" fill="#fef2f2"/>
+  <rect x="20" y="808" width="442" height="8" fill="#ffffff"/>
+  <text x="36" y="808" font-size="10" font-weight="700" fill="#b91c1c" font-family="'Courier New',monospace">agents/ingestion_pipeline.py</text>
+  <text x="36" y="824" font-size="9" fill="#57606a">LangGraph stateful pipeline — orchestrates fetch → extract → chunk → store as a state machine</text>
+  <rect x="36" y="830" width="78" height="14" rx="7" fill="#dbeafe"/><text x="75" y="841" text-anchor="middle" font-size="8" fill="#1d4ed8">langgraph.graph</text>
+  <rect x="120" y="830" width="78" height="14" rx="7" fill="#dbeafe"/><text x="159" y="841" text-anchor="middle" font-size="8" fill="#1d4ed8">langgraph.checkpoint</text>
+  <rect x="204" y="830" width="34" height="14" rx="7" fill="#fff7ed"/><text x="221" y="841" text-anchor="middle" font-size="8" fill="#c2410c">rich</text>
+  <line x1="36" y1="850" x2="444" y2="850" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="36" y="863" font-size="9" fill="#24292f" font-weight="700">class IngestionState(TypedDict):</text>
+  <text x="36" y="877" font-size="9" fill="#57606a">raw_recalls · processed_recalls · chunks · indexed_count · errors · skip_vectors · skip_neo4j</text>
+  <text x="36" y="891" font-size="9" fill="#0969da" font-weight="700">build_ingestion_graph()</text>
+  <text x="180" y="891" font-size="9" fill="#57606a">— 6-node StateGraph · --skip-vectors / --skip-neo4j for resumable runs</text>
+  <text x="36" y="905" font-size="9" fill="#57606a">Nodes: fetch_all_recalls · extract_entities · chunk_documents</text>
+  <text x="36" y="919" font-size="9" fill="#57606a">       store_vectors · build_knowledge_graph · summarize_run</text>
+  <text x="36" y="933" font-size="9" fill="#57606a" font-style="italic">TypedDict: typed dict — LangGraph reads/writes state through it at each step</text>
+
+  <!-- matching_pipeline.py -->
+  <rect x="478" y="792" width="442" height="146" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="478" y="792" width="442" height="24" rx="8" fill="#fef2f2"/>
+  <rect x="478" y="808" width="442" height="8" fill="#ffffff"/>
+  <text x="494" y="808" font-size="10" font-weight="700" fill="#b91c1c" font-family="'Courier New',monospace">agents/matching_pipeline.py</text>
+  <text x="494" y="824" font-size="9" fill="#57606a">Matches recalls to user profiles using dual RAG, evaluates risk with LLM, fires alerts</text>
+  <rect x="494" y="830" width="78" height="14" rx="7" fill="#dbeafe"/><text x="533" y="841" text-anchor="middle" font-size="8" fill="#1d4ed8">langgraph.graph</text>
+  <rect x="578" y="830" width="82" height="14" rx="7" fill="#dbeafe"/><text x="619" y="841" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain_openai</text>
+  <rect x="666" y="830" width="76" height="14" rx="7" fill="#e0f2fe"/><text x="704" y="841" text-anchor="middle" font-size="8" fill="#0369a1">concurrent.futures</text>
+  <line x1="494" y1="850" x2="902" y2="850" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="494" y="863" font-size="9" fill="#24292f" font-weight="700">class MatchingState(TypedDict):</text>
+  <text x="494" y="877" font-size="9" fill="#57606a">user_profiles · vector_matches · graph_matches · risk_assessments · alerts_sent</text>
+  <text x="494" y="891" font-size="9" fill="#0969da" font-weight="700">build_matching_graph()</text>
+  <text x="638" y="891" font-size="9" fill="#57606a">— 5-node pipeline with optional MemorySaver</text>
+  <text x="494" y="905" font-size="9" fill="#0969da" font-weight="700">evaluate_risk(state)</text>
+  <text x="638" y="905" font-size="9" fill="#57606a">— 7-day eval_cache.json · skips LLM on hit · 8 workers · 45s timeout each</text>
+  <text x="494" y="919" font-size="9" fill="#57606a" font-style="italic">Cache key: (user_id, recall_id) · first scan calls LLM · repeat scans complete in seconds</text>
+  <text x="494" y="933" font-size="9" fill="#0969da" font-weight="700">_make_llm(model)</text>
+  <text x="638" y="933" font-size="9" fill="#57606a">— disables Qwen3 thinking mode to prevent empty responses</text>
+
+  <!-- chat_pipeline.py -->
+  <rect x="936" y="792" width="444" height="146" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="936" y="792" width="444" height="24" rx="8" fill="#fef2f2"/>
+  <rect x="936" y="808" width="444" height="8" fill="#ffffff"/>
+  <text x="952" y="808" font-size="10" font-weight="700" fill="#b91c1c" font-family="'Courier New',monospace">agents/chat_pipeline.py</text>
+  <text x="952" y="824" font-size="9" fill="#57606a">LangGraph fan-out — parallel VectorRAG + GraphRAG, then LLM synthesises one answer</text>
+  <rect x="952" y="830" width="78" height="14" rx="7" fill="#dbeafe"/><text x="991" y="841" text-anchor="middle" font-size="8" fill="#1d4ed8">langgraph.graph</text>
+  <rect x="1036" y="830" width="78" height="14" rx="7" fill="#dbeafe"/><text x="1075" y="841" text-anchor="middle" font-size="8" fill="#1d4ed8">langchain_core</text>
+  <line x1="952" y1="850" x2="1362" y2="850" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="952" y="863" font-size="9" fill="#24292f" font-weight="700">class ChatState(TypedDict):</text>
+  <text x="952" y="877" font-size="9" fill="#57606a">query · user_id · vector_results · graph_results · final_answer · history</text>
+  <text x="952" y="891" font-size="9" fill="#0969da" font-weight="700">retrieve_graph(state)</text>
+  <text x="1090" y="891" font-size="9" fill="#57606a">— standard or supply-chain mode (auto-detected)</text>
+  <text x="952" y="905" font-size="9" fill="#0969da" font-weight="700">synthesize(state)</text>
+  <text x="1090" y="905" font-size="9" fill="#57606a">— 3 LLM calls: vector answer, graph answer, merge</text>
+  <text x="952" y="919" font-size="9" fill="#57606a" font-style="italic">Fan-out: START connects to 2 nodes simultaneously — LangGraph runs them in parallel</text>
+  <text x="952" y="933" font-size="9" fill="#57606a">errors: Annotated[list, operator.add] — allows both parallel nodes to write errors</text>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- ROW 7: app.py (full width, y=950–1040) -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <rect x="20" y="950" width="1360" height="90" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <rect x="20" y="950" width="1360" height="26" rx="8" fill="#fff1f2"/>
+  <rect x="20" y="968" width="1360" height="8" fill="#ffffff"/>
+  <text x="36" y="968" font-size="10" font-weight="700" fill="#dc2626" font-family="'Courier New',monospace">app.py</text>
+  <text x="110" y="968" font-size="9" fill="#57606a">Streamlit web app — 6 tabs, auto-scan on startup, sidebar profile/model selector, custom CSS severity badges</text>
+  <rect x="36" y="978" width="52" height="14" rx="7" fill="#fee2e2"/><text x="62" y="989" text-anchor="middle" font-size="8" fill="#dc2626">streamlit</text>
+  <rect x="94" y="978" width="78" height="14" rx="7" fill="#dbeafe"/><text x="133" y="989" text-anchor="middle" font-size="8" fill="#1d4ed8">langgraph.graph</text>
+  <rect x="178" y="978" width="60" height="14" rx="7" fill="#f1f5f9"/><text x="208" y="989" text-anchor="middle" font-size="8" fill="#475569">threading</text>
+  <rect x="244" y="978" width="34" height="14" rx="7" fill="#f1f5f9"/><text x="261" y="989" text-anchor="middle" font-size="8" fill="#475569">json</text>
+  <line x1="36" y1="998" x2="1362" y2="998" stroke="#e6e9ed" stroke-width="0.8"/>
+  <text x="36" y="1011" font-size="9" fill="#57606a">Tabs:</text>
+  <text x="72" y="1011" font-size="9" fill="#dc2626" font-weight="700">&#x1F4AC; Chat</text>
+  <text x="119" y="1011" font-size="9" fill="#57606a">(VectorRAG+GraphRAG parallel, multi-turn history) </text>
+  <text x="432" y="1011" font-size="9" fill="#dc2626" font-weight="700">&#x1F5C2; Browse</text>
+  <text x="490" y="1011" font-size="9" fill="#57606a">(Neo4j live filter) </text>
+  <text x="600" y="1011" font-size="9" fill="#dc2626" font-weight="700">&#x1F517; Supply Chain</text>
+  <text x="692" y="1011" font-size="9" fill="#57606a">(manufacturer graph trace) </text>
+  <text x="852" y="1011" font-size="9" fill="#dc2626" font-weight="700">&#x1F6A8; Alerts</text>
+  <text x="902" y="1011" font-size="9" fill="#57606a">(auto-populated) </text>
+  <text x="1010" y="1011" font-size="9" fill="#dc2626" font-weight="700">&#x1F52C; RAG Comparison  &#x1F5C4;&#xFE0F; Vector DB</text>
+  <text x="36" y="1027" font-size="9" fill="#57606a">Auto-scan: checks if alerts_log.json is older than 24 h on every page load → fires matching pipeline in background thread (daemon=True)</text>
+  <text x="36" y="1041" font-size="9" fill="#57606a" font-style="italic">st.session_state: Streamlit's way to persist variables between user interactions within one browser session</text>
+
+</svg>

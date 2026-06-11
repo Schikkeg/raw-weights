@@ -1,0 +1,360 @@
+<svg width="1200" height="980" viewBox="0 0 1200 980" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',system-ui,-apple-system,sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/></marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3fb950"/></marker>
+    <marker id="arr-b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#58a6ff"/></marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="980" fill="#0d1117" rx="12"/>
+
+  <!-- Title bar -->
+  <rect x="0" y="0" width="1200" height="50" fill="#161b22"/>
+  <rect x="0" y="44" width="1200" height="6" fill="#0d1117"/>
+  <text x="600" y="31" text-anchor="middle" font-size="17" font-weight="700" fill="#e6edf3">&#x1F6E1;&#xFE0F;  Passive Product Safety Guard — System Architecture</text>
+
+  <!-- ══ SECTION A: DATA SOURCES (y=58–218) ══ -->
+
+  <!-- Live feeds box -->
+  <rect x="20" y="58" width="555" height="160" rx="8" fill="#0c1e33" stroke="#1f6feb" stroke-width="1.5"/>
+  <rect x="20" y="58" width="555" height="28" rx="8" fill="#1f6feb" fill-opacity="0.3"/>
+  <rect x="20" y="76" width="555" height="10" fill="#0c1e33"/>
+  <text x="297" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#58a6ff" letter-spacing="1.5">LIVE DATA FEEDS</text>
+
+  <!-- FDA -->
+  <rect x="30" y="94" width="168" height="112" rx="6" fill="#0d1117" stroke="#1f6feb" stroke-width="1"/>
+  <text x="114" y="113" text-anchor="middle" font-size="18">&#x1F3DB;&#xFE0F;</text>
+  <text x="114" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#58a6ff">FDA Enforcement</text>
+  <text x="114" y="145" text-anchor="middle" font-size="9" fill="#8b949e">27,285 records (Class I+II)</text>
+  <text x="114" y="159" text-anchor="middle" font-size="9" fill="#8b949e">Class I + Class II</text>
+  <text x="114" y="173" text-anchor="middle" font-size="9" fill="#8b949e">Bulk JSON · REST API</text>
+  <text x="114" y="197" text-anchor="middle" font-size="9" fill="#3fb950">&#x25CF; Active</text>
+
+  <!-- USDA -->
+  <rect x="208" y="94" width="168" height="112" rx="6" fill="#0d1117" stroke="#1f6feb" stroke-width="1"/>
+  <text x="292" y="113" text-anchor="middle" font-size="18">&#x1F969;</text>
+  <text x="292" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#58a6ff">USDA FSIS</text>
+  <text x="292" y="145" text-anchor="middle" font-size="9" fill="#8b949e">Meat · Poultry · Eggs</text>
+  <text x="292" y="159" text-anchor="middle" font-size="9" fill="#8b949e">JSON API /fsis/api/recall</text>
+  <text x="292" y="173" text-anchor="middle" font-size="9" fill="#8b949e">1,759 records · RSS is 404</text>
+  <text x="292" y="197" text-anchor="middle" font-size="9" fill="#3fb950">&#x25CF; Active</text>
+
+  <!-- CDC -->
+  <rect x="386" y="94" width="178" height="112" rx="6" fill="#0d1117" stroke="#1f6feb" stroke-width="1"/>
+  <text x="475" y="113" text-anchor="middle" font-size="18">&#x1F9A0;</text>
+  <text x="475" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#58a6ff">CDC NORS</text>
+  <text x="475" y="145" text-anchor="middle" font-size="9" fill="#8b949e">Outbreak investigations</text>
+  <text x="475" y="159" text-anchor="middle" font-size="9" fill="#8b949e">Socrata API (9e7d-rfke)</text>
+  <text x="475" y="173" text-anchor="middle" font-size="9" fill="#8b949e">endpoint 404 · fail-fast</text>
+  <text x="475" y="197" text-anchor="middle" font-size="9" fill="#e3b341">&#x26A0; Offline</text>
+
+  <!-- Future inputs box (dashed) -->
+  <rect x="590" y="58" width="590" height="160" rx="8" fill="#130d1f" stroke="#8957e5" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <rect x="590" y="58" width="590" height="28" rx="8" fill="#8957e5" fill-opacity="0.2"/>
+  <rect x="590" y="76" width="590" height="10" fill="#130d1f"/>
+  <text x="885" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#a371f7" letter-spacing="1.5">FUTURE INPUTS — ALWAYS-ON PASSIVE SCAN</text>
+
+  <!-- Receipt Scan -->
+  <rect x="600" y="94" width="172" height="112" rx="6" fill="#0d1117" stroke="#8957e5" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="686" y="113" text-anchor="middle" font-size="18">&#x1F9FE;</text>
+  <text x="686" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#a371f7">Receipt / Bill Scan</text>
+  <text x="686" y="145" text-anchor="middle" font-size="9" fill="#8b949e">Photo of grocery receipt</text>
+  <text x="686" y="159" text-anchor="middle" font-size="9" fill="#8b949e">Auto-extracts products</text>
+  <text x="686" y="173" text-anchor="middle" font-size="9" fill="#8b949e">Cross-refs on upload</text>
+  <text x="686" y="197" text-anchor="middle" font-size="9" fill="#a371f7">&#x25C8; Planned</text>
+
+  <!-- WhatsApp -->
+  <rect x="784" y="94" width="172" height="112" rx="6" fill="#0d1117" stroke="#8957e5" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="870" y="113" text-anchor="middle" font-size="18">&#x1F4AC;</text>
+  <text x="870" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#a371f7">WhatsApp Bot</text>
+  <text x="870" y="145" text-anchor="middle" font-size="9" fill="#8b949e">Send product photo</text>
+  <text x="870" y="159" text-anchor="middle" font-size="9" fill="#8b949e">Instant recall check</text>
+  <text x="870" y="173" text-anchor="middle" font-size="9" fill="#8b949e">No app needed</text>
+  <text x="870" y="197" text-anchor="middle" font-size="9" fill="#a371f7">&#x25C8; Planned</text>
+
+  <!-- Phone/SMS -->
+  <rect x="968" y="94" width="200" height="112" rx="6" fill="#0d1117" stroke="#8957e5" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="1068" y="113" text-anchor="middle" font-size="18">&#x1F4F1;</text>
+  <text x="1068" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#a371f7">Phone / SMS</text>
+  <text x="1068" y="145" text-anchor="middle" font-size="9" fill="#8b949e">Scheduled silent scan</text>
+  <text x="1068" y="159" text-anchor="middle" font-size="9" fill="#8b949e">Text alert on match</text>
+  <text x="1068" y="173" text-anchor="middle" font-size="9" fill="#8b949e">No user action needed</text>
+  <text x="1068" y="197" text-anchor="middle" font-size="9" fill="#a371f7">&#x25C8; Planned</text>
+
+  <!-- Arrow A→B -->
+  <line x1="600" y1="218" x2="600" y2="248" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ══ SECTION B: INGESTION PIPELINE (y=252–400) ══ -->
+  <rect x="20" y="252" width="1160" height="148" rx="8" fill="#081a0c" stroke="#2ea043" stroke-width="1.5"/>
+  <rect x="20" y="252" width="1160" height="28" rx="8" fill="#2ea043" fill-opacity="0.25"/>
+  <rect x="20" y="270" width="1160" height="10" fill="#081a0c"/>
+  <text x="600" y="271" text-anchor="middle" font-size="10" font-weight="700" fill="#3fb950" letter-spacing="1.5">INGESTION PIPELINE — LangGraph StateGraph  (agents/ingestion_pipeline.py)</text>
+
+  <!-- Step 1 -->
+  <rect x="32" y="288" width="196" height="98" rx="5" fill="#0d1117" stroke="#2ea043" stroke-width="1"/>
+  <text x="130" y="306" text-anchor="middle" font-size="10" font-weight="700" fill="#3fb950">fetch_all_recalls</text>
+  <text x="130" y="320" text-anchor="middle" font-size="9" fill="#8b949e">fda / usda / cdc clients</text>
+  <text x="130" y="334" text-anchor="middle" font-size="9" fill="#8b949e">Multi-source merge</text>
+  <text x="130" y="348" text-anchor="middle" font-size="9" fill="#8b949e">requests · feedparser</text>
+  <text x="130" y="375" text-anchor="middle" font-size="8" fill="#3fb950">node 1 of 6</text>
+
+  <line x1="228" y1="337" x2="254" y2="337" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- Step 2 -->
+  <rect x="257" y="288" width="196" height="98" rx="5" fill="#0d1117" stroke="#2ea043" stroke-width="1"/>
+  <text x="355" y="306" text-anchor="middle" font-size="10" font-weight="700" fill="#3fb950">extract_entities</text>
+  <text x="355" y="320" text-anchor="middle" font-size="9" fill="#8b949e">Fast path: 0 LLM calls</text>
+  <text x="355" y="334" text-anchor="middle" font-size="9" fill="#8b949e">or Nebius LLM chain</text>
+  <text x="355" y="348" text-anchor="middle" font-size="9" fill="#8b949e">ChatOpenAI · Pydantic</text>
+  <text x="355" y="375" text-anchor="middle" font-size="8" fill="#3fb950">node 2 of 6</text>
+
+  <line x1="453" y1="337" x2="479" y2="337" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- Step 3 -->
+  <rect x="482" y="288" width="196" height="98" rx="5" fill="#0d1117" stroke="#2ea043" stroke-width="1"/>
+  <text x="580" y="306" text-anchor="middle" font-size="10" font-weight="700" fill="#3fb950">chunk_documents</text>
+  <text x="580" y="320" text-anchor="middle" font-size="9" fill="#8b949e">2 chunks per recall</text>
+  <text x="580" y="334" text-anchor="middle" font-size="9" fill="#8b949e">summary (WHAT)</text>
+  <text x="580" y="348" text-anchor="middle" font-size="9" fill="#8b949e">+ detail (WHERE/WHEN)</text>
+  <text x="580" y="375" text-anchor="middle" font-size="8" fill="#3fb950">node 3 of 6</text>
+
+  <line x1="678" y1="337" x2="704" y2="337" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- Step 4 -->
+  <rect x="707" y="288" width="196" height="98" rx="5" fill="#0d1117" stroke="#2ea043" stroke-width="1"/>
+  <text x="805" y="306" text-anchor="middle" font-size="10" font-weight="700" fill="#3fb950">store_vectors</text>
+  <text x="805" y="320" text-anchor="middle" font-size="9" fill="#8b949e">Qwen3-Embedding-8B</text>
+  <text x="805" y="334" text-anchor="middle" font-size="9" fill="#8b949e">5,000-doc batches</text>
+  <text x="805" y="348" text-anchor="middle" font-size="9" fill="#8b949e">langchain_chroma</text>
+  <text x="805" y="375" text-anchor="middle" font-size="8" fill="#3fb950">node 4 of 6</text>
+
+  <line x1="903" y1="337" x2="929" y2="337" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- Step 5 -->
+  <rect x="932" y="288" width="232" height="98" rx="5" fill="#0d1117" stroke="#2ea043" stroke-width="1"/>
+  <text x="1048" y="306" text-anchor="middle" font-size="10" font-weight="700" fill="#3fb950">build_knowledge_graph</text>
+  <text x="1048" y="320" text-anchor="middle" font-size="9" fill="#8b949e">Cypher MERGE upserts</text>
+  <text x="1048" y="334" text-anchor="middle" font-size="9" fill="#8b949e">Mfr &#x2192; Recall &#x2192; Region</text>
+  <text x="1048" y="348" text-anchor="middle" font-size="9" fill="#8b949e">neo4j.GraphDatabase</text>
+  <text x="1048" y="375" text-anchor="middle" font-size="8" fill="#3fb950">node 5 of 6</text>
+
+  <!-- Arrows B→C -->
+  <line x1="300" y1="400" x2="300" y2="432" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="315" y="420" font-size="9" fill="#8b949e">58k chunks</text>
+  <line x1="900" y1="400" x2="900" y2="432" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="915" y="420" font-size="9" fill="#8b949e">29k nodes</text>
+
+  <!-- ══ SECTION C: STORAGE (y=436–590) ══ -->
+
+  <!-- ChromaDB -->
+  <rect x="20" y="436" width="558" height="152" rx="8" fill="#0e1b2d" stroke="#388bfd" stroke-width="1.5"/>
+  <rect x="20" y="436" width="558" height="28" rx="8" fill="#388bfd" fill-opacity="0.25"/>
+  <rect x="20" y="454" width="558" height="10" fill="#0e1b2d"/>
+  <text x="299" y="455" text-anchor="middle" font-size="10" font-weight="700" fill="#58a6ff" letter-spacing="1.5">CHROMADB — VECTOR STORE  (storage/vector_store.py)</text>
+  <text x="40" y="479" font-size="9" fill="#8b949e">Embedding model:</text>
+  <text x="142" y="479" font-size="9" fill="#58a6ff">Qwen3-Embedding-8B via Nebius AI</text>
+  <text x="40" y="495" font-size="9" fill="#8b949e">Chunks stored:</text>
+  <text x="142" y="495" font-size="9" fill="#3fb950" font-weight="700">~58,000 semantic chunks</text>
+  <text x="40" y="511" font-size="9" fill="#8b949e">Search:</text>
+  <text x="142" y="511" font-size="9" fill="#8b949e">Cosine similarity  k=8  enriched with profile context</text>
+  <text x="40" y="527" font-size="9" fill="#8b949e">Metadata per chunk:</text>
+  <text x="142" y="527" font-size="9" fill="#8b949e">recall_id · severity · manufacturer · states · image_url</text>
+  <line x1="40" y1="538" x2="560" y2="538" stroke="#1f6feb" stroke-width="0.5"/>
+  <text x="40" y="553" font-size="9" fill="#58a6ff" font-weight="700">search_for_profile(profile)</text>
+  <text x="222" y="553" font-size="9" fill="#8b949e">semantic match per household</text>
+  <text x="40" y="567" font-size="9" fill="#58a6ff" font-weight="700">search_with_score(query, k)</text>
+  <text x="222" y="567" font-size="9" fill="#8b949e">returns (Document, distance) pairs</text>
+  <text x="40" y="581" font-size="9" fill="#58a6ff" font-weight="700">add_recall_chunks(chunks)</text>
+  <text x="222" y="581" font-size="9" fill="#8b949e">batched upsert, max 5,000/call</text>
+
+  <!-- Neo4j -->
+  <rect x="598" y="436" width="582" height="152" rx="8" fill="#0d1a10" stroke="#2ea043" stroke-width="1.5"/>
+  <rect x="598" y="436" width="582" height="28" rx="8" fill="#2ea043" fill-opacity="0.25"/>
+  <rect x="598" y="454" width="582" height="10" fill="#0d1a10"/>
+  <text x="889" y="455" text-anchor="middle" font-size="10" font-weight="700" fill="#3fb950" letter-spacing="1.5">NEO4J KNOWLEDGE GRAPH  (storage/graph_store.py)</text>
+
+  <!-- Node type badges -->
+  <text x="618" y="479" font-size="9" fill="#8b949e">Nodes:</text>
+  <rect x="655" y="468" width="84" height="16" rx="8" fill="#1f6feb" fill-opacity="0.35"/>
+  <text x="697" y="480" text-anchor="middle" font-size="8" fill="#58a6ff">RecallEvent</text>
+  <rect x="745" y="468" width="88" height="16" rx="8" fill="#2ea043" fill-opacity="0.35"/>
+  <text x="789" y="480" text-anchor="middle" font-size="8" fill="#3fb950">Manufacturer</text>
+  <rect x="839" y="468" width="58" height="16" rx="8" fill="#8957e5" fill-opacity="0.35"/>
+  <text x="868" y="480" text-anchor="middle" font-size="8" fill="#d2a8ff">Region</text>
+  <rect x="903" y="468" width="44" height="16" rx="8" fill="#f85149" fill-opacity="0.3"/>
+  <text x="925" y="480" text-anchor="middle" font-size="8" fill="#ff7b72">User</text>
+  <rect x="953" y="468" width="68" height="16" rx="8" fill="#e3b341" fill-opacity="0.3"/>
+  <text x="987" y="480" text-anchor="middle" font-size="8" fill="#e3b341">LotNumber</text>
+
+  <text x="618" y="500" font-size="9" fill="#8b949e">Key path:</text>
+  <text x="665" y="500" font-size="9" fill="#d2a8ff">(User)-[:LOCATED_IN]&#x2192;(Region)&#x2190;[:ACTIVE_IN]-(Recall)&#x2190;[:ISSUED_RECALL]-(Manufacturer)</text>
+  <text x="618" y="516" font-size="9" fill="#8b949e">Counts:</text>
+  <text x="665" y="516" font-size="9" fill="#3fb950" font-weight="700">29,044 recalls (FDA+USDA)</text>
+  <text x="755" y="516" font-size="9" fill="#3fb950" font-weight="700">5,000+ manufacturers</text>
+  <text x="885" y="516" font-size="9" fill="#3fb950" font-weight="700">52 regions</text>
+  <line x1="618" y1="526" x2="1162" y2="526" stroke="#2ea043" stroke-width="0.5"/>
+  <text x="618" y="541" font-size="9" fill="#3fb950" font-weight="700">get_supply_chain_risk(manufacturer)</text>
+  <text x="835" y="541" font-size="9" fill="#8b949e">all recalls from one manufacturer</text>
+  <text x="618" y="555" font-size="9" fill="#3fb950" font-weight="700">search_recalls_for_user(user_id, kw)</text>
+  <text x="835" y="555" font-size="9" fill="#8b949e">region + keyword + severity filter</text>
+  <text x="618" y="569" font-size="9" fill="#3fb950" font-weight="700">find_at_risk_users(severity)</text>
+  <text x="835" y="569" font-size="9" fill="#8b949e">full traversal for matching pipeline</text>
+  <text x="618" y="583" font-size="9" fill="#3fb950" font-weight="700">upsert_recall(recall)</text>
+  <text x="835" y="583" font-size="9" fill="#8b949e">idempotent MERGE write</text>
+
+  <!-- Arrows C→D -->
+  <line x1="299" y1="588" x2="299" y2="620" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="314" y="607" font-size="9" fill="#58a6ff">vector_match</text>
+  <line x1="889" y1="588" x2="889" y2="620" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="904" y="607" font-size="9" fill="#3fb950">graph_match</text>
+
+  <!-- ══ SECTION D: PIPELINES (y=624–796) ══ -->
+
+  <!-- Matching Pipeline -->
+  <rect x="20" y="624" width="722" height="170" rx="8" fill="#160d28" stroke="#8957e5" stroke-width="1.5"/>
+  <rect x="20" y="624" width="722" height="28" rx="8" fill="#8957e5" fill-opacity="0.25"/>
+  <rect x="20" y="642" width="722" height="10" fill="#160d28"/>
+  <text x="381" y="643" text-anchor="middle" font-size="10" font-weight="700" fill="#d2a8ff" letter-spacing="1.5">MATCHING PIPELINE  (agents/matching_pipeline.py)</text>
+
+  <!-- vector_match node -->
+  <rect x="34" y="660" width="136" height="54" rx="5" fill="#0d1117" stroke="#388bfd" stroke-width="1"/>
+  <text x="102" y="678" text-anchor="middle" font-size="9" font-weight="700" fill="#58a6ff">vector_match</text>
+  <text x="102" y="692" text-anchor="middle" font-size="8" fill="#8b949e">ChromaDB semantic</text>
+  <text x="102" y="704" text-anchor="middle" font-size="8" fill="#8b949e">search per profile</text>
+
+  <!-- graph_match node -->
+  <rect x="34" y="726" width="136" height="54" rx="5" fill="#0d1117" stroke="#2ea043" stroke-width="1"/>
+  <text x="102" y="744" text-anchor="middle" font-size="9" font-weight="700" fill="#3fb950">graph_match</text>
+  <text x="102" y="758" text-anchor="middle" font-size="8" fill="#8b949e">Neo4j traversal</text>
+  <text x="102" y="770" text-anchor="middle" font-size="8" fill="#8b949e">region-linked recalls</text>
+
+  <!-- Fan-in arrows -->
+  <line x1="170" y1="687" x2="218" y2="718" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <line x1="170" y1="753" x2="218" y2="722" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- evaluate_risk -->
+  <rect x="220" y="660" width="162" height="120" rx="5" fill="#0d1117" stroke="#8957e5" stroke-width="1"/>
+  <text x="301" y="678" text-anchor="middle" font-size="9" font-weight="700" fill="#d2a8ff">evaluate_risk</text>
+  <text x="301" y="692" text-anchor="middle" font-size="8" fill="#8b949e">LLM relevance judge</text>
+  <text x="301" y="706" text-anchor="middle" font-size="8" fill="#8b949e">8 parallel workers</text>
+  <text x="301" y="720" text-anchor="middle" font-size="8" fill="#8b949e">7-day eval cache</text>
+  <text x="301" y="734" text-anchor="middle" font-size="8" fill="#8b949e">confidence &#x2265; 0.60</text>
+  <text x="301" y="748" text-anchor="middle" font-size="8" fill="#e3b341">Llama-3.3-70B-Instruct</text>
+  <text x="301" y="762" text-anchor="middle" font-size="8" fill="#8b949e">or Qwen3-32B</text>
+
+  <line x1="382" y1="720" x2="410" y2="720" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- send_alerts -->
+  <rect x="412" y="660" width="148" height="120" rx="5" fill="#0d1117" stroke="#f85149" stroke-width="1"/>
+  <text x="486" y="678" text-anchor="middle" font-size="9" font-weight="700" fill="#ff7b72">send_alerts</text>
+  <text x="486" y="692" text-anchor="middle" font-size="8" fill="#8b949e">LLM writes 3-sentence</text>
+  <text x="486" y="706" text-anchor="middle" font-size="8" fill="#8b949e">personalised message</text>
+  <text x="486" y="720" text-anchor="middle" font-size="8" fill="#8b949e">Notifier.deliver()</text>
+  <text x="486" y="734" text-anchor="middle" font-size="8" fill="#8b949e">&#x2192; alerts_log.json</text>
+  <text x="486" y="748" text-anchor="middle" font-size="8" fill="#8b949e">image_url stored</text>
+
+  <!-- User profiles box -->
+  <rect x="578" y="660" width="150" height="70" rx="5" fill="#0d1117" stroke="#e3b341" stroke-width="1"/>
+  <text x="653" y="678" text-anchor="middle" font-size="9" font-weight="700" fill="#e3b341">User Profiles</text>
+  <text x="653" y="692" text-anchor="middle" font-size="8" fill="#8b949e">Alex Johnson · CA</text>
+  <text x="653" y="706" text-anchor="middle" font-size="8" fill="#8b949e">Maria Santos · TX</text>
+  <text x="653" y="720" text-anchor="middle" font-size="8" fill="#8b949e">Priya Mehta · NY</text>
+  <text x="653" y="763" text-anchor="middle" font-size="8" fill="#8b949e">user_profile.py</text>
+  <text x="653" y="777" text-anchor="middle" font-size="8" fill="#e3b341">load_profiles()</text>
+
+  <!-- Chat Pipeline -->
+  <rect x="758" y="624" width="422" height="170" rx="8" fill="#0c1822" stroke="#1f6feb" stroke-width="1.5"/>
+  <rect x="758" y="624" width="422" height="28" rx="8" fill="#1f6feb" fill-opacity="0.25"/>
+  <rect x="758" y="642" width="422" height="10" fill="#0c1822"/>
+  <text x="969" y="643" text-anchor="middle" font-size="10" font-weight="700" fill="#58a6ff" letter-spacing="1.5">CHAT PIPELINE  (agents/chat_pipeline.py)</text>
+
+  <!-- retrieve_vector -->
+  <rect x="772" y="660" width="126" height="54" rx="5" fill="#0d1117" stroke="#388bfd" stroke-width="1"/>
+  <text x="835" y="678" text-anchor="middle" font-size="9" font-weight="700" fill="#58a6ff">retrieve_vector</text>
+  <text x="835" y="692" text-anchor="middle" font-size="8" fill="#8b949e">ChromaDB  k=8</text>
+  <text x="835" y="706" text-anchor="middle" font-size="8" fill="#8b949e">+ profile context</text>
+
+  <!-- retrieve_graph -->
+  <rect x="772" y="726" width="126" height="54" rx="5" fill="#0d1117" stroke="#2ea043" stroke-width="1"/>
+  <text x="835" y="744" text-anchor="middle" font-size="9" font-weight="700" fill="#3fb950">retrieve_graph</text>
+  <text x="835" y="758" text-anchor="middle" font-size="8" fill="#8b949e">standard mode or</text>
+  <text x="835" y="772" text-anchor="middle" font-size="8" fill="#a371f7">supply-chain mode</text>
+
+  <!-- Fan-in arrows -->
+  <line x1="898" y1="687" x2="934" y2="718" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <line x1="898" y1="753" x2="934" y2="722" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- synthesize -->
+  <rect x="936" y="660" width="230" height="120" rx="5" fill="#0d1117" stroke="#58a6ff" stroke-width="1"/>
+  <text x="1051" y="678" text-anchor="middle" font-size="9" font-weight="700" fill="#58a6ff">synthesize</text>
+  <text x="1051" y="692" text-anchor="middle" font-size="8" fill="#8b949e">vector answer</text>
+  <text x="1051" y="706" text-anchor="middle" font-size="8" fill="#8b949e">+ graph answer</text>
+  <text x="1051" y="720" text-anchor="middle" font-size="8" fill="#8b949e">&#x2192; final_answer</text>
+  <text x="1051" y="734" text-anchor="middle" font-size="8" fill="#8b949e">RAG comparison saved</text>
+  <text x="1051" y="748" text-anchor="middle" font-size="8" fill="#e3b341">LangGraph fan-out</text>
+  <text x="1051" y="762" text-anchor="middle" font-size="8" fill="#8b949e">Annotated[list, operator.add]</text>
+
+  <!-- Arrows D→E -->
+  <line x1="381" y1="794" x2="381" y2="824" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="969" y1="794" x2="969" y2="824" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ══ SECTION E: NOTIFICATIONS (y=828–948) ══ -->
+
+  <!-- Current channels -->
+  <rect x="20" y="828" width="556" height="118" rx="8" fill="#1a0d0d" stroke="#f85149" stroke-width="1.5"/>
+  <rect x="20" y="828" width="556" height="28" rx="8" fill="#f85149" fill-opacity="0.2"/>
+  <rect x="20" y="846" width="556" height="10" fill="#1a0d0d"/>
+  <text x="298" y="847" text-anchor="middle" font-size="10" font-weight="700" fill="#ff7b72" letter-spacing="1.5">CURRENT CHANNELS  (notifications/notifier.py)</text>
+
+  <rect x="32" y="860" width="156" height="74" rx="5" fill="#0d1117" stroke="#f85149" stroke-width="1"/>
+  <text x="110" y="879" text-anchor="middle" font-size="16">&#x1F5A5;&#xFE0F;</text>
+  <text x="110" y="896" text-anchor="middle" font-size="10" font-weight="700" fill="#ff7b72">Console Alert</text>
+  <text x="110" y="910" text-anchor="middle" font-size="9" fill="#8b949e">Rich panel + colors</text>
+  <text x="110" y="924" text-anchor="middle" font-size="9" fill="#3fb950">&#x25CF; Active</text>
+
+  <rect x="200" y="860" width="156" height="74" rx="5" fill="#0d1117" stroke="#f85149" stroke-width="1"/>
+  <text x="278" y="879" text-anchor="middle" font-size="16">&#x1F4CB;</text>
+  <text x="278" y="896" text-anchor="middle" font-size="10" font-weight="700" fill="#ff7b72">JSON Log</text>
+  <text x="278" y="910" text-anchor="middle" font-size="9" fill="#8b949e">alerts_log.json</text>
+  <text x="278" y="924" text-anchor="middle" font-size="9" fill="#3fb950">&#x25CF; Active</text>
+
+  <rect x="368" y="860" width="196" height="74" rx="5" fill="#0d1117" stroke="#f85149" stroke-width="1"/>
+  <text x="466" y="879" text-anchor="middle" font-size="16">&#x1F310;</text>
+  <text x="466" y="896" text-anchor="middle" font-size="10" font-weight="700" fill="#ff7b72">Streamlit Dashboard</text>
+  <text x="466" y="910" text-anchor="middle" font-size="9" fill="#8b949e">6-tab app · vector DB browser</text>
+  <text x="466" y="924" text-anchor="middle" font-size="9" fill="#3fb950">&#x25CF; Active</text>
+
+  <!-- Future channels -->
+  <rect x="592" y="828" width="588" height="118" rx="8" fill="#1a0e00" stroke="#e3b341" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <rect x="592" y="828" width="588" height="28" rx="8" fill="#e3b341" fill-opacity="0.15"/>
+  <rect x="592" y="846" width="588" height="10" fill="#1a0e00"/>
+  <text x="886" y="847" text-anchor="middle" font-size="10" font-weight="700" fill="#e3b341" letter-spacing="1.5">FUTURE CHANNELS</text>
+
+  <rect x="604" y="860" width="126" height="74" rx="5" fill="#0d1117" stroke="#e3b341" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="667" y="879" text-anchor="middle" font-size="16">&#x1F4E7;</text>
+  <text x="667" y="896" text-anchor="middle" font-size="10" font-weight="700" fill="#e3b341">Email</text>
+  <text x="667" y="910" text-anchor="middle" font-size="9" fill="#8b949e">SendGrid / SMTP</text>
+  <text x="667" y="924" text-anchor="middle" font-size="9" fill="#e3b341">&#x25C8; Planned</text>
+
+  <rect x="742" y="860" width="126" height="74" rx="5" fill="#0d1117" stroke="#e3b341" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="805" y="879" text-anchor="middle" font-size="16">&#x1F4AC;</text>
+  <text x="805" y="896" text-anchor="middle" font-size="10" font-weight="700" fill="#e3b341">WhatsApp</text>
+  <text x="805" y="910" text-anchor="middle" font-size="9" fill="#8b949e">Twilio / Meta API</text>
+  <text x="805" y="924" text-anchor="middle" font-size="9" fill="#e3b341">&#x25C8; Planned</text>
+
+  <rect x="880" y="860" width="126" height="74" rx="5" fill="#0d1117" stroke="#e3b341" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="943" y="879" text-anchor="middle" font-size="16">&#x1F4F1;</text>
+  <text x="943" y="896" text-anchor="middle" font-size="10" font-weight="700" fill="#e3b341">SMS</text>
+  <text x="943" y="910" text-anchor="middle" font-size="9" fill="#8b949e">Twilio / AWS SNS</text>
+  <text x="943" y="924" text-anchor="middle" font-size="9" fill="#e3b341">&#x25C8; Planned</text>
+
+  <rect x="1018" y="860" width="150" height="74" rx="5" fill="#0d1117" stroke="#e3b341" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="1093" y="879" text-anchor="middle" font-size="16">&#x1F9FE;</text>
+  <text x="1093" y="896" text-anchor="middle" font-size="10" font-weight="700" fill="#e3b341">Bill Scan Alert</text>
+  <text x="1093" y="910" text-anchor="middle" font-size="9" fill="#8b949e">Auto on photo upload</text>
+  <text x="1093" y="924" text-anchor="middle" font-size="9" fill="#e3b341">&#x25C8; Planned</text>
+
+  <!-- Footer -->
+  <rect x="0" y="955" width="1200" height="25" fill="#161b22"/>
+  <text x="600" y="971" text-anchor="middle" font-size="9" fill="#8b949e">LangGraph · LangChain · Neo4j Aura · ChromaDB · Nebius AI  (Llama-3.3-70B · Qwen3-32B · Qwen3-Embedding-8B)</text>
+</svg>
