@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Intelligence — The Complete LlamaIndex Stack | RawWeights</title>
+    <meta name="description" content="Parser selection, citation trust, and production readiness — the three layers of document intelligence that most RAG tutorials skip.">
+    <meta name="author" content="RawWeights">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Document Intelligence — The Complete LlamaIndex Stack | RawWeights">
+    <meta property="og:description" content="Parser selection, citation trust, and production readiness — the three layers of document intelligence that most RAG tutorials skip.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
+        }
+    </script>
+    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <style>
+        nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
+        .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+        .nav-links { display:flex; gap:.6rem; flex-wrap:wrap; }
+        .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.35rem .8rem; border-radius:6px; cursor:pointer; font-size:.82rem; transition:all .2s; }
+        .nav-btn:hover { background:#0077b5; color:white; }
+        html { scroll-behavior:smooth; }
+
+        /* ── Section 1: Parser Selector (rose) ── */
+        .opt-card { cursor:pointer; transition:all .2s; }
+        .opt-card:hover { border-color:rgba(251,113,133,.5) !important; background:rgba(251,113,133,.05) !important; }
+        .opt-card.sel { border-color:#f43f5e !important; background:rgba(244,63,94,.1) !important; }
+
+        /* ── Section 2: Trust Ladder (indigo) ── */
+        .rung { cursor:pointer; transition:all .2s; }
+        .rung:hover { transform:translateX(4px); }
+        .rung.active { border-color:#818cf8 !important; background:rgba(99,102,241,.12) !important; }
+
+        /* ── Section 2: Algorithm steps ── */
+        .alg-step { cursor:pointer; transition:all .2s; }
+        .alg-step.active { border-color:#818cf8 !important; background:rgba(99,102,241,.12) !important; }
+
+        /* ── Section 3: Audit (amber) ── */
+        .score-btn { cursor:pointer; transition:all .15s; }
+        .score-btn:hover { background:rgba(251,191,36,.15); border-color:#fbbf24; }
+        .score-btn.picked { background:rgba(251,191,36,.25); border-color:#f59e0b; color:#fbbf24; font-weight:700; }
+
+        @keyframes pop { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .pop-in { animation:pop .3s ease forwards; }
+
+        .feature-row:hover { background:rgba(255,255,255,.03); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-brand">RawWeights</a>
+    <div class="nav-links">
+        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
+        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
+        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
+        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
+        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
+        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
+        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
+        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
+        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
+        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
+        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
+        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
+        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture &amp; Lifecycle</button></a>
+        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
+    </div>
+</nav>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 0% 100%, rgba(244,63,94,.25) 0%, transparent 55%), radial-gradient(ellipse at 100% 0%, rgba(99,102,241,.25) 0%, transparent 55%), radial-gradient(ellipse at 50% 50%, rgba(245,158,11,.1) 0%, transparent 70%);"></div>
+    <div class="absolute inset-0 opacity-[.025] pointer-events-none" style="background-image:linear-gradient(#94a3b8 1px,transparent 1px),linear-gradient(90deg,#94a3b8 1px,transparent 1px);background-size:52px 52px;"></div>
+
+    <div class="max-w-6xl mx-auto px-6 relative z-10">
+        <div class="flex flex-wrap gap-2 mb-6">
+            <span class="bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">LlamaIndex · Document Intelligence</span>
+            <span class="bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Guest Lecture</span>
+            <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">3 Interactive Tools</span>
+        </div>
+        <h1 class="text-4xl lg:text-6xl font-black leading-tight mb-5">Document<br><span class="text-transparent bg-clip-text" style="background-image:linear-gradient(90deg,#fb7185,#818cf8,#fbbf24);">Intelligence</span></h1>
+
+        <!-- Analogy pull-quote -->
+        <div class="max-w-3xl mb-8">
+            <div class="border-l-4 border-rose-500/60 pl-5 mb-5">
+                <p class="text-white text-xl lg:text-2xl font-semibold leading-snug italic">"Think of every PDF like a grandparent's filing cabinet — decades of knowledge, perfectly organized for its era. The wisdom is all there. The next generation just can't reach it."</p>
+            </div>
+            <p class="text-slate-400 text-sm leading-relaxed">Adobe built PDF to look identical on every screen, every OS, every printer — and they nailed it. That same decision made the structure invisible to machines. <span class="text-slate-300 font-medium">LlamaIndex builds the bridge: recover the archive, trace every answer to its source, pass the knowledge forward.</span></p>
+        </div>
+
+        <!-- Three pillars nav — larger cards -->
+        <div class="grid sm:grid-cols-3 gap-4 max-w-4xl">
+            <a href="#parser-selector" class="group bg-slate-800/60 border border-rose-900/50 hover:border-rose-500/50 hover:bg-rose-900/10 rounded-2xl p-5 transition-all">
+                <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 font-black text-sm mb-3">I</div>
+                <div class="text-rose-400 font-bold text-xs uppercase tracking-widest mb-1">Recover</div>
+                <div class="text-white font-bold text-base group-hover:text-rose-300 transition mb-1">The Parser Selector</div>
+                <div class="text-slate-500 text-xs leading-relaxed">LightParse vs LlamaParse — 4 questions, one answer</div>
+            </a>
+            <a href="#citation-layer" class="group bg-slate-800/60 border border-indigo-900/50 hover:border-indigo-500/50 hover:bg-indigo-900/10 rounded-2xl p-5 transition-all">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-black text-sm mb-3">II</div>
+                <div class="text-indigo-400 font-bold text-xs uppercase tracking-widest mb-1">Honor</div>
+                <div class="text-white font-bold text-base group-hover:text-indigo-300 transition mb-1">The Citation Layer</div>
+                <div class="text-slate-500 text-xs leading-relaxed">Trust Ladder + fallback algorithm explained</div>
+            </a>
+            <a href="#audit" class="group bg-slate-800/60 border border-amber-900/50 hover:border-amber-500/50 hover:bg-amber-900/10 rounded-2xl p-5 transition-all">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 font-black text-sm mb-3">III</div>
+                <div class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Verify</div>
+                <div class="text-white font-bold text-base group-hover:text-amber-300 transition mb-1">The Readiness Audit</div>
+                <div class="text-slate-500 text-xs leading-relaxed">Score your stack across 6 dimensions</div>
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 bg-slate-900">
+
+<!-- ══════════════════════════════════════
+     PART I — PARSER SELECTOR (rose)
+══════════════════════════════════════ -->
+<section id="parser-selector" class="py-20 border-b border-slate-800">
+    <div class="max-w-5xl mx-auto px-6">
+
+        <!-- Section header -->
+        <div class="flex items-center gap-4 mb-4">
+            <span class="bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Part I</span>
+            <div class="flex-1 h-px bg-rose-900/40"></div>
+        </div>
+        <h2 class="text-3xl font-black text-white mb-2">The Parser Selector</h2>
+        <p class="text-slate-400 max-w-2xl mb-10">PDF was designed for portability — same appearance on every screen, every OS. That was the win. The cost: reading order breaks when you extract text, tables fragment into noise, charts become flat images. Recovering structure from a format that was never designed to expose it is the first real problem in document AI. Answer four questions to find the right tool for your corpus.</p>
+
+        <!-- Questions grid -->
+        <div class="grid md:grid-cols-2 gap-8 mb-10">
+
+            <!-- Q1 -->
+            <div>
+                <p class="text-rose-400 font-bold text-xs uppercase tracking-widest mb-3">What are you parsing?</p>
+                <div class="space-y-2">
+                    <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-3" data-q="dt" data-v="plain" onclick="pick('dt','plain',this)">
+                        <span class="text-xl">📄</span>
+                        <div><div class="text-white text-sm font-semibold">Plain text PDFs</div><div class="text-slate-500 text-xs">Reports, articles — mostly running text</div></div>
+                    </div>
+                    <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-3" data-q="dt" data-v="complex" onclick="pick('dt','complex',this)">
+                        <span class="text-xl">📊</span>
+                        <div><div class="text-white text-sm font-semibold">Complex PDFs</div><div class="text-slate-500 text-xs">Financial filings, research — tables, charts, multi-column</div></div>
+                    </div>
+                    <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-3" data-q="dt" data-v="pptx" onclick="pick('dt','pptx',this)">
+                        <span class="text-xl">📑</span>
+                        <div><div class="text-white text-sm font-semibold">Presentations &amp; Spreadsheets</div><div class="text-slate-500 text-xs">PowerPoint, Excel — structured data and visual layouts</div></div>
+                    </div>
+                    <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-3" data-q="dt" data-v="mixed" onclick="pick('dt','mixed',this)">
+                        <span class="text-xl">🗂️</span>
+                        <div><div class="text-white text-sm font-semibold">Mixed formats</div><div class="text-slate-500 text-xs">PDFs + decks + spreadsheets together</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Q2 -->
+                <div>
+                    <p class="text-rose-400 font-bold text-xs uppercase tracking-widest mb-3">How many documents?</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 text-center" data-q="cs" data-v="small" onclick="pick('cs','small',this)">
+                            <div class="text-lg mb-0.5">🗒️</div><div class="text-white text-xs font-semibold">Under 30</div>
+                        </div>
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 text-center" data-q="cs" data-v="mid" onclick="pick('cs','mid',this)">
+                            <div class="text-lg mb-0.5">📚</div><div class="text-white text-xs font-semibold">30 – 500</div>
+                        </div>
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 text-center" data-q="cs" data-v="large" onclick="pick('cs','large',this)">
+                            <div class="text-lg mb-0.5">🏛️</div><div class="text-white text-xs font-semibold">500+</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Q3 -->
+                <div>
+                    <p class="text-rose-400 font-bold text-xs uppercase tracking-widest mb-3">Speed requirements?</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 text-center" data-q="sp" data-v="rt" onclick="pick('sp','rt',this)">
+                            <div class="text-lg mb-0.5">⚡</div><div class="text-white text-xs font-semibold">Real-time</div><div class="text-slate-500 text-xs">&lt;100ms</div>
+                        </div>
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 text-center" data-q="sp" data-v="async" onclick="pick('sp','async',this)">
+                            <div class="text-lg mb-0.5">🔄</div><div class="text-white text-xs font-semibold">Async</div><div class="text-slate-500 text-xs">Minutes</div>
+                        </div>
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 text-center" data-q="sp" data-v="batch" onclick="pick('sp','batch',this)">
+                            <div class="text-lg mb-0.5">🌙</div><div class="text-white text-xs font-semibold">Batch</div><div class="text-slate-500 text-xs">Hours OK</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Q4 -->
+                <div>
+                    <p class="text-rose-400 font-bold text-xs uppercase tracking-widest mb-3">Privacy requirements?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-2" data-q="pv" data-v="open" onclick="pick('pv','open',this)">
+                            <span>🌐</span><div><div class="text-white text-xs font-semibold">Public / internal</div><div class="text-slate-500 text-xs">Cloud fine</div></div>
+                        </div>
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-2" data-q="pv" data-v="pii" onclick="pick('pv','pii',this)">
+                            <span>🏥</span><div><div class="text-white text-xs font-semibold">PII / PHI present</div><div class="text-slate-500 text-xs">Retention controls needed</div></div>
+                        </div>
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-2" data-q="pv" data-v="sensitive" onclick="pick('pv','sensitive',this)">
+                            <span>🔒</span><div><div class="text-white text-xs font-semibold">Sensitive / confidential</div><div class="text-slate-500 text-xs">Prefer controlled cloud</div></div>
+                        </div>
+                        <div class="opt-card border-2 border-slate-700 bg-slate-800/60 rounded-xl p-3 flex items-center gap-2" data-q="pv" data-v="onprem" onclick="pick('pv','onprem',this)">
+                            <span>⚖️</span><div><div class="text-white text-xs font-semibold">Regulated / on-prem</div><div class="text-slate-500 text-xs">No cloud processing</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="sel-result" class="hidden">
+            <div id="sel-card" class="rounded-2xl border-2 p-6 pop-in">
+                <p id="sel-eyebrow" class="text-xs font-bold uppercase tracking-widest mb-1"></p>
+                <h3 id="sel-title" class="text-xl font-black text-white mb-2"></h3>
+                <p id="sel-lead" class="text-slate-300 text-sm mb-4"></p>
+                <div id="sel-bullets" class="space-y-1.5 mb-4"></div>
+                <div id="sel-search" class="bg-slate-900/60 rounded-xl p-4 border border-slate-700"></div>
+            </div>
+        </div>
+
+        <!-- LightParse vs LlamaParse quick-ref -->
+        <div class="mt-10 grid md:grid-cols-2 gap-4">
+            <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3"><span class="text-lg">⚡</span><span class="text-white font-bold">LightParse</span><span class="text-emerald-400 text-xs font-bold ml-auto">Free · Open Source · Rust</span></div>
+                <div class="space-y-1.5 text-xs text-slate-400">
+                    <div class="flex gap-2"><span class="text-emerald-400 font-mono font-bold">~10ms/pg</span><span>— local, no API, no model inference</span></div>
+                    <div class="flex gap-2"><span class="text-emerald-400">✓</span><span>Zero data leaves your machine — WebAssembly browser support</span></div>
+                    <div class="flex gap-2"><span class="text-rose-400">✗</span><span>No bounding boxes · Limited on complex tables / charts</span></div>
+                </div>
+            </div>
+            <div class="bg-slate-800/40 border border-rose-900/40 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3"><span class="text-lg">🔬</span><span class="text-white font-bold">LlamaParse</span><span class="text-rose-400 text-xs font-bold ml-auto">Paid API · OCR + Vision</span></div>
+                <div class="space-y-1.5 text-xs text-slate-400">
+                    <div class="flex gap-2"><span class="text-rose-300 font-mono font-bold">seconds/pg</span><span>— cloud API with vision model inference</span></div>
+                    <div class="flex gap-2"><span class="text-emerald-400">✓</span><span>Tables · Charts → table · PowerPoint · Excel · Bounding boxes</span></div>
+                    <div class="flex gap-2"><span class="text-slate-500">*</span><span>Enterprise: zero-retention &amp; on-prem options available</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parsebench callout -->
+        <div class="mt-4 bg-slate-800/40 border border-rose-900/30 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+                <p class="text-rose-400 font-bold text-xs uppercase tracking-widest mb-1">How parsers are ranked</p>
+                <p class="text-slate-400 text-sm">Parsebench measures five dimensions — table accuracy, content faithfulness, visual grounding, chart understanding, and semantic formatting. The public leaderboard shows how every major parser scores across all five.</p>
+            </div>
+            <a href="https://www.parsebench.ai/#leaderboard" target="_blank" rel="noopener noreferrer"
+               class="flex-shrink-0 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold text-xs px-4 py-2.5 rounded-lg transition-all whitespace-nowrap">
+                Parsebench Leaderboard ↗
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     PART II — CITATION LAYER (indigo)
+══════════════════════════════════════ -->
+<section id="citation-layer" class="py-20 border-b border-slate-800">
+    <div class="max-w-5xl mx-auto px-6">
+
+        <div class="flex items-center gap-4 mb-4">
+            <span class="bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Part II</span>
+            <div class="flex-1 h-px bg-indigo-900/40"></div>
+        </div>
+        <h2 class="text-3xl font-black text-white mb-2">The Citation Layer</h2>
+        <p class="text-slate-400 max-w-2xl mb-10">Any system can return an answer. Only a few can show you exactly where it came from — down to the pixel on the source page. In finance, law, and medicine, that difference is the difference between a demo and a deployable system.</p>
+
+        <!-- Trust Ladder -->
+        <h3 class="text-white font-bold text-lg mb-4">The Trust Ladder — click a rung</h3>
+        <div class="grid lg:grid-cols-5 gap-5 mb-12">
+            <div class="lg:col-span-2 space-y-2">
+                <div class="rung border-2 border-red-900/50 bg-slate-800/50 rounded-xl p-3.5" onclick="showRung(0)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-red-900/60 border border-red-700 flex items-center justify-center text-red-300 font-black text-sm flex-shrink-0">0</div>
+                        <div><p class="text-white font-bold text-sm">No Source</p><p class="text-slate-500 text-xs">The answer floats, unanchored</p></div>
+                    </div>
+                </div>
+                <div class="rung border-2 border-amber-900/50 bg-slate-800/50 rounded-xl p-3.5" onclick="showRung(1)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-900/50 border border-amber-700 flex items-center justify-center text-amber-300 font-black text-sm flex-shrink-0">1</div>
+                        <div><p class="text-white font-bold text-sm">Chunk Text</p><p class="text-slate-500 text-xs">Here's what was retrieved</p></div>
+                    </div>
+                </div>
+                <div class="rung border-2 border-slate-600 bg-slate-800/50 rounded-xl p-3.5" onclick="showRung(2)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-700 border border-slate-500 flex items-center justify-center text-slate-200 font-black text-sm flex-shrink-0">2</div>
+                        <div><p class="text-white font-bold text-sm">Page Number</p><p class="text-slate-500 text-xs">It's on page 42 of the filing</p></div>
+                    </div>
+                </div>
+                <div class="rung border-2 border-indigo-600/60 bg-slate-800/50 rounded-xl p-3.5 active" onclick="showRung(3)">
+                    <div class="flex items-center gap-3">
+                        <div id="rung3-num" class="w-8 h-8 rounded-full bg-indigo-600 border border-indigo-400 flex items-center justify-center text-white font-black text-sm flex-shrink-0">3</div>
+                        <div><p class="text-white font-bold text-sm">Bounding Box</p><p class="text-slate-500 text-xs">The exact pixel on the exact page</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="lg:col-span-3">
+                <div id="rung-panel" class="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 min-h-52"></div>
+            </div>
+        </div>
+
+        <!-- Citation Algorithm -->
+        <h3 class="text-white font-bold text-lg mb-2">The Citation Fallback Algorithm</h3>
+        <p class="text-slate-400 text-sm mb-5 max-w-2xl">Financial documents have irregular characters, currency symbols, and whitespace artifacts from PDF reflow. The algorithm degrades gracefully through four matching strategies — click each step.</p>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+            <div class="alg-step border-2 border-slate-700 bg-slate-800/50 rounded-xl p-4 active" onclick="showStep(0)">
+                <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white font-black text-xs mb-2">1</div>
+                <p class="text-white font-semibold text-sm mb-1">Exact Match</p>
+                <p class="text-slate-500 text-xs">Verbatim character-for-character search</p>
+                <p class="text-indigo-400 text-xs font-bold mt-2">Succeeds ~65% of the time</p>
+            </div>
+            <div class="alg-step border-2 border-slate-700 bg-slate-800/50 rounded-xl p-4" onclick="showStep(1)">
+                <div class="w-6 h-6 rounded-full bg-slate-700 border border-slate-500 flex items-center justify-center text-slate-200 font-black text-xs mb-2">2</div>
+                <p class="text-white font-semibold text-sm mb-1">Whitespace Normalize</p>
+                <p class="text-slate-500 text-xs">Collapse tabs, double-spaces, non-breaking spaces</p>
+                <p class="text-amber-400 text-xs font-bold mt-2">Recovers ~15% more</p>
+            </div>
+            <div class="alg-step border-2 border-slate-700 bg-slate-800/50 rounded-xl p-4" onclick="showStep(2)">
+                <div class="w-6 h-6 rounded-full bg-slate-700 border border-slate-500 flex items-center justify-center text-slate-200 font-black text-xs mb-2">3</div>
+                <p class="text-white font-semibold text-sm mb-1">Strip Currency</p>
+                <p class="text-slate-500 text-xs">Remove $, £, €, ¥, commas, abbreviations</p>
+                <p class="text-amber-400 text-xs font-bold mt-2">Critical for financial docs</p>
+            </div>
+            <div class="alg-step border-2 border-slate-700 bg-slate-800/50 rounded-xl p-4" onclick="showStep(3)">
+                <div class="w-6 h-6 rounded-full bg-slate-700 border border-slate-500 flex items-center justify-center text-slate-200 font-black text-xs mb-2">4</div>
+                <p class="text-white font-semibold text-sm mb-1">Longest Subtoken</p>
+                <p class="text-slate-500 text-xs">Find longest substring present — always anchors something</p>
+                <p class="text-rose-400 text-xs font-bold mt-2">Last resort — never fails</p>
+            </div>
+        </div>
+        <div id="alg-panel" class="bg-slate-800/40 border border-indigo-900/40 rounded-xl p-5"></div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     PART III — READINESS AUDIT (amber)
+══════════════════════════════════════ -->
+<section id="audit" class="py-20">
+    <div class="max-w-5xl mx-auto px-6">
+
+        <div class="flex items-center gap-4 mb-4">
+            <span class="bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Part III</span>
+            <div class="flex-1 h-px bg-amber-900/40"></div>
+        </div>
+        <h2 class="text-3xl font-black text-white mb-2">The Document Readiness Audit</h2>
+        <p class="text-slate-400 max-w-2xl mb-10">Score your RAG stack's document layer across six dimensions — 0 to 3 each. The total tells you where your parsing stack needs to be and what gaps to close before you ship.</p>
+
+        <!-- 6 Dimensions -->
+        <div class="grid md:grid-cols-2 gap-4 mb-8" id="audit-grid">
+
+            <!-- Dim 1 -->
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+                <p class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Document Complexity</p>
+                <p class="text-slate-400 text-xs mb-3">What's the hardest document type in your corpus?</p>
+                <div class="flex gap-2">
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d1" data-score="0" onclick="setScore('d1',0,this)">0 — Plain text</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d1" data-score="1" onclick="setScore('d1',1,this)">1 — Simple tables</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d1" data-score="2" onclick="setScore('d1',2,this)">2 — Complex layouts</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d1" data-score="3" onclick="setScore('d1',3,this)">3 — Decks + sheets</button>
+                </div>
+            </div>
+
+            <!-- Dim 2 -->
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+                <p class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Table Criticality</p>
+                <p class="text-slate-400 text-xs mb-3">How much do decisions depend on table data being correct?</p>
+                <div class="flex gap-2">
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d2" data-score="0" onclick="setScore('d2',0,this)">0 — No tables</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d2" data-score="1" onclick="setScore('d2',1,this)">1 — Reference only</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d2" data-score="2" onclick="setScore('d2',2,this)">2 — Data-driven</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d2" data-score="3" onclick="setScore('d2',3,this)">3 — Financial / legal precision</button>
+                </div>
+            </div>
+
+            <!-- Dim 3 -->
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+                <p class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Language Diversity</p>
+                <p class="text-slate-400 text-xs mb-3">How many languages appear in your document corpus?</p>
+                <div class="flex gap-2">
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d3" data-score="0" onclick="setScore('d3',0,this)">0 — English only</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d3" data-score="1" onclick="setScore('d3',1,this)">1 — 2–3 languages</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d3" data-score="2" onclick="setScore('d3',2,this)">2 — Multilingual</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d3" data-score="3" onclick="setScore('d3',3,this)">3 — Mixed within docs</button>
+                </div>
+            </div>
+
+            <!-- Dim 4 -->
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+                <p class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Citation Depth Required</p>
+                <p class="text-slate-400 text-xs mb-3">What do users need to verify an answer?</p>
+                <div class="flex gap-2">
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d4" data-score="0" onclick="setScore('d4',0,this)">0 — Not needed</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d4" data-score="1" onclick="setScore('d4',1,this)">1 — Chunk text</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d4" data-score="2" onclick="setScore('d4',2,this)">2 — Page number</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d4" data-score="3" onclick="setScore('d4',3,this)">3 — Bounding box</button>
+                </div>
+            </div>
+
+            <!-- Dim 5 -->
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+                <p class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Privacy Sensitivity</p>
+                <p class="text-slate-400 text-xs mb-3">How sensitive is the document content?</p>
+                <div class="flex gap-2">
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d5" data-score="0" onclick="setScore('d5',0,this)">0 — Public data</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d5" data-score="1" onclick="setScore('d5',1,this)">1 — Internal only</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d5" data-score="2" onclick="setScore('d5',2,this)">2 — Sensitive / confidential</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d5" data-score="3" onclick="setScore('d5',3,this)">3 — PII / regulated</button>
+                </div>
+            </div>
+
+            <!-- Dim 6 -->
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+                <p class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Latency Requirements</p>
+                <p class="text-slate-400 text-xs mb-3">How fast must document parsing complete?</p>
+                <div class="flex gap-2">
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d6" data-score="0" onclick="setScore('d6',0,this)">0 — Batch / hours</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d6" data-score="1" onclick="setScore('d6',1,this)">1 — Minutes</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d6" data-score="2" onclick="setScore('d6',2,this)">2 — Seconds</button>
+                    <button class="score-btn flex-1 border border-slate-700 rounded-lg py-1.5 text-slate-400 text-xs" data-dim="d6" data-score="3" onclick="setScore('d6',3,this)">3 — Real-time &lt;100ms</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score display -->
+        <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">Total Score</p>
+                    <div class="flex items-baseline gap-2">
+                        <span id="total-score" class="text-4xl font-black text-white">0</span>
+                        <span class="text-slate-500 text-sm">/ 18</span>
+                        <span id="grade-badge" class="ml-2 text-xs font-bold px-3 py-1 rounded-full border"></span>
+                    </div>
+                </div>
+                <!-- Score bar -->
+                <div class="w-48 h-3 bg-slate-700 rounded-full overflow-hidden">
+                    <div id="score-bar" class="h-full rounded-full transition-all duration-500 bg-emerald-400" style="width:0%"></div>
+                </div>
+            </div>
+            <div id="audit-rec" class="text-slate-400 text-sm leading-relaxed">Score at least one dimension to see your recommendation.</div>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<!-- PAGE FOOTER STRIP -->
+<div class="bg-slate-900 border-t border-slate-800">
+    <div class="max-w-6xl mx-auto px-6 py-10 text-center space-y-3">
+        <p class="text-white font-semibold">Document Intelligence — The Complete LlamaIndex Stack</p>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Parser selection · Citation trust architecture · Production readiness audit. Based on the GenAcademy guest lecture by Logan (LlamaIndex, Head of Open Source).</p>
+        <div class="flex flex-wrap justify-center gap-2 pt-1">
+            <span class="bg-slate-800 text-rose-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#LlamaIndex</span>
+            <span class="bg-slate-800 text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#DocumentParsing</span>
+            <span class="bg-slate-800 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RAG</span>
+            <span class="bg-slate-800 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#LightParse</span>
+            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0"><p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p></div>
+        <div class="flex space-x-6 text-sm">
+            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
+            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
+            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
+        </div>
+    </div>
+</footer>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
+<script>
+/* ── PART I: Parser Selector ── */
+const A = {};
+
+function pick(q, v, el) {
+    A[q] = v;
+    document.querySelectorAll('[data-q="' + q + '"]').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    if (Object.keys(A).length === 4) renderSel();
+}
+
+const PARSERS = {
+    lightparse: {
+        ey:'LightParse', eyC:'text-emerald-400', bc:'border-emerald-500/40 bg-emerald-900/10',
+        lead:'Fast, local, open-source — the right tool for your requirements. ~10ms per page with no external dependencies.',
+        bullets:[['⚡','~10ms per page — local, no API, no model inference'],['🔒','Zero data leaves your machine'],['🌐','WebAssembly support for browser deployment'],['📝','Tesseract OCR bundled for scanned pages']]
+    },
+    llamaparse: {
+        ey:'LlamaParse', eyC:'text-rose-400', bc:'border-rose-500/40 bg-rose-900/10',
+        lead:'Accuracy-first cloud parsing with OCR and computer vision — handles complex tables, charts, and multi-format documents.',
+        bullets:[['🔬','Layout-aware: complex tables, merged cells, multi-column'],['📈','Chart-to-table extraction included'],['📍','Bounding box output — enables visual citations'],['🗑️','48-hour auto-deletion on standard plan']]
+    },
+    llamaparse_ent: {
+        ey:'LlamaParse (Enterprise)', eyC:'text-purple-400', bc:'border-purple-500/40 bg-purple-900/10',
+        lead:'PII / regulated data requires zero-retention or on-prem. LlamaParse Enterprise handles both with full accuracy.',
+        bullets:[['🛡️','Zero-retention: deleted immediately after parse'],['🏢','On-prem deployment — data never leaves your infra'],['🔬','Full accuracy: tables, charts, bounding boxes'],['🔒','Pair with Presidio for PII masking pre-parse']]
+    },
+    lightparse_strict: {
+        ey:'LightParse (Local only)', eyC:'text-emerald-400', bc:'border-emerald-500/40 bg-emerald-900/10',
+        lead:'Regulatory constraints mean no cloud. LightParse is the only option — it runs fully locally with no external calls.',
+        bullets:[['⚡','~10ms per page — no cloud, no model inference, ever'],['🔒','Full compliance by design — data stays in your infrastructure'],['🌐','WebAssembly if browser embedding is needed'],['⚠️','Trade-off: complex tables and charts will be less accurate']]
+    }
+};
+
+const SEARCHES = {
+    keyword:{ label:'Keyword Search (BM25)', c:'text-emerald-400', desc:'Your corpus is small enough that BM25 keyword search is the correct default. No embedding model needed. Fast and accurate at this scale — don\'t add infrastructure you don\'t need.' },
+    hybrid:{ label:'Hybrid Search (Keyword + Embeddings)', c:'text-amber-400', desc:'Mix keyword for identifiers and dense embeddings for vocabulary gaps and semantic synonyms. Front-load agent context to give keyword matching stronger signal.' },
+    dense:{ label:'Dense Embeddings', c:'text-rose-400', desc:'At this scale, semantic vector search is essential for recall. Use embeddings as the primary path with metadata filtering to scope across document types.' }
+};
+
+function getPK() {
+    if (A.pv === 'onprem') return 'lightparse_strict';
+    if (A.dt === 'pptx' || A.dt === 'complex') return A.pv === 'pii' ? 'llamaparse_ent' : 'llamaparse';
+    if (A.pv === 'pii') return 'llamaparse_ent';
+    if (A.dt === 'mixed' && A.sp !== 'rt') return 'llamaparse';
+    if (A.sp === 'rt') return 'lightparse';
+    return A.dt === 'plain' ? 'lightparse' : 'llamaparse';
+}
+
+function getSK() {
+    return A.cs === 'small' ? 'keyword' : A.cs === 'mid' ? 'hybrid' : 'dense';
+}
+
+function renderSel() {
+    const p = PARSERS[getPK()], s = SEARCHES[getSK()];
+    const card = document.getElementById('sel-card');
+    card.className = 'rounded-2xl border-2 p-6 pop-in ' + p.bc;
+    document.getElementById('sel-eyebrow').className = 'text-xs font-bold uppercase tracking-widest mb-1 ' + p.eyC;
+    document.getElementById('sel-eyebrow').textContent = 'Recommended: ' + p.ey;
+    document.getElementById('sel-title').textContent = p.ey + ' + ' + s.label;
+    document.getElementById('sel-lead').textContent = p.lead;
+    document.getElementById('sel-bullets').innerHTML = p.bullets.map(([ic,tx]) =>
+        `<div class="flex items-start gap-2 text-slate-300 text-sm"><span class="flex-shrink-0">${ic}</span><span>${tx}</span></div>`).join('');
+    document.getElementById('sel-search').innerHTML =
+        `<p class="font-bold text-sm mb-1 ${s.c}">${s.label}</p><p class="text-slate-400 text-sm">${s.desc}</p>`;
+    const r = document.getElementById('sel-result');
+    r.classList.remove('hidden');
+    setTimeout(() => r.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+/* ── PART II: Trust Ladder ── */
+const RUNGS = [
+    { icon:'❓', label:'Level 0 — No Source', col:'text-red-400',
+      what:'The system returns an answer with no pointer back to any document. The user has no mechanism to verify it.',
+      ux:'Confident answer, no trail. Acceptable for low-stakes chatbots. In finance or medicine, this is a liability — not a feature gap.',
+      assumes:'Everything. The user either trusts the model or manually hunts through documents.',
+      ex:'"Total revenue was $4.2B." — No source shown.' },
+    { icon:'📃', label:'Level 1 — Chunk Text', col:'text-amber-400',
+      what:'The retrieved passage is shown alongside the answer. The user can read the raw text the model used.',
+      ux:'A "Sources" panel with the retrieved chunks. The most common RAG implementation. Significant improvement over nothing.',
+      assumes:'The user must manually locate the chunk in the original document to check surrounding context or page number.',
+      ex:'"Total revenue was $4.2B." [Source: "...Q3 total revenue reached $4.2B driven by cloud..."]' },
+    { icon:'📖', label:'Level 2 — Page Number', col:'text-slate-200',
+      what:'The system tells you which page of which document the answer came from, creating a reproducible verification path.',
+      ux:'Answer includes document name and page number. The minimum viable citation for professional use — meets most audit requirements.',
+      assumes:'The user still opens the document and scans the page. For a 300-page 10-K, page 42 still has 50+ lines to read.',
+      ex:'"Total revenue was $4.2B." [Annual Report 2024, p. 42]' },
+    { icon:'📍', label:'Level 3 — Bounding Box', col:'text-indigo-300',
+      what:'Every cited text block maps to exact pixel coordinates on the source page. Clicking a citation highlights the region on the rendered PDF.',
+      ux:'Click → the text lights up on the page. Users see the surrounding table, column headers, nearby footnotes. Full context with zero manual work. This is what the LlamaIndex demo shows.',
+      assumes:'Nothing for basic verification. Regulatory contexts still need expert review — but the full evidentiary trail is there.',
+      ex:'"Total revenue was $4.2B." [p.42 — row 3 of the revenue table, highlighted in blue]' }
+];
+
+function showRung(i) {
+    document.querySelectorAll('.rung').forEach((el, idx) => el.classList.toggle('active', idx === i));
+    const r = RUNGS[i];
+    document.getElementById('rung-panel').innerHTML = `<div class="pop-in space-y-3">
+        <div class="flex items-center gap-3"><span class="text-2xl">${r.icon}</span><h4 class="text-white font-black text-base">${r.label}</h4></div>
+        <div><p class="${r.col} font-bold text-xs uppercase tracking-widest mb-1">What the system provides</p><p class="text-slate-300 text-sm leading-relaxed">${r.what}</p></div>
+        <div><p class="${r.col} font-bold text-xs uppercase tracking-widest mb-1">User experience</p><p class="text-slate-300 text-sm leading-relaxed">${r.ux}</p></div>
+        <div><p class="${r.col} font-bold text-xs uppercase tracking-widest mb-1">Still requires user to assume</p><p class="text-slate-300 text-sm leading-relaxed">${r.assumes}</p></div>
+        <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700"><p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Example</p><p class="text-slate-300 text-sm italic">${r.ex}</p></div>
+    </div>`;
+}
+
+const STEPS = [
+    { n:1, title:'Exact String Match',
+      detail:'Search for the cited text verbatim — character for character — in the parsed page content. This is the fastest path and succeeds whenever the PDF was cleanly parsed with no OCR artifacts.',
+      code:'if page_text.find(citation) != -1:\n    return bbox_at(page_text.find(citation))',
+      ok:'Clean text PDFs, well-formatted documents', fail:'Hyphenated line breaks, ligatures, multi-column reflow' },
+    { n:2, title:'Whitespace Normalization',
+      detail:'Collapse all whitespace variants — non-breaking spaces (\\u00a0), tabs, double-spaces from OCR, line-break artifacts from multi-column layout reflow — before comparing. Both citation and page content are normalized.',
+      code:'norm = lambda t: re.sub(r\'\\s+\', \' \', t.strip())\nif norm(page).find(norm(cite)) != -1: ...',
+      ok:'Multi-column PDFs, OCR whitespace artifacts', fail:'Currency symbols, thousands separators, special characters' },
+    { n:3, title:'Currency Symbol Stripping',
+      detail:'Financial documents encode currency notation inconsistently. The model may output "$4.2B" while parsed text has "$ 4.2 billion" or "USD 4,200". Strip symbols ($, £, €, ¥), comma separators, and normalize numeric abbreviations before comparing.',
+      code:'def strip_fx(t):\n    return re.sub(r\'[$£€¥,]\', \'\', t)\nif strip_fx(page).find(strip_fx(cite)) != -1: ...',
+      ok:'10-K filings, earnings reports, balance sheets', fail:'Very short citations where stripped form is ambiguous' },
+    { n:4, title:'Longest Subtoken Match',
+      detail:'Find the longest contiguous word sequence from the citation that appears anywhere on the page. Use that substring\'s bounding box as a best-effort anchor. This always returns something — the anchor may not be centered on the claim, but it takes the user to the right region.',
+      code:'words = cite.split()\nfor l in range(len(words),1,-1):\n    sub = \' \'.join(words[:l])\n    if page.find(sub)!=-1:\n        return bbox_of(sub)',
+      ok:'Every document — designed to never give up', fail:'Nothing — this is the final fallback by design' }
+];
+
+function showStep(i) {
+    document.querySelectorAll('.alg-step').forEach((el, idx) => el.classList.toggle('active', idx === i));
+    const s = STEPS[i];
+    document.getElementById('alg-panel').innerHTML = `<div class="pop-in">
+        <div class="flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white font-black text-xs flex-shrink-0">${s.n}</span><h4 class="text-white font-bold">${s.title}</h4></div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-3">${s.detail}</p>
+        <div class="bg-slate-900 rounded-xl p-3 border border-slate-700 font-mono text-xs text-indigo-300 whitespace-pre mb-3 overflow-x-auto">${s.code}</div>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-emerald-900/20 border border-emerald-900/40 rounded-lg p-3"><p class="text-emerald-400 text-xs font-bold mb-1">Works well on</p><p class="text-slate-300 text-xs">${s.ok}</p></div>
+            <div class="bg-rose-900/20 border border-rose-900/40 rounded-lg p-3"><p class="text-rose-400 text-xs font-bold mb-1">Fails on</p><p class="text-slate-300 text-xs">${s.fail}</p></div>
+        </div>
+    </div>`;
+}
+
+/* ── PART III: Readiness Audit ── */
+const scores = { d1:null, d2:null, d3:null, d4:null, d5:null, d6:null };
+
+function setScore(dim, val, el) {
+    scores[dim] = val;
+    document.querySelectorAll('[data-dim="' + dim + '"]').forEach(b => b.classList.remove('picked'));
+    el.classList.add('picked');
+    updateAudit();
+}
+
+const RECS = [
+    { max:5, grade:'Green — Minimal Stack', gc:'text-emerald-400', bc:'bg-emerald-900/20 border-emerald-900/40', bar:'bg-emerald-400',
+      rec:'LightParse handles your documents. Use keyword search (BM25) — your corpus is small enough that embeddings add complexity without adding recall. Keep it simple: local parser, no vector database, no cloud API.' },
+    { max:9, grade:'Yellow — Standard Stack', gc:'text-amber-400', bc:'bg-amber-900/20 border-amber-900/40', bar:'bg-amber-400',
+      rec:'LlamaParse for document accuracy — your content has complexity that LightParse will mangle. Hybrid search covers both keyword precision and semantic recall. Start with page-number citations at minimum.' },
+    { max:13, grade:'Orange — Full Stack', gc:'text-orange-400', bc:'bg-orange-900/20 border-orange-900/40', bar:'bg-orange-400',
+      rec:'LlamaParse with bounding box output. Dense embeddings as the primary retrieval path with metadata filtering. Implement the citation fallback algorithm — users in your domain will need to verify answers against the source page.' },
+    { max:18, grade:'Red — Enterprise Stack', gc:'text-red-400', bc:'bg-red-900/20 border-red-900/40', bar:'bg-red-500',
+      rec:'LlamaParse Enterprise with zero-retention or on-prem deployment. PII masking (Presidio) before parse. Full bounding-box citation system. Consider evaluation with Ragas or Arise — at this level of stakes, you need systematic evals before shipping.' }
+];
+
+function updateAudit() {
+    const filled = Object.values(scores).filter(v => v !== null);
+    if (!filled.length) return;
+    const total = filled.reduce((a, b) => a + b, 0);
+    document.getElementById('total-score').textContent = total;
+    const pct = (total / 18) * 100;
+    const band = RECS.find(r => total <= r.max) || RECS[RECS.length - 1];
+    const bar = document.getElementById('score-bar');
+    bar.style.width = pct + '%';
+    bar.className = 'h-full rounded-full transition-all duration-500 ' + band.bar;
+    const badge = document.getElementById('grade-badge');
+    badge.textContent = band.grade;
+    badge.className = 'ml-2 text-xs font-bold px-3 py-1 rounded-full border ' + band.gc + ' border-current';
+    const rec = document.getElementById('audit-rec');
+    rec.className = 'text-sm leading-relaxed p-4 rounded-xl border pop-in ' + band.bc;
+    rec.innerHTML = `<span class="font-bold ${band.gc}">${band.grade} — </span><span class="text-slate-300">${band.rec}</span>`;
+}
+
+/* ── Init ── */
+showRung(3);
+showStep(0);
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+    links.forEach(link => { const n = link.getAttribute('data-group'); if (!groups[n]) groups[n] = []; groups[n].push(link); });
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:relative;display:inline-block;';
+        const trigger = document.createElement('button');
+        trigger.className = 'nav-btn';
+        trigger.innerHTML = `${groupName} &#9662;`;
+        const menu = document.createElement('div');
+        menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
+        const first = groupItems[0];
+        if (first.parentNode) first.replaceWith(wrapper);
+        groupItems.forEach(link => {
+            link.style.cssText = 'display:block;padding:.4rem .75rem;border-radius:4px;color:#333;text-decoration:none;font-size:.85rem;white-space:nowrap;';
+            link.onmouseenter = () => link.style.background = '#f0f9ff';
+            link.onmouseleave = () => link.style.background = '';
+            menu.appendChild(link);
+        });
+        wrapper.appendChild(trigger); wrapper.appendChild(menu);
+        trigger.addEventListener('click', e => { e.stopPropagation(); const open = menu.style.display === 'flex'; document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }); menu.style.display = open ? 'none' : 'flex'; });
+    });
+    document.addEventListener('click', () => document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }));
+});
+</script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1dbb923b06fe4997b8f6cdad1b22bc2d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
