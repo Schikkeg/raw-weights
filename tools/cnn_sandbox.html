@@ -1,13 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer"> 
 	<meta name="description" content="Master Convolutional Neural Networks (CNNs) with this interactive visual sandbox. Explore the exact math behind filters, ReLU, max pooling, and backpropagation.">
     <title>How The Machine Sees | CNN Sandbox</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+      <script>document.documentElement.setAttribute('data-theme','light');</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<style>#rw-theme-btn { display: none !important; }</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pixelit@1.1.1/dist/pixelit.min.js"></script>
 
@@ -20,7 +24,7 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js" defer></script>
     <script defer>mermaid.initialize({startOnLoad:true});</script>
-    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
         
     <style>
         :root {
@@ -160,20 +164,8 @@
 </head>
 <body>
 
-    <nav class="global-nav">
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰ Topics</button>
-        <div id="globalNavLinks" class="nav-links">
-            <a href="/">Home</a>
-		     <a href="/blog.html"><button >Blog</button></a>
-		     <a href="/tools/master_ml_hub.html"><button >ML Playground</button></a>
-		     <a href="/srt.html"><button >Simple Regression Tool</button></a>
-			 <a href="/tools/master_sequence_hub.html" ><button >Attention Journey</button></a>
-			 <a href="/tools/cnn_sandbox.html" ><button >Explore CNN</button></a>
-             <a href="/tools/deep_generative_modeling.html" ><button >Generative Journey</button></a>
-	 		 <a href="/tools/deep_reinforcement.html" ><button >Reinforcement</button></a>
-        </div>
-        <button class="mobile-global-btn" onclick="toggleGlobalNav()">⋮ Menu</button>
-    </nav>
+    <div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
     <header class="site-header">
         <h1>How The Machine Sees</h1>
@@ -588,7 +580,7 @@ sequenceDiagram
     Out-->>Data: 8. Return final classification
                     </div>
                 
-                <p class="mt-4 self-start text-sm italic">Or, <a href="https://mermaid.live/view#pako:eNqVVcFu2zgQ_ZUBTw7geG3ZUh2iCLAbJ0ABtxts0MvCF1oaS0QpUiUpx26Qv9jzftx-yQ4pyZvG2QI1AllM3sx782Y4eWK5KZBx5vBrizrHlRSlFfVGA30aYb3MZSO0h5XwAoSDD7ppPXyoRYnnoBuj97OAWs94PBjVemn0OfIPXH8-IcPhHHJvjDpBwkHq8hy1TiJEHNFCAqNACv_8_VfMGV9C5MUbcfP_4uY_EXenhA-R4dujflPT722E3CjhnNxJYhg9mJ2vxYESdvBg5-X1dTSMw2wC94QFKx6hkQdUIKwVRxglKzCkb9UL6Z4Wcw-23I6SxXQMyWJJjzTtIZ-MRzB74oy5x52NvK-UXm6FVUe4Q-Fbiw5GtwdvRe6pEPhNOJnDrcIatXdvJ-TwoGSBoFBYjQXspPJoXYdohM8rdOP3W_vLNXZ5Lh-lQ6hb5WVDxEIX4NoavImgAn2oZhuZsShJUUBQMnJTKKCmo5t0SiI_mRZnh0PSm7brSoFaNBAGrsbXwvuAX5sgwFdUdmVUESqOGkbuaytcBRpL4eWeJHgD39Cai544xhNxb-W8Jw6u7YUnE4LwQYd7zd5HrcyjdqJuFIIjnyQVV0gyyNH9cL0QnJSTMXwUh2HeBwWoi5cTEFOSoHXCYdGrKU75i5eWnMkJMR9lUZCOOBOOR-67vo-5qbfkOWAck64jUpMhYcBdhCr5BSGXNlfUasBjeGrjwlfoHUUOHeue6yRInXNIe6mVLCu0lwr3NOmDGf9nXwhcITY_VBvFdTp3rVLdANIfyY0DOG_bvJv2KJ2GUpI5O5HjK6FzEhouNodsGC6pQ6MC_49M7YJWSFTmeCrpRDzo0WGuw3QJcNRdasFs1V3173SEbKSE1giHd70QAg4CYsBrBRF8I1TeUjAZYs1WbKWS_khjRkLkNm7il3N2b7GQ3c1_rGReweeH8DtH15uWmKQfd_GdLuK4JF1hd3FYTuhekB7de5T32y4XgYeNWWllwThZgGNWo61FOLKnkGrDfEXLYcM4vRa4E7QdNmyjnymMNuifxtRDpDVtWTG-E8rRqW0Kqq7_J3WC0O1Ae2Na7RlPs6uYg_EndmA8yZaTJF0kabLIsiSdJ9mYHRm_WkxmtD2XWTadvbtaZPPnMfsWWaeTZZpNk_Rqms5T-iSz538BBzZbAA" target="_blank" class="text-blue-500 underline">view this diagram in the Mermaid Live Editor</a>.</p>
+                <p class="mt-4 self-start text-sm italic">Or, <a href="https://mermaid.live/view#pako:eNqVVcFu2zgQ_ZUBTw7geG3ZUh2iCLAbJ0ABtxts0MvCF1oaS0QpUiUpx26Qv9jzftx-yQ4pyZvG2QI1AllM3sx782Y4eWK5KZBx5vBrizrHlRSlFfVGA30aYb3MZSO0h5XwAoSDD7ppPXyoRYnnoBuj97OAWs94PBjVemn0OfIPXH8-IcPhHHJvjDpBwkHq8hy1TiJEHNFCAqNACv_8_VfMGV9C5MUbcfP_4uY_EXenhA-R4dujflPT722E3CjhnNxJYhg9mJ2vxYESdvBg5-X1dTSMw2wC94QFKx6hkQdUIKwVRxglKzCkb9UL6Z4Wcw-23I6SxXQMyWJJjzTtIZ-MRzB74oy5x52NvK-UXm6FVUe4Q-Fbiw5GtwdvRe6pEPhNOJnDrcIatXdvJ-TwoGSBoFBYjQXspPJoXYdohM8rdOP3W_vLNXZ5Lh-lQ6hb5WVDxEIX4NoavImgAn2oZhuZsShJUUBQMnJTKKCmo5t0SiI_mRZnh0PSm7brSoFaNBAGrsbXwvuAX5sgwFdUdmVUESqOGkbuaytcBRpL4eWeJHgD39Cai544xhNxb-W8Jw6u7YUnE4LwQYd7zd5HrcyjdqJuFIIjnyQVV0gyyNH9cL0QnJSTMXwUh2HeBwWoi5cTEFOSoHXCYdGrKU75i5eWnMkJMR9lUZCOOBOOR-67vo-5qbfkOWAck64jUpMhYcBdhCr5BSGXNlfUasBjeGrjwlfoHUUOHeue6yRInXNIe6mVLCu0lwr3NOmDGf9nXwhcITY_VBvFdTp3rVLdANIfyY0DOG_bvJv2KJ2GUpI5O5HjK6FzEhouNodsGC6pQ6MC_49M7YJWSFTmeCrpRDzo0WGuw3QJcNRdasFs1V3173SEbKSE1giHd70QAg4CYsBrBRF8I1TeUjAZYs1WbKWS_khjRkLkNm7il3N2b7GQ3c1_rGReweeH8DtH15uWmKQfd_GdLuK4JF1hd3FYTuhekB7de5T32y4XgYeNWWllwThZgGNWo61FOLKnkGrDfEXLYcM4vRa4E7QdNmyjnymMNuifxtRDpDVtWTG-E8rRqW0Kqq7_J3WC0O1Ae2Na7RlPs6uYg_EndmA8yZaTJF0kabLIsiSdJ9mYHRm_WkxmtD2XWTadvbtaZPPnMfsWWaeTZZpNk_Rqms5T-iSz538BBzZbAA" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">view this diagram in the Mermaid Live Editor</a>.</p>
             </div>
         </details>
 
@@ -801,9 +793,8 @@ sequenceDiagram
         </main>
     </div>
 
-    <footer class="site-footer">
-        <p>&copy; 2026 RawWeights. All rights reserved. Convolutional Neural Networks Sandbox.</p>
-    </footer>
+    <div id="rw-footer"></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
     <script>
         // --- LAYOUT CONTROLS ---

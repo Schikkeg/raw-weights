@@ -1,11 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RawWeights | Engineering the Probabilistic Web</title>
 <meta name="description" content="A Principal Architect's log on integrating AI into modern web systems. Dissecting fundamentals, evaluating tools, and architecting the future.">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>document.documentElement.setAttribute('data-theme','light');</script>
+  <link rel="stylesheet" href="./includes/brand.css">
+<style>#rw-theme-btn { display: none !important; }</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
@@ -86,19 +90,12 @@
         .formula-box { background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center; font-family: monospace; font-weight: bold; color: #2d3436; margin: 10px 0; border: 1px dashed #ccc; }
         .variable { font-weight: bold; color: #0984e3; }
     </style>
-        <script type="text/javascript" async src="/includes/analytics.js"></script>
+        <script type="text/javascript" async src="./includes/analytics.js"></script>
 
 </head>
 <body>
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/blog.html"><button >Blog</button></a>
-        <a href="/tools/master_ml_hub.html"><button >ML Playground</button></a>
-        <a href="/srt.html"><button >Simple Regression Tool</button></a>
-		<a href="/tools/cnn_sandbox.html" ><button >Explore CNN</button></a>
-    </div>
-</nav>
+<div id="rw-nav"></div>
+<script src="./includes/rw-nav.js?v=20260615"></script>
 <div class="grid">
     <div class="sidebar">
         
@@ -416,5 +413,9 @@
     // Initial label set
     updateLabels();
 </script>
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_machinelearning-datascience-linearregression-activity-7426300104090738688-q9Gb/"
+></div>
+<script src="./includes/rw-footer.js?v=20260612"></script>
 </body>
 </html>

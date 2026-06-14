@@ -1,804 +1,911 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atomic GPT Playground</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #475569;
-            --success: #16a34a;
-            --bg: #f8fafc;
-            --panel-bg: #ffffff;
-            --text: #1e293b;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RawWeights — From Weights to Intelligence</title>
+  <meta name="description" content="Exploring AI from raw fundamentals to applied intelligence. Interactive playgrounds, deep guides, and field notes on the math behind modern AI. Start from first principles.">
+  <meta name="keywords" content="AI, machine learning, neural networks, deep learning, RAG, LLM, transformer, weights, interactive playground, RawWeights">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/">
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rawweights.com/">
+  <meta property="og:title" content="RawWeights — From Weights to Intelligence">
+  <meta property="og:description" content="Exploring AI from raw fundamentals to applied intelligence. Interactive playgrounds, deep guides, and field notes.">
+  <meta property="og:image" content="https://rawweights.com/images/rw-og.png">
+  <meta name="twitter:card" content="summary_large_image">
 
-        /* Navigation */
-        nav {
-            background: white;
-            padding: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "RawWeights",
+    "url": "https://rawweights.com",
+    "description": "Exploring AI from raw fundamentals to applied intelligence.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://rawweights.com/blog.html?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 
-        .nav-brand {
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: var(--primary);
-            text-decoration: none;
-        }
+  <!-- Theme: apply before render to prevent flash -->
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
 
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-        }
+  <link rel="stylesheet" href="./includes/brand.css">
+  <script type="text/javascript" async src="./includes/analytics.js"></script>
 
-        .nav-btn {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
+  <style>
+    /* ── Hero ──────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--rw-bg);
+      padding: 2rem 1.5rem;
+    }
 
-        .nav-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
+    /* Animated gradient orbs */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    [data-theme="dark"] .hero-orb { opacity: 0.35; }
 
-        /* Main Container */
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      top: -15%; left: -10%;
+      background: radial-gradient(circle, rgba(249,115,22,0.5) 0%, rgba(249,115,22,0) 70%);
+      animation: rwOrb1 18s ease-in-out infinite;
+    }
+    .hero-orb-2 {
+      width: 500px; height: 500px;
+      bottom: -10%; right: -5%;
+      background: radial-gradient(circle, rgba(99,102,241,0.5) 0%, rgba(99,102,241,0) 70%);
+      animation: rwOrb2 22s ease-in-out infinite;
+    }
+    .hero-orb-3 {
+      width: 350px; height: 350px;
+      top: 30%; right: 20%;
+      background: radial-gradient(circle, rgba(6,182,212,0.35) 0%, rgba(6,182,212,0) 70%);
+      animation: rwOrb3 16s ease-in-out infinite;
+    }
 
-        .grid {
-            display: grid;
-            gap: 1.5rem;
-        }
+    /* Subtle dot grid */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--rw-border) 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    [data-theme="dark"] .hero-grid { opacity: 0.25; }
 
-        /* Panels */
-        .panel {
-            background: var(--panel-bg);
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-        }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 860px;
+    }
 
-        h3 { margin-top: 0; color: var(--secondary); font-size: 1.1rem; }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--rw-orange-light);
+      border: 1px solid var(--rw-orange-border);
+      border-radius: var(--rw-r-full);
+      padding: 0.35rem 1rem;
+      font-family: var(--rw-font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--rw-orange-hover);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 1.75rem;
+      animation: rwFadeUp 0.6s var(--rw-ease-out) both;
+    }
 
-        /* Inputs & Controls */
-        textarea, input[type="text"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-family: monospace;
-            box-sizing: border-box;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
-        
-        textarea { height: 120px; resize: vertical; }
+    .hero-title {
+      font-family: var(--rw-font-display);
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--rw-text);
+      margin-bottom: 1.25rem;
+      animation: rwFadeUp 0.6s var(--rw-ease-out) 0.1s both;
+    }
 
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+    .hero-title .rw-text-gradient {
+      display: inline-block;
+    }
 
-        button {
-            padding: 0.75rem 1.25rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      color: var(--rw-text-muted);
+      line-height: 1.7;
+      max-width: 620px;
+      margin: 0 auto 2.5rem;
+      animation: rwFadeUp 0.6s var(--rw-ease-out) 0.2s both;
+    }
 
-        button:active { transform: translateY(1px); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: rwFadeUp 0.6s var(--rw-ease-out) 0.32s both;
+    }
 
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-secondary { background: var(--secondary); color: white; }
-        .btn-danger { background: #dc2626; color: white; }
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--rw-text-subtle);
+      font-size: 0.72rem;
+      font-family: var(--rw-font-display);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      animation: rwFadeIn 0.8s 0.8s both;
+    }
+    .hero-scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--rw-border), transparent);
+    }
 
-        /* Logger */
-        #log {
-            background: #0f172a;
-            color: #4ade80;
-            padding: 1rem;
-            border-radius: 8px;
-            height: 200px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            white-space: pre-wrap;
-        }
+    /* ── Analogy section ──────────────────────────────────────── */
+    .analogy-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
 
-        .status-text { font-size: 0.9rem; color: var(--secondary); margin-left: auto; }
+    .analogy-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-lg);
+      padding: 2rem;
+      transition: border-color var(--rw-t), box-shadow var(--rw-t);
+    }
+    .analogy-card:hover { border-color: var(--rw-orange-border); box-shadow: var(--rw-shadow-md); }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
-            color: var(--secondary);
-            font-size: 0.9rem;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        footer a { color: var(--primary); text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
+    .analogy-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
 
-        /* Modals */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 100; 
-            left: 0; top: 0; 
-            width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.5);
-            overflow-y: auto;
-        }
+    .analogy-card h3 {
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--rw-text);
+      margin-bottom: 0.5rem;
+    }
 
-        .modal-content {
-            background-color: #fff;
-            margin: 10% auto;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%; 
-            max-width: 600px;
-            position: relative;
-        }
+    .analogy-card p {
+      font-size: 0.9rem;
+      color: var(--rw-text-muted);
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
 
-        .close-modal {
-            float: right;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
-        }
-        .close-modal:hover { color: black; }
+    .analogy-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .analogy-list li {
+      font-size: 0.85rem;
+      color: var(--rw-text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .analogy-list li::before {
+      content: '→';
+      color: var(--rw-orange);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
 
-        .modal-body h4 { color: var(--primary); margin-bottom: 0.5rem; }
-        .modal-body p { margin-bottom: 1rem; font-size: 0.95rem; }
+    .analogy-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .analogy-connector-inner {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--rw-orange);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 0 0 8px var(--rw-orange-light);
+      font-weight: 700;
+    }
 
-        /* Mobile Optimization */
-        @media (max-width: 600px) {
-            .nav-links { width: 100%; justify-content: space-between; margin-top: 1rem; }
-            .nav-btn { flex: 1; text-align: center; }
-            .btn-group button { flex: 1; }
-            .status-text { width: 100%; text-align: left; margin-top: 0.5rem; }
-        }
-    </style>
-        <script type="text/javascript" async src="/includes/analytics.js"></script>
+    /* ── Playground cards ─────────────────────────────────────── */
+    .playground-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 1.5rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: border-color var(--rw-t), box-shadow var(--rw-t), transform var(--rw-t);
+    }
+    .playground-card:hover {
+      border-color: var(--rw-orange-border);
+      box-shadow: var(--rw-shadow-md);
+      transform: translateY(-3px);
+    }
 
+    .playground-card-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--rw-r-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .playground-card h3 {
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 0.975rem;
+      color: var(--rw-text);
+      line-height: 1.3;
+    }
+
+    .playground-card p {
+      font-size: 0.83rem;
+      color: var(--rw-text-muted);
+      line-height: 1.5;
+    }
+
+    .playground-card-arrow {
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: var(--rw-orange);
+      font-weight: 600;
+      font-family: var(--rw-font-display);
+    }
+
+    /* ── Blog cards ───────────────────────────────────────────── */
+    .blog-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      transition: border-color var(--rw-t), box-shadow var(--rw-t), transform var(--rw-t);
+    }
+    .blog-card:hover {
+      border-color: var(--rw-orange-border);
+      box-shadow: var(--rw-shadow-md);
+      transform: translateY(-2px);
+    }
+    .blog-card img {
+      width: 100%; height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+    .blog-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+    .blog-card-meta { font-size: 0.75rem; color: var(--rw-text-subtle); margin-bottom: 0.5rem; }
+    .blog-card h3 {
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--rw-text);
+      line-height: 1.35;
+      margin-bottom: 0.5rem;
+    }
+    .blog-card p {
+      font-size: 0.83rem;
+      color: var(--rw-text-muted);
+      line-height: 1.55;
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+    .blog-card-read {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--rw-orange);
+      font-family: var(--rw-font-display);
+    }
+
+    /* ── Guide strip ──────────────────────────────────────────── */
+    .guide-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rw-border);
+      border-radius: var(--rw-r-md);
+      overflow: hidden;
+      border: 1px solid var(--rw-border);
+    }
+    .guide-strip-item {
+      background: var(--rw-card);
+      padding: 1.5rem;
+      text-decoration: none;
+      transition: background var(--rw-t);
+    }
+    .guide-strip-item:hover { background: var(--rw-orange-light); }
+    .guide-strip-item:hover .guide-strip-label { color: var(--rw-orange); }
+    .guide-strip-num {
+      font-family: var(--rw-font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--rw-text-subtle);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+    .guide-strip-label {
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--rw-text);
+      line-height: 1.3;
+      margin-bottom: 0.35rem;
+      transition: color var(--rw-t);
+    }
+    .guide-strip-desc {
+      font-size: 0.8rem;
+      color: var(--rw-text-subtle);
+      line-height: 1.4;
+    }
+
+    /* ── CTA banner ───────────────────────────────────────────── */
+    .cta-banner {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1040 50%, #0a1a30 100%);
+      border-radius: var(--rw-r-xl);
+      padding: 4rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      color: #f0f4ff;
+    }
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -20%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(249,115,22,0.25) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -40%; left: -15%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-banner h2 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.7rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+    .cta-banner p {
+      font-size: 1.05rem;
+      color: rgba(240,244,255,0.72);
+      max-width: 500px;
+      margin: 0 auto 2rem;
+      line-height: 1.65;
+      position: relative;
+    }
+    .cta-banner-actions { position: relative; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Stats bar ─────────────────────────────────────────────── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      overflow: hidden;
+      background: var(--rw-card);
+    }
+    .stat-item {
+      flex: 1;
+      min-width: 130px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      border-right: 1px solid var(--rw-border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--rw-font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--rw-orange);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--rw-text-subtle);
+      font-weight: 500;
+    }
+
+    /* ── Learning path ─────────────────────────────────────────── */
+    .path-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+      scrollbar-width: none;
+    }
+    .path-steps::-webkit-scrollbar { display: none; }
+
+    .path-step {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .path-step-node {
+      background: var(--rw-card);
+      border: 1.5px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 0.85rem 1.25rem;
+      text-align: center;
+      min-width: 140px;
+      transition: border-color var(--rw-t), box-shadow var(--rw-t);
+    }
+    .path-step-node:hover { border-color: var(--rw-orange); box-shadow: var(--rw-shadow-orange); }
+    .path-step-node a { text-decoration: none; display: block; }
+
+    .path-step-num {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--rw-orange);
+      margin-bottom: 0.3rem;
+      font-family: var(--rw-font-display);
+    }
+    .path-step-label {
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--rw-text);
+      line-height: 1.25;
+    }
+
+    .path-arrow {
+      font-size: 1.1rem;
+      color: var(--rw-text-subtle);
+      padding: 0 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Section header row ────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .section-header a {
+      font-family: var(--rw-font-display);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--rw-orange);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 0.3rem;
+      flex-shrink: 0;
+    }
+    .section-header a:hover { color: var(--rw-orange-hover); }
+
+    /* ── Responsive overrides ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .analogy-grid { grid-template-columns: 1fr; }
+      .analogy-connector { display: none; }
+      .guide-strip { grid-template-columns: 1fr; }
+      .guide-strip-item { border-bottom: 1px solid var(--rw-border); }
+      .guide-strip-item:last-child { border-bottom: none; }
+    }
+    @media (max-width: 768px) {
+      .rw-grid-3 { grid-template-columns: 1fr; }
+      .cta-banner { padding: 2.5rem 1.5rem; }
+      .stats-bar { gap: 0; }
+      .stat-item { min-width: 50%; border-bottom: 1px solid var(--rw-border); }
+      .stat-item:nth-child(even) { border-right: none; }
+    }
+    @media (max-width: 600px) {
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .rw-btn { justify-content: center; }
+    }
+  </style>
 </head>
 <body>
 
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
-		<a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
-		
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+<!-- ── Centralized Navigation ──────────────────────────────── -->
+<div id="rw-nav"></div>
+<script src="./includes/rw-nav.js?v=20260615"></script>
 
-<div class="container">
-<div style="text-align: center; margin-bottom: 2rem;">
-        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: #1e293b;"> Atomic GPT Playground</h1>
-        <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
-            Train a real <strong>Neural Network</strong> entirely in your browser. 
-            <br>
-            This is a "glass box" educational tool based on <a href="https://github.com/karpathy/makemore" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: bold;">Andrej Karpathy's</a> <em>makemore</em> repository. It demonstrates how Large Language Models (LLMs) learn patterns from data—no Python or GPU required.
-        </p>
-    </div>
-    <div class="grid">
-<div class="panel">
-    <div class="nav-links">
-        <button class="nav-btn" onclick="openModal('modalSimple')">How it Works (Simple)</button>
-        <button class="nav-btn" onclick="openModal('modalTech')">How it Works (Technical)</button>
-    </div>
-</div>        
-        <div class="panel">
-            <h3>1. Training Data</h3>
-            <textarea id="inputData" placeholder="Paste names or text here...">
-emma
-olivia
-ava
-isabella
-sophia
-charlotte
-mia
-amelia
-harper
-evelyn
-abigail
-emily
-ella
-elizabeth
-camila
-luna
-sofia
-avery
-mila
-aria</textarea>
-            <div class="btn-group">
-                <button id="trainBtn" class="btn-primary" onclick="startTraining()">Start Training</button>
-                <span id="trainStatus" class="status-text">State: Idle</span>
-            </div>
-        </div>
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-3" aria-hidden="true"></div>
 
-        <div class="panel">
-            <h3>2. Save / Load Model</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Save your trained "brain" to your browser so you don't have to retrain later.</p>
-            <div class="btn-group">
-                <button class="btn-success" onclick="saveToBrowser()">💾 Save Locally</button>
-                <button class="btn-secondary" onclick="loadFromBrowser()">📂 Load Saved</button>
-                <button class="btn-danger" onclick="clearBrowserStorage()">🗑️ Clear</button>
-                <span id="storageStatus" class="status-text"></span>
-            </div>
-        </div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">
+      ⚖️ From First Principles to Applied Intelligence
+    </span>
 
-        <div class="panel">
-            <h3>3. Generate Text</h3>
-            <label style="font-size: 0.9rem; font-weight: bold; display:block; margin-bottom:0.5rem;">Start with (Optional):</label>
-            <input type="text" id="promptInput" placeholder="e.g. 'M' or 'Al'">
-            <div class="btn-group">
-                <button class="btn-primary" onclick="runInference()">✨ Generate</button>
-            </div>
-        </div>
+    <h1 class="hero-title">
+      Raw<span class="rw-text-gradient">Weights</span><br>
+      Where Learning Starts
+    </h1>
 
-        <div id="log">Logs will appear here...</div>
-    </div>
-</div>
-
-<footer>
-    <p>Based on the "minGPT" and "makemore" work by <strong><a href="https://www.linkedin.com/in/andrej-karpathy-9a650716/">Andrej Karpathy</a></strong>.</p>
-    <p>
-        <a href="https://github.com/karpathy/makemore" target="_blank">View Original Repo</a> • 
-        <a href="https://karpathy.ai/" target="_blank">Karpathy.ai</a>
+    <p class="hero-subtitle">
+      In a gym, raw weights are the fundamental tool — no machines, no shortcuts. Neural network weights work the same way. We go from those raw numbers all the way to how they power the modern AI field.
     </p>
-    <p style="font-size: 0.8rem; margin-top: 1rem; color: #94a3b8;">
-        This playground is a simplified educational tool to demonstrate the core algorithm of a Transformer.
-    </p>
-</footer>
 
-<div id="modalSimple" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModals()">&times;</span>
-        <h2>How it Works (Simple)</h2>
-        <div class="modal-body">
-            <p>Think of this AI as a <strong>Robot Student</strong> learning to write names.</p>
-            
-            <h4>1. The "Future-Blind" Reader</h4>
-            <p>The robot reads names one letter at a time. It covers the rest of the word with its hand. It sees "E" and tries to guess what comes next. It cannot cheat and look ahead.</p>
-
-            <h4>2. The Voting Booth (Logits)</h4>
-            <p>Inside its brain, the robot doesn't just guess one letter. It holds a vote for every possible letter (A-Z). "M" might get 50 votes, while "Z" gets -10 votes.</p>
-
-            <h4>3. The Teacher (Loss)</h4>
-            <p>We reveal the actual next letter. If the robot guessed wrong, we give it a score (Loss). A high score means "You did bad."</p>
-
-            <h4>4. The Smart Hiker (Adam Optimizer)</h4>
-            <p>The robot wants to get its error score to zero (the bottom of the valley). It uses a math trick called "Adam" to find the fastest path down the hill, adjusting its brain so it doesn't make the same mistake twice.</p>
-            
-            <h4>5. Showtime (Inference)</h4>
-            <p>Once trained, we take away the answer key. We give it a starting letter, and it uses its trained intuition to dream up new names entirely on its own!</p>
-        </div>
+    <div class="hero-actions">
+      <a href="./tools/master_ml_hub.html" class="rw-btn rw-btn-primary rw-btn-lg">
+        Explore Playgrounds →
+      </a>
+      <a href="./blog.html" class="rw-btn rw-btn-ghost rw-btn-lg">
+        Read the Blog
+      </a>
     </div>
-</div>
+  </div>
 
-<div id="modalTech" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModals()">&times;</span>
-        <h2>How it Works (Technical)</h2>
-        <div class="modal-body">
-            <p>This is a pure JavaScript implementation of a <strong>Decoder-Only Transformer</strong>.</p>
+  <div class="hero-scroll" aria-hidden="true">
+    <div class="hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
 
-            <h4>1. Tokenization & Embeddings</h4>
-            <p>Input text is converted to integer IDs. We learn two embedding matrices: <code>wte</code> (Token Embeddings) for identity and <code>wpe</code> (Position Embeddings) for order. These are added together.</p>
-
-            <h4>2. Self-Attention</h4>
-            <p>The core mechanism. Queries (Q), Keys (K), and Values (V) are computed. We calculate <code>softmax(Q @ K.T)</code> to create an attention map, which determines how much the model should focus on past tokens to predict the current one.</p>
-
-            <h4>3. MLP & Residuals</h4>
-            <p>The attention output passes through a Feed-Forward Network (MLP) with ReLU activation. We use LayerNorm (RMSNorm here) and Residual connections (adding input to output) to stabilize deep learning.</p>
-
-            <h4>4. Autograd Engine</h4>
-            <p>We implemented a custom <code>Value</code> class that builds a dynamic computation graph. Calling <code>.backward()</code> performs topological sort and reverse-mode automatic differentiation to compute gradients.</p>
-
-            <h4>5. Optimization</h4>
-            <p>We use <strong>Adam</strong> (Adaptive Moment Estimation), which tracks first (momentum) and second (variance) moments of gradients to update weights efficiently.</p>
-        </div>
+<!-- ══════════════════════════════════════════════════════════
+     STATS
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section-sm" style="padding-top:0;">
+  <div class="rw-container">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-num" data-count="6" data-suffix="+">6+</div>
+        <div class="stat-label">Interactive Playgrounds</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-count="12" data-suffix="+">12+</div>
+        <div class="stat-label">Deep Guides</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-count="25" data-suffix="+">25+</div>
+        <div class="stat-label">Blog Articles</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-count="100" data-suffix="%">100%</div>
+        <div class="stat-label">Browser-Based</div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
 
+<!-- ══════════════════════════════════════════════════════════
+     ANALOGY — THE BRAND STORY
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section" style="background: var(--rw-bg-alt);">
+  <div class="rw-container">
+    <div style="text-align:center; margin-bottom: 1rem;">
+      <p class="rw-section-label">The Analogy</p>
+      <h2 class="rw-section-title">Why <em style="font-style:italic;color:var(--rw-orange);">Raw</em> Weights?</h2>
+      <p class="rw-section-subtitle" style="margin:0 auto;">
+        The name is intentional. Gym weights and neural network weights share a deeper connection than you'd think.
+      </p>
+    </div>
+
+    <div class="analogy-grid">
+      <div class="analogy-card">
+        <span class="analogy-icon">🏋️</span>
+        <h3>Gym Weights</h3>
+        <p>In a gym, "raw" means no machines — just iron, gravity, and your body. There's nowhere to hide. You feel every pound.</p>
+        <ul class="analogy-list">
+          <li>Progressive overload builds strength</li>
+          <li>Muscle memory is learned, not programmed</li>
+          <li>Form matters more than the number</li>
+          <li>Rest between sets = better adaptation</li>
+        </ul>
+      </div>
+
+      <div class="analogy-connector">
+        <div class="analogy-connector-inner">≡</div>
+      </div>
+
+      <div class="analogy-card" style="border-color: var(--rw-indigo); border-width: 1.5px;">
+        <span class="analogy-icon">🧠</span>
+        <h3>Neural Network Weights</h3>
+        <p>In AI, weights are the actual numbers your model adjusts to learn. They encode everything the model knows — in raw numbers.</p>
+        <ul class="analogy-list">
+          <li>Gradient descent tunes weights each step</li>
+          <li>Backpropagation computes the correction</li>
+          <li>Learning rate = how big each step is</li>
+          <li>Epochs = how many times you train</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:2.5rem;">
+      <p style="font-size:0.95rem; color: var(--rw-text-muted); max-width:600px; margin:0 auto 1.5rem; line-height:1.7;">
+        We start with that raw mathematical foundation and trace how it becomes the intelligence powering modern LLMs, agentic systems, and production AI. <strong style="color:var(--rw-text)">Analogy first, always.</strong>
+      </p>
+      <a href="./how-it-started.html" class="rw-btn rw-btn-secondary">See the Tiny Transformer We Built →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     LEARNING PATH
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section-sm">
+  <div class="rw-container">
+    <div style="text-align:center; margin-bottom:2rem;">
+      <p class="rw-section-label">Your Path</p>
+      <h2 class="rw-section-title">The Learning Journey</h2>
+    </div>
+    <div class="path-steps">
+      <div class="path-step">
+        <div class="path-step-node">
+          <a href="./srt.html">
+            <div class="path-step-num">Start Here</div>
+            <div class="path-step-label">Simple Regression</div>
+          </a>
+        </div>
+      </div>
+      <div class="path-arrow" aria-hidden="true">→</div>
+      <div class="path-step">
+        <div class="path-step-node">
+          <a href="./tools/master_ml_hub.html">
+            <div class="path-step-num">Level 2</div>
+            <div class="path-step-label">Deep Learning</div>
+          </a>
+        </div>
+      </div>
+      <div class="path-arrow" aria-hidden="true">→</div>
+      <div class="path-step">
+        <div class="path-step-node">
+          <a href="./tools/master_sequence_hub.html">
+            <div class="path-step-num">Level 3</div>
+            <div class="path-step-label">Transformers</div>
+          </a>
+        </div>
+      </div>
+      <div class="path-arrow" aria-hidden="true">→</div>
+      <div class="path-step">
+        <div class="path-step-node">
+          <a href="./guide/rag.html">
+            <div class="path-step-num">Level 4</div>
+            <div class="path-step-label">RAG & LLMs</div>
+          </a>
+        </div>
+      </div>
+      <div class="path-arrow" aria-hidden="true">→</div>
+      <div class="path-step">
+        <div class="path-step-node">
+          <a href="./blog/ai-stack-practices.html">
+            <div class="path-step-num">Level 5</div>
+            <div class="path-step-label">Agentic AI</div>
+          </a>
+        </div>
+      </div>
+      <div class="path-arrow" aria-hidden="true">→</div>
+      <div class="path-step">
+        <div class="path-step-node" style="border-color: var(--rw-orange); background: var(--rw-orange-light);">
+          <a href="./guide/adobe-cx-enterprise-ecosystem.html">
+            <div class="path-step-num">Applied</div>
+            <div class="path-step-label" style="color:var(--rw-orange);">Production AI</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PLAYGROUNDS
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section" style="background: var(--rw-bg-alt);">
+  <div class="rw-container">
+    <div class="section-header">
+      <div>
+        <p class="rw-section-label">Interactive</p>
+        <h2 class="rw-section-title">Playgrounds</h2>
+        <p class="rw-section-subtitle">No setup. No Python. Learn by doing — directly in your browser.</p>
+      </div>
+      <a href="./tools/master_ml_hub.html">View all →</a>
+    </div>
+
+    <div class="rw-grid-3" style="grid-template-columns: repeat(3, 1fr);">
+      <a class="playground-card" href="./tools/master_ml_hub.html">
+        <div class="playground-card-icon" style="background: rgba(249,115,22,0.12);">🧪</div>
+        <h3>ML Master Hub</h3>
+        <p>Gradient descent, activation functions, neural networks — all interactive with real-time visualization.</p>
+        <span class="playground-card-arrow">Explore →</span>
+      </a>
+      <a class="playground-card" href="./tools/master_sequence_hub.html">
+        <div class="playground-card-icon" style="background: rgba(99,102,241,0.12);">🔄</div>
+        <h3>Attention Journey</h3>
+        <p>From vanilla RNNs through LSTM to multi-head self-attention. 13 interactive visualizers.</p>
+        <span class="playground-card-arrow">Start the journey →</span>
+      </a>
+      <a class="playground-card" href="./tools/cnn_sandbox.html">
+        <div class="playground-card-icon" style="background: rgba(6,182,212,0.12);">🔍</div>
+        <h3>CNN Explorer</h3>
+        <p>Visualize convolution, pooling, and feature maps. See what the layers actually detect.</p>
+        <span class="playground-card-arrow">Explore →</span>
+      </a>
+      <a class="playground-card" href="./tools/deep_generative_modeling.html">
+        <div class="playground-card-icon" style="background: rgba(16,185,129,0.12);">🎨</div>
+        <h3>Generative Modeling</h3>
+        <p>Interactive VAE, GAN, and CycleGAN explorer. Understand how AI creates new data.</p>
+        <span class="playground-card-arrow">Explore →</span>
+      </a>
+      <a class="playground-card" href="./tools/deep_reinforcement.html">
+        <div class="playground-card-icon" style="background: rgba(239,68,68,0.1);">🤖</div>
+        <h3>Reinforcement Learning</h3>
+        <p>Deep RL with policy gradients. Watch an agent learn to balance, navigate, and optimize.</p>
+        <span class="playground-card-arrow">Play →</span>
+      </a>
+      <a class="playground-card" href="./how-it-started.html" style="border-color:var(--rw-orange-border); background: var(--rw-orange-light);">
+        <div class="playground-card-icon" style="background: rgba(249,115,22,0.2);">⚡</div>
+        <h3>Atomic GPT</h3>
+        <p>Train a real Transformer in your browser. The glass-box that started everything. Pure JavaScript.</p>
+        <span class="playground-card-arrow" style="color:var(--rw-orange);">How It Started →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FROM THE BLOG
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section">
+  <div class="rw-container">
+    <div class="section-header">
+      <div>
+        <p class="rw-section-label">Latest</p>
+        <h2 class="rw-section-title">From the Blog</h2>
+      </div>
+      <a href="./blog.html">All articles →</a>
+    </div>
+
+    <div class="rw-grid-3" id="home-blog-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     GUIDES
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section" style="background: var(--rw-bg-alt);">
+  <div class="rw-container">
+    <div class="section-header">
+      <div>
+        <p class="rw-section-label">Deep Dives</p>
+        <h2 class="rw-section-title">Guides</h2>
+        <p class="rw-section-subtitle">Structured, interactive learning for the hard parts of AI.</p>
+      </div>
+    </div>
+
+    <div class="guide-strip">
+      <a class="guide-strip-item" href="./guide/rag.html">
+        <div class="guide-strip-num">01 · RAG</div>
+        <div class="guide-strip-label">Ultimate Guide to Retrieval-Augmented Generation</div>
+        <div class="guide-strip-desc">Architecture, chunking, evaluation, and production patterns. For Developer, PM, and Beginner.</div>
+      </a>
+      <a class="guide-strip-item" href="./guide/mcp.html">
+        <div class="guide-strip-num">02 · MCP</div>
+        <div class="guide-strip-label">Model Context Protocol — The Agentic Web</div>
+        <div class="guide-strip-desc">Solve the N×M integration problem. Interactive diagrams, agent architectures, and MCP deep dive.</div>
+      </a>
+      <a class="guide-strip-item" href="./guide/llm-post-training-guide.html">
+        <div class="guide-strip-num">03 · Fine-Tuning</div>
+        <div class="guide-strip-label">LLM Post-Training — Build Your Own Model</div>
+        <div class="guide-strip-desc">Data prep, DPO training, model merging, and test-time compute. Based on real production experience.</div>
+      </a>
+      <a class="guide-strip-item" href="./guide/adobe-cx-enterprise-ecosystem.html">
+        <div class="guide-strip-num">04 · Agentic AI</div>
+        <div class="guide-strip-label">Architecting Autonomous AI Systems</div>
+        <div class="guide-strip-desc">Levels of autonomy, LangChain, n8n, SDK frameworks, and designing resilient agents.</div>
+      </a>
+      <a class="guide-strip-item" href="./guide/full-lifecycle.html">
+        <div class="guide-strip-num">05 · LLM Lifecycle</div>
+        <div class="guide-strip-label">Full LLM Architecture & Production Lifecycle</div>
+        <div class="guide-strip-desc">From tokenization to serving — the complete picture of how a language model goes live.</div>
+      </a>
+      <a class="guide-strip-item" href="./guide/mythos.html">
+        <div class="guide-strip-num">06 · Safety</div>
+        <div class="guide-strip-label">Mythos — AI Threats Preview Report</div>
+        <div class="guide-strip-desc">Claude AI threat modeling, safety analysis, and what adversarial AI actually looks like today.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     HOW IT STARTED CTA
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section">
+  <div class="rw-container">
+    <div class="cta-banner">
+      <h2>See Where It All Started</h2>
+      <p>A pure JavaScript Transformer — trained live in your browser. No Python, no GPU, no magic. Just math and curiosity.</p>
+      <div class="cta-banner-actions">
+        <a href="./how-it-started.html" class="rw-btn rw-btn-primary rw-btn-lg">Open Atomic GPT →</a>
+        <a href="./blog.html" class="rw-btn" style="background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.2);">Browse the Blog</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Centralized Footer ───────────────────────────────────── -->
+<div id="rw-footer"></div>
+<script src="./includes/rw-footer.js?v=20260612"></script>
+<script src="./data/site-content.js"></script>
 <script>
-function openModal(id) { document.getElementById(id).style.display = "block"; }
-function closeModals() { 
-    document.getElementById('modalSimple').style.display = "none";
-    document.getElementById('modalTech').style.display = "none";
-}
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) closeModals();
-}
-
-let G_uchars = [];     
-let G_state_dict = {}; 
-let G_vocab_size = 0;
-let G_block_size = 12; 
-let G_n_layer = 1;
-let G_n_head = 4;
-let G_n_embd = 16;
-let G_head_dim = 4;
-let G_is_trained = false;
-
-const logger = document.getElementById('log');
-function log(msg) {
-    logger.textContent += msg + "\n";
-    logger.scrollTop = logger.scrollHeight;
-}
-
-window.onload = function() {
-    if(localStorage.getItem('atomic_gpt_model')) {
-        document.getElementById('storageStatus').innerText = "✅ Found saved model";
-        document.getElementById('storageStatus').style.color = "var(--success)";
-    }
-};
-
-class SeededRandom {
-    constructor(seed) {
-        this.m = 0x80000000; this.a = 1103515245; this.c = 12345;
-        this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
-    }
-    nextFloat() {
-        this.state = (this.a * this.state + this.c) % this.m;
-        return this.state / (this.m - 1);
-    }
-    gauss(mean, std) {
-        let u = 0, v = 0;
-        while(u === 0) u = this.nextFloat();
-        while(v === 0) v = this.nextFloat();
-        return (Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)) * std + mean;
-    }
-    choice(options, weights) {
-        let sum = weights.reduce((a, b) => a + b, 0);
-        let r = this.nextFloat() * sum;
-        for (let i = 0; i < options.length; i++) {
-            r -= weights[i];
-            if (r < 0) return options[i];
-        }
-        return options[options.length - 1];
-    }
-    shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(this.nextFloat() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-}
-const rng = new SeededRandom(42);
-
-class Value {
-    constructor(data, children = [], local_grads = []) {
-        this.data = data;
-        this.grad = 0;
-        this._children = children;
-        this._local_grads = local_grads;
-    }
-    add(other) {
-        other = other instanceof Value ? other : new Value(other);
-        return new Value(this.data + other.data, [this, other], [1, 1]);
-    }
-    mul(other) {
-        other = other instanceof Value ? other : new Value(other);
-        return new Value(this.data * other.data, [this, other], [other.data, this.data]);
-    }
-    pow(other) {
-        return new Value(Math.pow(this.data, other), [this], [other * Math.pow(this.data, other - 1)]);
-    }
-    log() { return new Value(Math.log(this.data), [this], [1 / this.data]); }
-    exp() { return new Value(Math.exp(this.data), [this], [Math.exp(this.data)]); }
-    relu() { return new Value(Math.max(0, this.data), [this], [this.data > 0 ? 1 : 0]); }
-    neg() { return this.mul(-1); }
-    sub(other) { return this.add(other instanceof Value ? other.neg() : new Value(-other)); }
-    div(other) { return this.mul(other instanceof Value ? other.pow(-1) : new Value(other).pow(-1)); }
-    
-    backward() {
-        let topo = [], visited = new Set();
-        const build_topo = (v) => {
-            if (!visited.has(v)) {
-                visited.add(v);
-                for (let child of v._children) build_topo(child);
-                topo.push(v);
-            }
-        };
-        build_topo(this);
-        this.grad = 1;
-        for (let i = topo.length - 1; i >= 0; i--) {
-            const v = topo[i];
-            for (let j = 0; j < v._children.length; j++) {
-                v._children[j].grad += v._local_grads[j] * v.grad;
-            }
-        }
-    }
-}
-
-function linear(x, w) {
-    return w.map(wo => {
-        let sum = new Value(0);
-        for(let i=0; i<wo.length; i++) sum = sum.add(wo[i].mul(x[i]));
-        return sum;
-    });
-}
-function softmax(logits) {
-    const max_val = logits.reduce((max, val) => val.data > max ? val.data : max, -Infinity);
-    const exps = logits.map(val => val.sub(max_val).exp());
-    let total = new Value(0);
-    exps.forEach(e => total = total.add(e));
-    return exps.map(e => e.div(total));
-}
-function rmsnorm(x) {
-    let ms = new Value(0);
-    x.forEach(xi => ms = ms.add(xi.mul(xi)));
-    ms = ms.div(x.length);
-    const scale = ms.add(1e-5).pow(-0.5);
-    return x.map(xi => xi.mul(scale));
-}
-
-function gpt(token_id, pos_id, keys, values, state_dict) {
-    const tok_emb = state_dict['wte'][token_id];
-    const pos_emb = state_dict['wpe'][pos_id];
-    let x = tok_emb.map((t, i) => t.add(pos_emb[i]));
-    x = rmsnorm(x);
-
-    for (let li = 0; li < G_n_layer; li++) {
-        const x_residual_attn = x;
-        x = rmsnorm(x);
-        const q = linear(x, state_dict[`layer${li}.attn_wq`]);
-        const k = linear(x, state_dict[`layer${li}.attn_wk`]);
-        const v = linear(x, state_dict[`layer${li}.attn_wv`]);
-        
-        keys[li].push(k);
-        values[li].push(v);
-
-        let x_attn = [];
-        for (let h = 0; h < G_n_head; h++) {
-            const hs = h * G_head_dim;
-            const q_h = q.slice(hs, hs + G_head_dim);
-            const k_h = keys[li].map(ki => ki.slice(hs, hs + G_head_dim));
-            const v_h = values[li].map(vi => vi.slice(hs, hs + G_head_dim));
-
-            const attn_logits = k_h.map(k_vec => {
-                let dot = new Value(0);
-                for(let j=0; j<G_head_dim; j++) dot = dot.add(q_h[j].mul(k_vec[j]));
-                return dot.div(Math.sqrt(G_head_dim));
-            });
-
-            const attn_weights = softmax(attn_logits);
-            const head_out = [];
-            for(let j=0; j<G_head_dim; j++) {
-                let acc = new Value(0);
-                for(let t=0; t<v_h.length; t++) acc = acc.add(attn_weights[t].mul(v_h[t][j]));
-                head_out.push(acc);
-            }
-            x_attn.push(...head_out);
-        }
-
-        x = linear(x_attn, state_dict[`layer${li}.attn_wo`]);
-        x = x.map((xi, i) => xi.add(x_residual_attn[i]));
-
-        const x_residual_mlp = x;
-        x = rmsnorm(x);
-        x = linear(x, state_dict[`layer${li}.mlp_fc1`]);
-        x = x.map(xi => xi.relu());
-        x = linear(x, state_dict[`layer${li}.mlp_fc2`]);
-        x = x.map((xi, i) => xi.add(x_residual_mlp[i]));
-    }
-    return linear(x, state_dict['lm_head']);
-}
-
-async function startTraining() {
-    const rawText = document.getElementById('inputData').value;
-    const docs = rawText.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    if (docs.length === 0) return log("Error: No data.");
-
-    logger.textContent = "Initializing...\n";
-    document.getElementById('trainBtn').disabled = true;
-    document.getElementById('trainStatus').innerText = "Running...";
-
-    G_uchars = [...new Set(docs.join(''))].sort();
-    const BOS = G_uchars.length;
-    G_vocab_size = G_uchars.length + 1;
-    log(`Vocab: ${G_uchars.join('')} (Size: ${G_vocab_size})`);
-
-    const createMatrix = (nout, nin) => Array.from({ length: nout }, () => Array.from({ length: nin }, () => new Value(rng.gauss(0, 0.08))));
-    G_head_dim = Math.floor(G_n_embd / G_n_head);
-
-    G_state_dict = {
-        'wte': createMatrix(G_vocab_size, G_n_embd),
-        'wpe': createMatrix(G_block_size, G_n_embd),
-        'lm_head': createMatrix(G_vocab_size, G_n_embd)
-    };
-    for (let i = 0; i < G_n_layer; i++) {
-        G_state_dict[`layer${i}.attn_wq`] = createMatrix(G_n_embd, G_n_embd);
-        G_state_dict[`layer${i}.attn_wk`] = createMatrix(G_n_embd, G_n_embd);
-        G_state_dict[`layer${i}.attn_wv`] = createMatrix(G_n_embd, G_n_embd);
-        G_state_dict[`layer${i}.attn_wo`] = createMatrix(G_n_embd, G_n_embd);
-        G_state_dict[`layer${i}.mlp_fc1`] = createMatrix(4 * G_n_embd, G_n_embd);
-        G_state_dict[`layer${i}.mlp_fc2`] = createMatrix(G_n_embd, 4 * G_n_embd);
-    }
-
-    const params = [];
-    Object.values(G_state_dict).forEach(mat => mat.forEach(row => row.forEach(p => params.push(p))));
-    
-    let m = new Float64Array(params.length).fill(0);
-    let v = new Float64Array(params.length).fill(0);
-    const learning_rate = 0.01;
-    const beta1 = 0.85, beta2 = 0.99, eps_adam = 1e-8;
-    const num_steps = 100;
-
-    log("Training started (100 steps)...");
-
-    for (let step = 0; step < num_steps; step++) {
-        if (step % 5 === 0) await new Promise(r => setTimeout(r, 0)); 
-
-        const doc = docs[step % docs.length];
-        const tokens = [BOS, ...doc.split('').map(c => G_uchars.indexOf(c)), BOS];
-        const n = Math.min(G_block_size, tokens.length - 1);
-
-        let keys = Array.from({length: G_n_layer}, () => []);
-        let values = Array.from({length: G_n_layer}, () => []);
-        let losses = [];
-
-        for (let pos_id = 0; pos_id < n; pos_id++) {
-            const token_id = tokens[pos_id];
-            const target_id = tokens[pos_id + 1];
-            const logits = gpt(token_id, pos_id, keys, values, G_state_dict);
-            const probs = softmax(logits);
-            losses.push(probs[target_id].log().neg());
-        }
-
-        let loss = new Value(0);
-        losses.forEach(l => loss = loss.add(l));
-        loss = loss.mul(1/n);
-
-        params.forEach(p => p.grad = 0);
-        loss.backward();
-
-        const lr_t = learning_rate * (1 - step / num_steps);
-        for (let i = 0; i < params.length; i++) {
-            const p = params[i];
-            m[i] = beta1 * m[i] + (1 - beta1) * p.grad;
-            v[i] = beta2 * v[i] + (1 - beta2) * (p.grad * p.grad);
-            const m_hat = m[i] / (1 - Math.pow(beta1, step + 1));
-            const v_hat = v[i] / (1 - Math.pow(beta2, step + 1));
-            p.data -= lr_t * m_hat / (Math.sqrt(v_hat) + eps_adam);
-        }
-
-        if (step % 20 === 0 || step === num_steps - 1) {
-            log(`Step ${step+1}/${num_steps} | Loss: ${loss.data.toFixed(4)}`);
-        }
-    }
-
-    G_is_trained = true;
-    document.getElementById('trainBtn').disabled = false;
-    document.getElementById('trainStatus').innerText = "Complete";
-    document.getElementById('trainStatus').style.color = "var(--success)";
-    log("Training Complete.");
-}
-
-function saveToBrowser() {
-    if (!G_is_trained) return alert("Train a model first!");
-    const serializedDict = {};
-    for (const [key, matrix] of Object.entries(G_state_dict)) {
-        serializedDict[key] = matrix.map(row => row.map(val => val.data));
-    }
-    const bundle = { state_dict: serializedDict, uchars: G_uchars, vocab_size: G_vocab_size };
-
-    try {
-        localStorage.setItem('atomic_gpt_model', JSON.stringify(bundle));
-        log("Saved to LocalStorage!");
-        document.getElementById('storageStatus').innerText = "✅ Saved";
-        document.getElementById('storageStatus').style.color = "var(--success)";
-    } catch (e) {
-        alert("Storage full or error: " + e);
-    }
-}
-
-function loadFromBrowser() {
-    const jsonStr = localStorage.getItem('atomic_gpt_model');
-    if (!jsonStr) return alert("No saved model found.");
-
-    try {
-        const bundle = JSON.parse(jsonStr);
-        G_uchars = bundle.uchars;
-        G_vocab_size = bundle.vocab_size;
-        G_state_dict = {};
-        for (const [key, rawMatrix] of Object.entries(bundle.state_dict)) {
-            G_state_dict[key] = rawMatrix.map(row => row.map(d => new Value(d)));
-        }
-        G_is_trained = true;
-        log(`Model Loaded! Vocab: ${G_vocab_size}`);
-        document.getElementById('storageStatus').innerText = "✅ Loaded";
-        document.getElementById('storageStatus').style.color = "var(--success)";
-    } catch (err) {
-        log("Error loading: " + err);
-    }
-}
-
-function clearBrowserStorage() {
-    localStorage.removeItem('atomic_gpt_model');
-    log("Deleted saved model.");
-    document.getElementById('storageStatus').innerText = "🗑️ Deleted";
-    document.getElementById('storageStatus').style.color = "var(--secondary)";
-}
-
-function runInference() {
-    if (!G_is_trained) return log("Please Train or Load a model first.");
-
-    const promptText = document.getElementById('promptInput').value.trim();
-    const BOS = G_uchars.length;
-    let keys = Array.from({length: G_n_layer}, () => []);
-    let values = Array.from({length: G_n_layer}, () => []);
-    
-    let inputTokens = [];
-    if (promptText.length > 0) {
-        inputTokens = promptText.split('').map(c => G_uchars.indexOf(c)).filter(i => i !== -1);
-    }
-    
-    let currentToken = BOS;
-    let generatedText = promptText; 
-    let pos_id = 0;
-    
-    if (inputTokens.length > 0) {
-        gpt(BOS, pos_id, keys, values, G_state_dict);
-        pos_id++;
-        for (let i = 0; i < inputTokens.length - 1; i++) {
-            gpt(inputTokens[i], pos_id, keys, values, G_state_dict);
-            pos_id++;
-        }
-        currentToken = inputTokens[inputTokens.length - 1];
-    }
-
-    const temperature = 0.6;
-    for (; pos_id < G_block_size; pos_id++) {
-        const logits = gpt(currentToken, pos_id, keys, values, G_state_dict);
-        const adjusted = logits.map(l => l.div(temperature));
-        const probs = softmax(adjusted);
-        const weights = probs.map(p => p.data);
-        const nextToken = rng.choice(Array.from({length: G_vocab_size}, (_, i) => i), weights);
-
-        if (nextToken === BOS) break; 
-        const char = G_uchars[nextToken];
-        generatedText += char;
-        currentToken = nextToken;
-    }
-    log(`Generated: ${generatedText}`);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    const navLinksContainer = document.querySelector('.nav-links');
-    if (!navLinksContainer) return;
-
-    // 1. Identify all links that want to be grouped
-    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
-    const groups = {};
-
-    links.forEach(link => {
-        const name = link.getAttribute('data-group');
-        if (!groups[name]) groups[name] = [];
-        groups[name].push(link);
-    });
-
-    // 2. Build the dropdowns
-    Object.keys(groups).forEach(groupName => {
-        const groupItems = groups[groupName];
-        
-        // Create the wrapper
-        const dropdownWrapper = document.createElement('div');
-        dropdownWrapper.className = 'nav-dropdown';
-        dropdownWrapper.style.position = 'relative';
-        dropdownWrapper.style.display = 'inline-block';
-
-        // Create the Trigger Button
-        const triggerBtn = document.createElement('button');
-        triggerBtn.className = 'nav-btn';
-        triggerBtn.type = 'button';
-        triggerBtn.innerHTML = `${groupName} ▾`;
-
-        // Create the Menu
-        const menu = document.createElement('div');
-        menu.style.cssText = `
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-radius: 6px;
-            padding: 0.5rem;
-            z-index: 1000;
-            min-width: 180px;
-            flex-direction: column;
-            gap: 5px;
-        `;
-
-        // 3. THE KEY CHANGE: 
-        // Replace the FIRST link of the group in the DOM with our dropdown wrapper
-        const firstItem = groupItems[0];
-        if (firstItem.parentNode) {
-            firstItem.replaceWith(dropdownWrapper);
-        }
-
-        // 4. Now move all items (including the first one) into the menu
-        groupItems.forEach(link => {
-            link.style.display = 'block';
-            link.style.margin = '0';
-            const btn = link.querySelector('button');
-            if (btn) {
-                btn.style.width = '100%';
-                btn.style.textAlign = 'left';
-                btn.style.border = 'none';
-            }
-            menu.appendChild(link);
-        });
-
-        dropdownWrapper.appendChild(triggerBtn);
-        dropdownWrapper.appendChild(menu);
-
-        // Click to toggle
-        triggerBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const isVisible = menu.style.display === 'flex';
-            // Close others
-            document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
-            menu.style.display = isVisible ? 'none' : 'flex';
-        });
-    });
-
-    // Close when clicking document
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.nav-dropdown > div').forEach(m => m.style.display = 'none');
-    });
-});
+(function () {
+  var grid = document.getElementById('home-blog-grid');
+  if (!grid || !window.SITE_CONTENT) return;
+  var posts = window.SITE_CONTENT.articles.slice(0, 3);
+  grid.innerHTML = posts.map(function (a) {
+    var imgHTML = a.image
+      ? '<img src="' + a.image + '" alt="' + a.title + '" loading="lazy">'
+      : '';
+    var date = a.date.replace(/(\w+ \d+), (\d+)/, function (_, dm, y) { return dm + ' ' + y; });
+    var href = a.link.startsWith('http') ? a.link : a.link;
+    var target = a.link.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+    return '<a class="blog-card" href="' + href + '"' + target + '>'
+      + imgHTML
+      + '<div class="blog-card-body">'
+      + '<div class="blog-card-meta">' + date + ' · ' + a.type + '</div>'
+      + '<h3>' + a.title + '</h3>'
+      + '<p>' + a.excerpt + '</p>'
+      + '<span class="blog-card-read">Read →</span>'
+      + '</div></a>';
+  }).join('');
+})();
 </script>
+
 </body>
 </html>

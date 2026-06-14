@@ -1,7 +1,8 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adobe CX Enterprise Ecosystem | Interactive AI Architecture Guide | RawWeights</title>
@@ -14,7 +15,10 @@
 	<meta property="og:title" content="Adobe CX Enterprise Ecosystem | Interactive AI Architecture Guide">
 	<meta property="og:description" content="An independent, interactive breakdown of the 2026 Adobe CX Enterprise Architecture. Explore how agentic AI, Real-Time CDP, and GenStudio connect the content supply chain with customer journeys.">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>document.documentElement.setAttribute('data-theme','light');</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<style>#rw-theme-btn { display: none !important; }</style>
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
 
@@ -385,23 +389,8 @@
 </head>
 <body class="antialiased">
 
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
 <header class="bg-gray-900 text-white py-20 relative overflow-hidden">
     <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#EB1000] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob"></div>
@@ -524,18 +513,10 @@
         <section class="lg:w-3/4 w-full flex flex-col min-w-0" id="content-area"></section>
     </main>
     
-   <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <p class="text-sm">© 2026 RawWeights. All rights reserved.</p>
-            </div>
-            <div class="flex space-x-6 text-sm">
-                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
-                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
-                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
-            </div>
-        </div>
-    </footer>
+   <div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_adobesummit-agenticweb-adobecxenterprise-activity-7452582752979300352-G6tC/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
     <script>
         const jsonData = JSON.parse(document.getElementById('adobe-data').textContent);

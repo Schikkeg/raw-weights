@@ -1,11 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="scroll-smooth scroll-pt-28">
 <head>
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deep Reinforcement Learning | Interactive Guide & Playground</title>
     <meta name="description" content="A comprehensive, interactive guide to Deep Reinforcement Learning. Explore Q-Learning, Policy Gradients, and train your own AI agent directly in the browser with realistic simulators.">
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>document.documentElement.setAttribute('data-theme','light');</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<style>#rw-theme-btn { display: none !important; }</style>
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -45,20 +49,8 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased flex flex-col min-h-screen relative">
 
-    <nav class="bg-white border-b border-slate-200 relative z-50">
-        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-            <div class="font-bold text-xl tracking-tight text-slate-900"><a href="/">RawWeights</a></div>
-            <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-                <a href="/" class="hover:text-brand-600 transition">Home</a>
-                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
-                <a href="/tools/master_ml_hub.html">ML Playground</a>
-                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
-                <a href="/tools/master_sequence_hub.html">Attention Journey</a>
-				<a href="/tools/cnn_sandbox.html" >Explore CNN</a>
-				<a href="/tools/deep_generative_modeling.html" >Generative Journey</a>
-            </div>
-        </div>
-    </nav>
+    <div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
     <div class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm py-3">
         <div class="max-w-7xl mx-auto px-4">
@@ -402,16 +394,10 @@
 
     </main>
 
-    <footer class="bg-white border-t border-slate-200 mt-10">
-        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center text-xs">
-            <p class="text-slate-500 mb-2 md:mb-0">&copy; 2026 RawWeights. Data synthesized from MIT Lecture, presented by Alexander Amini.</p>
-            <div class="flex space-x-6">
-                <a href="/disclaimer.html" class="text-slate-400 hover:text-brand-600 transition">Disclaimer</a>
-                <a href="https://www.linkedin.com/in/shamhc/" class="text-slate-400 hover:text-brand-600 transition">LinkedIn</a>
-                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-slate-400 hover:text-brand-600 transition">X</a>
-            </div>
-        </div>
-    </footer>
+    <div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_artificialintelligence-reinforcementlearning-activity-7444745331365298176-BqcD/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
     <!-- ========================================== -->
     <!-- JAVASCRIPT LOGIC                           -->

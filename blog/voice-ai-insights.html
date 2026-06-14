@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,35 +12,122 @@
     <meta property="og:title" content="What Voice AI Gets Right — Insights from Building at Scale">
     <meta property="og:description" content="11 insights that shift how you think about product metrics, latency, data flywheels, and building with AI — drawn from the engineering reality of a 1M-user voice AI product.">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], serif: ['Merriweather','serif'] } } }
         }
     </script>
-    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
+    <style>
+      /* ── Dark mode overrides ── */
+      [data-theme="dark"] body { background: #0f172a !important; color: #e2e8f0 !important; }
+      [data-theme="dark"] .bg-white { background: #1e293b !important; }
+      [data-theme="dark"] .bg-gray-50 { background: #0f172a !important; }
+      [data-theme="dark"] .bg-gray-100 { background: #1a2742 !important; }
+      [data-theme="dark"] .bg-gray-200 { background: #334155 !important; }
+      [data-theme="dark"] .text-gray-900,
+      [data-theme="dark"] .text-gray-800 { color: #f0f4ff !important; }
+      [data-theme="dark"] .text-gray-700,
+      [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
+      [data-theme="dark"] .text-gray-500,
+      [data-theme="dark"] .text-gray-400 { color: #94a3b8 !important; }
+      [data-theme="dark"] .border-gray-100,
+      [data-theme="dark"] .border-gray-200 { border-color: #334155 !important; }
+      [data-theme="dark"] .border-gray-300 { border-color: #475569 !important; }
+      [data-theme="dark"] .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
+      [data-theme="dark"] .shadow-md { box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important; }
+      /* Intentional dark accent sections — keep in both modes */
+      [data-theme="dark"] .bg-gray-900 { background: #080c18 !important; }
+      [data-theme="dark"] .bg-indigo-900 { background: #1e1b4b !important; }
+      /* Brand/orange stays consistent */
+      [data-theme="dark"] .bg-orange-50 { background: rgba(249,115,22,0.1) !important; }
+      [data-theme="dark"] .text-orange-600,
+      [data-theme="dark"] .text-orange-700 { color: #f97316 !important; }
+      /* Tables */
+      [data-theme="dark"] th { background: #0f172a !important; color: #94a3b8 !important; }
+      [data-theme="dark"] td { color: #cbd5e1 !important; }
+      [data-theme="dark"] .divide-gray-100 > * + * { border-color: #334155 !important; }
+      /* Code blocks */
+      [data-theme="dark"] pre,
+      [data-theme="dark"] code { background: #080c18 !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+      /* Inputs/selects */
+      [data-theme="dark"] input,
+      [data-theme="dark"] textarea,
+      [data-theme="dark"] select { background: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+      /* Page-specific: slate content areas (bg-slate-900 dark header — keep) */
+      [data-theme="dark"] .bg-slate-50 { background: #1e293b !important; }
+      [data-theme="dark"] .bg-slate-100 { background: #1a2742 !important; }
+      [data-theme="dark"] .text-slate-900,
+      [data-theme="dark"] .text-slate-800 { color: #f0f4ff !important; }
+      [data-theme="dark"] .text-slate-700,
+      [data-theme="dark"] .text-slate-600 { color: #cbd5e1 !important; }
+      /* Emerald/teal accent tones for voice AI page */
+      [data-theme="dark"] .bg-emerald-50 { background: rgba(16,185,129,0.08) !important; }
+      [data-theme="dark"] .bg-teal-50 { background: rgba(20,184,166,0.08) !important; }
+      /* ── LIGHT mode: overrides for dark-bg blog pages ── */
+      [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
+      [data-theme="light"] header .text-white,
+      [data-theme="light"] header .text-slate-100,
+      [data-theme="light"] header .text-slate-200 { color: #f0f4ff !important; }
+      [data-theme="light"] header .text-slate-300 { color: #cbd5e1 !important; }
+      [data-theme="light"] header .text-slate-400,
+      [data-theme="light"] header .text-slate-500 { color: #94a3b8 !important; }
+      [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
+      [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
+      [data-theme="light"] main .bg-slate-950 { background: #e2e8f0 !important; }
+      [data-theme="light"] main .bg-slate-900 { background: #f8fafc !important; }
+      [data-theme="light"] main .bg-slate-800 { background: #ffffff !important; }
+      [data-theme="light"] main .bg-slate-700 { background: #e2e8f0 !important; }
+      [data-theme="light"] main .bg-slate-600 { background: #cbd5e1 !important; }
+      [data-theme="light"] main .bg-slate-900\/60,
+      [data-theme="light"] main .bg-slate-900\/70,
+      [data-theme="light"] main .bg-slate-900\/80 { background: rgba(248,250,252,0.95) !important; }
+      [data-theme="light"] main .bg-slate-800\/50,
+      [data-theme="light"] main .bg-slate-800\/60,
+      [data-theme="light"] main .bg-slate-800\/70,
+      [data-theme="light"] main .bg-slate-800\/80,
+      [data-theme="light"] main .bg-slate-800\/90 { background: rgba(255,255,255,0.97) !important; }
+      [data-theme="light"] main .bg-slate-700\/60,
+      [data-theme="light"] main .bg-slate-700\/80 { background: rgba(226,232,240,0.85) !important; }
+      [data-theme="light"] main .text-white { color: #0f172a !important; }
+      [data-theme="light"] main .text-slate-100,
+      [data-theme="light"] main .text-slate-200 { color: #1e293b !important; }
+      [data-theme="light"] main .text-slate-300 { color: #1e293b !important; }
+      [data-theme="light"] main .text-slate-400 { color: #334155 !important; }
+      [data-theme="light"] main .text-slate-500 { color: #475569 !important; }
+      [data-theme="light"] main .text-slate-600 { color: #334155 !important; }
+      [data-theme="light"] main .border-slate-900,
+      [data-theme="light"] main .border-slate-800 { border-color: #cbd5e1 !important; }
+      [data-theme="light"] main .border-slate-700 { border-color: #94a3b8 !important; }
+      [data-theme="light"] main .border-slate-600 { border-color: #64748b !important; }
+      [data-theme="light"] main .text-green-300,
+      [data-theme="light"] main .text-green-400 { color: #16a34a !important; }
+      [data-theme="light"] main .text-emerald-300,
+      [data-theme="light"] main .text-emerald-400 { color: #059669 !important; }
+      [data-theme="light"] main .text-teal-300,
+      [data-theme="light"] main .text-teal-400 { color: #0d9488 !important; }
+      [data-theme="light"] main .text-cyan-300,
+      [data-theme="light"] main .text-cyan-400 { color: #0891b2 !important; }
+      [data-theme="light"] main .text-red-300,
+      [data-theme="light"] main .text-red-400 { color: #dc2626 !important; }
+      [data-theme="light"] main .text-blue-300,
+      [data-theme="light"] main .text-blue-400 { color: #2563eb !important; }
+      [data-theme="light"] main .text-purple-300,
+      [data-theme="light"] main .text-purple-400 { color: #7c3aed !important; }
+      [data-theme="light"] .text-transparent { color: transparent !important; }
+      [data-theme="light"] main input,
+      [data-theme="light"] main textarea,
+      [data-theme="light"] main select { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+    </style>
+  <style>.rw-theme-btn{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
-        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
 
 <header class="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden border-b border-slate-800">
@@ -65,7 +152,7 @@
                 <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">Data Flywheels</span>
                 <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">AI Agents</span>
             </div>
-            <a href="https://whisperflow.com" target="_blank" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Try Whisper Flow →</a>
+            <a href="https://whisperflow.com" target="_blank" rel="noopener noreferrer" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Try Whisper Flow →</a>
         </div>
         <div class="lg:w-1/2 w-full space-y-4">
             <!-- Insight preview cards -->
@@ -702,7 +789,7 @@
             <div class="mt-10 bg-gradient-to-r from-emerald-900/20 to-slate-800 border border-emerald-800/30 rounded-2xl p-8 text-center">
                 <p class="text-white font-bold text-xl mb-2">Want to feel what these insights describe?</p>
                 <p class="text-slate-400 text-sm mb-6">Whisper Flow is free to start — no account needed for the first few dictations.</p>
-                <a href="https://whisperflow.com" target="_blank" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 py-3 rounded-xl transition-colors text-sm">Try Whisper Flow →</a>
+                <a href="https://whisperflow.com" target="_blank" rel="noopener noreferrer" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 py-3 rounded-xl transition-colors text-sm">Try Whisper Flow →</a>
             </div>
 
             <!-- Thanks -->
@@ -731,18 +818,10 @@
 </main>
 
 
-<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
-    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-        <div class="mb-4 md:mb-0">
-            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
-        </div>
-        <div class="flex space-x-6 text-sm">
-            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
-            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
-            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
-        </div>
-    </div>
-</footer>
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_genacademy-wisprflow-activity-7468536597190393856-EqHn/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {

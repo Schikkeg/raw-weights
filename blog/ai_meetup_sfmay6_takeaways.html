@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,9 @@
 	<title>SF Bay Area AI Meetup: Hybrid Search Debates & Meeting the Cohort | RawWeights</title>
 	<meta name="description" content="A down-to-earth recap of the Pinecone & The Gen Academy AI Meetup in SF. Exploring hybrid search debates, meeting my Mastering Agentic AI cohort, and an update on building MCP servers after AI Dev 26.">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -111,7 +113,7 @@
     });
 });
     </script>
-            <script type="text/javascript" async src="/includes/analytics.js"></script>
+            <script type="text/javascript" async src="../includes/analytics.js"></script>
 	   <style>
     	/* Navigation */
         nav {
@@ -155,22 +157,8 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
-	<nav>
-	    <a href="/" class="nav-brand">RawWeights</a>
-	    <div class="nav-links">
-	        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-	        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-			<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-			<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-			<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-			<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-			<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-			<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-			<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-	        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-	    </div>
-	</nav>
+	<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 	
 
     <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
@@ -289,18 +277,10 @@
         </aside>
     </div>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
-            </div>
-            <div class="flex space-x-6 text-sm">
-                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
-                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
-                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
-            </div>
-        </div>
-    </footer>
+    <div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_agenticai-physicalai-robotics-activity-7465324745673162752-Y9-9/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
     <script>
         // Same Data Source

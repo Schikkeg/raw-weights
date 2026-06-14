@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,22 @@
     <meta name="keywords" content="MCP, RawWeights">
     <meta name="author" content="RawWeights">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<style>
+/* ── Dark mode: hero persona CTA buttons — keep full visibility ── */
+[data-theme="dark"] .persona-btn { color: #cbd5e1 !important; background-color: #1e293b !important; border-color: #475569 !important; }
+[data-theme="dark"] .persona-btn.bg-blue-600,
+[data-theme="dark"] #btn-app_dev.bg-blue-600 { background-color: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; }
+/* ── Dark mode: composability SVG section — fix undefined CSS vars ── */
+[data-theme="dark"] [style*="var(--bg-nav)"] { background-color: #1e293b; border-color: #334155; }
+/* ── Dark mode: quiz feedback panel — keep text readable ── */
+[data-theme="dark"] #quiz-feedback { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+/* ── Dark mode: quiz option buttons (injected via JS) ── */
+[data-theme="dark"] #quiz-options button { background-color: #0f172a !important; color: #cbd5e1 !important; border-color: #334155 !important; }
+[data-theme="dark"] #quiz-options button:hover { background-color: #1e293b !important; }
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
 
 
@@ -36,27 +51,12 @@
             }
         }
     </script>
+  <style>.rw-theme-btn{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
 
 <header class="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden border-b border-slate-800">
@@ -413,18 +413,10 @@
     </div>
 </main>
 
-    <footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
-            </div>
-            <div class="flex space-x-6 text-sm">
-                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
-                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
-                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
-            </div>
-        </div>
-    </footer>
+    <div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_artificialintelligence-mcp-aiagent-activity-7461460265696415744-5VjH/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
     
     <script>
  /* --- DATA STRUCTURE --- */

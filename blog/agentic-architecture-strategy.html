@@ -1,11 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Architecting Autonomy: A Strategic Framework for Agentic AI | RawWeights</title>
 	<meta name="description" content="A deep dive into the evolution of automation, the levels of AI autonomy, and the frameworks (LangChain, n8n, SDKs) required to build resilient autonomous systems.">
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -110,7 +112,7 @@
     });
 });
     </script>
-            <script type="text/javascript" async src="/includes/analytics.js"></script>
+            <script type="text/javascript" async src="../includes/analytics.js"></script>
 	   <style>
     	/* Navigation */
         nav {
@@ -151,29 +153,57 @@
             color: white;
         }
         </style>
+  <style>
+    /* ── Dark mode overrides ── */
+    [data-theme="dark"] body { background: #0f172a !important; color: #e2e8f0 !important; }
+    [data-theme="dark"] .bg-white { background: #1e293b !important; }
+    [data-theme="dark"] .bg-gray-50 { background: #0f172a !important; }
+    [data-theme="dark"] .bg-gray-100 { background: #1a2742 !important; }
+    [data-theme="dark"] .bg-gray-200 { background: #334155 !important; }
+    [data-theme="dark"] .text-gray-900,
+    [data-theme="dark"] .text-gray-800 { color: #f0f4ff !important; }
+    [data-theme="dark"] .text-gray-700,
+    [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
+    [data-theme="dark"] .text-gray-500,
+    [data-theme="dark"] .text-gray-400 { color: #94a3b8 !important; }
+    [data-theme="dark"] .border-gray-100,
+    [data-theme="dark"] .border-gray-200 { border-color: #334155 !important; }
+    [data-theme="dark"] .border-gray-300 { border-color: #475569 !important; }
+    [data-theme="dark"] .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
+    [data-theme="dark"] .shadow-md { box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important; }
+    /* Intentional dark accent sections — keep in both modes */
+    [data-theme="dark"] .bg-gray-900 { background: #080c18 !important; }
+    [data-theme="dark"] .bg-indigo-900 { background: #1e1b4b !important; }
+    /* Brand/orange stays consistent */
+    [data-theme="dark"] .bg-orange-50 { background: rgba(249,115,22,0.1) !important; }
+    [data-theme="dark"] .text-orange-600,
+    [data-theme="dark"] .text-orange-700 { color: #f97316 !important; }
+    /* Tables */
+    [data-theme="dark"] th { background: #0f172a !important; color: #94a3b8 !important; }
+    [data-theme="dark"] td { color: #cbd5e1 !important; }
+    [data-theme="dark"] .divide-gray-100 > * + * { border-color: #334155 !important; }
+    /* Code blocks */
+    [data-theme="dark"] pre,
+    [data-theme="dark"] code { background: #080c18 !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+    /* Inputs/selects */
+    [data-theme="dark"] input,
+    [data-theme="dark"] textarea,
+    [data-theme="dark"] select { background: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+    /* Page-specific: indigo accent backgrounds */
+    [data-theme="dark"] .bg-indigo-50 { background: rgba(99,102,241,0.1) !important; }
+    [data-theme="dark"] .border-indigo-100 { border-color: rgba(99,102,241,0.25) !important; }
+    [data-theme="dark"] .bg-slate-50 { background: #1e293b !important; }
+    [data-theme="dark"] .border-slate-200 { border-color: #334155 !important; }
+    [data-theme="dark"] .text-slate-900,
+    [data-theme="dark"] .text-slate-800 { color: #f0f4ff !important; }
+    [data-theme="dark"] .text-slate-600 { color: #cbd5e1 !important; }
+    [data-theme="dark"] .text-indigo-600 { color: #818cf8 !important; }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
-	<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
-		<a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
-		
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+	<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 	
 
     <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 px-6 py-12">
@@ -409,18 +439,10 @@
         </aside>
     </div>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <p class="text-sm text-gray-500">&copy; 2026 RawWeights. All rights reserved.</p>
-            </div>
-            <div class="flex space-x-6 text-sm">
-                <a href="/disclaimer.html" class="text-gray-400 hover:text-brand-600">Disclaimer</a>
-                <a href="https://www.linkedin.com/in/shamhc/" class="text-gray-400 hover:text-brand-600">LinkedIn</a>
-                <a href="https://x.com/intent/user?screen_name=shamhcs" class="text-gray-400 hover:text-brand-600">X</a>
-            </div>
-        </div>
-    </footer>
+    <div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_aiarchitecture-agenticautomation-aiautonomy-activity-7466985010642972672-lKeo/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
     <script>
         // Same Data Source

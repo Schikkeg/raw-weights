@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,36 +13,119 @@
 	<meta property="og:description" content="ThreatScope Analytics — free IP threat intelligence for agencies and startups who can't afford enterprise security tools yet.">
 
 
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], serif: ['Merriweather','serif'] } } }
         }
     </script>
-    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
+    <style>
+      /* ── Dark mode overrides ── */
+      [data-theme="dark"] body { background: #0f172a !important; color: #e2e8f0 !important; }
+      [data-theme="dark"] .bg-white { background: #1e293b !important; }
+      [data-theme="dark"] .bg-gray-50 { background: #0f172a !important; }
+      [data-theme="dark"] .bg-gray-100 { background: #1a2742 !important; }
+      [data-theme="dark"] .bg-gray-200 { background: #334155 !important; }
+      [data-theme="dark"] .text-gray-900,
+      [data-theme="dark"] .text-gray-800 { color: #f0f4ff !important; }
+      [data-theme="dark"] .text-gray-700,
+      [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
+      [data-theme="dark"] .text-gray-500,
+      [data-theme="dark"] .text-gray-400 { color: #94a3b8 !important; }
+      [data-theme="dark"] .border-gray-100,
+      [data-theme="dark"] .border-gray-200 { border-color: #334155 !important; }
+      [data-theme="dark"] .border-gray-300 { border-color: #475569 !important; }
+      [data-theme="dark"] .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
+      [data-theme="dark"] .shadow-md { box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important; }
+      /* Intentional dark accent sections — keep in both modes */
+      [data-theme="dark"] .bg-gray-900 { background: #080c18 !important; }
+      [data-theme="dark"] .bg-indigo-900 { background: #1e1b4b !important; }
+      /* Brand/orange stays consistent */
+      [data-theme="dark"] .bg-orange-50 { background: rgba(249,115,22,0.1) !important; }
+      [data-theme="dark"] .text-orange-600,
+      [data-theme="dark"] .text-orange-700 { color: #f97316 !important; }
+      /* Tables */
+      [data-theme="dark"] th { background: #0f172a !important; color: #94a3b8 !important; }
+      [data-theme="dark"] td { color: #cbd5e1 !important; }
+      [data-theme="dark"] .divide-gray-100 > * + * { border-color: #334155 !important; }
+      /* Code blocks */
+      [data-theme="dark"] pre,
+      [data-theme="dark"] code { background: #080c18 !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+      /* Inputs/selects */
+      [data-theme="dark"] input,
+      [data-theme="dark"] textarea,
+      [data-theme="dark"] select { background: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+      /* Page-specific: slate content areas (body is bg-slate-900 dark header — keep) */
+      [data-theme="dark"] .bg-slate-50 { background: #1e293b !important; }
+      [data-theme="dark"] .bg-slate-100 { background: #1a2742 !important; }
+      [data-theme="dark"] .text-slate-900,
+      [data-theme="dark"] .text-slate-800 { color: #f0f4ff !important; }
+      [data-theme="dark"] .text-slate-700,
+      [data-theme="dark"] .text-slate-600 { color: #cbd5e1 !important; }
+      /* ── LIGHT mode: overrides for dark-bg blog pages ── */
+      [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
+      [data-theme="light"] header .text-white,
+      [data-theme="light"] header .text-slate-100,
+      [data-theme="light"] header .text-slate-200 { color: #f0f4ff !important; }
+      [data-theme="light"] header .text-slate-300 { color: #cbd5e1 !important; }
+      [data-theme="light"] header .text-slate-400,
+      [data-theme="light"] header .text-slate-500 { color: #94a3b8 !important; }
+      [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
+      [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
+      [data-theme="light"] main .bg-slate-950 { background: #e2e8f0 !important; }
+      [data-theme="light"] main .bg-slate-900 { background: #f8fafc !important; }
+      [data-theme="light"] main .bg-slate-800 { background: #ffffff !important; }
+      [data-theme="light"] main .bg-slate-700 { background: #e2e8f0 !important; }
+      [data-theme="light"] main .bg-slate-600 { background: #cbd5e1 !important; }
+      [data-theme="light"] main .bg-slate-900\/60,
+      [data-theme="light"] main .bg-slate-900\/70,
+      [data-theme="light"] main .bg-slate-900\/80 { background: rgba(248,250,252,0.95) !important; }
+      [data-theme="light"] main .bg-slate-800\/50,
+      [data-theme="light"] main .bg-slate-800\/60,
+      [data-theme="light"] main .bg-slate-800\/70,
+      [data-theme="light"] main .bg-slate-800\/80,
+      [data-theme="light"] main .bg-slate-800\/90 { background: rgba(255,255,255,0.97) !important; }
+      [data-theme="light"] main .bg-slate-700\/60,
+      [data-theme="light"] main .bg-slate-700\/80 { background: rgba(226,232,240,0.85) !important; }
+      [data-theme="light"] main .text-white { color: #0f172a !important; }
+      [data-theme="light"] main .text-slate-100,
+      [data-theme="light"] main .text-slate-200 { color: #1e293b !important; }
+      [data-theme="light"] main .text-slate-300 { color: #1e293b !important; }
+      [data-theme="light"] main .text-slate-400 { color: #334155 !important; }
+      [data-theme="light"] main .text-slate-500 { color: #475569 !important; }
+      [data-theme="light"] main .text-slate-600 { color: #334155 !important; }
+      [data-theme="light"] main .border-slate-900,
+      [data-theme="light"] main .border-slate-800 { border-color: #cbd5e1 !important; }
+      [data-theme="light"] main .border-slate-700 { border-color: #94a3b8 !important; }
+      [data-theme="light"] main .border-slate-600 { border-color: #64748b !important; }
+      [data-theme="light"] main .text-green-300,
+      [data-theme="light"] main .text-green-400 { color: #16a34a !important; }
+      [data-theme="light"] main .text-emerald-300,
+      [data-theme="light"] main .text-emerald-400 { color: #059669 !important; }
+      [data-theme="light"] main .text-teal-300,
+      [data-theme="light"] main .text-teal-400 { color: #0d9488 !important; }
+      [data-theme="light"] main .text-cyan-300,
+      [data-theme="light"] main .text-cyan-400 { color: #0891b2 !important; }
+      [data-theme="light"] main .text-red-300,
+      [data-theme="light"] main .text-red-400 { color: #dc2626 !important; }
+      [data-theme="light"] main .text-blue-300,
+      [data-theme="light"] main .text-blue-400 { color: #2563eb !important; }
+      [data-theme="light"] main .text-purple-300,
+      [data-theme="light"] main .text-purple-400 { color: #7c3aed !important; }
+      [data-theme="light"] .text-transparent { color: transparent !important; }
+      [data-theme="light"] main input,
+      [data-theme="light"] main textarea,
+      [data-theme="light"] main select { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+    </style>
+  <style>.rw-theme-btn{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-		<a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-		<a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-		<a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-		<a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-		<a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-		<a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-		<a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-		<a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-		<a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-		<a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
-		<a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture & Lifecycle</button></a>
-		
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
 
 <header class="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden border-b border-slate-800">
@@ -70,8 +153,8 @@
                 <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-600">uv</span>
             </div>
             <div class="flex gap-3">
-                <a href="https://ipthreatscope.streamlit.app" target="_blank" class="inline-block bg-red-600 hover:bg-red-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Try the live app →</a>
-                <a href="https://github.com/researchsite/ai" target="_blank" class="inline-block bg-slate-700 hover:bg-slate-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">View source</a>
+                <a href="https://ipthreatscope.streamlit.app" target="_blank" rel="noopener noreferrer" class="inline-block bg-red-600 hover:bg-red-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">Try the live app →</a>
+                <a href="https://github.com/researchsite/ai" target="_blank" rel="noopener noreferrer" class="inline-block bg-slate-700 hover:bg-slate-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">View source</a>
             </div>
         </div>
         <div class="lg:w-1/2 w-full space-y-4">
@@ -245,7 +328,7 @@
                 <h2 class="text-3xl font-extrabold text-white">What ThreatScope Does</h2>
             </div>
 
-            <p class="text-lg leading-relaxed mb-8">Connects to <a href="https://www.abuseipdb.com" class="text-blue-400 hover:text-blue-300 underline" target="_blank">AbuseIPDB</a> — a community-maintained database where sysadmins and security teams report malicious IPs. Score 0–100 based on independent reporters. No code, no install, free.</p>
+            <p class="text-lg leading-relaxed mb-8">Connects to <a href="https://www.abuseipdb.com" class="text-blue-400 hover:text-blue-300 underline" target="_blank" rel="noopener noreferrer">AbuseIPDB</a> — a community-maintained database where sysadmins and security teams report malicious IPs. Score 0–100 based on independent reporters. No code, no install, free.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="group bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-red-700/50 rounded-2xl p-6 transition-all duration-200">
@@ -294,7 +377,7 @@
                 <div class="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center text-xl flex-shrink-0">🎯</div>
                 <div>
                     <h4 class="text-white font-bold mb-1">Demo mode — no account needed</h4>
-                    <p class="text-slate-400 text-sm leading-relaxed">App opens with bundled real-world threat data. Type any IP, browse a real blacklist snapshot, explore the full UI. No sign-up, no friction. Get a free key from <a href="https://www.abuseipdb.com" class="text-blue-400 hover:underline" target="_blank">abuseipdb.com</a> for live queries.</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">App opens with bundled real-world threat data. Type any IP, browse a real blacklist snapshot, explore the full UI. No sign-up, no friction. Get a free key from <a href="https://www.abuseipdb.com" class="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer">abuseipdb.com</a> for live queries.</p>
                 </div>
             </div>
         </section>
@@ -680,11 +763,11 @@
                 <p class="text-white font-bold text-xl mb-2">Try it now — no account needed for demo</p>
                 <p class="text-slate-400 text-sm mb-6">Get a free AbuseIPDB key for live queries.</p>
                 <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
-                    <a href="https://ipthreatscope.streamlit.app" target="_blank" class="inline-block bg-red-600 hover:bg-red-500 text-white font-bold px-6 py-3 rounded-xl transition-colors">Open ThreatScope →</a>
-                    <a href="https://www.abuseipdb.com" target="_blank" class="inline-block bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition-colors">Get free API key</a>
-                    <a href="https://github.com/researchsite/ai" target="_blank" class="inline-block bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition-colors">View on GitHub</a>
+                    <a href="https://ipthreatscope.streamlit.app" target="_blank" rel="noopener noreferrer" class="inline-block bg-red-600 hover:bg-red-500 text-white font-bold px-6 py-3 rounded-xl transition-colors">Open ThreatScope →</a>
+                    <a href="https://www.abuseipdb.com" target="_blank" rel="noopener noreferrer" class="inline-block bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition-colors">Get free API key</a>
+                    <a href="https://github.com/researchsite/ai" target="_blank" rel="noopener noreferrer" class="inline-block bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition-colors">View on GitHub</a>
                 </div>
-                <p class="text-slate-500 text-xs">Built with <a href="https://claude.ai/code" class="text-slate-400 hover:text-white transition" target="_blank">Claude Code</a> · Powered by <a href="https://www.abuseipdb.com" class="text-slate-400 hover:text-white transition" target="_blank">AbuseIPDB</a></p>
+                <p class="text-slate-500 text-xs">Built with <a href="https://claude.ai/code" class="text-slate-400 hover:text-white transition" target="_blank" rel="noopener noreferrer">Claude Code</a> · Powered by <a href="https://www.abuseipdb.com" class="text-slate-400 hover:text-white transition" target="_blank" rel="noopener noreferrer">AbuseIPDB</a></p>
             </div>
 
             <!-- Initial prompt -->
@@ -695,7 +778,7 @@
                         <p class="text-white font-bold mb-1">Curious where it started?</p>
                         <p class="text-slate-400 text-sm leading-relaxed mb-4">The entire project began with a single prompt — every requirement, API constraint, error handling rule, and UI behaviour was specified before a line of code was written. That's the understand-first part. If you want to see exactly what "orchestration" looks like at the starting line, the initial prompt is saved here:</p>
                         <a href="https://github.com/researchsite/ai/blob/master/assets/initial_prompt.md"
-                           target="_blank"
+                           target="_blank" rel="noopener noreferrer"
                            class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors border border-slate-600 hover:border-slate-500">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
                             View the initial prompt on GitHub →
@@ -723,18 +806,10 @@
 </main>
 
 
-<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
-    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-        <div class="mb-4 md:mb-0">
-            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
-        </div>
-        <div class="flex space-x-6 text-sm">
-            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
-            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
-            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
-        </div>
-    </div>
-</footer>
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_agenticai-aisecurity-devsecops-activity-7464004601097392128--Crr/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {

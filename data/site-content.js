@@ -1,0 +1,299 @@
+/**
+ * RawWeights — Centralized site content
+ * Single source of truth for articles used by blog.html and index.html.
+ *
+ * Fields:
+ *   title    — article headline
+ *   excerpt  — short description (~1–2 sentences)
+ *   date     — display date string
+ *   image    — path or URL to hero image
+ *   type     — "Guide" | "Blog" | "LinkedIn Article" | "Web Performance"
+ *   link     — canonical URL for the article
+ *   linkedin — LinkedIn post URL (null if none); used for the LinkedIn carousel
+ */
+(function () {
+  'use strict';
+  window.SITE_CONTENT = {
+    articles: [
+      {
+        title: "Blueprint: How an Agent Rebuilds a Website From the Ground Up",
+        excerpt: "You handed an AI a prompt and got a redesigned website. Here's what actually happened inside the agent — and how to build one that does it reliably.",
+        date: "June 13, 2026",
+        image: "./images/agenticstrategy.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/agent-blueprint-site-transform.html",
+        linkedin: null
+      },
+      {
+        title: "The AI Security Stack Autopsy",
+        excerpt: "CSPM, pen tests, IAM, SOC — five tools already running on your site, five reasons none of them can see what an AI content agent does.",
+        date: "June 13, 2026",
+        image: "./images/intro_slide.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/ai-security-stack-autopsy.html",
+        linkedin: null
+      },
+      {
+        title: "The Agent Autonomy Dial",
+        excerpt: "Five levels of AI autonomy, two axes of control — an interactive framework for deciding how much should an AI agent decide vs. when humans stay in the loop.",
+        date: "June 13, 2026",
+        image: "./images/agentic.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/agent-autonomy-dial.html",
+        linkedin: null
+      },
+      {
+        title: "Document Intelligence — The Complete LlamaIndex Stack",
+        excerpt: "Parser selection, citation trust, and production readiness — the three layers of document intelligence that most RAG tutorials skip.",
+        date: "June 12, 2026",
+        image: "./images/llama.png",
+        type: "Guide",
+        link: "https://www.rawweights.com/guide/llamaindex-document-intelligence.html",
+        linkedin: null
+      },
+      {
+        title: "The Invisible Recall — Building a Passive Food Safety Watchdog",
+        excerpt: "How we built a GraphRAG food safety system that silently monitors 29,000+ FDA and USDA recalls and alerts households before they know to ask.",
+        date: "June 10, 2026",
+        image: "./images/passive.png",
+        type: "Guide",
+        link: "https://www.rawweights.com/guide/passive-safety-watchdog.html",
+        linkedin: null
+      },
+      {
+        title: "The Retrieval Playbook — 6 RAG Search Strategies",
+        excerpt: "Six query types. Six retrieval strategies. Know which play to call — explained simply with real healthcare examples.",
+        date: "June 09, 2026",
+        image: "./images/pinecone_slide.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/pinecone-retrieval-playbook.html",
+        linkedin: null
+      },
+      {
+        title: "RAG Architect's Studio — Context Budget & Pattern Matcher",
+        excerpt: "Two interactive tools: allocate your context window like a budget, then match your use case to the right RAG pattern.",
+        date: "June 07, 2026",
+        image: "./images/ragad_slide.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/rag-architects-studio.html",
+        linkedin: null
+      },
+      {
+        title: "RAG Pipeline Toolkit — Design, Tune & Debug",
+        excerpt: "Interactive RAG pipeline toolkit — chunk size, top-K, embedding model picker, retrieval strategy, 12 debug signals, and a 20-point pre-launch checklist.",
+        date: "June 06, 2026",
+        image: "./images/rag_slide.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/rag-pipeline-toolkit.html",
+        linkedin: null
+      },
+      {
+        title: "Beyond Classical RL: How LLMs Are Actually Trained",
+        excerpt: "What classical RL doesn't cover when training frontier LLMs — RLVR, reward hacking, multi-environment training, GRPO, and RLHF explained with interactive sandboxes.",
+        date: "June 05, 2026",
+        image: "./images/nvidia_slide.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/nvidia-llm-post-training.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_machinelearning-datascience-deeplearning-activity-7431542124044779521-Aow7/"
+      },
+      {
+        title: "What Voice AI Gets Right — Insights from Building at Scale",
+        excerpt: "11 insights that shift how you think about product metrics, latency, data flywheels, and building with AI — drawn from the engineering reality of a 1M-user voice AI product.",
+        date: "June 04, 2026",
+        image: "./images/voice_slide.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/voice-ai-insights.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-wisprflow-activity-7468536597190393856-EqHn/"
+      },
+      {
+        title: "ThreatScope Analytics — Building in Public: Week 1",
+        excerpt: "ThreatScope Analytics — free IP threat intelligence for agencies and startups who can't afford enterprise security tools yet.",
+        date: "June 02, 2026",
+        image: "./images/intro_slide.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/threatscope.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_agenticai-aisecurity-devsecops-activity-7464004601097392128--Crr/"
+      },
+      {
+        title: "The Digital Colleague: Professional Automation with Coding Agents",
+        excerpt: "Explore the evolution of AI agents from simple autocomplete tools to independent digital colleagues capable of 100-hour autonomous projects.",
+        date: "June 01, 2026",
+        image: "./images/codex.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/digital-colleague-masterclass.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_the-digital-colleague-professional-automation-activity-7467385964458487808-68aY/"
+      },
+      {
+        title: "Architecting Autonomy: A Strategic Framework for Agentic AI",
+        excerpt: "A deep dive into the evolution of automation, the levels of AI autonomy, and the frameworks required to build resilient autonomous systems.",
+        date: "May 31, 2026",
+        image: "./images/agenticstrategy.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/agentic-architecture-strategy.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_aiarchitecture-agenticautomation-aiautonomy-activity-7466985010642972672-lKeo/"
+      },
+      {
+        title: "Agentic AI: Best Practices & Architecture",
+        excerpt: "A guide to the Agentic AI ecosystem, featuring tech stack breakdowns, model selection frameworks, and prompting best practices.",
+        date: "May 30, 2026",
+        image: "./images/agentic.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/ai-stack-practices.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_zoom-linkedin-nanobanano-activity-7442003615625609217-_02X/"
+      },
+      {
+        title: "The Liquid Software Supply Chain",
+        excerpt: "An interactive architectural guide to the JFrog Platform. Explore how Artifactory, Xray, AI Catalog, and Connect secure your software supply chain.",
+        date: "May 19, 2026",
+        image: "./images/jfrog.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/jfrog.html",
+        linkedin: null
+      },
+      {
+        title: "The Agentic Web Architecture",
+        excerpt: "Explore our interactive guide to the Model Context Protocol (MCP). Learn how to solve the N x M integration problem and build self-evolving AI agents.",
+        date: "May 16, 2026",
+        image: "./images/mcp.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/mcp.html",
+        linkedin: null
+      },
+      {
+        title: "BioLogic: AI-Powered OSINT Dashboard - Hackathon Pitch",
+        excerpt: "An under-the-hood look at BioLogic, a real-time OSINT health intelligence dashboard integrating React, Node, Java MCP tools, and Gemini AI.",
+        date: "May 9, 2026",
+        image: "./images/biologic.jpg",
+        type: "Blog",
+        link: "https://rawweights.com/blog/biologic-osint.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_agenticaibootcamp-builtinpublic-playwright-activity-7467866006120484864-uZ6m/"
+      },
+      {
+        title: "SF Bay Area AI Meetup: Hybrid Search Debates & Meeting the Cohort",
+        excerpt: "A down-to-earth recap of the Pinecone & The Gen Academy AI Meetup in SF — hybrid search debates, meeting the Mastering Agentic AI cohort, and MCP server updates.",
+        date: "May 6, 2026",
+        image: "./images/aish.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/ai_meetup_sfmay6_takeaways.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_agenticai-physicalai-robotics-activity-7465324745673162752-Y9-9/"
+      },
+      {
+        title: "The Reality of Agentic Engineering: Insights from AI Dev 26",
+        excerpt: "What happens when you put 25,000 tools in the hands of AI agents? Dive into my AI Dev 26 conference recap for hands-on insights and the hard questions about multi-agent sandboxing.",
+        date: "Apr 29, 2026",
+        image: "./images/Sham_Andrew.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/ai_dev_2026_takeaways.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_aidev26-softwareengineering-ai-activity-7455517710118985730-yu73/"
+      },
+      {
+        title: "From Auto-Complete to Custom Assistant: A Visual Guide to LLM Post-Training",
+        excerpt: "Discover how to move beyond basic RAG with our new interactive, visual guide to LLM post-training. Step-by-step infographics on data preparation, DPO training, model merging, and test-time compute.",
+        date: "Apr 13, 2026",
+        image: "./images/ptl.jpg",
+        type: "Blog",
+        link: "https://rawweights.com/blog/from-auto-complete-to-custom-assistant.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_buildinpublic-agenticai-promptengineering-activity-7466688513908953089-6Yu6/"
+      },
+      {
+        title: "The Architect's Illusion: Why AI is Transforming Jobs, Not Erasing Them",
+        excerpt: "A visual exploration of the shift from deterministic programming to probabilistic AI. Discover why the limitations of the Universal Approximation Theorem are creating new opportunities.",
+        date: "Apr 06, 2026",
+        image: "./images/uat.jpg",
+        type: "Blog",
+        link: "https://rawweights.com/blog/uat.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_supplychain-mlops-devsecops-activity-7462407948896522240-XrCI/"
+      },
+      {
+        title: "Guide to RAG (Retrieval-Augmented Generation)",
+        excerpt: "Learn the architecture, chunking strategies, limitations, and evaluation metrics for AI models. Tailored for Developers, PMs, and Beginners.",
+        date: "Apr 04, 2026",
+        image: "./images/rag.jpg",
+        type: "Guide",
+        link: "https://rawweights.com/guide/rag.html",
+        linkedin: null
+      },
+      {
+        title: "From Asset Selectors to Liquid Synthesis: The Bicycle Math of Reinforcement Learning",
+        excerpt: "Explore an interactive Deep Reinforcement Learning playground that teaches the math behind AI. Discover how continuous policy gradients could transform the web.",
+        date: "Mar 29, 2026",
+        image: "./images/rel.jpg",
+        type: "Blog",
+        link: "https://rawweights.com/blog/learning-bicycle-math-driving-ai-evolution.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_in-college-we-all-knew-someone-whod-fill-activity-7469646186610630656-kOU6/"
+      },
+      {
+        title: "From Plato to Profile Pictures: Unpacking Deep Generative Models",
+        excerpt: "A comprehensive, interactive masterclass on Deep Generative Modeling. Explore Unsupervised Learning, Autoencoders, VAEs, GANs, and Cycle GANs.",
+        date: "Mar 23, 2026",
+        image: "./images/dgm.jpg",
+        type: "Blog",
+        link: "https://rawweights.com/blog/variational_breakthrough.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_ai-machinelearning-deeplearning-activity-7428441739536805888-H8iw/"
+      },
+      {
+        title: "Why Computer Vision is the New Business Intelligence",
+        excerpt: "How do machines actually see? Explore the Tesla vs. Waymo pure vision debate and learn how B2B companies use CNNs to unlock powerful new business metrics.",
+        date: "Mar 15, 2026",
+        image: "./images/cnnarchi.jpeg",
+        type: "Blog",
+        link: "https://rawweights.com/blog/grayscale_logic.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_computervision-deeplearning-machinelearning-activity-7439061201247965184-JPDF/"
+      },
+      {
+        title: "Teaching a Java App to Hear the Heartbeat of the Server",
+        excerpt: "Your own data is the best teacher. Discover why building a local neural network from scratch gives you the visibility needed to navigate the AI era.",
+        date: "Mar 08, 2026",
+        image: "./images/java_ai_exp.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/teaching-a-java-app-to-hear-the-heartbeat-of-the-server.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_artificialintelligence-softwareengineering-activity-7457708599331545088-XTLF/"
+      },
+      {
+        title: "Visualizing AI: An Interactive Journey from RNNs to Transformers",
+        excerpt: "Explore the evolution of sequence models — from RNNs to Transformers — with 13 hands-on interactive visualizers.",
+        date: "Mar 01, 2026",
+        image: "./images/transformer.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/visualizing-ai-rnns-to-transformers.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_rnns-transformers-engineering-activity-7436331624633548800-91Vg/"
+      },
+      {
+        title: "Achieving Domain-Wide Core Web Vitals Consistency",
+        excerpt: "Optimizing a single page for performance is tactical. Sustaining domain-wide Google Core Web Vitals passing across Mobile and Desktop is operational.",
+        date: "Feb 24, 2026",
+        image: "./images/vital.jpg",
+        type: "Web Performance",
+        link: "https://rawweights.com/blog/webvital.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_websiteperformance-corewebvitals-frontendarchitecture-activity-7432191881373024256-mjAl/"
+      },
+      {
+        title: "Bridging the Gap Between ML Theory and Intuition: An Interactive Sandbox",
+        excerpt: "Discover how our AI & ML Master Playground bridges the gap by turning static equations into dynamic, tactile experiences you can build, break, and manipulate in real-time.",
+        date: "Feb 22, 2026",
+        image: "./images/sandbox.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/bridging-the-gap-between-ml-theory-and-intuition-in-interactive-sandbox.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_artificialintelligence-machinelearning-llm-activity-7434154839057637376-SIUg/"
+      },
+      {
+        title: "Building a Tiny AI in Your Browser (No Python Required)",
+        excerpt: "LLMs aren't magic — they're math. I built the Atomic GPT Playground: a pure JavaScript Decoder-Only Transformer. No Python, no GPUs, and no servers.",
+        date: "Feb 14, 2026",
+        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc",
+        linkedin: "https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+      },
+      {
+        title: "Why I paused the advanced AI rush to build a simple regression tool",
+        excerpt: "Why is your model failing? Usually it's not the architecture — it's a lack of intuition for the Learning Rate and the Cost Function.",
+        date: "Feb 8, 2026",
+        image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/",
+        linkedin: "https://www.linkedin.com/pulse/why-i-paused-advanced-ai-rush-build-simple-regression-sham-sundar-v0dcc/"
+      },
+    ]
+  };
+})();

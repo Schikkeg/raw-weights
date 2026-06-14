@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,14 +11,16 @@
     <meta property="og:url" content="https://www.rawweights.com/blog/rag-pipeline-toolkit.html">
     <meta property="og:title" content="RAG Pipeline Toolkit — Design, Tune & Debug | RawWeights">
     <meta property="og:description" content="Interactive RAG pipeline toolkit — chunk size, top-K, embedding model picker, retrieval strategy, 12 debug signals, and a 20-point pre-launch checklist.">
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: { extend: { fontFamily: { sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
         }
     </script>
-    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
     <style>
         /* ── nav ── */
         nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
@@ -45,30 +47,88 @@
         /* failure dot */
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
         .dot-blink { animation:blink 2s infinite; }
+
+        /* ── LIGHT mode: comprehensive overrides for dark-bg pages ── */
+        /* Hero header always stays dark (brand accent) */
+        [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
+        [data-theme="light"] header .text-white,
+        [data-theme="light"] header .text-slate-100,
+        [data-theme="light"] header .text-slate-200 { color: #f0f4ff !important; }
+        [data-theme="light"] header .text-slate-300 { color: #cbd5e1 !important; }
+        [data-theme="light"] header .text-slate-400,
+        [data-theme="light"] header .text-slate-500 { color: #94a3b8 !important; }
+        /* Body + main: light surface */
+        [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
+        [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
+        /* Slate base classes — scoped to main so header stays dark */
+        [data-theme="light"] main .bg-slate-950 { background: #e2e8f0 !important; }
+        [data-theme="light"] main .bg-slate-900 { background: #f8fafc !important; }
+        [data-theme="light"] main .bg-slate-800 { background: #ffffff !important; }
+        [data-theme="light"] main .bg-slate-700 { background: #e2e8f0 !important; }
+        [data-theme="light"] main .bg-slate-600 { background: #cbd5e1 !important; }
+        /* Tailwind opacity variants (/50 /60 /70 /80 generate separate CSS class names) */
+        [data-theme="light"] main .bg-slate-900\/60,
+        [data-theme="light"] main .bg-slate-900\/70,
+        [data-theme="light"] main .bg-slate-900\/80 { background: rgba(248,250,252,0.95) !important; }
+        [data-theme="light"] main .bg-slate-800\/50,
+        [data-theme="light"] main .bg-slate-800\/60,
+        [data-theme="light"] main .bg-slate-800\/70,
+        [data-theme="light"] main .bg-slate-800\/80,
+        [data-theme="light"] main .bg-slate-800\/90 { background: rgba(255,255,255,0.97) !important; }
+        [data-theme="light"] main .bg-slate-700\/60,
+        [data-theme="light"] main .bg-slate-700\/80 { background: rgba(226,232,240,0.85) !important; }
+        /* Diagnostic cells (dark red/amber/purple with /40) */
+        [data-theme="light"] main .bg-red-950\/40 { background: rgba(255,241,241,0.9) !important; border-color: rgba(220,38,38,0.2) !important; }
+        [data-theme="light"] main .bg-amber-950\/40 { background: rgba(255,251,235,0.9) !important; border-color: rgba(217,119,6,0.2) !important; }
+        [data-theme="light"] main .bg-purple-950\/40 { background: rgba(250,245,255,0.9) !important; border-color: rgba(124,58,237,0.2) !important; }
+        /* Text within main */
+        [data-theme="light"] main .text-white { color: #0f172a !important; }
+        [data-theme="light"] main .text-slate-100,
+        [data-theme="light"] main .text-slate-200 { color: #1e293b !important; }
+        [data-theme="light"] main .text-slate-300 { color: #1e293b !important; }
+        [data-theme="light"] main .text-slate-400 { color: #334155 !important; }
+        [data-theme="light"] main .text-slate-500 { color: #475569 !important; }
+        [data-theme="light"] main .text-slate-600 { color: #334155 !important; }
+        /* Borders within main */
+        [data-theme="light"] main .border-slate-900,
+        [data-theme="light"] main .border-slate-800 { border-color: #cbd5e1 !important; }
+        [data-theme="light"] main .border-slate-700 { border-color: #94a3b8 !important; }
+        [data-theme="light"] main .border-slate-600 { border-color: #94a3b8 !important; }
+        /* Accent text darkened for light backgrounds */
+        [data-theme="light"] main .text-teal-300,
+        [data-theme="light"] main .text-teal-400 { color: #0d9488 !important; }
+        [data-theme="light"] main .text-emerald-300,
+        [data-theme="light"] main .text-emerald-400 { color: #059669 !important; }
+        [data-theme="light"] main .text-cyan-300,
+        [data-theme="light"] main .text-cyan-400 { color: #0891b2 !important; }
+        [data-theme="light"] main .text-purple-300,
+        [data-theme="light"] main .text-purple-400 { color: #7c3aed !important; }
+        [data-theme="light"] main .text-fuchsia-300,
+        [data-theme="light"] main .text-fuchsia-400 { color: #a21caf !important; }
+        [data-theme="light"] main .text-pink-300,
+        [data-theme="light"] main .text-pink-400 { color: #db2777 !important; }
+        [data-theme="light"] main .text-red-300,
+        [data-theme="light"] main .text-red-400 { color: #dc2626 !important; }
+        [data-theme="light"] main .text-amber-300,
+        [data-theme="light"] main .text-amber-400 { color: #d97706 !important; }
+        [data-theme="light"] main .text-green-300,
+        [data-theme="light"] main .text-green-400 { color: #16a34a !important; }
+        [data-theme="light"] main .text-sky-300,
+        [data-theme="light"] main .text-sky-400 { color: #0284c7 !important; }
+        /* Preserve gradient clip text */
+        [data-theme="light"] .text-transparent { color: transparent !important; }
+        /* Form elements */
+        [data-theme="light"] main input,
+        [data-theme="light"] main textarea,
+        [data-theme="light"] main select { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
     </style>
+  <style>.rw-theme-btn{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
 <!-- NAV -->
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
-        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture &amp; Lifecycle</button></a>
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
 <!-- HEADER -->
 <header class="bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
@@ -211,10 +271,10 @@
             </div>
             <div class="mt-6 pt-4 border-t border-slate-700">
                 <p class="text-slate-600 text-xs uppercase tracking-widest mb-3">Tools referenced</p>
-                <a href="https://chunkviz.up.railway.app/" target="_blank" class="flex items-center gap-2 text-xs text-slate-400 hover:text-teal-400 py-1 transition-colors">
+                <a href="https://chunkviz.up.railway.app/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-xs text-slate-400 hover:text-teal-400 py-1 transition-colors">
                     <span class="text-teal-500">↗</span> ChunkViz — visualise splits
                 </a>
-                <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" class="flex items-center gap-2 text-xs text-slate-400 hover:text-teal-400 py-1 transition-colors">
+                <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-xs text-slate-400 hover:text-teal-400 py-1 transition-colors">
                     <span class="text-teal-500">↗</span> MTEB Leaderboard
                 </a>
             </div>
@@ -238,13 +298,13 @@
                     <p class="text-slate-400 text-sm">Architecture, chunking strategies, vector databases, evaluation metrics, and limitations — the complete reference.</p>
                     <p class="text-teal-500 text-sm mt-3 font-medium">Read the guide →</p>
                 </a>
-                <a href="https://chunkviz.up.railway.app/" target="_blank" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-teal-500/50 transition-colors">
+                <a href="https://chunkviz.up.railway.app/" target="_blank" rel="noopener noreferrer" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-teal-500/50 transition-colors">
                     <p class="text-emerald-400 font-bold text-xs uppercase tracking-widest mb-2">Visualise your chunks</p>
                     <p class="text-white font-semibold mb-1">ChunkViz</p>
                     <p class="text-slate-400 text-sm">Paste any text, choose a splitter, and see exactly how your document gets broken apart before it hits the embedding model.</p>
                     <p class="text-emerald-500 text-sm mt-3 font-medium">Open tool ↗</p>
                 </a>
-                <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-teal-500/50 transition-colors">
+                <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" rel="noopener noreferrer" class="group block bg-slate-800 rounded-2xl p-5 border border-slate-700 hover:border-teal-500/50 transition-colors">
                     <p class="text-cyan-400 font-bold text-xs uppercase tracking-widest mb-2">Pick your model</p>
                     <p class="text-white font-semibold mb-1">MTEB Leaderboard</p>
                     <p class="text-slate-400 text-sm">Filter by task, language, and model size. The authoritative benchmark for choosing an embedding model for your domain.</p>
@@ -502,7 +562,7 @@
                 <p class="text-slate-500 text-xs">tokens</p>
             </div>
         </div>
-        <p class="text-slate-600 text-xs mt-3">Starting point: recursive character splitter, 512 tokens, 64-token overlap. Visualise your actual splits with <a href="https://chunkviz.up.railway.app/" target="_blank" class="text-teal-400 underline">ChunkViz ↗</a> before committing to an index.</p>
+        <p class="text-slate-600 text-xs mt-3">Starting point: recursive character splitter, 512 tokens, 64-token overlap. Visualise your actual splits with <a href="https://chunkviz.up.railway.app/" target="_blank" rel="noopener noreferrer" class="text-teal-400 underline">ChunkViz ↗</a> before committing to an index.</p>
     </div>
 </div>
 
@@ -510,7 +570,7 @@
 <div id="sb-3" class="sb-content hidden">
     <h3 class="text-white font-bold text-xl mb-1">Embedding Model Picker</h3>
     <p class="text-slate-400 text-sm mb-2">The embedding model converts text into a vector. Everything depends on choosing one and sticking with it. <strong class="text-red-400">The same model must be used for ingestion and for querying.</strong> Different models produce incompatible vector spaces — mixing them makes cosine similarity meaningless.</p>
-    <p class="text-slate-500 text-xs mb-5">Model benchmarks from public sources: <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" class="text-teal-400 underline">MTEB Leaderboard ↗</a>, OpenAI docs, Cohere docs, HuggingFace model cards.</p>
+    <p class="text-slate-500 text-xs mb-5">Model benchmarks from public sources: <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank" rel="noopener noreferrer" class="text-teal-400 underline">MTEB Leaderboard ↗</a>, OpenAI docs, Cohere docs, HuggingFace model cards.</p>
 
     <div class="flex flex-wrap gap-2 mb-4">
         <button onclick="filterModels('all')" id="mf-all" class="model-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-700 text-white transition-all">All</button>
@@ -732,10 +792,10 @@
     <div class="mt-5 bg-slate-900 rounded-xl border border-slate-700 p-4">
         <p class="text-slate-400 text-xs uppercase font-bold tracking-widest mb-2">Further reading — public sources</p>
         <div class="flex flex-wrap gap-3 text-xs">
-            <a href="https://docs.ragas.io/en/stable/" target="_blank" class="text-teal-400 hover:underline">RAGAS evaluation framework ↗</a>
-            <a href="https://docs.llamaindex.ai/en/stable/optimizing/evaluation/evaluation/" target="_blank" class="text-teal-400 hover:underline">LlamaIndex Evaluation Guide ↗</a>
-            <a href="https://www.pinecone.io/learn/retrieval-augmented-generation/" target="_blank" class="text-teal-400 hover:underline">Pinecone RAG Guide ↗</a>
-            <a href="https://python.langchain.com/docs/tutorials/rag/" target="_blank" class="text-teal-400 hover:underline">LangChain RAG Tutorial ↗</a>
+            <a href="https://docs.ragas.io/en/stable/" target="_blank" rel="noopener noreferrer" class="text-teal-400 hover:underline">RAGAS evaluation framework ↗</a>
+            <a href="https://docs.llamaindex.ai/en/stable/optimizing/evaluation/evaluation/" target="_blank" rel="noopener noreferrer" class="text-teal-400 hover:underline">LlamaIndex Evaluation Guide ↗</a>
+            <a href="https://www.pinecone.io/learn/retrieval-augmented-generation/" target="_blank" rel="noopener noreferrer" class="text-teal-400 hover:underline">Pinecone RAG Guide ↗</a>
+            <a href="https://python.langchain.com/docs/tutorials/rag/" target="_blank" rel="noopener noreferrer" class="text-teal-400 hover:underline">LangChain RAG Tutorial ↗</a>
         </div>
     </div>
 </div>
@@ -782,18 +842,10 @@
 </div>
 
 <!-- FOOTER -->
-<footer class="bg-gray-900 text-gray-400 mt-auto border-t border-gray-800">
-    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-        <div class="mb-4 md:mb-0">
-            <p class="text-sm">&copy; 2026 RawWeights. All rights reserved.</p>
-        </div>
-        <div class="flex space-x-6 text-sm">
-            <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
-            <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
-            <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
-        </div>
-    </div>
-</footer>
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_genacademy-rag-activity-7469272786025222147-3wK-/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
 <script>
 // ── TAB SWITCHER ─────────────────────────────────────────────────────────
@@ -821,7 +873,7 @@ const PIPE_DETAILS = {
     },
     chunk: {
         title:'✂️ Chunk',
-        body:'<strong class="text-white">What it does:</strong> Splits each parsed document into smaller, overlapping passages sized to work well with your embedding model and retrieval precision targets.<br><br><strong class="text-white">Three main strategies:</strong><br>• <strong class="text-teal-400">Fixed-size with overlap</strong> — split every N tokens, keep M tokens of overlap. Simple, predictable, works well as a baseline.<br>• <strong class="text-teal-400">Recursive character splitter</strong> — tries to split at paragraphs first, then sentences, then words. Preserves natural text boundaries.<br>• <strong class="text-teal-400">Semantic chunking</strong> — uses embedding similarity to detect topic shifts and split there. Most accurate but slower.<br><br><strong class="text-amber-400">The boundary problem:</strong> If a sentence is cut in half, neither resulting chunk makes sense in isolation. Overlap exists specifically to prevent this. Visualise your actual output with <a href="https://chunkviz.up.railway.app/" target="_blank" class="text-teal-400 underline">ChunkViz ↗</a> before committing.'
+        body:'<strong class="text-white">What it does:</strong> Splits each parsed document into smaller, overlapping passages sized to work well with your embedding model and retrieval precision targets.<br><br><strong class="text-white">Three main strategies:</strong><br>• <strong class="text-teal-400">Fixed-size with overlap</strong> — split every N tokens, keep M tokens of overlap. Simple, predictable, works well as a baseline.<br>• <strong class="text-teal-400">Recursive character splitter</strong> — tries to split at paragraphs first, then sentences, then words. Preserves natural text boundaries.<br>• <strong class="text-teal-400">Semantic chunking</strong> — uses embedding similarity to detect topic shifts and split there. Most accurate but slower.<br><br><strong class="text-amber-400">The boundary problem:</strong> If a sentence is cut in half, neither resulting chunk makes sense in isolation. Overlap exists specifically to prevent this. Visualise your actual output with <a href="https://chunkviz.up.railway.app/" target="_blank" rel="noopener noreferrer" class="text-teal-400 underline">ChunkViz ↗</a> before committing.'
     },
     'embed-offline': {
         title:'🔢 Embed (Ingestion)',

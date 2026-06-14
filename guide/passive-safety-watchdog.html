@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,14 +11,16 @@
     <meta property="og:url" content="https://www.rawweights.com/guide/passive-safety-watchdog.html">
     <meta property="og:title" content="The Invisible Recall — Building a Passive Food Safety Watchdog | RawWeights">
     <meta property="og:description" content="GraphRAG + Neo4j + ChromaDB + LangGraph: a builder's log from the first line to Phase 1 ship.">
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: { extend: { fontFamily: { sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
         }
     </script>
-    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
     <style>
         nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
         .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
@@ -33,30 +35,78 @@
         .pulse { animation: pulse-ring 2.5s ease-out infinite; }
         .timeline-line { position:relative; }
         .timeline-line::before { content:''; position:absolute; left:1.25rem; top:2rem; bottom:0; width:2px; background:linear-gradient(to bottom, #fb7185, #f43f5e, #9f1239); opacity:.3; }
+
+        /* ── LIGHT mode: comprehensive overrides for dark-bg pages ── */
+        /* Hero header always stays dark (brand accent) */
+        [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
+        [data-theme="light"] header .text-white,
+        [data-theme="light"] header .text-slate-100,
+        [data-theme="light"] header .text-slate-200 { color: #f0f4ff !important; }
+        [data-theme="light"] header .text-slate-300 { color: #cbd5e1 !important; }
+        [data-theme="light"] header .text-slate-400,
+        [data-theme="light"] header .text-slate-500 { color: #94a3b8 !important; }
+        /* Body + main: light surface */
+        [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
+        [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
+        /* Slate base classes — scoped to main so header stays dark */
+        [data-theme="light"] main .bg-slate-950 { background: #e2e8f0 !important; }
+        [data-theme="light"] main .bg-slate-900 { background: #f8fafc !important; }
+        [data-theme="light"] main .bg-slate-800 { background: #ffffff !important; }
+        [data-theme="light"] main .bg-slate-700 { background: #e2e8f0 !important; }
+        [data-theme="light"] main .bg-slate-600 { background: #cbd5e1 !important; }
+        /* Tailwind opacity variants (/50 /60 /70 /80 generate separate CSS class names) */
+        [data-theme="light"] main .bg-slate-900\/60,
+        [data-theme="light"] main .bg-slate-900\/70,
+        [data-theme="light"] main .bg-slate-900\/80 { background: rgba(248,250,252,0.95) !important; }
+        [data-theme="light"] main .bg-slate-800\/50,
+        [data-theme="light"] main .bg-slate-800\/60,
+        [data-theme="light"] main .bg-slate-800\/70,
+        [data-theme="light"] main .bg-slate-800\/80,
+        [data-theme="light"] main .bg-slate-800\/90 { background: rgba(255,255,255,0.97) !important; }
+        [data-theme="light"] main .bg-slate-700\/60,
+        [data-theme="light"] main .bg-slate-700\/80 { background: rgba(226,232,240,0.85) !important; }
+        /* Text within main */
+        [data-theme="light"] main .text-white { color: #0f172a !important; }
+        [data-theme="light"] main .text-slate-100,
+        [data-theme="light"] main .text-slate-200 { color: #1e293b !important; }
+        [data-theme="light"] main .text-slate-300 { color: #1e293b !important; }
+        [data-theme="light"] main .text-slate-400 { color: #334155 !important; }
+        [data-theme="light"] main .text-slate-500 { color: #475569 !important; }
+        [data-theme="light"] main .text-slate-600 { color: #334155 !important; }
+        /* Borders within main */
+        [data-theme="light"] main .border-slate-900,
+        [data-theme="light"] main .border-slate-800 { border-color: #cbd5e1 !important; }
+        [data-theme="light"] main .border-slate-700 { border-color: #94a3b8 !important; }
+        [data-theme="light"] main .border-slate-600 { border-color: #94a3b8 !important; }
+        /* Accent text darkened for light backgrounds */
+        [data-theme="light"] main .text-rose-300,
+        [data-theme="light"] main .text-rose-400 { color: #e11d48 !important; }
+        [data-theme="light"] main .text-pink-300,
+        [data-theme="light"] main .text-pink-400 { color: #db2777 !important; }
+        [data-theme="light"] main .text-red-300,
+        [data-theme="light"] main .text-red-400 { color: #dc2626 !important; }
+        [data-theme="light"] main .text-amber-300,
+        [data-theme="light"] main .text-amber-400 { color: #d97706 !important; }
+        [data-theme="light"] main .text-green-300,
+        [data-theme="light"] main .text-green-400 { color: #16a34a !important; }
+        [data-theme="light"] main .text-teal-300,
+        [data-theme="light"] main .text-teal-400 { color: #0d9488 !important; }
+        [data-theme="light"] main .text-purple-300,
+        [data-theme="light"] main .text-purple-400 { color: #7c3aed !important; }
+        /* Preserve gradient clip text */
+        [data-theme="light"] .text-transparent { color: transparent !important; }
+        /* Form elements */
+        [data-theme="light"] main input,
+        [data-theme="light"] main textarea,
+        [data-theme="light"] main select { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
     </style>
+  <style>.rw-theme-btn{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
 <!-- NAV -->
-<nav>
-    <a href="/" class="nav-brand">RawWeights</a>
-    <div class="nav-links">
-        <a href="/tools/master_ml_hub.html" data-group="Deep Learning"><button class="nav-btn">ML Playground</button></a>
-        <a href="/srt.html" data-group="Deep Learning"><button class="nav-btn">Simple Regression Tool</button></a>
-        <a href="/tools/master_sequence_hub.html" data-group="Deep Learning"><button class="nav-btn">Attention Journey</button></a>
-        <a href="/tools/cnn_sandbox.html" data-group="Deep Learning"><button class="nav-btn">Explore CNN</button></a>
-        <a href="/tools/deep_generative_modeling.html" data-group="Advanced AI"><button class="nav-btn">Generative Journey</button></a>
-        <a href="/tools/deep_reinforcement.html" data-group="Advanced AI"><button class="nav-btn">Reinforcement</button></a>
-        <a href="/tools/limitations-and-frontiers.html" data-group="Advanced AI"><button class="nav-btn">UAT</button></a>
-        <a href="/guide/rag.html" data-group="Guides"><button class="nav-btn">RAG</button></a>
-        <a href="/guide/llm-post-training-guide.html" data-group="Guides"><button class="nav-btn">Custom LLMs</button></a>
-        <a href="/guide/mythos.html" data-group="Guides"><button class="nav-btn">Mythos Preview Report</button></a>
-        <a href="/guide/adobe-cx-enterprise-ecosystem.html" data-group="Guides"><button class="nav-btn">Agentic Web Guide</button></a>
-        <a href="/guide/mcp.html" data-group="Guides"><button class="nav-btn">MCP</button></a>
-        <a href="/guide/full-lifecycle.html" data-group="Guides"><button class="nav-btn">LLM Architecture &amp; Lifecycle</button></a>
-        <a href="/blog.html"><button class="nav-btn">Blog</button></a>
-    </div>
-</nav>
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
 <!-- HEADER -->
 <header class="bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
@@ -857,16 +907,10 @@
 </main>
 
 <!-- FOOTER -->
-<footer class="bg-slate-950 border-t border-slate-800 py-8">
-    <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p class="text-slate-500 text-sm">© 2026 RawWeights · Built with LangGraph, Neo4j, ChromaDB, Nebius AI, Streamlit</p>
-        <div class="flex gap-4 text-xs text-slate-600">
-            <a href="/blog.html" class="hover:text-slate-400 transition-colors">Blog</a>
-            <a href="/guide/rag.html" class="hover:text-slate-400 transition-colors">RAG Guide</a>
-            <a href="/guide/rag-architects-studio.html" class="hover:text-slate-400 transition-colors">Architect's Studio</a>
-        </div>
-    </div>
-</footer>
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_passive-watch-dog-activity-7470730452576874497-srAo/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
 <script>
 // Diagram lightbox

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -57,7 +57,26 @@
 }
     </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<style>
+/* ── Dark mode: hero persona selector ── */
+[data-theme="dark"] .header-persona { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+[data-theme="dark"] .header-persona .persona-btn { color: #cbd5e1; border-color: rgba(255,255,255,0.15); }
+[data-theme="dark"] .header-persona .persona-btn:hover:not(.active) { background: rgba(255,255,255,0.12); color: #ffffff; }
+/* ── Dark mode: article body cards ── */
+[data-theme="dark"] .glass-card { background: rgba(17,24,39,0.95); border-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] article .bg-white { background-color: #111827 !important; color: #e2e8f0 !important; }
+[data-theme="dark"] article .text-gray-900 { color: #f0f4ff !important; }
+[data-theme="dark"] article .text-gray-700 { color: #cbd5e1 !important; }
+/* ── Dark mode: limitations section (bg-red-50 card) ── */
+[data-theme="dark"] #content-limitations { background-color: rgba(127,29,29,0.25) !important; border-color: rgba(239,68,68,0.3) !important; color: #fca5a5 !important; }
+[data-theme="dark"] #content-limitations strong { color: #f87171; }
+/* ── Dark mode: comparison cards injected via JS (bg-white inside content areas) ── */
+[data-theme="dark"] .bg-gray-50 { background-color: #1a2236 !important; }
+[data-theme="dark"] .border-gray-100, [data-theme="dark"] .border-gray-200 { border-color: #1e293b !important; }
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -81,7 +100,7 @@
             }
         }
     </script>
-    <script type="text/javascript" async src="/includes/analytics.js"></script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
     <style>
         html { scroll-behavior: smooth; }
         body { position: relative; }
@@ -112,27 +131,8 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
-    <nav class="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="font-bold text-2xl tracking-tight text-gray-900"><a href="/">RawWeights</a></div>
-            <div class="hidden md:flex space-x-8 text-sm font-semibold text-gray-600">
-                <a href="/" class="hover:text-brand-600 transition">Home</a>
-                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
-                <a href="/tools/master_ml_hub.html" class="hover:text-brand-600 transition">ML Playground</a>
-                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
-                <a href="/tools/master_sequence_hub.html" class="hover:text-brand-600 transition">Attention Journey</a>
-				<a href="/tools/cnn_sandbox.html" class="hover:text-brand-600 transition">Explore CNN</a>
-				<a href="/tools/deep_generative_modeling.html" class="hover:text-brand-600 transition">Generative Journey</a>
-				<a href="/tools/deep_reinforcement.html" class="hover:text-brand-600 transition">Reinforcement</a>
-				<a href="/tools/limitations-and-frontiers.html" class="hover:text-brand-600 transition">UAT</a>
-            </div>
-            <div class="md:hidden flex items-center">
-                <button class="text-gray-600 hover:text-brand-600 focus:outline-none" aria-label="Menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-            </div>
-        </div>
-    </nav>
+    <div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
     <script type="application/json" id="persona-data">
 
@@ -465,19 +465,10 @@
         </article>
     </main>
 
-    <footer class="bg-gray-900 text-gray-400 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <span class="text-white font-bold text-lg tracking-tight">RawWeights</span>
-                <p class="text-sm mt-2">&copy; 2026 RawWeights. All rights reserved.</p>
-            </div>
-            <div class="flex space-x-6 text-sm">
-                <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
-                <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-white transition">LinkedIn</a>
-                <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-white transition">X</a>
-            </div>
-        </div>
-    </footer>
+    <div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_rag-generativeai-beginner-activity-7446359870330810369-bYSl/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
     <script>
         // Global variables for Quiz

@@ -1,0 +1,1428 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Autonomy Dial — How Much Should You Let an AI Agent Decide? | RawWeights</title>
+    <meta name="description" content="From suggesting a flight to managing your entire travel calendar, AI agents exist on a spectrum. Learn the five positions, the danger zones, and when to hand over the wheel.">
+    <meta name="author" content="RawWeights">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://rawweights.com/images/dial.png">
+    <meta property="og:url" content="https://www.rawweights.com/blog/agent-autonomy-dial.html">
+    <meta property="og:title" content="The Autonomy Dial — How Much Should You Let an AI Agent Decide? | RawWeights">
+    <meta property="og:description" content="Five positions. Two axes. One rule. An interactive guide to AI autonomy — through the lens of travel planning.">
+    <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+    <link rel="stylesheet" href="../includes/brand.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
+        }
+    </script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
+    <style>
+        /* ── nav ── */
+        nav { background:white; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; z-index:50; }
+        .nav-brand { font-weight:800; font-size:1.25rem; color:#0077b5; text-decoration:none; }
+        .nav-links { display:flex; gap:.6rem; flex-wrap:wrap; }
+        .nav-btn { background:transparent; border:1px solid #0077b5; color:#0077b5; padding:.35rem .8rem; border-radius:6px; cursor:pointer; font-size:.82rem; transition:all .2s; }
+        .nav-btn:hover { background:#0077b5; color:white; }
+        html { scroll-behavior:smooth; }
+
+        /* ════════════════════════════════ DIAL HEADER */
+        .dial-track { position:relative; height:6px; background:rgba(168,85,247,.2); border-radius:999px; margin:1.5rem 0 .5rem; }
+        .dial-knob { position:absolute; top:50%; transform:translate(-50%,-50%); width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,#a855f7,#ec4899); box-shadow:0 0 12px rgba(168,85,247,.7); transition:left .45s cubic-bezier(.34,1.56,.64,1); }
+        .dial-pos { cursor:pointer; transition:border-color .3s, background .3s, transform .25s; }
+        .dial-pos.active { background:rgba(168,85,247,.15); border-color:#a855f7 !important; transform:translateX(3px); }
+        .dial-pos:not(.active):hover { border-color:rgba(168,85,247,.4) !important; transform:translateY(-1px); }
+        @keyframes dialGlow { 0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.5)} 50%{box-shadow:0 0 0 8px rgba(168,85,247,0)} }
+        .dial-pos.active .dial-dot { animation:dialGlow 2s infinite; }
+        .dial-dot { width:8px; height:8px; border-radius:50%; background:#a855f7; flex-shrink:0; transition:background .3s; }
+
+        /* ════════════════════════════════ FAILURE CARDS — smooth accordion */
+        .fail-card { cursor:pointer; transition:border-color .3s, background .3s; }
+        .fail-card:hover { border-color:rgba(168,85,247,.5) !important; }
+        .fail-card.open { border-color:#a855f7 !important; background:rgba(168,85,247,.05); }
+        .fail-body {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height .5s cubic-bezier(.4,0,.2,1), opacity .35s ease, padding .35s ease;
+        }
+        .fail-card.open .fail-body { max-height: 600px; opacity: 1; padding-top:1rem; }
+        .chevron { transition:transform .35s cubic-bezier(.4,0,.2,1); display:inline-block; }
+        .fail-card.open .chevron { transform:rotate(180deg); }
+
+        /* ════════════════════════════════ MEMORY TABS */
+        .mem-tab { cursor:pointer; transition:all .25s; position:relative; }
+        .mem-tab.active { border-color:#a855f7 !important; color:white; }
+        .mem-tab.active::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:linear-gradient(90deg,#a855f7,#ec4899); border-radius:999px; }
+        .mem-panel {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        .mem-panel.active { display: block; animation: tabSlideIn .38s cubic-bezier(.25,.46,.45,.94) forwards; }
+        @keyframes tabSlideIn { to { opacity:1; transform:translateY(0); } }
+
+        /* ════════════════════════════════ REACT STEPPER */
+        .react-btn-step { transition: all .3s; position:relative; overflow:hidden; }
+        .react-btn-step::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,rgba(168,85,247,.15),rgba(236,72,153,.1)); opacity:0; transition:opacity .3s; }
+        .react-btn-step.active { border-color:#a855f7 !important; }
+        .react-btn-step.active::after { opacity:1; }
+        .react-btn-step.done { border-color:rgba(168,85,247,.4) !important; }
+        .react-btn-step.done .step-dot { background:#a855f7; }
+        .react-btn-step.active .step-dot { background:#ec4899; animation:stepPulse 1.4s infinite; }
+        @keyframes stepPulse { 0%,100%{box-shadow:0 0 0 0 rgba(236,72,153,.6)} 50%{box-shadow:0 0 0 7px rgba(236,72,153,0)} }
+        .step-dot { width:10px; height:10px; border-radius:50%; background:#334155; transition:background .3s; flex-shrink:0; }
+
+        .react-content { animation: reactSlide .42s cubic-bezier(.25,.46,.45,.94) both; }
+        @keyframes reactSlide { from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
+        .react-content.reverse { animation: reactSlideLeft .42s cubic-bezier(.25,.46,.45,.94) both; }
+        @keyframes reactSlideLeft { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+
+        /* ── progress bar ── */
+        .prog-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#a855f7,#ec4899); transition:width .5s cubic-bezier(.4,0,.2,1); }
+
+        /* ════════════════════════════════ QUADRANT */
+        .quad-cell { transition:transform .3s, box-shadow .3s; }
+        .quad-cell:hover { transform:scale(1.025); z-index:10; }
+
+        /* ════════════════════════════════ POSITIONS grid stagger */
+        .pos-card { opacity:0; animation: cardRise .5s ease forwards; }
+        .pos-card:nth-child(1) { animation-delay:.05s }
+        .pos-card:nth-child(2) { animation-delay:.1s }
+        .pos-card:nth-child(3) { animation-delay:.15s }
+        .pos-card:nth-child(4) { animation-delay:.2s }
+        .pos-card:nth-child(5) { animation-delay:.25s }
+        @keyframes cardRise { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ════════════════════════════════ GENERAL */
+        @keyframes pop { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .pop { animation:pop .4s ease forwards; }
+        .row-hover:hover { background:rgba(255,255,255,.03); border-radius:12px; }
+        .tag { display:inline-block; font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:.2rem .55rem; border-radius:6px; }
+
+        /* ── LIGHT mode: comprehensive overrides for dark-bg pages ── */
+        /* Hero header always stays dark (brand accent) */
+        [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
+        [data-theme="light"] header .text-white,
+        [data-theme="light"] header .text-slate-100,
+        [data-theme="light"] header .text-slate-200 { color: #f0f4ff !important; }
+        [data-theme="light"] header .text-slate-300 { color: #cbd5e1 !important; }
+        [data-theme="light"] header .text-slate-400,
+        [data-theme="light"] header .text-slate-500 { color: #94a3b8 !important; }
+        /* Body + main: light surface */
+        [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
+        [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
+        /* Slate base classes — scoped to main so header stays dark */
+        [data-theme="light"] main .bg-slate-950 { background: #e2e8f0 !important; }
+        [data-theme="light"] main .bg-slate-900 { background: #f8fafc !important; }
+        [data-theme="light"] main .bg-slate-800 { background: #ffffff !important; }
+        [data-theme="light"] main .bg-slate-700 { background: #e2e8f0 !important; }
+        [data-theme="light"] main .bg-slate-600 { background: #cbd5e1 !important; }
+        /* Tailwind opacity variants (/50 /60 /70 /80 generate separate CSS class names) */
+        [data-theme="light"] main .bg-slate-900\/60,
+        [data-theme="light"] main .bg-slate-900\/70,
+        [data-theme="light"] main .bg-slate-900\/80 { background: rgba(248,250,252,0.95) !important; }
+        [data-theme="light"] main .bg-slate-800\/50,
+        [data-theme="light"] main .bg-slate-800\/60,
+        [data-theme="light"] main .bg-slate-800\/70,
+        [data-theme="light"] main .bg-slate-800\/80,
+        [data-theme="light"] main .bg-slate-800\/90 { background: rgba(255,255,255,0.97) !important; }
+        [data-theme="light"] main .bg-slate-700\/60,
+        [data-theme="light"] main .bg-slate-700\/80 { background: rgba(226,232,240,0.85) !important; }
+        /* Text within main */
+        [data-theme="light"] main .text-white { color: #0f172a !important; }
+        [data-theme="light"] main .text-slate-100,
+        [data-theme="light"] main .text-slate-200 { color: #1e293b !important; }
+        [data-theme="light"] main .text-slate-300 { color: #1e293b !important; }
+        [data-theme="light"] main .text-slate-400 { color: #334155 !important; }
+        [data-theme="light"] main .text-slate-500 { color: #475569 !important; }
+        [data-theme="light"] main .text-slate-600 { color: #334155 !important; }
+        /* Borders within main */
+        [data-theme="light"] main .border-slate-900,
+        [data-theme="light"] main .border-slate-800 { border-color: #cbd5e1 !important; }
+        [data-theme="light"] main .border-slate-700 { border-color: #94a3b8 !important; }
+        [data-theme="light"] main .border-slate-600 { border-color: #94a3b8 !important; }
+        /* Accent text darkened for light backgrounds */
+        [data-theme="light"] main .text-purple-300,
+        [data-theme="light"] main .text-purple-400 { color: #7c3aed !important; }
+        [data-theme="light"] main .text-fuchsia-300,
+        [data-theme="light"] main .text-fuchsia-400 { color: #a21caf !important; }
+        [data-theme="light"] main .text-pink-300,
+        [data-theme="light"] main .text-pink-400 { color: #db2777 !important; }
+        [data-theme="light"] main .text-red-300,
+        [data-theme="light"] main .text-red-400 { color: #dc2626 !important; }
+        [data-theme="light"] main .text-amber-300,
+        [data-theme="light"] main .text-amber-400 { color: #d97706 !important; }
+        [data-theme="light"] main .text-green-300,
+        [data-theme="light"] main .text-green-400 { color: #16a34a !important; }
+        /* Preserve gradient clip text */
+        [data-theme="light"] .text-transparent { color: transparent !important; }
+        /* Form elements */
+        [data-theme="light"] main input,
+        [data-theme="light"] main textarea,
+        [data-theme="light"] main select { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+        /* ── Dark mode overrides — interactive elements ── */
+        [data-theme="dark"] .bg-white { background: #1e293b !important; }
+        [data-theme="dark"] .bg-gray-100 { background: #1a2742 !important; }
+        [data-theme="dark"] .text-gray-900,
+        [data-theme="dark"] .text-gray-800 { color: #f0f4ff !important; }
+        [data-theme="dark"] .text-gray-700 { color: #cbd5e1 !important; }
+    </style>
+  <style>.rw-theme-btn{display:none!important}</style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<!-- ── Centralized Navigation ──────────────────────────────── -->
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ═══════════════════════════════════════════════════════════ HEADER -->
+<header class="bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 100% 0%, rgba(168,85,247,.28) 0%, transparent 52%), radial-gradient(ellipse at 0% 100%, rgba(236,72,153,.18) 0%, transparent 52%);"></div>
+    <div class="absolute inset-0 opacity-[.035] pointer-events-none" style="background-image:linear-gradient(#a855f7 1px,transparent 1px),linear-gradient(90deg,#a855f7 1px,transparent 1px);background-size:56px 56px;"></div>
+
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-14 relative z-10">
+
+        <!-- LEFT -->
+        <div class="lg:w-1/2 space-y-6 pt-4">
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-purple-500/15 border border-purple-500/40 text-purple-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Interactive Guide</span>
+                <span class="bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy · Agentic AI · Week 3</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]">
+                The Autonomy<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400">Dial</span>
+            </h1>
+            <p class="text-slate-300 text-lg leading-relaxed max-w-lg">
+                Every AI agent sits somewhere on a spectrum — from "just show me options" to "handle the entire trip." Where you set that dial determines what you get back, and what you're risking.
+            </p>
+            <div class="flex flex-wrap gap-3 pt-2">
+                <a href="#five-positions" class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
+                    Turn the Dial →
+                </a>
+                <a href="#mint-rule" class="inline-flex items-center gap-2 border border-slate-600 hover:border-purple-500 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
+                    The MINT Rule
+                </a>
+            </div>
+        </div>
+
+        <!-- RIGHT — Animated Dial -->
+        <div class="lg:w-1/2 w-full">
+            <div class="bg-slate-800/60 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">The Five Positions — click to explore</p>
+
+                <!-- Track + knob -->
+                <div class="dial-track">
+                    <div class="dial-knob" id="hdr-knob" style="left:0%"></div>
+                </div>
+                <div class="flex justify-between mb-5 px-0.5">
+                    <span class="text-slate-600 text-xs">Least autonomous</span>
+                    <span class="text-slate-600 text-xs">Fully autonomous</span>
+                </div>
+
+                <div id="hdr-dial" class="space-y-2">
+                    <div class="dial-pos active border border-slate-700 rounded-xl px-4 py-3 flex items-center gap-3" data-pos="0">
+                        <div class="dial-dot"></div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-sm">Suggest <span class="text-slate-500 font-normal text-xs">[Scripted / Rule-Based]</span></p>
+                            <p class="text-slate-400 text-xs mt-0.5">Shows you options. Books nothing.</p>
+                        </div>
+                        <span class="text-slate-600 text-xs font-mono">1</span>
+                    </div>
+                    <div class="dial-pos border border-slate-700 rounded-xl px-4 py-3 flex items-center gap-3" data-pos="1">
+                        <div class="dial-dot"></div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-sm">Approve <span class="text-slate-500 font-normal text-xs">[Bare LLM / Chatbot]</span></p>
+                            <p class="text-slate-400 text-xs mt-0.5">Prepares the booking. Waits for your go-ahead.</p>
+                        </div>
+                        <span class="text-slate-600 text-xs font-mono">2</span>
+                    </div>
+                    <div class="dial-pos border border-slate-700 rounded-xl px-4 py-3 flex items-center gap-3" data-pos="2">
+                        <div class="dial-dot"></div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-sm">Delegate <span class="text-slate-500 font-normal text-xs">[Agentic Workflow]</span></p>
+                            <p class="text-slate-400 text-xs mt-0.5">Handles routine trips. Calls you for the unusual.</p>
+                        </div>
+                        <span class="text-slate-600 text-xs font-mono">3</span>
+                    </div>
+                    <div class="dial-pos border border-slate-700 rounded-xl px-4 py-3 flex items-center gap-3" data-pos="3">
+                        <div class="dial-dot"></div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-sm">Monitor <span class="text-slate-500 font-normal text-xs">[Single Agent]</span></p>
+                            <p class="text-slate-400 text-xs mt-0.5">Runs your travel calendar. Reports weekly.</p>
+                        </div>
+                        <span class="text-slate-600 text-xs font-mono">4</span>
+                    </div>
+                    <div class="dial-pos border border-slate-700 rounded-xl px-4 py-3 flex items-center gap-3" data-pos="4">
+                        <div class="dial-dot"></div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-sm">Automate <span class="text-slate-500 font-normal text-xs">[Multi-Agent System]</span></p>
+                            <p class="text-slate-400 text-xs mt-0.5">Fully autonomous. Alerts only when something breaks.</p>
+                        </div>
+                        <span class="text-slate-600 text-xs font-mono">5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════ MAIN -->
+<main class="bg-slate-900 text-white flex-1">
+<!-- ──────────────────────────────── SECTION 0: SYSTEM DIAGRAM -->
+<section id="diagram" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-10">
+            <span class="text-purple-400 text-xs font-bold uppercase tracking-widest">Everything in One View</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">The Full System — Positions, Thinking, Memory &amp; Patterns</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">Every concept on this page in one diagram. The five autonomy levels feed into the agent's ReAct thinking loop — powered by three layers of memory — all wrapped in human oversight. Multiple agents can be arranged using the four patterns below.</p>
+        </div>
+        <div class="bg-slate-950/60 border border-slate-700/50 rounded-2xl p-3 overflow-x-auto">
+<svg viewBox="0 0 900 692" xmlns="http://www.w3.org/2000/svg" style="min-width:640px;display:block;width:100%;font-family:Inter,sans-serif">
+<defs>
+  <linearGradient id="d-grad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#a855f7"/>
+    <stop offset="50%" stop-color="#d946ef"/>
+    <stop offset="100%" stop-color="#ec4899"/>
+  </linearGradient>
+  <linearGradient id="d-vgrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#a855f7" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#ec4899" stop-opacity="0.06"/>
+  </linearGradient>
+  <!-- Arrow: purple -->
+  <marker id="d-ah" markerWidth="6" markerHeight="6" viewBox="0 0 10 10" refX="8" refY="5" orient="auto">
+    <path d="M0,1 L9,5 L0,9 Z" fill="#a855f7"/>
+  </marker>
+  <!-- Arrow: fuchsia -->
+  <marker id="d-ahf" markerWidth="6" markerHeight="6" viewBox="0 0 10 10" refX="8" refY="5" orient="auto">
+    <path d="M0,1 L9,5 L0,9 Z" fill="#d946ef"/>
+  </marker>
+  <!-- Arrow: pink -->
+  <marker id="d-ahp" markerWidth="6" markerHeight="6" viewBox="0 0 10 10" refX="8" refY="5" orient="auto">
+    <path d="M0,1 L9,5 L0,9 Z" fill="#ec4899"/>
+  </marker>
+  <!-- Arrow: dim -->
+  <marker id="d-ahd" markerWidth="6" markerHeight="6" viewBox="0 0 10 10" refX="8" refY="5" orient="auto">
+    <path d="M0,1 L9,5 L0,9 Z" fill="#475569"/>
+  </marker>
+  <!-- Glow -->
+  <filter id="d-glow" x="-60%" y="-60%" width="220%" height="220%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="d-glow-sm" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <style>
+    .d-node { cursor:default; transition:opacity .2s; }
+    .d-node:hover circle { filter:url(#d-glow); }
+    .d-pnode:hover circle { filter:url(#d-glow-sm); }
+    .d-pat:hover > rect { fill-opacity:.22 !important; }
+    .d-mem:hover > rect:first-child { fill-opacity:.22 !important; }
+    .d-arc { transition:opacity .2s; }
+    .d-arc:hover { opacity:1 !important; }
+  </style>
+</defs>
+
+<!-- ══════════════════════════════════════════════════ OVERALL BG -->
+<rect width="900" height="692" rx="14" fill="#070d1a"/>
+
+<!-- ══════════════════════════════════════════════════ ZONE 1: FIVE POSITIONS -->
+<rect x="8" y="8" width="884" height="100" rx="9" fill="#1e293b"/>
+<text x="450" y="27" fill="#94a3b8" font-size="8.5" font-weight="700" letter-spacing="2.5" text-anchor="middle">THE FIVE POSITIONS OF AUTONOMY</text>
+
+<!-- Track -->
+<line x1="86" y1="60" x2="814" y2="60" stroke="#334155" stroke-width="3"/>
+<line x1="86" y1="60" x2="814" y2="60" stroke="url(#d-grad)" stroke-width="3" opacity="0.85"/>
+
+<!-- P1: Suggest -->
+<g class="d-pnode">
+  <circle cx="86" cy="60" r="16" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+  <text x="86" y="65" fill="#a855f7" font-size="12" font-weight="700" text-anchor="middle">1</text>
+</g>
+<text x="86" y="86" fill="#cbd5e1" font-size="9" font-weight="600" text-anchor="middle">Suggest</text>
+<text x="86" y="99" fill="#64748b" font-size="7" text-anchor="middle">[Rule-Based]</text>
+
+<!-- P2: Approve -->
+<g class="d-pnode">
+  <circle cx="268" cy="60" r="16" fill="#0f172a" stroke="#b84cf0" stroke-width="2"/>
+  <text x="268" y="65" fill="#b84cf0" font-size="12" font-weight="700" text-anchor="middle">2</text>
+</g>
+<text x="268" y="86" fill="#cbd5e1" font-size="9" font-weight="600" text-anchor="middle">Approve</text>
+<text x="268" y="99" fill="#64748b" font-size="7" text-anchor="middle">[Bare LLM]</text>
+
+<!-- P3: Delegate (highlighted) -->
+<g class="d-pnode">
+  <circle cx="450" cy="60" r="19" fill="#0f172a" stroke="#d946ef" stroke-width="2.5" filter="url(#d-glow-sm)"/>
+  <text x="450" y="65" fill="#d946ef" font-size="12" font-weight="700" text-anchor="middle">3</text>
+</g>
+<text x="450" y="87" fill="#e2e8f0" font-size="9" font-weight="700" text-anchor="middle">Delegate</text>
+<text x="450" y="100" fill="#64748b" font-size="7" text-anchor="middle">[Agentic Workflow]</text>
+
+<!-- P4: Monitor -->
+<g class="d-pnode">
+  <circle cx="632" cy="60" r="16" fill="#0f172a" stroke="#e879a8" stroke-width="2"/>
+  <text x="632" y="65" fill="#e879a8" font-size="12" font-weight="700" text-anchor="middle">4</text>
+</g>
+<text x="632" y="86" fill="#cbd5e1" font-size="9" font-weight="600" text-anchor="middle">Monitor</text>
+<text x="632" y="99" fill="#64748b" font-size="7" text-anchor="middle">[Single Agent]</text>
+
+<!-- P5: Automate -->
+<g class="d-pnode">
+  <circle cx="814" cy="60" r="16" fill="#0f172a" stroke="#ec4899" stroke-width="2"/>
+  <text x="814" y="65" fill="#ec4899" font-size="12" font-weight="700" text-anchor="middle">5</text>
+</g>
+<text x="814" y="86" fill="#cbd5e1" font-size="9" font-weight="600" text-anchor="middle">Automate</text>
+<text x="814" y="99" fill="#64748b" font-size="7" text-anchor="middle">[Multi-Agent]</text>
+
+<!-- Connector arrow down -->
+<line x1="450" y1="108" x2="450" y2="123" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#d-ahd)"/>
+
+<!-- ══════════════════════════════════════════════════ ZONE 2: OVERSIGHT BOX -->
+<rect x="8" y="125" width="884" height="432" rx="9" fill="#111827" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+<!-- Oversight header -->
+<text x="450" y="143" fill="#475569" font-size="8" font-weight="700" letter-spacing="2.5" text-anchor="middle">WITHIN HUMAN OVERSIGHT</text>
+
+<!-- HITL badge -->
+<rect x="18" y="149" width="145" height="20" rx="4" fill="rgba(168,85,247,0.1)" stroke="rgba(168,85,247,0.35)" stroke-width="1"/>
+<text x="90" y="163" fill="#a855f7" font-size="8" font-weight="700" text-anchor="middle">✋ HITL — Co-Pilot</text>
+
+<!-- HOTL badge -->
+<rect x="737" y="149" width="153" height="20" rx="4" fill="rgba(168,85,247,0.1)" stroke="rgba(168,85,247,0.35)" stroke-width="1"/>
+<text x="813" y="163" fill="#a855f7" font-size="8" font-weight="700" text-anchor="middle">👁 HOTL — Control Tower</text>
+
+<!-- ══════════════════════════════════════════════════ ZONE 2a: REACT LOOP -->
+<rect x="16" y="171" width="422" height="378" rx="7" fill="rgba(10,18,38,0.7)"/>
+<text x="227" y="190" fill="#a855f7" font-size="8" font-weight="700" letter-spacing="2" text-anchor="middle">HOW IT THINKS — ReAct LOOP</text>
+
+<!-- Guide circle (subtle) -->
+<circle cx="227" cy="355" r="100" fill="none" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="3,4"/>
+
+<!-- ── ARC ARROWS (drawn under nodes) ── -->
+<!-- Goal→Reason: 288°→342° clockwise. Points: (258,260)→(322,324) -->
+<path class="d-arc" d="M 258,260 A 100,100 0 0,1 322,324" fill="none" stroke="#a855f7" stroke-width="2" marker-end="url(#d-ah)" opacity="0.9"/>
+<!-- Reason→Act: 18°→72° clockwise. Points: (322,386)→(258,450) -->
+<path class="d-arc" d="M 322,386 A 100,100 0 0,1 258,450" fill="none" stroke="#c026d3" stroke-width="2" marker-end="url(#d-ahf)" opacity="0.9"/>
+<!-- Act→Observe: 108°→162° clockwise. Points: (196,450)→(132,386) -->
+<path class="d-arc" d="M 196,450 A 100,100 0 0,1 132,386" fill="none" stroke="#d946ef" stroke-width="2" marker-end="url(#d-ahf)" opacity="0.9"/>
+<!-- Observe→Goal: 198°→252° clockwise. Points: (132,324)→(196,260) -->
+<path class="d-arc" d="M 132,324 A 100,100 0 0,1 196,260" fill="none" stroke="#ec4899" stroke-width="2" marker-end="url(#d-ahp)" opacity="0.9"/>
+
+<!-- ── REACT NODES ── -->
+<!-- GOAL (top) -->
+<g class="d-node">
+  <circle cx="227" cy="255" r="35" fill="#14082a" stroke="#a855f7" stroke-width="2"/>
+  <text x="227" y="252" fill="#e2e8f0" font-size="10" font-weight="700" text-anchor="middle">GOAL</text>
+  <text x="227" y="265" fill="#94a3b8" font-size="7.5" text-anchor="middle">Set objective</text>
+</g>
+
+<!-- REASON (right) -->
+<g class="d-node">
+  <circle cx="327" cy="355" r="35" fill="#14082a" stroke="#b84cf0" stroke-width="2"/>
+  <text x="327" y="352" fill="#e2e8f0" font-size="10" font-weight="700" text-anchor="middle">REASON</text>
+  <text x="327" y="365" fill="#94a3b8" font-size="7.5" text-anchor="middle">Plan next step</text>
+</g>
+
+<!-- ACT (bottom) -->
+<g class="d-node">
+  <circle cx="227" cy="455" r="35" fill="#14082a" stroke="#d946ef" stroke-width="2"/>
+  <text x="227" y="452" fill="#e2e8f0" font-size="10" font-weight="700" text-anchor="middle">ACT</text>
+  <text x="227" y="465" fill="#94a3b8" font-size="7.5" text-anchor="middle">Use a tool</text>
+</g>
+
+<!-- OBSERVE (left) -->
+<g class="d-node">
+  <circle cx="127" cy="355" r="35" fill="#14082a" stroke="#ec4899" stroke-width="2"/>
+  <text x="127" y="352" fill="#e2e8f0" font-size="10" font-weight="700" text-anchor="middle">OBSERVE</text>
+  <text x="127" y="365" fill="#94a3b8" font-size="7.5" text-anchor="middle">Check result</text>
+</g>
+
+<!-- Tool use callout from ACT -->
+<line x1="262" y1="455" x2="330" y2="455" stroke="#d946ef" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#d-ahf)"/>
+<rect x="330" y="444" width="74" height="22" rx="4" fill="#1e0a2e" stroke="#d946ef" stroke-width="1"/>
+<text x="367" y="459" fill="#d946ef" font-size="7.5" font-weight="700" text-anchor="middle">⚡ TOOL USE</text>
+
+<!-- reads / writes labels at divider -->
+<line x1="446" y1="310" x2="370" y2="332" stroke="#334155" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#d-ahd)"/>
+<text x="415" y="306" fill="#475569" font-size="7.5" text-anchor="middle">reads</text>
+<line x1="296" y1="440" x2="446" y2="425" stroke="#334155" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#d-ahd)"/>
+<text x="373" y="447" fill="#475569" font-size="7.5" text-anchor="middle">writes</text>
+
+<!-- ══════════════════════════════════════════════════ DIVIDER -->
+<line x1="447" y1="174" x2="447" y2="543" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+
+<!-- ══════════════════════════════════════════════════ ZONE 2b: MEMORY STACK -->
+<rect x="455" y="171" width="429" height="378" rx="7" fill="rgba(10,18,38,0.7)"/>
+<text x="669" y="190" fill="#ec4899" font-size="8" font-weight="700" letter-spacing="2" text-anchor="middle">WHAT IT REMEMBERS — 3 LAYERS</text>
+
+<!-- Working Memory -->
+<g class="d-mem">
+  <rect x="465" y="200" width="409" height="54" rx="6" fill="rgba(168,85,247,0.14)" stroke="#a855f7" stroke-width="1.5"/>
+  <text x="481" y="220" fill="#a855f7" font-size="8.5" font-weight="700">🗒  WORKING MEMORY</text>
+  <text x="481" y="234" fill="#94a3b8" font-size="7.5">Current task only — gone when task ends</text>
+  <text x="481" y="246" fill="#475569" font-size="7">"Lisbon, 3 nights, 2 travellers, £800 budget"</text>
+</g>
+
+<!-- Session Memory -->
+<g class="d-mem">
+  <rect x="465" y="264" width="409" height="62" rx="6" fill="rgba(217,70,239,0.12)" stroke="#d946ef" stroke-width="1.5"/>
+  <text x="481" y="283" fill="#d946ef" font-size="8.5" font-weight="700">📋  SESSION MEMORY</text>
+  <text x="481" y="296" fill="#94a3b8" font-size="7.5">All turns in this conversation — lost when session ends</text>
+  <text x="481" y="308" fill="#475569" font-size="7">"User said: avoid 6am flights, window seat, hotel with pool"</text>
+  <text x="481" y="319" fill="#475569" font-size="7">"Hotel must be central district; max 1 stop on any flight"</text>
+</g>
+
+<!-- Long-Term Memory container -->
+<g class="d-mem">
+  <rect x="465" y="336" width="409" height="205" rx="6" fill="rgba(236,72,153,0.07)" stroke="#ec4899" stroke-width="1.5"/>
+  <text x="481" y="355" fill="#ec4899" font-size="8.5" font-weight="700">🧠  LONG-TERM MEMORY — persists across all sessions</text>
+
+  <!-- Semantic sub-box -->
+  <rect x="473" y="364" width="191" height="167" rx="4" fill="rgba(168,85,247,0.1)" stroke="rgba(168,85,247,0.45)" stroke-width="1"/>
+  <text x="568" y="381" fill="#a855f7" font-size="7.5" font-weight="700" text-anchor="middle">📇 SEMANTIC</text>
+  <text x="568" y="394" fill="#64748b" font-size="6.5" text-anchor="middle">Facts without timestamps</text>
+  <text x="568" y="411" fill="#94a3b8" font-size="7" text-anchor="middle">"Always books window seat"</text>
+  <text x="568" y="424" fill="#94a3b8" font-size="7" text-anchor="middle">"Prefers 10am+ departures"</text>
+  <text x="568" y="437" fill="#94a3b8" font-size="7" text-anchor="middle">"Loyalty: British Airways"</text>
+  <text x="568" y="450" fill="#94a3b8" font-size="7" text-anchor="middle">"Budget cap: £800 per trip"</text>
+  <text x="568" y="463" fill="#94a3b8" font-size="7" text-anchor="middle">"Vegetarian meal option"</text>
+  <text x="568" y="480" fill="#64748b" font-size="6" text-anchor="middle" font-style="italic">Traveller Profile</text>
+  <text x="568" y="492" fill="#64748b" font-size="6" text-anchor="middle" font-style="italic">→ traveller-profile.json</text>
+  <text x="568" y="522" fill="#475569" font-size="6" text-anchor="middle">Apply to every future session</text>
+
+  <!-- Episodic sub-box -->
+  <rect x="672" y="364" width="194" height="167" rx="4" fill="rgba(236,72,153,0.1)" stroke="rgba(236,72,153,0.45)" stroke-width="1"/>
+  <text x="769" y="381" fill="#ec4899" font-size="7.5" font-weight="700" text-anchor="middle">📔 EPISODIC</text>
+  <text x="769" y="394" fill="#64748b" font-size="6.5" text-anchor="middle">Time-stamped events</text>
+  <text x="769" y="411" fill="#94a3b8" font-size="7" text-anchor="middle">"Jun 3: upgrade requested</text>
+  <text x="769" y="423" fill="#94a3b8" font-size="7" text-anchor="middle">on all long-haul legs"</text>
+  <text x="769" y="438" fill="#94a3b8" font-size="7" text-anchor="middle">"Apr: avoid Ryanair</text>
+  <text x="769" y="450" fill="#94a3b8" font-size="7" text-anchor="middle">after cancellation"</text>
+  <text x="769" y="465" fill="#94a3b8" font-size="7" text-anchor="middle">"Nov: traveller uses</text>
+  <text x="769" y="477" fill="#94a3b8" font-size="7" text-anchor="middle">mobility aid"</text>
+  <text x="769" y="492" fill="#64748b" font-size="6" text-anchor="middle" font-style="italic">Decision Log / Diary</text>
+  <text x="769" y="504" fill="#64748b" font-size="6" text-anchor="middle" font-style="italic">→ trip-history.json</text>
+  <text x="769" y="522" fill="#475569" font-size="6" text-anchor="middle">Override defaults when relevant</text>
+</g>
+
+<!-- Connector arrow down from oversight box -->
+<line x1="450" y1="557" x2="450" y2="573" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#d-ahd)"/>
+
+<!-- ══════════════════════════════════════════════════ ZONE 3: PATTERNS -->
+<rect x="8" y="575" width="884" height="109" rx="9" fill="#1e293b"/>
+<text x="450" y="593" fill="#64748b" font-size="8" font-weight="700" letter-spacing="2.5" text-anchor="middle">AGENT ARCHITECTURE PATTERNS</text>
+
+<!-- Pattern 1: Router -->
+<g class="d-pat">
+  <rect x="16" y="601" width="204" height="75" rx="5" fill="rgba(168,85,247,0.1)" stroke="rgba(168,85,247,0.45)" stroke-width="1.5"/>
+  <text x="118" y="621" fill="#a855f7" font-size="9" font-weight="700" text-anchor="middle">🗂 ROUTER</text>
+  <text x="118" y="636" fill="#94a3b8" font-size="7.5" text-anchor="middle">Reads request, routes</text>
+  <text x="118" y="648" fill="#94a3b8" font-size="7.5" text-anchor="middle">to right specialist.</text>
+  <text x="118" y="662" fill="#64748b" font-size="7" text-anchor="middle">Takes no action itself</text>
+</g>
+
+<!-- Pattern 2: Orchestrator -->
+<g class="d-pat">
+  <rect x="228" y="601" width="204" height="75" rx="5" fill="rgba(217,70,239,0.1)" stroke="rgba(217,70,239,0.45)" stroke-width="1.5"/>
+  <text x="330" y="621" fill="#d946ef" font-size="9" font-weight="700" text-anchor="middle">🧩 ORCHESTRATOR</text>
+  <text x="330" y="636" fill="#94a3b8" font-size="7.5" text-anchor="middle">Breaks task into tracks,</text>
+  <text x="330" y="648" fill="#94a3b8" font-size="7.5" text-anchor="middle">assigns sub-agents,</text>
+  <text x="330" y="662" fill="#64748b" font-size="7" text-anchor="middle">assembles results</text>
+</g>
+
+<!-- Pattern 3: Supervisor -->
+<g class="d-pat">
+  <rect x="440" y="601" width="204" height="75" rx="5" fill="rgba(236,72,153,0.1)" stroke="rgba(236,72,153,0.45)" stroke-width="1.5"/>
+  <text x="542" y="621" fill="#ec4899" font-size="9" font-weight="700" text-anchor="middle">📡 SUPERVISOR</text>
+  <text x="542" y="636" fill="#94a3b8" font-size="7.5" text-anchor="middle">Monitors live; intervenes</text>
+  <text x="542" y="648" fill="#94a3b8" font-size="7.5" text-anchor="middle">when sub-agents deviate,</text>
+  <text x="542" y="662" fill="#64748b" font-size="7" text-anchor="middle">without being asked</text>
+</g>
+
+<!-- Pattern 4: Reflection -->
+<g class="d-pat">
+  <rect x="652" y="601" width="240" height="75" rx="5" fill="rgba(168,85,247,0.1)" stroke="rgba(168,85,247,0.45)" stroke-width="1.5"/>
+  <text x="772" y="621" fill="#a855f7" font-size="9" font-weight="700" text-anchor="middle">✍ REFLECTION LOOP</text>
+  <text x="772" y="636" fill="#94a3b8" font-size="7.5" text-anchor="middle">Build → Critique → Revise</text>
+  <text x="772" y="648" fill="#94a3b8" font-size="7.5" text-anchor="middle">until quality threshold met.</text>
+  <text x="772" y="662" fill="#64748b" font-size="7" text-anchor="middle">Writer + Editor model</text>
+</g>
+
+</svg>
+        </div>
+        <p class="text-center text-slate-600 text-xs mt-4">Hover over nodes and patterns to explore. Scroll down for interactive deep-dives into each section.</p>
+    </div>
+</section>
+<!-- ──────────────────────────────── SECTION 1: FIVE POSITIONS -->
+<section id="five-positions" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-purple-400 text-xs font-bold uppercase tracking-widest">Positions One Through Five</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">What Does Each Click on the Dial Actually Mean?</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">Think of each level as a different travel arrangement — from a website that shows you flights to an agent who manages every trip you'll ever take.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
+            <!-- Card 1 -->
+            <div class="pos-card bg-slate-800/50 border border-slate-700 hover:border-purple-700/50 rounded-2xl p-6 space-y-3 transition-all duration-300">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-lg">✈️</div>
+                    <div>
+                        <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Position 1</p>
+                        <p class="text-white font-bold text-lg">Suggest</p>
+                        <span class="tag bg-slate-700/80 text-slate-400">Scripted / Rule-Based</span>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">You enter your travel dates. The search engine lists twelve flights matching your filters. It does nothing else. You compare, you decide, you book it yourself.</p>
+                <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700">
+                    <p class="text-xs text-slate-500 font-mono mb-1">Travel equivalent</p>
+                    <p class="text-slate-300 text-sm">A flight comparison site. It reads the schedule, you make the call.</p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="pos-card bg-slate-800/50 border border-slate-700 hover:border-fuchsia-700/50 rounded-2xl p-6 space-y-3 transition-all duration-300">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-fuchsia-500/20 border border-fuchsia-500/40 flex items-center justify-center text-lg">📩</div>
+                    <div>
+                        <p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest">Position 2</p>
+                        <p class="text-white font-bold text-lg">Approve</p>
+                        <span class="tag bg-slate-700/80 text-slate-400">Bare LLM / Chatbot</span>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">A travel assistant finds the best available flight for your trip, cross-checks your loyalty account, and sends you a message: "Confirm this booking?" Nothing is charged until you reply yes.</p>
+                <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700">
+                    <p class="text-xs text-slate-500 font-mono mb-1">Travel equivalent</p>
+                    <p class="text-slate-300 text-sm">A concierge who does all the research and hands you the pen to sign.</p>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="pos-card bg-slate-800/50 border border-slate-700 hover:border-pink-700/50 rounded-2xl p-6 space-y-3 transition-all duration-300">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-lg">🎫</div>
+                    <div>
+                        <p class="text-xs text-pink-400 font-bold uppercase tracking-widest">Position 3</p>
+                        <p class="text-white font-bold text-lg">Delegate</p>
+                        <span class="tag bg-slate-700/80 text-slate-400">Agentic Workflow</span>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">Your travel agent has standing instructions: book economy, always grab a window seat, hotel within walking distance of the venue. She handles every standard trip. She calls you only when something unusual comes up — a cancellation, a price spike, an upgrade opportunity.</p>
+                <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700">
+                    <p class="text-xs text-slate-500 font-mono mb-1">Travel equivalent</p>
+                    <p class="text-slate-300 text-sm">A corporate travel desk that works within your company policy and escalates edge cases.</p>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="pos-card bg-slate-800/50 border border-slate-700 hover:border-purple-700/50 rounded-2xl p-6 space-y-3 transition-all duration-300">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-lg">📊</div>
+                    <div>
+                        <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Position 4</p>
+                        <p class="text-white font-bold text-lg">Monitor</p>
+                        <span class="tag bg-slate-700/80 text-slate-400">Single Agent</span>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">Your entire travel calendar runs independently. Hotels, transfers, seat upgrades, check-in reminders — all handled. You receive a weekly digest. You can step in anytime, but you rarely need to.</p>
+                <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700">
+                    <p class="text-xs text-slate-500 font-mono mb-1">Travel equivalent</p>
+                    <p class="text-slate-300 text-sm">A full-service travel manager for a mid-sized company — responsible, reporting in, acting alone.</p>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="pos-card bg-slate-800/50 border border-slate-700 hover:border-fuchsia-700/50 rounded-2xl p-6 space-y-3 transition-all duration-300 md:col-span-2 lg:col-span-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-fuchsia-500/20 border border-fuchsia-500/40 flex items-center justify-center text-lg">🤖</div>
+                    <div>
+                        <p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest">Position 5</p>
+                        <p class="text-white font-bold text-lg">Automate</p>
+                        <span class="tag bg-slate-700/80 text-slate-400">Multi-Agent System</span>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">All recurring trips run without you. A scheduling agent reads your calendar, a booking agent handles reservations, a disruption agent reroutes you when a flight is delayed. You only hear from the system when something it cannot resolve on its own requires a decision.</p>
+                <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700">
+                    <p class="text-xs text-slate-500 font-mono mb-1">Travel equivalent</p>
+                    <p class="text-slate-300 text-sm">A 24-hour travel operations centre with specialized teams working in parallel on your account.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-purple-900/30 to-fuchsia-900/20 border border-purple-700/40 rounded-2xl p-6 flex gap-4 items-start">
+            <span class="text-2xl mt-1">💡</span>
+            <div>
+                <p class="text-white font-semibold mb-1">Higher autonomy isn't automatically better</p>
+                <p class="text-slate-300 text-sm leading-relaxed">Fully automating your routine Monday commute is very different from fully automating your company's international conference travel. The right position depends on the stakes involved, how easily a mistake can be undone, and how well you understand what the agent is doing on your behalf.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SECTION 2: TWO AXES -->
+<section id="two-axes" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">The Control Dimension</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Autonomy Without Control Is Not Freedom — It's Exposure</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">Autonomy is only one axis. The other is how tightly you can see, adjust, and limit what's happening. Where those two axes intersect is where your actual risk lives.</p>
+        </div>
+
+        <div class="max-w-3xl mx-auto">
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Top Left: High Auto, Low Control -->
+                <div class="quad-cell bg-red-950/40 border-2 border-red-800/60 rounded-2xl p-6 space-y-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xl">⚠️</span>
+                        <span class="text-red-400 text-xs font-bold uppercase tracking-widest">High Autonomy · Low Control</span>
+                    </div>
+                    <p class="text-white font-bold">The Agent with the Company Card</p>
+                    <p class="text-slate-300 text-sm leading-relaxed">Your travel agent has full booking authority, no spending ceiling, and sends you updates only when she feels like it. She is booking everything — you won't see the bill until after the trip.</p>
+                    <div class="bg-red-950/50 border border-red-800/40 rounded-lg px-3 py-2">
+                        <p class="text-red-300 text-xs font-mono">Verdict: Dangerous</p>
+                    </div>
+                </div>
+
+                <!-- Top Right: High Auto, High Control -->
+                <div class="quad-cell bg-purple-950/40 border-2 border-purple-600/70 rounded-2xl p-6 space-y-3 relative">
+                    <div class="absolute -top-3 right-4 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white text-xs font-bold px-3 py-1 rounded-full">Sweet Spot</div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xl">✅</span>
+                        <span class="text-purple-400 text-xs font-bold uppercase tracking-widest">High Autonomy · High Control</span>
+                    </div>
+                    <p class="text-white font-bold">The Trusted Agent with a Budget Ceiling</p>
+                    <p class="text-slate-300 text-sm leading-relaxed">She handles your full travel calendar — but has a £500-per-booking limit, sends you a nightly summary, and you can cancel anything confirmed in the last hour.</p>
+                    <div class="bg-purple-950/50 border border-purple-600/40 rounded-lg px-3 py-2">
+                        <p class="text-purple-300 text-xs font-mono">Verdict: Enterprise sweet spot</p>
+                    </div>
+                </div>
+
+                <!-- Bottom Left: Low Auto, Low Control -->
+                <div class="quad-cell bg-slate-800/40 border-2 border-slate-700 rounded-2xl p-6 space-y-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xl">😐</span>
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">Low Autonomy · Low Control</span>
+                    </div>
+                    <p class="text-white font-bold">The Flight Search Website</p>
+                    <p class="text-slate-300 text-sm leading-relaxed">It shows you results. You click around. It doesn't act, and you're not really watching it — because there's nothing to watch. Limited risk, limited value.</p>
+                    <div class="bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
+                        <p class="text-slate-400 text-xs font-mono">Verdict: Safe but limited</p>
+                    </div>
+                </div>
+
+                <!-- Bottom Right: Low Auto, High Control -->
+                <div class="quad-cell bg-blue-950/30 border-2 border-blue-800/50 rounded-2xl p-6 space-y-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xl">🏛️</span>
+                        <span class="text-blue-400 text-xs font-bold uppercase tracking-widest">Low Autonomy · High Control</span>
+                    </div>
+                    <p class="text-white font-bold">The Check-In Desk Agent</p>
+                    <p class="text-slate-300 text-sm leading-relaxed">Every action requires your passport, your signature, a supervisor code. A seat change generates a paper trail. Nothing happens without you present. Appropriate where errors carry real consequences.</p>
+                    <div class="bg-blue-950/50 border border-blue-800/40 rounded-lg px-3 py-2">
+                        <p class="text-blue-300 text-xs font-mono">Verdict: Regulated high-stakes environments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5 flex justify-between items-center px-2">
+                <p class="text-slate-600 text-xs">← Low autonomy</p>
+                <p class="text-slate-600 text-xs">Autonomy axis</p>
+                <p class="text-slate-600 text-xs">High autonomy →</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SECTION 3: REACT STEPPER -->
+<section id="agent-head" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-purple-400 text-xs font-bold uppercase tracking-widest">How an Agent Thinks</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Goal → Reason → Act → Observe → Repeat</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">An agent isn't following a checklist. It reasons in a loop — constantly checking whether its last action moved it closer to the goal, and whether the situation changed in a way that should alter what comes next.</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+
+            <!-- Progress bar -->
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-slate-500 text-xs font-mono whitespace-nowrap">Step <span id="react-prog-label">1</span> / 4</span>
+                <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="prog-bar-fill" id="react-prog-bar" style="width:25%"></div>
+                </div>
+                <span class="text-slate-500 text-xs font-mono">Lisbon trip</span>
+            </div>
+
+            <!-- Step selector buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <button onclick="showReactStep(0,false)" class="react-btn-step active border border-slate-700 rounded-xl px-4 py-3 text-left" data-step="0">
+                    <div class="flex items-center gap-2 mb-1"><div class="step-dot"></div><p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Step 1</p></div>
+                    <p class="text-white font-semibold text-sm">Receive Goal</p>
+                </button>
+                <button onclick="showReactStep(1,false)" class="react-btn-step border border-slate-700 rounded-xl px-4 py-3 text-left" data-step="1">
+                    <div class="flex items-center gap-2 mb-1"><div class="step-dot"></div><p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest">Step 2</p></div>
+                    <p class="text-white font-semibold text-sm">Reason</p>
+                </button>
+                <button onclick="showReactStep(2,false)" class="react-btn-step border border-slate-700 rounded-xl px-4 py-3 text-left" data-step="2">
+                    <div class="flex items-center gap-2 mb-1"><div class="step-dot"></div><p class="text-xs text-pink-400 font-bold uppercase tracking-widest">Step 3</p></div>
+                    <p class="text-white font-semibold text-sm">Act</p>
+                </button>
+                <button onclick="showReactStep(3,false)" class="react-btn-step border border-slate-700 rounded-xl px-4 py-3 text-left" data-step="3">
+                    <div class="flex items-center gap-2 mb-1"><div class="step-dot"></div><p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Step 4</p></div>
+                    <p class="text-white font-semibold text-sm">Observe &amp; Adapt</p>
+                </button>
+            </div>
+
+            <!-- Content area -->
+            <div class="bg-slate-800/50 border border-purple-700/40 rounded-2xl p-8 mb-6 min-h-[200px] relative overflow-hidden">
+                <div id="react-display">
+                    <div class="react-content" id="react-inner">
+                        <p class="text-purple-300 text-xs font-bold uppercase tracking-widest mb-3">Scenario — booking a 3-night trip to Lisbon</p>
+                        <p class="text-white text-xl font-bold mb-3" id="react-title">Step 1 — Receive the Goal</p>
+                        <p class="text-slate-300 leading-relaxed text-base" id="react-body">"Book a 3-night trip to Lisbon for two people, leaving next Thursday. Budget under £800 total, hotel near the city centre."</p>
+                        <p class="text-slate-500 text-sm mt-4 italic" id="react-note">The agent now has a clear task, constraints to work within, and a starting point for its planning.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next / Back controls -->
+            <div class="flex gap-3">
+                <button onclick="stepReact(-1)" id="react-back" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold py-3 rounded-xl transition-all opacity-40 cursor-not-allowed" disabled>
+                    ← Previous
+                </button>
+                <button onclick="stepReact(1)" id="react-fwd" class="flex-1 bg-gradient-to-r from-purple-700 to-fuchsia-700 hover:from-purple-600 hover:to-fuchsia-600 text-white font-semibold py-3 rounded-xl transition-all">
+                    Next Step →
+                </button>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">🔄</p>
+                    <p class="text-white font-semibold text-sm">It loops</p>
+                    <p class="text-slate-400 text-xs mt-1">Each action triggers an observation that informs the next decision. Not a checklist — a feedback cycle.</p>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">🔧</p>
+                    <p class="text-white font-semibold text-sm">It uses tools</p>
+                    <p class="text-slate-400 text-xs mt-1">The agent searches availability, checks prices, reads your loyalty account, and books — not just generates text about booking.</p>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">🎯</p>
+                    <p class="text-white font-semibold text-sm">It recovers</p>
+                    <p class="text-slate-400 text-xs mt-1">When the hotel is full, the flight is cancelled, or the price spikes — it doesn't stop, it replans.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SECTION 4: MEMORY -->
+<section id="memory" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">What an Agent Remembers</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Three Layers of Memory, Three Lengths of Time</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">An agent's ability to stay useful over time depends entirely on which kind of memory it can access — and how long that knowledge survives after a conversation ends.</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <!-- Tabs -->
+            <div class="flex gap-3 mb-1 flex-wrap">
+                <button onclick="showMemTab('working')" class="mem-tab border border-slate-700 rounded-xl px-5 py-3 text-sm font-semibold bg-slate-800/60 active" id="tab-working">
+                    🗒️ Working Memory
+                </button>
+                <button onclick="showMemTab('session')" class="mem-tab border border-slate-700 rounded-xl px-5 py-3 text-sm font-semibold bg-slate-800/60" id="tab-session">
+                    📋 Session Memory
+                </button>
+                <button onclick="showMemTab('longterm')" class="mem-tab border border-slate-700 rounded-xl px-5 py-3 text-sm font-semibold bg-slate-800/60" id="tab-longterm">
+                    🧠 Long-Term Memory
+                </button>
+            </div>
+
+            <!-- Panel: Working -->
+            <div id="panel-working" class="mem-panel active bg-slate-800/50 border border-slate-700 rounded-2xl p-8">
+                <div class="flex items-start gap-6">
+                    <div class="text-4xl mt-1">🗒️</div>
+                    <div class="flex-1">
+                        <p class="text-xs text-purple-400 font-bold uppercase tracking-widest mb-2">Working Memory</p>
+                        <h3 class="text-white font-bold text-xl mb-3">The sticky note on the desk right now</h3>
+                        <p class="text-slate-300 leading-relaxed mb-4">Right now, the agent knows: 3 nights, Lisbon, two people, Thursday departure, £800 budget. That's it. This is active, immediate knowledge — the facts it is currently working with for this single request.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 font-mono mb-1">Lifespan</p>
+                                <p class="text-white text-sm">This request only</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 font-mono mb-1">What it holds</p>
+                                <p class="text-white text-sm">Destination, dates, budget, number of travellers</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 font-mono mb-1">When it disappears</p>
+                                <p class="text-white text-sm">The moment this task completes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Session -->
+            <div id="panel-session" class="mem-panel bg-slate-800/50 border border-slate-700 rounded-2xl p-8">
+                <div class="flex items-start gap-6">
+                    <div class="text-4xl mt-1">📋</div>
+                    <div class="flex-1">
+                        <p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest mb-2">Session Memory</p>
+                        <h3 class="text-white font-bold text-xl mb-3">The notepad from today's conversation</h3>
+                        <p class="text-slate-300 leading-relaxed mb-4">Everything said during this planning session. You mentioned wanting an aisle seat. You said to avoid the 6am departure. You asked for a hotel with a gym. The agent remembers all of it — until you close the chat and start a new one tomorrow.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 font-mono mb-1">Lifespan</p>
+                                <p class="text-white text-sm">All turns within one conversation</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 font-mono mb-1">What it holds</p>
+                                <p class="text-white text-sm">Seat preference, departure time, hotel amenities, mid-session changes</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 font-mono mb-1">When it disappears</p>
+                                <p class="text-white text-sm">When you close the session</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Long-term -->
+            <div id="panel-longterm" class="mem-panel bg-slate-800/50 border border-slate-700 rounded-2xl p-8">
+                <div class="flex items-start gap-6">
+                    <div class="text-4xl mt-1">🧠</div>
+                    <div class="flex-1">
+                        <p class="text-xs text-pink-400 font-bold uppercase tracking-widest mb-2">Long-Term Memory — Two Kinds</p>
+                        <h3 class="text-white font-bold text-xl mb-4">Your travel profile and your travel diary</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-purple-900/20 border border-purple-700/50 rounded-xl p-4">
+                                <p class="text-purple-300 font-bold mb-2">📇 Semantic — The Profile</p>
+                                <p class="text-slate-300 text-sm leading-relaxed">Standing facts with no expiry date. "Always books an aisle seat." "Vegetarian meal option on long-haul." "Prefers the same hotel chain for loyalty points." These apply to every future booking, forever, until you change them.</p>
+                            </div>
+                            <div class="bg-fuchsia-900/20 border border-fuchsia-700/50 rounded-xl p-4">
+                                <p class="text-fuchsia-300 font-bold mb-2">📔 Episodic — The Diary</p>
+                                <p class="text-slate-300 text-sm leading-relaxed">Time-stamped events. "In April 2024, a last-minute rebooking cost £340 — the traveller asked us to keep a buffer." "In November 2024, the traveller mentioned they now use a mobility aid." These happened at a specific moment and change how the agent handles future requests.</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 text-sm">Together, these make the agent feel like it already knows you — because knowledge from every past trip was saved and is retrieved whenever it becomes relevant.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SECTION 5: HITL / HOTL -->
+<section id="hitl" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-purple-400 text-xs font-bold uppercase tracking-widest">Your Role When It's Running</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Are You the Co-Pilot or the Control Tower?</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">There are two fundamentally different ways to stay involved with a running agent — and one of them doesn't mean you've stopped paying attention.</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div class="bg-slate-800/50 border border-purple-700/50 rounded-2xl p-8 space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-3xl">✈️</span>
+                    <div>
+                        <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Human-in-the-Loop (HITL)</p>
+                        <p class="text-white font-bold text-xl">The Co-Pilot</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 leading-relaxed">You are inside the decision chain. Before the agent confirms any booking, it stops and sends you the details to approve. Nothing is charged, no confirmation is sent, no itinerary is locked — until you say yes.</p>
+                <div class="bg-purple-950/30 border border-purple-800/40 rounded-xl p-4">
+                    <p class="text-purple-300 text-sm font-semibold mb-2">Best for situations like:</p>
+                    <ul class="text-slate-300 text-sm space-y-1.5">
+                        <li class="flex gap-2"><span class="text-purple-400">→</span> First-time use of a new agent you haven't calibrated yet</li>
+                        <li class="flex gap-2"><span class="text-purple-400">→</span> Any booking above your normal spend threshold</li>
+                        <li class="flex gap-2"><span class="text-purple-400">→</span> Non-refundable tickets or hotel deposits</li>
+                        <li class="flex gap-2"><span class="text-purple-400">→</span> Trips with complex multi-leg itineraries</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-fuchsia-700/50 rounded-2xl p-8 space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-3xl">🗼</span>
+                    <div>
+                        <p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest">Human-on-the-Loop (HOTL)</p>
+                        <p class="text-white font-bold text-xl">The Control Tower</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 leading-relaxed">The bookings are happening. You are watching the dashboard. You can intervene — and you will if something looks wrong — but the agent doesn't pause to ask permission for every move. Your job is oversight, not approval.</p>
+                <div class="bg-fuchsia-950/30 border border-fuchsia-800/40 rounded-xl p-4">
+                    <p class="text-fuchsia-300 text-sm font-semibold mb-2">Best for situations like:</p>
+                    <ul class="text-slate-300 text-sm space-y-1.5">
+                        <li class="flex gap-2"><span class="text-fuchsia-400">→</span> Routine recurring trips you've seen many times before</li>
+                        <li class="flex gap-2"><span class="text-fuchsia-400">→</span> High-volume bookings where per-approval would create a bottleneck</li>
+                        <li class="flex gap-2"><span class="text-fuchsia-400">→</span> An agent that's been running reliably for months</li>
+                        <li class="flex gap-2"><span class="text-fuchsia-400">→</span> Time-sensitive bookings where delay has a cost</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <p class="text-center text-slate-400 text-sm mb-6">Four situations where you should always require a check-in — regardless of which mode you're in:</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">💰</p>
+                    <p class="text-white font-semibold text-sm">Before money moves</p>
+                    <p class="text-slate-400 text-xs mt-1">Any payment above your set threshold — no exceptions</p>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">📣</p>
+                    <p class="text-white font-semibold text-sm">Before external comms</p>
+                    <p class="text-slate-400 text-xs mt-1">Booking confirmations sent to clients or third parties</p>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">❓</p>
+                    <p class="text-white font-semibold text-sm">When it flags uncertainty</p>
+                    <p class="text-slate-400 text-xs mt-1">Two options look equally valid and the agent can't decide</p>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">🚫</p>
+                    <p class="text-white font-semibold text-sm">Non-refundable actions</p>
+                    <p class="text-slate-400 text-xs mt-1">Non-flexible fares, hotel deposits, airline tickets already ticketed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SECTION 6: FOUR PATTERNS -->
+<section id="patterns" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">Agent Architecture Patterns</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Four Ways to Organise Who Does What</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">One agent can handle a simple trip. But complex travel — 12 people, 6 cities, shifting schedules — is often better split. These four patterns describe how you divide responsibility.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div class="bg-slate-800/50 border border-slate-700 hover:border-purple-700/60 rounded-2xl p-6 space-y-4 transition-all duration-300 hover:-translate-y-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-2xl">🛎️</div>
+                    <div>
+                        <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Pattern 1</p>
+                        <p class="text-white font-bold text-lg">The Router</p>
+                        <p class="text-slate-500 text-xs font-mono">Triage — no action taken</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">The hotel concierge desk. When a guest asks something, they don't handle it themselves — they figure out who can, and send you there. The router's only job is to read the request and direct it to the right specialist.</p>
+                <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-3 text-sm">
+                    <p class="text-slate-400">A travel query arrives → Router reads it → Sends it to the "flights" agent, the "hotels" agent, or the "disruptions" agent based on what's being asked.</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 hover:border-fuchsia-700/60 rounded-2xl p-6 space-y-4 transition-all duration-300 hover:-translate-y-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-fuchsia-500/20 border border-fuchsia-500/40 flex items-center justify-center text-2xl">🗺️</div>
+                    <div>
+                        <p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest">Pattern 2</p>
+                        <p class="text-white font-bold text-lg">The Orchestrator</p>
+                        <p class="text-slate-500 text-xs font-mono">Coordinates without doing</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">The tour operator who plans a 10-day itinerary. She doesn't drive the coach, manage the hotel, or run the tours herself — she coordinates the specialists who do, and assembles the pieces into one coherent trip.</p>
+                <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-3 text-sm">
+                    <p class="text-slate-400">Book a conference trip → Orchestrator assigns: flight agent handles air, hotel agent handles rooms, transfer agent handles ground. Results roll up and get assembled into one itinerary.</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 hover:border-pink-700/60 rounded-2xl p-6 space-y-4 transition-all duration-300 hover:-translate-y-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-2xl">📡</div>
+                    <div>
+                        <p class="text-xs text-pink-400 font-bold uppercase tracking-widest">Pattern 3</p>
+                        <p class="text-white font-bold text-lg">The Supervisor</p>
+                        <p class="text-slate-500 text-xs font-mono">Monitors and intervenes</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">The on-trip coordinator who actively watches the whole journey in real time. When your connecting flight is delayed by 90 minutes, she reroutes the airport transfer and calls ahead to the hotel — without anyone asking her to.</p>
+                <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-3 text-sm">
+                    <p class="text-slate-400">Flight lands late → Supervisor detects the delay → Immediately rebooks the transfer, updates the hotel arrival time, and alerts the traveller — all before they've left the gate.</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 hover:border-purple-700/60 rounded-2xl p-6 space-y-4 transition-all duration-300 hover:-translate-y-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-2xl">✍️</div>
+                    <div>
+                        <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Pattern 4</p>
+                        <p class="text-white font-bold text-lg">The Reflection Loop</p>
+                        <p class="text-slate-500 text-xs font-mono">Produce → critique → improve</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">A travel planner and a quality checker working together in a loop. The planner drafts the itinerary. The checker reviews it: "Day 3 has a 4-hour gap but the transfer alone takes 90 minutes." The planner revises until the checker has no more objections.</p>
+                <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-3 text-sm">
+                    <p class="text-slate-400">Draft itinerary → Critic agent finds a timing clash → Planner revises → Critic approves → Itinerary is finalised and sent to the traveller.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SECTION 7: FAILURE MODES -->
+<section id="failure-modes" class="py-20 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-purple-400 text-xs font-bold uppercase tracking-widest">What Goes Wrong</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Five Ways an Agent Fails</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">Every failure mode here has a real-world travel equivalent — and they all appear in the wild. Recognising the pattern early is the difference between a minor redirect and a missed flight.</p>
+        </div>
+
+        <div class="max-w-3xl mx-auto space-y-3">
+
+            <div class="fail-card bg-slate-800/50 border border-slate-700 rounded-2xl p-5" onclick="toggleFail(this)">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">🗺️</span>
+                        <div>
+                            <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Failure 1 — Stale Knowledge</p>
+                            <p class="text-white font-bold">Booking a hotel that closed six months ago</p>
+                        </div>
+                    </div>
+                    <span class="chevron text-slate-500 text-lg">▼</span>
+                </div>
+                <div class="fail-body border-t border-slate-700 mt-4 space-y-3">
+                    <p class="text-slate-300 leading-relaxed">The agent searches for accommodation, finds a well-rated option near your venue, and books it. It doesn't know the hotel went through a major renovation and closed its doors to guests six months ago. It followed its information perfectly — the information was just wrong.</p>
+                    <p class="text-slate-300 leading-relaxed">This is the equivalent of GPS routing you down a road that was closed in the last map update. The system is technically working. The world has moved on without it.</p>
+                    <div class="bg-purple-900/20 border border-purple-700/40 rounded-xl p-3">
+                        <p class="text-purple-300 text-sm"><strong>Prevention:</strong> Agents need access to live, current information — not just what they were trained on. Build in expiry dates for knowledge, and ensure critical checks (like hotel availability) happen in real time at the moment of booking.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fail-card bg-slate-800/50 border border-slate-700 rounded-2xl p-5" onclick="toggleFail(this)">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">✈️</span>
+                        <div>
+                            <p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest">Failure 2 — Overconfident Assumption</p>
+                            <p class="text-white font-bold">Booking the wrong London airport</p>
+                        </div>
+                    </div>
+                    <span class="chevron text-slate-500 text-lg">▼</span>
+                </div>
+                <div class="fail-body border-t border-slate-700 mt-4 space-y-3">
+                    <p class="text-slate-300 leading-relaxed">You ask the agent to book a flight from London. You mean London City — it's 15 minutes from your office. The agent assumes Heathrow, which is how most London flights are listed. Tickets issued. Your departure is 40 miles in the wrong direction.</p>
+                    <p class="text-slate-300 leading-relaxed">The agent didn't flag the ambiguity. It filled in the gap with its most common pattern and proceeded as if it were certain. A well-calibrated agent would have asked.</p>
+                    <div class="bg-fuchsia-900/20 border border-fuchsia-700/40 rounded-xl p-3">
+                        <p class="text-fuchsia-300 text-sm"><strong>Prevention:</strong> Build calibrated uncertainty into the system. When a key detail is ambiguous, the agent should ask — not guess. Confirm before you commit to anything non-refundable.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fail-card bg-slate-800/50 border border-slate-700 rounded-2xl p-5" onclick="toggleFail(this)">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">🔁</span>
+                        <div>
+                            <p class="text-xs text-pink-400 font-bold uppercase tracking-widest">Failure 3 — Infinite Search Loop</p>
+                            <p class="text-white font-bold">Still searching for the perfect flight while yours sells out</p>
+                        </div>
+                    </div>
+                    <span class="chevron text-slate-500 text-lg">▼</span>
+                </div>
+                <div class="fail-body border-t border-slate-700 mt-4 space-y-3">
+                    <p class="text-slate-300 leading-relaxed">The agent keeps searching for a better combination of price, timing, and stops. Option A is slightly too expensive. Option B has a short layover. Option C is good but maybe something better will appear. After 90 minutes of recalculating, your preferred flight sold out at the price you would have paid immediately.</p>
+                    <p class="text-slate-300 leading-relaxed">This is a reasoning loop with no exit condition — the agent never hit "good enough" and kept going indefinitely instead.</p>
+                    <div class="bg-pink-900/20 border border-pink-700/40 rounded-xl p-3">
+                        <p class="text-pink-300 text-sm"><strong>Prevention:</strong> Set a maximum number of reasoning steps. If the agent hasn't converged after a defined number of attempts, it should return its best option found so far — not keep searching forever.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fail-card bg-slate-800/50 border border-slate-700 rounded-2xl p-5" onclick="toggleFail(this)">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">🗓️</span>
+                        <div>
+                            <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Failure 4 — Precise Execution of Wrong Instructions</p>
+                            <p class="text-white font-bold">Perfect itinerary, wrong destination</p>
+                        </div>
+                    </div>
+                    <span class="chevron text-slate-500 text-lg">▼</span>
+                </div>
+                <div class="fail-body border-t border-slate-700 mt-4 space-y-3">
+                    <p class="text-slate-300 leading-relaxed">You asked for a "hotel near the conference." The agent books one near the conference registration address — which is the venue's administrative office, in a suburb 45 minutes from where the actual sessions take place. The agent did exactly what you said. You said the wrong thing.</p>
+                    <p class="text-slate-300 leading-relaxed">An agent optimises for the instruction it received, not the outcome you intended. Vague inputs produce precise-but-wrong outputs.</p>
+                    <div class="bg-purple-900/20 border border-purple-700/40 rounded-xl p-3">
+                        <p class="text-purple-300 text-sm"><strong>Prevention:</strong> Specific constraints with clear definitions of success. Before the agent starts, define what "near the conference" actually means — a postcode, a radius, a specific area of the city.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fail-card bg-slate-800/50 border border-slate-700 rounded-2xl p-5" onclick="toggleFail(this)">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">🔧</span>
+                        <div>
+                            <p class="text-xs text-fuchsia-400 font-bold uppercase tracking-widest">Failure 5 — Wrong Tool for the Job</p>
+                            <p class="text-white font-bold">Using the flight search to book a dinner reservation</p>
+                        </div>
+                    </div>
+                    <span class="chevron text-slate-500 text-lg">▼</span>
+                </div>
+                <div class="fail-body border-t border-slate-700 mt-4 space-y-3">
+                    <p class="text-slate-300 leading-relaxed">The agent is given access to a flight and hotel booking tool. You ask it to also reserve a table at a restaurant for your client dinner. It tries to process the restaurant request through the hotel booking system, fails, loops, and reports the restaurant as "unavailable" — because it was querying the wrong service entirely.</p>
+                    <p class="text-slate-300 leading-relaxed">An agent without the right tools will improvise with what it has. The result looks like failure, but the underlying problem is a tool mismatch.</p>
+                    <div class="bg-fuchsia-900/20 border border-fuchsia-700/40 rounded-xl p-3">
+                        <p class="text-fuchsia-300 text-sm"><strong>Prevention:</strong> Match tools to tasks deliberately. Give the agent exactly what it needs for its specific scope — no more, no less. If you expand the task, expand the toolset to match.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="max-w-3xl mx-auto mt-8 bg-gradient-to-r from-slate-800/80 to-slate-800/40 border border-slate-700 rounded-2xl p-6">
+            <div class="flex items-start gap-4">
+                <span class="text-2xl mt-1">📐</span>
+                <div>
+                    <p class="text-white font-bold mb-2">Why chained steps multiply risk</p>
+                    <p class="text-slate-300 text-sm leading-relaxed">If your agent is 95% accurate at each step and runs through six reasoning steps to plan your trip — checking flights, availability, prices, transfers, hotel, and confirmation — you don't end up with 95% accuracy overall. You end up with roughly 74%. A small error at step two compounds through every step that follows it. Shorter chains with human checkpoints outperform long autonomous pipelines for anything high-stakes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SECTION 8: MINT -->
+<section id="mint-rule" class="py-20">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <span class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">The Design Principle</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Don't Hire a Travel Agency to Book One Taxi</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">The MINT rule is a single question you should ask before building any agent: is every piece of this necessary, or am I adding complexity out of habit?</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <div class="bg-purple-900/20 border border-purple-700/50 rounded-2xl p-5 text-center">
+                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-purple-400 to-fuchsia-400 mb-2">M</p>
+                    <p class="text-white font-bold">Minimal</p>
+                    <p class="text-slate-400 text-xs mt-1">Fewest components that can do the job</p>
+                </div>
+                <div class="bg-fuchsia-900/20 border border-fuchsia-700/50 rounded-2xl p-5 text-center">
+                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-fuchsia-400 to-pink-400 mb-2">I</p>
+                    <p class="text-white font-bold">Intelligence</p>
+                    <p class="text-slate-400 text-xs mt-1">Only as much reasoning as the trip requires</p>
+                </div>
+                <div class="bg-pink-900/20 border border-pink-700/50 rounded-2xl p-5 text-center">
+                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-pink-400 to-purple-400 mb-2">N</p>
+                    <p class="text-white font-bold">Necessary</p>
+                    <p class="text-slate-400 text-xs mt-1">Each component must earn its place</p>
+                </div>
+                <div class="bg-purple-900/20 border border-purple-700/50 rounded-2xl p-5 text-center">
+                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-purple-400 to-fuchsia-400 mb-2">T</p>
+                    <p class="text-white font-bold">Tools</p>
+                    <p class="text-slate-400 text-xs mt-1">Only the tools the agent actually needs</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 mb-8">
+                <p class="text-white font-bold text-center mb-6">Four questions before you build your travel agent</p>
+                <div class="space-y-4">
+                    <div class="flex gap-4 items-start row-hover p-3 transition-all duration-200">
+                        <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-0.5">1</div>
+                        <div>
+                            <p class="text-white font-semibold">Could a simple booking site handle this reliably?</p>
+                            <p class="text-slate-400 text-sm mt-1">If the trip is always the same route, same hotel, same day of the week — you don't need an agent. A standing order or a direct booking tool is faster, cheaper, and less fragile.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start row-hover p-3 transition-all duration-200">
+                        <div class="w-8 h-8 rounded-full bg-fuchsia-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-0.5">2</div>
+                        <div>
+                            <p class="text-white font-semibold">Does this trip actually need multiple specialist agents, or can one handle it?</p>
+                            <p class="text-slate-400 text-sm mt-1">A multi-agent system adds handoff points and failure modes between agents. A single well-scoped agent handling the whole booking is often faster and much easier to debug when something goes wrong.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start row-hover p-3 transition-all duration-200">
+                        <div class="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-0.5">3</div>
+                        <div>
+                            <p class="text-white font-semibold">Which tools does it actually need access to?</p>
+                            <p class="text-slate-400 text-sm mt-1">If the agent only needs to search flights and send a confirmation email — give it those two tools. Not your full calendar, not your expense system, not your entire contact list. Each additional tool is a surface for error.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start row-hover p-3 transition-all duration-200">
+                        <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-0.5">4</div>
+                        <div>
+                            <p class="text-white font-semibold">What is the simplest setup that could work?</p>
+                            <p class="text-slate-400 text-sm mt-1">Start there. Book the flight with the simplest possible agent. Run it on one trip. Watch what breaks. Add complexity only when the simple version demonstrably can't do what you need.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-900/40 via-fuchsia-900/30 to-pink-900/20 border border-purple-700/50 rounded-2xl p-8 text-center">
+                <p class="text-3xl mb-4">🚕</p>
+                <p class="text-white font-bold text-xl mb-3">Start with the taxi</p>
+                <p class="text-slate-300 leading-relaxed max-w-2xl mx-auto">If you need to get from the airport to your hotel, you book a taxi — not a full travel operations centre with a fleet manager, a route optimiser, and a customer success team. Agents built to handle tasks that didn't need them add overhead without adding value, and they introduce new ways to fail. Prove the simple version works first. Then scale the one piece that actually needs to grow.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<!-- ── Centralized Footer ───────────────────────────────────── -->
+<div id="rw-footer"></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<!-- ═══════════════════════════════════════════════════════════ JS -->
+<script>
+// ═══════════════ HEADER DIAL
+const knobPositions = ['0%','25%','50%','75%','100%'];
+document.querySelectorAll('#hdr-dial .dial-pos').forEach(el => {
+    el.addEventListener('click', () => {
+        document.querySelectorAll('#hdr-dial .dial-pos').forEach(e => e.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('hdr-knob').style.left = knobPositions[parseInt(el.dataset.pos)];
+    });
+});
+
+// ═══════════════ REACT STEPPER
+const reactData = [
+    {
+        label:'1',
+        color:'text-purple-400',
+        title: 'Step 1 — Receive the Goal',
+        body: '"Book a 3-night trip to Lisbon for two people, leaving next Thursday. Budget under £800 total. Hotel within walking distance of the city centre, preferably with a pool."',
+        note: 'The agent now has a clear task, hard constraints (budget, dates, two travellers), and soft preferences (pool, central location) to work within.'
+    },
+    {
+        label:'2',
+        color:'text-fuchsia-400',
+        title: 'Step 2 — Reason Through the Options',
+        body: '3 nights Thursday to Sunday. Two travellers means a double room or two singles — double is cheaper. £800 covers economy flights plus a mid-range hotel if kept under £120 per night. Agent searches direct flights from Gatwick Thursday afternoon and cross-references hotel availability near Baixa, the central tourist district.',
+        note: 'Reasoning happens before any action is taken. The agent plans its search strategy based on the constraints before it starts looking.'
+    },
+    {
+        label:'3',
+        color:'text-pink-400',
+        title: 'Step 3 — Act',
+        body: 'Flights found: London Gatwick → Lisbon, Thursday 14:35, £186 total for two. Three hotels shortlisted near Baixa: Solar do Castelo (£108/night, pool ✓), Hotel Bairro Alto (£114/night, no pool), Lisboa Carmo (£99/night, rooftop terrace). Solar do Castelo selected — best match on all criteria.',
+        note: 'The agent uses its tools to take real action — not just describe what it might do. Flights are held, hotel availability confirmed.'
+    },
+    {
+        label:'4',
+        color:'text-purple-400',
+        title: 'Step 4 — Observe and Adapt',
+        body: 'Confirmation attempted for Solar do Castelo — returned unavailable for the selected dates. A group booking has taken the remaining rooms. Agent automatically selects Lisboa Carmo (second-best match, £4 cheaper per night, no pool but rooftop terrace instead). Updated itinerary prepared and sent for your approval before anything is charged.',
+        note: 'When reality doesn\'t match the plan, the agent doesn\'t stop — it recalculates and reroutes. This loop is the core of agentic behaviour.'
+    }
+];
+let reactIdx = 0;
+
+function showReactStep(idx, reverse) {
+    const prev = reactIdx;
+    reactIdx = idx;
+    const s = reactData[idx];
+
+    // Update inner content
+    const inner = document.getElementById('react-inner');
+    inner.className = 'react-content' + (reverse ? ' reverse' : '');
+    // re-trigger animation
+    void inner.offsetWidth;
+    inner.className = 'react-content' + (reverse ? ' reverse' : '');
+
+    document.getElementById('react-title').textContent = s.title;
+    document.getElementById('react-body').textContent = s.body;
+    document.getElementById('react-note').textContent = s.note;
+
+    // Update progress
+    document.getElementById('react-prog-label').textContent = idx + 1;
+    document.getElementById('react-prog-bar').style.width = ((idx + 1) / 4 * 100) + '%';
+
+    // Update step buttons
+    document.querySelectorAll('.react-btn-step').forEach((el, i) => {
+        el.classList.remove('active','done');
+        if (i === idx) el.classList.add('active');
+        else if (i < idx) el.classList.add('done');
+        el.querySelector('.step-dot').style.background = i < idx ? '#a855f7' : (i === idx ? '#ec4899' : '');
+    });
+
+    // Update nav button states
+    document.getElementById('react-back').disabled = idx === 0;
+    document.getElementById('react-back').classList.toggle('opacity-40', idx === 0);
+    document.getElementById('react-back').classList.toggle('cursor-not-allowed', idx === 0);
+    document.getElementById('react-fwd').textContent = idx === reactData.length - 1 ? 'Start Over ↺' : 'Next Step →';
+}
+
+function stepReact(dir) {
+    const next = (reactIdx + dir + reactData.length) % reactData.length;
+    showReactStep(next, dir < 0);
+}
+
+// ═══════════════ MEMORY TABS
+function showMemTab(name) {
+    ['working','session','longterm'].forEach(n => {
+        const panel = document.getElementById('panel-'+n);
+        const tab = document.getElementById('tab-'+n);
+        if (n === name) {
+            panel.classList.add('active');
+            tab.classList.add('active');
+        } else {
+            panel.classList.remove('active');
+            tab.classList.remove('active');
+        }
+    });
+}
+
+// ═══════════════ FAILURE CARDS
+function toggleFail(card) {
+    const wasOpen = card.classList.contains('open');
+    document.querySelectorAll('.fail-card').forEach(c => c.classList.remove('open'));
+    if (!wasOpen) card.classList.add('open');
+}
+
+// Init react
+showReactStep(0, false);
+</script>
+
+<!-- Nav dropdown grouping -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+    const links = Array.from(navLinksContainer.querySelectorAll('a[data-group]'));
+    const groups = {};
+    links.forEach(link => { const n = link.getAttribute('data-group'); if (!groups[n]) groups[n] = []; groups[n].push(link); });
+    Object.keys(groups).forEach(groupName => {
+        const groupItems = groups[groupName];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:relative;display:inline-block;';
+        const trigger = document.createElement('button');
+        trigger.className = 'nav-btn';
+        trigger.innerHTML = `${groupName} &#9662;`;
+        const menu = document.createElement('div');
+        menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
+        const first = groupItems[0];
+        if (first.parentNode) first.replaceWith(wrapper);
+        groupItems.forEach(link => {
+            link.style.cssText = 'display:block;padding:.4rem .75rem;border-radius:4px;color:#333;text-decoration:none;font-size:.85rem;white-space:nowrap;';
+            link.onmouseenter = () => link.style.background = '#f0f9ff';
+            link.onmouseleave = () => link.style.background = '';
+            menu.appendChild(link);
+        });
+        wrapper.appendChild(trigger); wrapper.appendChild(menu);
+        trigger.addEventListener('click', e => { e.stopPropagation(); const open = menu.style.display === 'flex'; document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }); menu.style.display = open ? 'none' : 'flex'; });
+    });
+    document.addEventListener('click', () => document.querySelectorAll('nav div > div').forEach(m => { if (m.style.display==='flex') m.style.display='none'; }));
+});
+</script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1dbb923b06fe4997b8f6cdad1b22bc2d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

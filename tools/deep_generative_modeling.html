@@ -1,6 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
     <meta charset="UTF-8">
     <meta content="width=device-width,initial-scale=1" name="viewport">
     <title>Deep Generative Modeling | RawWeights</title>
@@ -10,8 +11,11 @@
     <meta property="og:description" content="Interactive visual architectures and sandboxes for learning Deep Generative Models.">
     <meta property="og:type" content="article">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" async src="/includes/analytics.js"></script>
+      <script>document.documentElement.setAttribute('data-theme','light');</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+<style>#rw-theme-btn { display: none !important; }</style>
+<script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" async src="../includes/analytics.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -101,21 +105,8 @@
 
 <body class="flex flex-col antialiased bg-gray-50 font-sans min-h-screen text-gray-800">
 
-    <nav class="bg-white border-gray-200 border-b sticky top-0 z-50 shadow-sm relative">
-        <div class="flex items-center justify-between max-w-6xl mx-auto px-6 h-16">
-            <div class="font-bold text-gray-900 text-xl tracking-tight">
-                <a href="/">RawWeights</a>
-            </div>
-            <div class="text-sm font-medium hidden md:flex space-x-8 text-gray-600">
-                <a href="/" class="hover:text-brand-600 transition">Home</a>
-                <a href="/blog.html" class="hover:text-brand-600 transition">Blogs</a>
-                <a href="/tools/master_ml_hub.html"  class="hover:text-brand-600 transition">ML Playground</a>
-                <a href="/srt.html" class="hover:text-brand-600 transition">Simple Regression Tool</a>
-                <a href="/tools/master_sequence_hub.html" class="hover:text-brand-600 transition">Attention Journey</a>
-	            <a href="/tools/deep_reinforcement.html" class="hover:text-brand-600 transition">Reinforcement</a>
-            </div>
-        </div>
-    </nav>
+    <div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
 
     <main class="mx-auto px-6 flex-grow max-w-6xl py-8 w-full flex flex-col">
 
@@ -912,12 +903,10 @@
         </div>
     </main>
 
-    <footer class="bg-white border-gray-200 border-t mt-auto">
-        <div class="flex flex-col items-center justify-between max-w-6xl md:flex-row mx-auto px-6 py-12">
-            <div class="mb-4 md:mb-0"><p class="text-sm text-gray-500">© 2026 RawWeights. All rights reserved.</p></div>
-            <div class="flex space-x-6 text-sm"><a href="/disclaimer.html" class="hover:text-brand-600 text-gray-400">Disclaimer</a> <a href="https://www.linkedin.com/in/shamhc/" class="hover:text-brand-600 text-gray-400">LinkedIn</a> <a href="https://x.com/intent/user?screen_name=shamhcs" class="hover:text-brand-600 text-gray-400">X</a></div>
-        </div>
-    </footer>
+    <div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/posts/shamhc_artificialintelligence-functionapproximator-activity-7446919720790028288-sQ7C/"
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
 
     <script>
         const track = document.getElementById('slider-track');

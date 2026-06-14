@@ -1,0 +1,737 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How It Started — Atomic GPT Playground | RawWeights</title>
+  <meta name="description" content="Train a real Transformer entirely in your browser. No Python, no GPU. A pure JavaScript decoder-only Transformer — the glass-box educational tool that started RawWeights.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/how-it-started.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rawweights.com/how-it-started.html">
+  <meta property="og:title" content="How It Started — Atomic GPT Playground | RawWeights">
+  <meta property="og:description" content="Train a real Transformer in your browser. No Python, no GPU. Pure JavaScript autograd engine + Adam optimizer.">
+  <meta property="og:image" content="https://rawweights.com/images/rw-og.png">
+
+  <!-- Theme: apply before render to prevent flash -->
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
+
+  <link rel="stylesheet" href="./includes/brand.css">
+  <script type="text/javascript" async src="./includes/analytics.js"></script>
+
+  <style>
+    /* Page-specific styles — preserve all original functionality */
+    :root {
+      --primary: #f97316;
+      --secondary: #475569;
+      --success: #16a34a;
+      --bg: var(--rw-bg);
+      --panel-bg: var(--rw-card);
+      --text: var(--rw-text);
+    }
+
+    /* Hero intro */
+    .gpt-hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1040 60%, #0f1a2e 100%);
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .gpt-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(249,115,22,0.22) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .gpt-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 9999px;
+      padding: 0.3rem 0.85rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fb923c;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-family: var(--rw-font-display, sans-serif);
+      margin-bottom: 1.25rem;
+    }
+    .gpt-hero h1 {
+      font-family: var(--rw-font-display, sans-serif);
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800;
+      color: #f0f4ff;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .gpt-hero h1 span { color: #fb923c; }
+    .gpt-hero p {
+      font-size: 1.05rem;
+      color: rgba(240,244,255,0.72);
+      max-width: 600px;
+      margin: 0 auto 1.75rem;
+      line-height: 1.7;
+      position: relative;
+    }
+    .gpt-hero-links {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .gpt-hero-links a {
+      font-family: var(--rw-font-display, sans-serif);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .gpt-hero-links a.primary {
+      background: #f97316;
+      color: #fff;
+    }
+    .gpt-hero-links a.primary:hover { background: #ea580c; box-shadow: 0 4px 12px rgba(249,115,22,0.35); }
+    .gpt-hero-links a.ghost {
+      border: 1.5px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+    }
+    .gpt-hero-links a.ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+    /* Playground container */
+    .playground-wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem;
+    }
+
+    /* Panels */
+    .panel {
+      background: var(--rw-card, #ffffff);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--rw-border, #e2e8f0);
+      box-shadow: var(--rw-shadow-sm);
+      margin-bottom: 1.25rem;
+    }
+
+    .panel h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-family: var(--rw-font-display, sans-serif);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--rw-text-muted, #475569);
+    }
+
+    /* Inputs & Controls */
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--rw-border, #cbd5e1);
+      border-radius: 8px;
+      font-family: monospace;
+      box-sizing: border-box;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      background: var(--rw-bg-alt, #f8fafc);
+      color: var(--rw-text, #1e293b);
+      transition: border-color 0.15s;
+    }
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+    }
+    textarea { height: 120px; resize: vertical; }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button.action-btn {
+      padding: 0.65rem 1.15rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      font-family: var(--rw-font-display, sans-serif);
+      font-size: 0.875rem;
+    }
+    button.action-btn:active { transform: translateY(1px); }
+    button.action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary  { background: #f97316; color: white; }
+    .btn-primary:hover { background: #ea580c; }
+    .btn-success  { background: #16a34a; color: white; }
+    .btn-success:hover { background: #15803d; }
+    .btn-secondary { background: #6366f1; color: white; }
+    .btn-secondary:hover { background: #4f46e5; }
+    .btn-danger   { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--rw-text-muted);
+      border: 1px solid var(--rw-border);
+    }
+    .btn-ghost:hover { border-color: #f97316; color: #f97316; }
+
+    .status-text {
+      font-size: 0.875rem;
+      color: var(--rw-text-muted, #475569);
+      margin-left: auto;
+      font-family: var(--rw-font-display, sans-serif);
+    }
+
+    /* Logger */
+    #log {
+      background: #0f172a;
+      color: #4ade80;
+      padding: 1rem;
+      border-radius: 8px;
+      height: 200px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      border: 1px solid #1e293b;
+    }
+
+    /* Nav links inside panel (how it works) */
+    .how-it-works-links {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .how-it-works-links button {
+      padding: 0.55rem 1rem;
+      border: 1.5px solid var(--rw-border, #e2e8f0);
+      border-radius: 8px;
+      background: var(--rw-bg-alt);
+      color: var(--rw-text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-family: var(--rw-font-display, sans-serif);
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .how-it-works-links button:hover {
+      border-color: #f97316;
+      color: #f97316;
+      background: rgba(249,115,22,0.06);
+    }
+
+    /* Attribution note */
+    .attribution-note {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--rw-text-muted);
+      border-top: 1px solid var(--rw-border);
+      margin-top: 1rem;
+    }
+    .attribution-note a { color: #f97316; font-weight: 600; }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 400;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.55);
+      overflow-y: auto;
+    }
+    .modal-content {
+      background-color: var(--rw-card, #fff);
+      margin: 8% auto;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+      border: 1px solid var(--rw-border);
+      box-shadow: var(--rw-shadow-xl);
+    }
+    .modal-content h2 {
+      font-family: var(--rw-font-display, sans-serif);
+      font-weight: 800;
+      color: var(--rw-text);
+      margin-bottom: 1.25rem;
+    }
+    .close-modal {
+      position: absolute;
+      top: 1rem; right: 1.25rem;
+      font-size: 1.4rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--rw-text-subtle);
+      line-height: 1;
+      transition: color 0.1s;
+    }
+    .close-modal:hover { color: var(--rw-text); }
+    .modal-body h4 { color: #f97316; margin: 1rem 0 0.35rem; font-family: var(--rw-font-display, sans-serif); font-size: 0.95rem; }
+    .modal-body p { margin-bottom: 0.75rem; font-size: 0.9rem; line-height: 1.65; color: var(--rw-text-muted); }
+    .modal-body code {
+      background: var(--rw-bg-subtle, #f1f5f9);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #6366f1;
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .btn-group { flex-direction: column; }
+      .btn-group button { width: 100%; }
+      .status-text { margin-left: 0; }
+    }
+  </style>
+  <style>.rw-theme-btn{display:none!important}</style>
+</head>
+<body>
+
+<!-- ── Centralized Navigation ──────────────────────────────── -->
+<div id="rw-nav"></div>
+<script src="./includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ────────────────────────────────────────────────── -->
+<div class="gpt-hero">
+  <div class="gpt-hero-eyebrow">⚡ Where RawWeights Began</div>
+  <h1>Atomic <span>GPT</span> Playground</h1>
+  <p>
+    Train a real <strong style="color:#f0f4ff">Transformer</strong> entirely in your browser.
+    A "glass box" educational tool based on
+    <a href="https://github.com/karpathy/makemore" target="_blank" rel="noopener" style="color:#fb923c;font-weight:600">Andrej Karpathy's</a>
+    <em>makemore</em> — demonstrating how LLMs learn from data. No Python, no GPU required.
+  </p>
+  <div class="gpt-hero-links">
+    <a href="#playground" class="primary">Start Training ↓</a>
+    <a href="./blog.html" class="ghost">Read the Blog</a>
+  </div>
+</div>
+
+<!-- ── Playground ───────────────────────────────────────────── -->
+<div class="playground-wrapper" id="playground">
+
+  <div class="panel">
+    <div class="how-it-works-links">
+      <button onclick="openModal('modalSimple')">📖 How it Works (Simple)</button>
+      <button onclick="openModal('modalTech')">⚙️ How it Works (Technical)</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>1. Training Data</h3>
+    <textarea id="inputData" placeholder="Paste names or text here — one per line...">
+emma
+olivia
+ava
+isabella
+sophia
+charlotte
+mia
+amelia
+harper
+evelyn
+abigail
+emily
+ella
+elizabeth
+camila
+luna
+sofia
+avery
+mila
+aria</textarea>
+    <div class="btn-group">
+      <button id="trainBtn" class="action-btn btn-primary" onclick="startTraining()">▶ Start Training</button>
+      <span id="trainStatus" class="status-text">State: Idle</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>2. Save / Load Model</h3>
+    <p style="font-size: 0.85rem; color: var(--rw-text-muted); margin-bottom: 1rem;">Save your trained "brain" to your browser so you don't have to retrain later.</p>
+    <div class="btn-group">
+      <button class="action-btn btn-success" onclick="saveToBrowser()">💾 Save Locally</button>
+      <button class="action-btn btn-secondary" onclick="loadFromBrowser()">📂 Load Saved</button>
+      <button class="action-btn btn-danger" onclick="clearBrowserStorage()">🗑️ Clear</button>
+      <span id="storageStatus" class="status-text"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>3. Generate Text</h3>
+    <label style="font-size: 0.875rem; font-weight: 700; display:block; margin-bottom:0.5rem; color:var(--rw-text);">Start with (Optional):</label>
+    <input type="text" id="promptInput" placeholder="e.g. 'M' or 'Al'">
+    <div class="btn-group">
+      <button class="action-btn btn-primary" onclick="runInference()">✨ Generate</button>
+    </div>
+  </div>
+
+  <div id="log">Logs will appear here...</div>
+
+  <div class="attribution-note">
+    Based on the "minGPT" and "makemore" work by
+    <a href="https://www.linkedin.com/in/andrej-karpathy-9a650716/" target="_blank" rel="noopener">Andrej Karpathy</a>. &nbsp;·&nbsp;
+    <a href="https://github.com/karpathy/makemore" target="_blank" rel="noopener">View Original Repo</a> &nbsp;·&nbsp;
+    <a href="https://karpathy.ai/" target="_blank" rel="noopener">Karpathy.ai</a>
+    <br>
+    <small style="display:block;margin-top:0.5rem;color:var(--rw-text-subtle)">
+      This playground is a simplified educational tool demonstrating the core algorithm of a Decoder-Only Transformer.
+    </small>
+  </div>
+</div>
+
+<!-- ── Modals ────────────────────────────────────────────────── -->
+<div id="modalSimple" class="modal" role="dialog" aria-modal="true" aria-labelledby="simpleModalTitle">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeModals()" aria-label="Close">&times;</button>
+    <h2 id="simpleModalTitle">How it Works (Simple)</h2>
+    <div class="modal-body">
+      <p>Think of this AI as a <strong>Robot Student</strong> learning to write names.</p>
+      <h4>1. The "Future-Blind" Reader</h4>
+      <p>The robot reads names one letter at a time, covering the rest with its hand. It sees "E" and tries to guess what comes next. It cannot cheat and look ahead.</p>
+      <h4>2. The Voting Booth (Logits)</h4>
+      <p>Inside its brain, the robot holds a vote for every possible letter (A-Z). "M" might get 50 votes, while "Z" gets -10 votes.</p>
+      <h4>3. The Teacher (Loss)</h4>
+      <p>We reveal the actual next letter. If the robot guessed wrong, we give it a score (Loss). A high score means "You did bad."</p>
+      <h4>4. The Smart Hiker (Adam Optimizer)</h4>
+      <p>The robot wants to get its error score to zero (the bottom of the valley). It uses a math trick called "Adam" to find the fastest path down the hill, adjusting its brain so it doesn't make the same mistake twice.</p>
+      <h4>5. Showtime (Inference)</h4>
+      <p>Once trained, we take away the answer key. We give it a starting letter, and it uses its trained intuition to dream up new names entirely on its own!</p>
+    </div>
+  </div>
+</div>
+
+<div id="modalTech" class="modal" role="dialog" aria-modal="true" aria-labelledby="techModalTitle">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeModals()" aria-label="Close">&times;</button>
+    <h2 id="techModalTitle">How it Works (Technical)</h2>
+    <div class="modal-body">
+      <p>This is a pure JavaScript implementation of a <strong>Decoder-Only Transformer</strong>.</p>
+      <h4>1. Tokenization & Embeddings</h4>
+      <p>Input text is converted to integer IDs. We learn two embedding matrices: <code>wte</code> (Token Embeddings) for identity and <code>wpe</code> (Position Embeddings) for order. These are added together.</p>
+      <h4>2. Self-Attention</h4>
+      <p>The core mechanism. Queries (Q), Keys (K), and Values (V) are computed. We calculate <code>softmax(Q @ K.T)</code> to create an attention map, which determines how much the model should focus on past tokens to predict the current one.</p>
+      <h4>3. MLP & Residuals</h4>
+      <p>The attention output passes through a Feed-Forward Network (MLP) with ReLU activation. We use LayerNorm (RMSNorm here) and Residual connections (adding input to output) to stabilize deep learning.</p>
+      <h4>4. Autograd Engine</h4>
+      <p>We implemented a custom <code>Value</code> class that builds a dynamic computation graph. Calling <code>.backward()</code> performs topological sort and reverse-mode automatic differentiation to compute gradients.</p>
+      <h4>5. Optimization</h4>
+      <p>We use <strong>Adam</strong> (Adaptive Moment Estimation), which tracks first (momentum) and second (variance) moments of gradients to update weights efficiently.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Centralized Footer ───────────────────────────────────── -->
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/pulse/building-tiny-ai-your-browser-python-required-hassan-chikkegowda-nxroc"
+     data-linkedin-label="Read the original LinkedIn article about this playground"
+     data-related='[{"label":"ML Master Hub","url":"/tools/master_ml_hub.html"},{"label":"Attention Journey","url":"/tools/master_sequence_hub.html"},{"label":"Simple Regression","url":"/srt.html"}]'
+></div>
+<script src="./includes/rw-footer.js?v=20260612"></script>
+
+<!-- ══════════════════════════════════════════════════════════
+     Original GPT Playground JavaScript — unchanged
+══════════════════════════════════════════════════════════ -->
+<script>
+function openModal(id) { document.getElementById(id).style.display = "block"; document.body.style.overflow = "hidden"; }
+function closeModals() {
+  ['modalSimple','modalTech'].forEach(id => { document.getElementById(id).style.display = "none"; });
+  document.body.style.overflow = '';
+}
+window.addEventListener('click', function(event) {
+  if (event.target.classList.contains('modal')) closeModals();
+});
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModals(); });
+
+window.onload = function() {
+  if(localStorage.getItem('atomic_gpt_model')) {
+    document.getElementById('storageStatus').innerText = "✅ Found saved model";
+    document.getElementById('storageStatus').style.color = "var(--success, #16a34a)";
+  }
+};
+
+let G_uchars = [];
+let G_state_dict = {};
+let G_vocab_size = 0;
+let G_block_size = 12;
+let G_n_layer = 1;
+let G_n_head = 4;
+let G_n_embd = 16;
+let G_head_dim = 4;
+let G_is_trained = false;
+
+const logger = document.getElementById('log');
+function log(msg) {
+  logger.textContent += msg + "\n";
+  logger.scrollTop = logger.scrollHeight;
+}
+
+class SeededRandom {
+  constructor(seed) {
+    this.m = 0x80000000; this.a = 1103515245; this.c = 12345;
+    this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
+  }
+  nextFloat() {
+    this.state = (this.a * this.state + this.c) % this.m;
+    return this.state / (this.m - 1);
+  }
+  gauss(mean, std) {
+    let u = 0, v = 0;
+    while(u === 0) u = this.nextFloat();
+    while(v === 0) v = this.nextFloat();
+    return (Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)) * std + mean;
+  }
+  choice(options, weights) {
+    let sum = weights.reduce((a, b) => a + b, 0);
+    let r = this.nextFloat() * sum;
+    for (let i = 0; i < options.length; i++) { r -= weights[i]; if (r < 0) return options[i]; }
+    return options[options.length - 1];
+  }
+  shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(this.nextFloat() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+}
+const rng = new SeededRandom(42);
+
+class Value {
+  constructor(data, children = [], local_grads = []) {
+    this.data = data; this.grad = 0;
+    this._children = children; this._local_grads = local_grads;
+  }
+  add(other) { other = other instanceof Value ? other : new Value(other); return new Value(this.data + other.data, [this, other], [1, 1]); }
+  mul(other) { other = other instanceof Value ? other : new Value(other); return new Value(this.data * other.data, [this, other], [other.data, this.data]); }
+  pow(other) { return new Value(Math.pow(this.data, other), [this], [other * Math.pow(this.data, other - 1)]); }
+  log() { return new Value(Math.log(this.data), [this], [1 / this.data]); }
+  exp() { return new Value(Math.exp(this.data), [this], [Math.exp(this.data)]); }
+  relu() { return new Value(Math.max(0, this.data), [this], [this.data > 0 ? 1 : 0]); }
+  neg() { return this.mul(-1); }
+  sub(other) { return this.add(other instanceof Value ? other.neg() : new Value(-other)); }
+  div(other) { return this.mul(other instanceof Value ? other.pow(-1) : new Value(other).pow(-1)); }
+  backward() {
+    let topo = [], visited = new Set();
+    const build_topo = (v) => {
+      if (!visited.has(v)) { visited.add(v); for (let child of v._children) build_topo(child); topo.push(v); }
+    };
+    build_topo(this); this.grad = 1;
+    for (let i = topo.length - 1; i >= 0; i--) {
+      const v = topo[i];
+      for (let j = 0; j < v._children.length; j++) { v._children[j].grad += v._local_grads[j] * v.grad; }
+    }
+  }
+}
+
+function linear(x, w) {
+  return w.map(wo => { let sum = new Value(0); for(let i=0; i<wo.length; i++) sum = sum.add(wo[i].mul(x[i])); return sum; });
+}
+function softmax(logits) {
+  const max_val = logits.reduce((max, val) => val.data > max ? val.data : max, -Infinity);
+  const exps = logits.map(val => val.sub(max_val).exp());
+  let total = new Value(0);
+  exps.forEach(e => total = total.add(e));
+  return exps.map(e => e.div(total));
+}
+function rmsnorm(x) {
+  let ms = new Value(0);
+  x.forEach(xi => ms = ms.add(xi.mul(xi)));
+  ms = ms.div(x.length);
+  const scale = ms.add(1e-5).pow(-0.5);
+  return x.map(xi => xi.mul(scale));
+}
+
+function gpt(token_id, pos_id, keys, values, state_dict) {
+  const tok_emb = state_dict['wte'][token_id];
+  const pos_emb = state_dict['wpe'][pos_id];
+  let x = tok_emb.map((t, i) => t.add(pos_emb[i]));
+  x = rmsnorm(x);
+  for (let li = 0; li < G_n_layer; li++) {
+    const x_residual_attn = x;
+    x = rmsnorm(x);
+    const q = linear(x, state_dict[`layer${li}.attn_wq`]);
+    const k = linear(x, state_dict[`layer${li}.attn_wk`]);
+    const v = linear(x, state_dict[`layer${li}.attn_wv`]);
+    keys[li].push(k); values[li].push(v);
+    let x_attn = [];
+    for (let h = 0; h < G_n_head; h++) {
+      const hs = h * G_head_dim;
+      const q_h = q.slice(hs, hs + G_head_dim);
+      const k_h = keys[li].map(ki => ki.slice(hs, hs + G_head_dim));
+      const v_h = values[li].map(vi => vi.slice(hs, hs + G_head_dim));
+      const attn_logits = k_h.map(k_vec => {
+        let dot = new Value(0);
+        for(let j=0; j<G_head_dim; j++) dot = dot.add(q_h[j].mul(k_vec[j]));
+        return dot.div(Math.sqrt(G_head_dim));
+      });
+      const attn_weights = softmax(attn_logits);
+      const head_out = [];
+      for(let j=0; j<G_head_dim; j++) {
+        let acc = new Value(0);
+        for(let t=0; t<v_h.length; t++) acc = acc.add(attn_weights[t].mul(v_h[t][j]));
+        head_out.push(acc);
+      }
+      x_attn.push(...head_out);
+    }
+    x = linear(x_attn, state_dict[`layer${li}.attn_wo`]);
+    x = x.map((xi, i) => xi.add(x_residual_attn[i]));
+    const x_residual_mlp = x;
+    x = rmsnorm(x);
+    x = linear(x, state_dict[`layer${li}.mlp_fc1`]);
+    x = x.map(xi => xi.relu());
+    x = linear(x, state_dict[`layer${li}.mlp_fc2`]);
+    x = x.map((xi, i) => xi.add(x_residual_mlp[i]));
+  }
+  return linear(x, state_dict['lm_head']);
+}
+
+async function startTraining() {
+  const rawText = document.getElementById('inputData').value;
+  const docs = rawText.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (docs.length === 0) return log("Error: No data.");
+  logger.textContent = "Initializing...\n";
+  document.getElementById('trainBtn').disabled = true;
+  document.getElementById('trainStatus').innerText = "Running...";
+  G_uchars = [...new Set(docs.join(''))].sort();
+  const BOS = G_uchars.length;
+  G_vocab_size = G_uchars.length + 1;
+  log(`Vocab: ${G_uchars.join('')} (Size: ${G_vocab_size})`);
+  const createMatrix = (nout, nin) => Array.from({ length: nout }, () => Array.from({ length: nin }, () => new Value(rng.gauss(0, 0.08))));
+  G_head_dim = Math.floor(G_n_embd / G_n_head);
+  G_state_dict = { 'wte': createMatrix(G_vocab_size, G_n_embd), 'wpe': createMatrix(G_block_size, G_n_embd), 'lm_head': createMatrix(G_vocab_size, G_n_embd) };
+  for (let i = 0; i < G_n_layer; i++) {
+    G_state_dict[`layer${i}.attn_wq`] = createMatrix(G_n_embd, G_n_embd);
+    G_state_dict[`layer${i}.attn_wk`] = createMatrix(G_n_embd, G_n_embd);
+    G_state_dict[`layer${i}.attn_wv`] = createMatrix(G_n_embd, G_n_embd);
+    G_state_dict[`layer${i}.attn_wo`] = createMatrix(G_n_embd, G_n_embd);
+    G_state_dict[`layer${i}.mlp_fc1`] = createMatrix(4 * G_n_embd, G_n_embd);
+    G_state_dict[`layer${i}.mlp_fc2`] = createMatrix(G_n_embd, 4 * G_n_embd);
+  }
+  const params = [];
+  Object.values(G_state_dict).forEach(mat => mat.forEach(row => row.forEach(p => params.push(p))));
+  let m = new Float64Array(params.length).fill(0);
+  let v = new Float64Array(params.length).fill(0);
+  const learning_rate = 0.01, beta1 = 0.85, beta2 = 0.99, eps_adam = 1e-8, num_steps = 100;
+  log("Training started (100 steps)...");
+  for (let step = 0; step < num_steps; step++) {
+    if (step % 5 === 0) await new Promise(r => setTimeout(r, 0));
+    const doc = docs[step % docs.length];
+    const tokens = [BOS, ...doc.split('').map(c => G_uchars.indexOf(c)), BOS];
+    const n = Math.min(G_block_size, tokens.length - 1);
+    let keys = Array.from({length: G_n_layer}, () => []);
+    let values_arr = Array.from({length: G_n_layer}, () => []);
+    let losses = [];
+    for (let pos_id = 0; pos_id < n; pos_id++) {
+      const token_id = tokens[pos_id], target_id = tokens[pos_id + 1];
+      const logits = gpt(token_id, pos_id, keys, values_arr, G_state_dict);
+      const probs = softmax(logits);
+      losses.push(probs[target_id].log().neg());
+    }
+    let loss = new Value(0);
+    losses.forEach(l => loss = loss.add(l));
+    loss = loss.mul(1/n);
+    params.forEach(p => p.grad = 0);
+    loss.backward();
+    const lr_t = learning_rate * (1 - step / num_steps);
+    for (let i = 0; i < params.length; i++) {
+      const p = params[i];
+      m[i] = beta1 * m[i] + (1 - beta1) * p.grad;
+      v[i] = beta2 * v[i] + (1 - beta2) * (p.grad * p.grad);
+      const m_hat = m[i] / (1 - Math.pow(beta1, step + 1));
+      const v_hat = v[i] / (1 - Math.pow(beta2, step + 1));
+      p.data -= lr_t * m_hat / (Math.sqrt(v_hat) + eps_adam);
+    }
+    if (step % 20 === 0 || step === num_steps - 1) log(`Step ${step+1}/${num_steps} | Loss: ${loss.data.toFixed(4)}`);
+  }
+  G_is_trained = true;
+  document.getElementById('trainBtn').disabled = false;
+  document.getElementById('trainStatus').innerText = "✅ Complete";
+  document.getElementById('trainStatus').style.color = "var(--success, #16a34a)";
+  log("Training Complete.");
+}
+
+function saveToBrowser() {
+  if (!G_is_trained) return alert("Train a model first!");
+  const serializedDict = {};
+  for (const [key, matrix] of Object.entries(G_state_dict)) { serializedDict[key] = matrix.map(row => row.map(val => val.data)); }
+  const bundle = { state_dict: serializedDict, uchars: G_uchars, vocab_size: G_vocab_size };
+  try {
+    localStorage.setItem('atomic_gpt_model', JSON.stringify(bundle));
+    log("Saved to LocalStorage!");
+    document.getElementById('storageStatus').innerText = "✅ Saved";
+    document.getElementById('storageStatus').style.color = "var(--success, #16a34a)";
+  } catch (e) { alert("Storage full or error: " + e); }
+}
+
+function loadFromBrowser() {
+  const jsonStr = localStorage.getItem('atomic_gpt_model');
+  if (!jsonStr) return alert("No saved model found.");
+  try {
+    const bundle = JSON.parse(jsonStr);
+    G_uchars = bundle.uchars; G_vocab_size = bundle.vocab_size; G_state_dict = {};
+    for (const [key, rawMatrix] of Object.entries(bundle.state_dict)) { G_state_dict[key] = rawMatrix.map(row => row.map(d => new Value(d))); }
+    G_is_trained = true;
+    log(`Model Loaded! Vocab: ${G_vocab_size}`);
+    document.getElementById('storageStatus').innerText = "✅ Loaded";
+    document.getElementById('storageStatus').style.color = "var(--success, #16a34a)";
+  } catch (err) { log("Error loading: " + err); }
+}
+
+function clearBrowserStorage() {
+  localStorage.removeItem('atomic_gpt_model');
+  log("Deleted saved model.");
+  document.getElementById('storageStatus').innerText = "🗑️ Deleted";
+  document.getElementById('storageStatus').style.color = "var(--rw-text-muted, #475569)";
+}
+
+function runInference() {
+  if (!G_is_trained) return log("Please Train or Load a model first.");
+  const promptText = document.getElementById('promptInput').value.trim();
+  const BOS = G_uchars.length;
+  let keys = Array.from({length: G_n_layer}, () => []);
+  let values_arr = Array.from({length: G_n_layer}, () => []);
+  let inputTokens = [];
+  if (promptText.length > 0) { inputTokens = promptText.split('').map(c => G_uchars.indexOf(c)).filter(i => i !== -1); }
+  let currentToken = BOS, generatedText = promptText, pos_id = 0;
+  if (inputTokens.length > 0) {
+    gpt(BOS, pos_id, keys, values_arr, G_state_dict); pos_id++;
+    for (let i = 0; i < inputTokens.length - 1; i++) { gpt(inputTokens[i], pos_id, keys, values_arr, G_state_dict); pos_id++; }
+    currentToken = inputTokens[inputTokens.length - 1];
+  }
+  const temperature = 0.6;
+  for (; pos_id < G_block_size; pos_id++) {
+    const logits = gpt(currentToken, pos_id, keys, values_arr, G_state_dict);
+    const adjusted = logits.map(l => l.div(temperature));
+    const probs = softmax(adjusted);
+    const weights = probs.map(p => p.data);
+    const nextToken = rng.choice(Array.from({length: G_vocab_size}, (_, i) => i), weights);
+    if (nextToken === BOS) break;
+    generatedText += G_uchars[nextToken];
+    currentToken = nextToken;
+  }
+  log(`Generated: ${generatedText}`);
+}
+</script>
+
+</body>
+</html>

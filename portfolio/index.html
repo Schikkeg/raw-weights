@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio | RawWeights — Applied AI Projects</title>
+  <meta name="description" content="Applied AI projects — interactive playgrounds, agentic systems, RAG pipelines, and production-grade tools built by RawWeights.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/portfolio/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rawweights.com/portfolio/">
+  <meta property="og:title" content="Portfolio | RawWeights — Applied AI Projects">
+  <meta property="og:description" content="Applied AI projects — interactive playgrounds, agentic systems, RAG pipelines, and production-grade tools.">
+
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    .port-hero {
+      background: linear-gradient(135deg, #080c18 0%, #0f172a 60%, #1a0a2e 100%);
+      padding: 5rem 1.5rem 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .port-hero::before {
+      content: '';
+      position: absolute;
+      top: -10%; right: 10%;
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .port-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -10%; left: 5%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .port-hero-inner { max-width: 800px; margin: 0 auto; position: relative; }
+    .port-hero-label {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 9999px; padding: 0.3rem 0.9rem;
+      font-size: 0.72rem; font-weight: 700; color: #fb923c;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      font-family: 'Space Grotesk', sans-serif; margin-bottom: 1.25rem;
+    }
+    .port-hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 1rem;
+    }
+    .port-hero h1 span { color: #fb923c; }
+    .port-hero p {
+      font-size: 1.05rem; color: rgba(240,244,255,0.65);
+      max-width: 540px; margin: 0 auto; line-height: 1.7;
+    }
+
+    .port-main { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+
+    .port-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 1024px) { .port-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .port-grid { grid-template-columns: 1fr; } }
+
+    .port-card {
+      background: var(--rw-card, #fff);
+      border: 1px solid var(--rw-border, #e2e8f0);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s;
+      text-decoration: none;
+    }
+    .port-card:hover {
+      box-shadow: 0 8px 32px rgba(249,115,22,0.13);
+      border-color: #f97316;
+      transform: translateY(-3px);
+    }
+    .port-card-img {
+      width: 100%; height: 180px;
+      object-fit: cover; display: block;
+    }
+    .port-card-img-placeholder {
+      width: 100%; height: 180px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .port-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+    .port-card-tag {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #f97316; margin-bottom: 0.6rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .port-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      color: var(--rw-text, #0f172a); line-height: 1.3;
+      margin: 0 0 0.6rem;
+    }
+    .port-card p {
+      font-size: 0.875rem; color: var(--rw-text-muted, #475569);
+      line-height: 1.6; flex: 1; margin: 0 0 1rem;
+    }
+    .port-card-chips {
+      display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem;
+    }
+    .port-chip {
+      font-size: 0.68rem; font-weight: 600; padding: 0.2rem 0.55rem;
+      border-radius: 9999px; background: var(--rw-bg-alt, #f8fafc);
+      border: 1px solid var(--rw-border, #e2e8f0);
+      color: var(--rw-text-muted, #475569);
+    }
+    .port-card-read {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.82rem; font-weight: 700; color: #f97316;
+      text-decoration: none; font-family: 'Space Grotesk', sans-serif;
+      margin-top: auto;
+    }
+    .port-card-read:hover { color: #ea580c; }
+    .port-card-soon {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.78rem; font-weight: 600; color: var(--rw-text-subtle, #94a3b8);
+      font-family: 'Space Grotesk', sans-serif; margin-top: auto; cursor: default;
+    }
+
+    [data-theme="dark"] .port-card { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .port-card h3 { color: #f0f4ff; }
+    [data-theme="dark"] .port-chip { background: #0f172a; border-color: #334155; color: #94a3b8; }
+  </style>
+  <style>.rw-theme-btn{display:none!important}</style>
+</head>
+<body style="background:var(--rw-bg,#fff); color:var(--rw-text,#0f172a); min-height:100vh;">
+
+<!-- ── Centralized Navigation ──────────────────────────────── -->
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ──────────────────────────────────────────────────── -->
+<div class="port-hero">
+  <div class="port-hero-inner">
+    <span class="port-hero-label">⚙️ Applied AI</span>
+    <h1>Building with <span>Raw Weights</span></h1>
+    <p>Production projects at the intersection of AI fundamentals and real-world engineering — from agentic pipelines to interactive learning tools.</p>
+  </div>
+</div>
+
+<!-- ── Projects Grid ─────────────────────────────────────────── -->
+<main class="port-main">
+  <div class="port-grid">
+
+    <!-- 1. RFP Intelligent Agent -->
+    <a class="port-card" href="./rfp-mcp-agent.html">
+      <div class="port-card-img-placeholder" style="background:linear-gradient(135deg,#1e3a5f 0%,#1a237e 100%);">🤖</div>
+      <div class="port-card-body">
+        <span class="port-card-tag">Agentic System</span>
+        <h3>RFP Intelligent Agent</h3>
+        <p>Bridges LLMs with highly structured enterprise hardware catalogs via Model Context Protocol. Java + Gemini + 5 deterministic tool classes eliminate hallucinations in spec-heavy RFP scoring.</p>
+        <div class="port-card-chips">
+          <span class="port-chip">Java</span>
+          <span class="port-chip">MCP</span>
+          <span class="port-chip">Gemini AI</span>
+          <span class="port-chip">Enterprise</span>
+        </div>
+        <span class="port-card-read">View case study →</span>
+      </div>
+    </a>
+
+    <!-- 2. ThreatScope Analytics -->
+    <a class="port-card" href="../blog/threatscope.html">
+      <div class="port-card-img-placeholder" style="background:linear-gradient(135deg,#1a0a0a 0%,#3d0000 100%);">🛡️</div>
+      <div class="port-card-body">
+        <span class="port-card-tag">Security Tool</span>
+        <h3>ThreatScope Analytics</h3>
+        <p>Free IP threat intelligence for agencies and startups who can't afford enterprise security tools. Real-time threat scoring, geolocation mapping, and risk classification for any IP address.</p>
+        <div class="port-card-chips">
+          <span class="port-chip">Security</span>
+          <span class="port-chip">Agentic AI</span>
+          <span class="port-chip">Building in Public</span>
+        </div>
+        <span class="port-card-read">Read build log →</span>
+      </div>
+    </a>
+
+    <!-- 3. Passive Safety Watchdog -->
+    <a class="port-card" href="../guide/passive-safety-watchdog.html">
+      <img class="port-card-img" src="../images/passive.png" alt="Passive Safety Watchdog" loading="lazy">
+      <div class="port-card-body">
+        <span class="port-card-tag">GraphRAG</span>
+        <h3>Passive Food Safety Watchdog</h3>
+        <p>Silently monitors 29,000+ FDA and USDA recalls and proactively alerts households before they know to ask. A real-world GraphRAG system with Phase 1 production deployment.</p>
+        <div class="port-card-chips">
+          <span class="port-chip">GraphRAG</span>
+          <span class="port-chip">FDA/USDA API</span>
+          <span class="port-chip">Proactive AI</span>
+        </div>
+        <span class="port-card-read">Read builder's log →</span>
+      </div>
+    </a>
+
+    <!-- 4. BioLogic OSINT Dashboard -->
+    <a class="port-card" href="../blog/biologic-osint.html">
+      <img class="port-card-img" src="../images/biologic.jpg" alt="BioLogic OSINT" loading="lazy">
+      <div class="port-card-body">
+        <span class="port-card-tag">Hackathon · OSINT</span>
+        <h3>BioLogic: AI-Powered OSINT Dashboard</h3>
+        <p>Real-time health intelligence dashboard built at a hackathon — integrating React, Node, Java MCP tools, and Gemini AI to track disease signals and outbreak indicators from open sources.</p>
+        <div class="port-card-chips">
+          <span class="port-chip">React</span>
+          <span class="port-chip">Gemini AI</span>
+          <span class="port-chip">MCP</span>
+          <span class="port-chip">Hackathon</span>
+        </div>
+        <span class="port-card-read">View pitch →</span>
+      </div>
+    </a>
+
+    <!-- 5. AI/ML Master Playground -->
+    <a class="port-card" href="../tools/master_ml_hub.html">
+      <img class="port-card-img" src="../images/sandbox.png" alt="ML Master Playground" loading="lazy">
+      <div class="port-card-body">
+        <span class="port-card-tag">Interactive Tool</span>
+        <h3>AI & ML Master Playground</h3>
+        <p>Browser-based sandbox covering 12+ ML models — neural networks, attention, CNNs, regression, generative modeling, and reinforcement learning — with real-time parameter tuning and math visualization.</p>
+        <div class="port-card-chips">
+          <span class="port-chip">Vanilla JS</span>
+          <span class="port-chip">Chart.js</span>
+          <span class="port-chip">MathJax</span>
+          <span class="port-chip">No-server</span>
+        </div>
+        <span class="port-card-read">Open playground →</span>
+      </div>
+    </a>
+
+    <!-- 6. AI Site Transform Blueprint -->
+    <a class="port-card" href="../guide/agent-blueprint-site-transform.html">
+      <div class="port-card-img-placeholder" style="background:linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);">🏗️</div>
+      <div class="port-card-body">
+        <span class="port-card-tag">Agentic Engineering</span>
+        <h3>Blueprint: AI Site Redesign from Scratch</h3>
+        <p>The engineering playbook behind transforming rawweights.com using a multi-agent pipeline — from scattered HTML to a unified design system with centralized nav, footer, and content layer.</p>
+        <div class="port-card-chips">
+          <span class="port-chip">Claude Code</span>
+          <span class="port-chip">Multi-agent</span>
+          <span class="port-chip">Design System</span>
+        </div>
+        <span class="port-card-read">Read blueprint →</span>
+      </div>
+    </a>
+
+  </div>
+</main>
+
+<!-- ── Centralized Footer ───────────────────────────────────── -->
+<div id="rw-footer"></div>
+<script src="../includes/rw-footer.js?v=20260613"></script>
+
+</body>
+</html>
