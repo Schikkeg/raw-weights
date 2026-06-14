@@ -19,7 +19,7 @@
         title: "Blueprint: How an Agent Rebuilds a Website From the Ground Up",
         excerpt: "You handed an AI a prompt and got a redesigned website. Here's what actually happened inside the agent — and how to build one that does it reliably.",
         date: "June 13, 2026",
-        image: "./images/agenticstrategy.png",
+        image: "./images/sitetransform.png",
         type: "Guide",
         link: "https://rawweights.com/guide/agent-blueprint-site-transform.html",
         linkedin: null
@@ -28,7 +28,7 @@
         title: "The AI Security Stack Autopsy",
         excerpt: "CSPM, pen tests, IAM, SOC — five tools already running on your site, five reasons none of them can see what an AI content agent does.",
         date: "June 13, 2026",
-        image: "./images/intro_slide.png",
+        image: "./images/autospy.png",
         type: "Guide",
         link: "https://rawweights.com/guide/ai-security-stack-autopsy.html",
         linkedin: null
@@ -37,7 +37,7 @@
         title: "The Agent Autonomy Dial",
         excerpt: "Five levels of AI autonomy, two axes of control — an interactive framework for deciding how much should an AI agent decide vs. when humans stay in the loop.",
         date: "June 13, 2026",
-        image: "./images/agentic.png",
+        image: "./images/dial.png",
         type: "Guide",
         link: "https://rawweights.com/guide/agent-autonomy-dial.html",
         linkedin: null

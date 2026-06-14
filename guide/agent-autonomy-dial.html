@@ -7,11 +7,11 @@
     <meta name="description" content="From suggesting a flight to managing your entire travel calendar, AI agents exist on a spectrum. Learn the five positions, the danger zones, and when to hand over the wheel.">
     <meta name="author" content="RawWeights">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://rawweights.com/images/dial.png">
+	<meta property="og:image" content="https://rawweights.com/images/dial.png">
     <meta property="og:url" content="https://www.rawweights.com/blog/agent-autonomy-dial.html">
     <meta property="og:title" content="The Autonomy Dial — How Much Should You Let an AI Agent Decide? | RawWeights">
     <meta property="og:description" content="Five positions. Two axes. One rule. An interactive guide to AI autonomy — through the lens of travel planning.">
-    <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+    <script>(function(){var t=localStorage.getItem('rw-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
     <link rel="stylesheet" href="../includes/brand.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -104,14 +104,24 @@
         .tag { display:inline-block; font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:.2rem .55rem; border-radius:6px; }
 
         /* ── LIGHT mode: comprehensive overrides for dark-bg pages ── */
-        /* Hero header always stays dark (brand accent) */
-        [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
-        [data-theme="light"] header .text-white,
+        /* Hero header — adapts to light mode (purple-tinted light surface) */
+        [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#fdf4ff 0%,#f5f3ff 100%) !important; border-color: #e9d5ff !important; }
+        [data-theme="light"] header .text-white { color: #0f172a !important; }
         [data-theme="light"] header .text-slate-100,
-        [data-theme="light"] header .text-slate-200 { color: #f0f4ff !important; }
-        [data-theme="light"] header .text-slate-300 { color: #cbd5e1 !important; }
+        [data-theme="light"] header .text-slate-200 { color: #1e293b !important; }
+        [data-theme="light"] header .text-slate-300 { color: #334155 !important; }
         [data-theme="light"] header .text-slate-400,
-        [data-theme="light"] header .text-slate-500 { color: #94a3b8 !important; }
+        [data-theme="light"] header .text-slate-500 { color: #475569 !important; }
+        [data-theme="light"] header .text-slate-600 { color: #64748b !important; }
+        [data-theme="light"] header .text-purple-300 { color: #7c3aed !important; }
+        [data-theme="light"] header .text-fuchsia-300 { color: #a21caf !important; }
+        /* Dial panel inside header */
+        [data-theme="light"] header .bg-slate-800\/60 { background: rgba(255,255,255,0.88) !important; }
+        [data-theme="light"] header .bg-slate-900\/60 { background: rgba(253,244,255,0.95) !important; }
+        [data-theme="light"] header .border-slate-700 { border-color: #e9d5ff !important; }
+        [data-theme="light"] header .border-slate-800 { border-color: #f3e8ff !important; }
+        /* SVG diagram section — keep container dark; inline SVG fills are hardcoded */
+        [data-theme="light"] #diagram .bg-slate-950\/60 { background: rgba(2,6,23,0.96) !important; border-color: #1e3a5f !important; }
         /* Body + main: light surface */
         [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
         [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
@@ -164,6 +174,45 @@
         [data-theme="light"] main input,
         [data-theme="light"] main textarea,
         [data-theme="light"] main select { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+        /* ── Interactive elements — active states visible in light mode ── */
+        [data-theme="light"] .mem-tab { color: #475569 !important; background: rgba(255,255,255,0.6) !important; border-color: #e2e8f0 !important; }
+        [data-theme="light"] .mem-tab.active { color: #6d28d9 !important; background: rgba(243,232,255,0.8) !important; border-color: #a855f7 !important; }
+        [data-theme="light"] .mem-tab.active::after { background: linear-gradient(90deg,#a855f7,#ec4899); }
+        [data-theme="light"] .dial-pos { color: #334155 !important; }
+        [data-theme="light"] .dial-pos.active { background: rgba(168,85,247,0.12) !important; }
+        [data-theme="light"] .react-btn-step { color: #334155 !important; }
+        [data-theme="light"] .react-btn-step.active { color: #6d28d9 !important; }
+        [data-theme="light"] .react-btn-step.done { color: #475569 !important; }
+        /* ── Missing opacity variants ── */
+        [data-theme="light"] main .bg-slate-800\/40 { background: rgba(255,255,255,0.85) !important; }
+        [data-theme="light"] main .bg-slate-800\/30 { background: rgba(255,255,255,0.75) !important; }
+        /* Quadrant cells — purple/red theme */
+        [data-theme="light"] main .bg-red-950\/40 { background: rgba(254,226,226,0.65) !important; }
+        [data-theme="light"] main .bg-red-950\/50 { background: rgba(254,226,226,0.85) !important; }
+        [data-theme="light"] main .border-red-800\/60 { border-color: rgba(220,38,38,0.45) !important; }
+        [data-theme="light"] main .border-red-800\/40 { border-color: rgba(220,38,38,0.3) !important; }
+        [data-theme="light"] main .bg-purple-950\/40 { background: rgba(243,232,255,0.7) !important; }
+        [data-theme="light"] main .bg-purple-950\/50 { background: rgba(243,232,255,0.88) !important; }
+        [data-theme="light"] main .bg-purple-950\/30 { background: rgba(243,232,255,0.55) !important; }
+        [data-theme="light"] main .border-purple-600\/70 { border-color: rgba(147,51,234,0.6) !important; }
+        [data-theme="light"] main .border-purple-600\/40 { border-color: rgba(147,51,234,0.35) !important; }
+        [data-theme="light"] main .border-purple-800\/40 { border-color: rgba(107,33,168,0.35) !important; }
+        [data-theme="light"] main .bg-fuchsia-950\/30 { background: rgba(253,232,255,0.55) !important; }
+        [data-theme="light"] main .border-fuchsia-800\/40 { border-color: rgba(134,25,143,0.35) !important; }
+        /* Info / highlight boxes — purple/fuchsia theme */
+        [data-theme="light"] main .bg-purple-900\/20 { background: rgba(243,232,255,0.5) !important; }
+        [data-theme="light"] main .bg-purple-900\/30 { background: rgba(243,232,255,0.65) !important; }
+        [data-theme="light"] main .bg-fuchsia-900\/20 { background: rgba(253,232,255,0.5) !important; }
+        [data-theme="light"] main .bg-fuchsia-900\/30 { background: rgba(253,232,255,0.65) !important; }
+        [data-theme="light"] main .border-purple-700\/40 { border-color: rgba(126,34,206,0.35) !important; }
+        [data-theme="light"] main .border-purple-700\/50 { border-color: rgba(126,34,206,0.45) !important; }
+        [data-theme="light"] main .border-fuchsia-700\/40 { border-color: rgba(162,28,175,0.35) !important; }
+        [data-theme="light"] main .border-fuchsia-700\/50 { border-color: rgba(162,28,175,0.45) !important; }
+        /* Gradient overrides */
+        [data-theme="light"] main .from-purple-900\/30 { --tw-gradient-from: rgba(243,232,255,.55) var(--tw-gradient-from-position); }
+        [data-theme="light"] main .from-fuchsia-900\/30 { --tw-gradient-from: rgba(253,232,255,.55) var(--tw-gradient-from-position); }
+        [data-theme="light"] main .to-fuchsia-900\/20 { --tw-gradient-to: rgba(253,232,255,.45) var(--tw-gradient-to-position); }
+        [data-theme="light"] main .to-pink-900\/20 { --tw-gradient-to: rgba(255,228,230,.45) var(--tw-gradient-to-position); }
         /* ── Dark mode overrides — interactive elements ── */
         [data-theme="dark"] .bg-white { background: #1e293b !important; }
         [data-theme="dark"] .bg-gray-100 { background: #1a2742 !important; }
@@ -171,7 +220,6 @@
         [data-theme="dark"] .text-gray-800 { color: #f0f4ff !important; }
         [data-theme="dark"] .text-gray-700 { color: #cbd5e1 !important; }
     </style>
-  <style>.rw-theme-btn{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 

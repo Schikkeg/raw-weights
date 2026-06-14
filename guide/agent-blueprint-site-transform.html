@@ -7,10 +7,11 @@
     <meta name="description" content="You handed an AI a prompt and got a redesigned website. Here's what actually happened inside the agent — and how to build one that does it reliably without breaking everything.">
     <meta name="author" content="RawWeights">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="https://rawweights.com/images/sitetransform.png">
     <meta property="og:url" content="https://www.rawweights.com/blog/agent-blueprint-site-transform.html">
     <meta property="og:title" content="The Blueprint — How an Agent Rebuilds a Website From the Ground Up | RawWeights">
     <meta property="og:description" content="Five levels of autonomy. Two axes of control. One rule. Built around the real challenge of transforming a scattered site into a unified digital experience.">
-    <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
+    <script>(function(){var t=localStorage.getItem('rw-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
     <link rel="stylesheet" href="../includes/brand.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -97,14 +98,23 @@
         .tag { display:inline-block; font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:.2rem .55rem; border-radius:6px; }
 
         /* ── LIGHT mode: comprehensive overrides for dark-bg pages ── */
-        /* Hero header always stays dark (brand accent) */
-        [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
-        [data-theme="light"] header .text-white,
+        /* Hero header — adapts to light mode (RawWeights brand: orange/indigo) */
+        [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#fff8f3 0%,#fff0e8 100%) !important; border-color: #fed7aa !important; }
+        [data-theme="light"] header .text-white { color: #0f172a !important; }
         [data-theme="light"] header .text-slate-100,
-        [data-theme="light"] header .text-slate-200 { color: #f0f4ff !important; }
-        [data-theme="light"] header .text-slate-300 { color: #cbd5e1 !important; }
+        [data-theme="light"] header .text-slate-200 { color: #1e293b !important; }
+        [data-theme="light"] header .text-slate-300 { color: #334155 !important; }
         [data-theme="light"] header .text-slate-400,
-        [data-theme="light"] header .text-slate-500 { color: #94a3b8 !important; }
+        [data-theme="light"] header .text-slate-500 { color: #475569 !important; }
+        [data-theme="light"] header .text-slate-600 { color: #64748b !important; }
+        /* Pipeline panel inside header */
+        [data-theme="light"] header .bg-slate-800\/60 { background: rgba(255,255,255,0.88) !important; }
+        [data-theme="light"] header .bg-slate-900\/60 { background: rgba(255,250,245,0.95) !important; }
+        [data-theme="light"] header .border-slate-700 { border-color: #fdba74 !important; }
+        [data-theme="light"] header .border-slate-800 { border-color: #fed7aa !important; }
+        [data-theme="light"] header .text-blue-300,
+        [data-theme="light"] header .text-blue-400 { color: #2563eb !important; }
+        [data-theme="light"] header .text-indigo-300 { color: #4338ca !important; }
         /* Body + main: light surface */
         [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
         [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
@@ -159,6 +169,52 @@
         [data-theme="light"] main input,
         [data-theme="light"] main textarea,
         [data-theme="light"] main select { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+        /* ── Interactive elements — active states visible in light mode ── */
+        [data-theme="light"] .mem-tab { color: #475569 !important; background: rgba(255,255,255,0.6) !important; border-color: #e2e8f0 !important; }
+        [data-theme="light"] .mem-tab.active { color: #1d4ed8 !important; background: rgba(239,246,255,0.8) !important; border-color: #3b82f6 !important; }
+        [data-theme="light"] .mem-tab.active::after { background: linear-gradient(90deg,#3b82f6,#6366f1); }
+        [data-theme="light"] .react-btn-step { color: #334155 !important; }
+        [data-theme="light"] .react-btn-step.active { color: #1d4ed8 !important; }
+        [data-theme="light"] .react-btn-step.done { color: #475569 !important; }
+        [data-theme="light"] .pipe-stage { color: #334155 !important; }
+        [data-theme="light"] .pipe-stage.active { background: rgba(59,130,246,0.1) !important; }
+        /* ── Missing opacity variants ── */
+        [data-theme="light"] main .bg-slate-800\/40 { background: rgba(255,255,255,0.85) !important; }
+        [data-theme="light"] main .bg-slate-800\/30 { background: rgba(255,255,255,0.75) !important; }
+        /* ── Quadrant cells — Control Dimension section ── */
+        [data-theme="light"] main .bg-red-950\/40 { background: rgba(254,226,226,0.65) !important; }
+        [data-theme="light"] main .bg-red-950\/50 { background: rgba(254,226,226,0.85) !important; }
+        [data-theme="light"] main .bg-red-950\/30 { background: rgba(254,226,226,0.5) !important; }
+        [data-theme="light"] main .border-red-800\/60 { border-color: rgba(220,38,38,0.45) !important; }
+        [data-theme="light"] main .border-red-800\/50 { border-color: rgba(220,38,38,0.4) !important; }
+        [data-theme="light"] main .border-red-800\/40 { border-color: rgba(220,38,38,0.3) !important; }
+        [data-theme="light"] main .bg-blue-950\/40 { background: rgba(219,234,254,0.7) !important; }
+        [data-theme="light"] main .bg-blue-950\/50 { background: rgba(219,234,254,0.88) !important; }
+        [data-theme="light"] main .border-blue-600\/70 { border-color: rgba(37,99,235,0.6) !important; }
+        [data-theme="light"] main .border-blue-600\/40 { border-color: rgba(37,99,235,0.35) !important; }
+        [data-theme="light"] main .bg-indigo-950\/30 { background: rgba(224,231,255,0.55) !important; }
+        [data-theme="light"] main .bg-indigo-950\/50 { background: rgba(224,231,255,0.85) !important; }
+        [data-theme="light"] main .border-indigo-800\/50 { border-color: rgba(99,102,241,0.45) !important; }
+        [data-theme="light"] main .border-indigo-800\/40 { border-color: rgba(99,102,241,0.35) !important; }
+        /* Info / highlight boxes */
+        [data-theme="light"] main .bg-blue-900\/20 { background: rgba(219,234,254,0.5) !important; }
+        [data-theme="light"] main .bg-blue-900\/30 { background: rgba(219,234,254,0.65) !important; }
+        [data-theme="light"] main .bg-blue-900\/40 { background: rgba(219,234,254,0.75) !important; }
+        [data-theme="light"] main .bg-indigo-900\/20 { background: rgba(224,231,255,0.5) !important; }
+        [data-theme="light"] main .bg-indigo-900\/30 { background: rgba(224,231,255,0.65) !important; }
+        [data-theme="light"] main .bg-violet-900\/20 { background: rgba(237,233,254,0.5) !important; }
+        [data-theme="light"] main .bg-violet-900\/30 { background: rgba(237,233,254,0.65) !important; }
+        [data-theme="light"] main .border-blue-700\/40 { border-color: rgba(59,130,246,0.35) !important; }
+        [data-theme="light"] main .border-blue-700\/50 { border-color: rgba(59,130,246,0.45) !important; }
+        [data-theme="light"] main .border-indigo-700\/40 { border-color: rgba(99,102,241,0.35) !important; }
+        [data-theme="light"] main .border-indigo-700\/50 { border-color: rgba(99,102,241,0.45) !important; }
+        [data-theme="light"] main .border-violet-700\/40 { border-color: rgba(124,58,237,0.35) !important; }
+        /* Gradient info boxes — override Tailwind gradient from/via/to variables */
+        [data-theme="light"] main .from-blue-900\/30 { --tw-gradient-from: rgba(219,234,254,.55) var(--tw-gradient-from-position); }
+        [data-theme="light"] main .from-blue-900\/40 { --tw-gradient-from: rgba(219,234,254,.65) var(--tw-gradient-from-position); }
+        [data-theme="light"] main .via-indigo-900\/30 { --tw-gradient-via: rgba(224,231,255,.55) var(--tw-gradient-via-position); }
+        [data-theme="light"] main .to-indigo-900\/20 { --tw-gradient-to: rgba(224,231,255,.45) var(--tw-gradient-to-position); }
+        [data-theme="light"] main .to-violet-900\/20 { --tw-gradient-to: rgba(237,233,254,.45) var(--tw-gradient-to-position); }
         /* ── Dark mode overrides — interactive elements ── */
         [data-theme="dark"] .bg-white { background: #1e293b !important; }
         [data-theme="dark"] .bg-gray-100 { background: #1a2742 !important; }
@@ -166,7 +222,6 @@
         [data-theme="dark"] .text-gray-800 { color: #f0f4ff !important; }
         [data-theme="dark"] .text-gray-700 { color: #cbd5e1 !important; }
     </style>
-  <style>.rw-theme-btn{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
