@@ -16,6 +16,15 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "MCP: The Practitioner's Playbook",
+        excerpt: "Part 2 of MCP on RawWeights — authentication patterns, transport layer, the full 4-capability map including Sampling, security threats, and a decision gate for when MCP makes sense.",
+        date: "June 14, 2026",
+        image: "./images/mcp_practise.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/mcp-practitioner-playbook.html",
+        linkedin: null
+      },
+      {
         title: "Blueprint: How an Agent Rebuilds a Website From the Ground Up",
         excerpt: "You handed an AI a prompt and got a redesigned website. Here's what actually happened inside the agent — and how to build one that does it reliably.",
         date: "June 13, 2026",
@@ -31,7 +40,7 @@
         image: "./images/autospy.png",
         type: "Guide",
         link: "https://rawweights.com/guide/ai-security-stack-autopsy.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_agenticai-aisecurity-devsecops-activity-7464004601097392128--Crr/"
       },
       {
         title: "The Agent Autonomy Dial",
@@ -40,7 +49,7 @@
         image: "./images/dial.png",
         type: "Guide",
         link: "https://rawweights.com/guide/agent-autonomy-dial.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-activity-7471818327863242752-mBvj/"
       },
       {
         title: "Document Intelligence — The Complete LlamaIndex Stack",
@@ -49,7 +58,7 @@
         image: "./images/llama.png",
         type: "Guide",
         link: "https://www.rawweights.com/guide/llamaindex-document-intelligence.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-llamaindex-documentai-activity-7471099532622274561-PxpJ/"
       },
       {
         title: "The Invisible Recall — Building a Passive Food Safety Watchdog",
@@ -58,7 +67,7 @@
         image: "./images/passive.png",
         type: "Guide",
         link: "https://www.rawweights.com/guide/passive-safety-watchdog.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_passive-watch-dog-activity-7470730452576874497-srAo/"
       },
       {
         title: "The Retrieval Playbook — 6 RAG Search Strategies",
@@ -67,7 +76,7 @@
         image: "./images/pinecone_slide.png",
         type: "Guide",
         link: "https://rawweights.com/guide/pinecone-retrieval-playbook.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_pinecone-pinecone-rag-activity-7470335349223755777-xQ9k/"
       },
       {
         title: "RAG Architect's Studio — Context Budget & Pattern Matcher",
@@ -76,7 +85,7 @@
         image: "./images/ragad_slide.png",
         type: "Guide",
         link: "https://rawweights.com/guide/rag-architects-studio.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_in-college-we-all-knew-someone-whod-fill-activity-7469646186610630656-kOU6/"
       },
       {
         title: "RAG Pipeline Toolkit — Design, Tune & Debug",
@@ -85,7 +94,7 @@
         image: "./images/rag_slide.png",
         type: "Guide",
         link: "https://rawweights.com/guide/rag-pipeline-toolkit.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-rag-activity-7469272786025222147-3wK-/"
       },
       {
         title: "Beyond Classical RL: How LLMs Are Actually Trained",
