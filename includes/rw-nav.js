@@ -413,6 +413,34 @@
     }
   }
 
+  /* ── Favicon injection — runs once on first nav init ───────── */
+  function injectFavicons() {
+    if (document.querySelector('link[data-rw-favicon]')) return;
+    const head = document.head;
+    const root = ROOT;
+    [
+      { rel: 'icon',             type: 'image/svg+xml',  href: root + 'favicon.svg',                    extra: '' },
+      { rel: 'icon',             type: 'image/png',       href: root + 'images/favicon-32.png',          extra: 'sizes="32x32"' },
+      { rel: 'icon',             type: 'image/png',       href: root + 'images/favicon-16.png',          extra: 'sizes="16x16"' },
+      { rel: 'apple-touch-icon', type: '',                href: root + 'images/apple-touch-icon.png',    extra: 'sizes="180x180"' },
+      { rel: 'manifest',         type: '',                href: root + 'site.webmanifest',               extra: '' },
+    ].forEach(({ rel, type, href, extra }, i) => {
+      if (document.querySelector(`link[rel="${rel}"][href="${href}"]`)) return;
+      const el = document.createElement('link');
+      el.rel = rel;
+      if (type) el.type = type;
+      el.href = href;
+      if (extra) {
+        extra.split(' ').forEach(attr => {
+          const [k, v] = attr.split('=');
+          if (k && v) el.setAttribute(k, v.replace(/"/g, ''));
+        });
+      }
+      if (i === 0) el.dataset.rwFavicon = '1'; // marker on first link
+      head.appendChild(el);
+    });
+  }
+
   /* ── Main init ─────────────────────────────────────────────── */
   function init() {
     const container = document.getElementById('rw-nav');
@@ -420,6 +448,7 @@
     if (container.dataset.rwNavInit) return; /* guard against double-init */
     container.dataset.rwNavInit = '1';
 
+    injectFavicons();
     container.innerHTML = buildHeaderHTML();
 
     updateThemeIcon();
