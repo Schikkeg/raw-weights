@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AG2 Beta — Session Quick Reference | RawWeights</title>
+  <meta name="description" content="10 concepts from the AG2 Beta hands-on workshop with Vasily Radostev. Click the session map to explore each concept, then try them live on the playground.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/guide/ag2-quickref.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/ag2.png">
+  <meta property="og:url" content="https://rawweights.com/guide/ag2-quickref.html">
+  <meta property="og:title" content="AG2 Beta Session Reference | RawWeights">
+  <meta property="og:description" content="Click any concept on the session map. 10 topics, instant detail, playground ready.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    :root {
+      --pg:      #eab308;
+      --pg-h:    #ca8a04;
+      --pg-glow: rgba(234,179,8,0.12);
+      --pg-glo2: rgba(234,179,8,0.22);
+    }
+
+    /* ── Hero ─────────────────────────────────────────────── */
+    .hero {
+      background:linear-gradient(135deg,#0c0a00 0%,#14100a 55%,#0a0c10 100%);
+      padding:4rem 1.5rem 3rem; text-align:center; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; top:-15%; right:-4%;
+      width:500px; height:500px;
+      background:radial-gradient(circle,rgba(234,179,8,0.15) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .hero::after {
+      content:''; position:absolute; bottom:-10%; left:-4%;
+      width:300px; height:300px;
+      background:radial-gradient(circle,rgba(6,182,212,0.06) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .hero-inner { max-width:680px; margin:0 auto; position:relative; }
+    .hero-eyebrow {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      background:rgba(234,179,8,0.14); border:1px solid rgba(234,179,8,0.3);
+      border-radius:9999px; padding:0.26rem 0.9rem;
+      font-family:var(--rw-font-display); font-size:0.68rem; font-weight:700;
+      color:#fde047; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.6rem;
+    }
+    .hero-byline {
+      font-family:var(--rw-font-display); font-size:0.75rem;
+      color:rgba(254,252,232,0.38); margin-bottom:1rem;
+    }
+    .hero-byline strong { color:rgba(254,252,232,0.65); font-weight:700; }
+    .hero h1 {
+      font-family:var(--rw-font-display);
+      font-size:clamp(1.8rem,5vw,2.9rem); font-weight:800;
+      color:#fefce8; line-height:1.1; letter-spacing:-0.025em; margin-bottom:0.7rem;
+    }
+    .hero h1 em {
+      font-style:normal;
+      background:linear-gradient(90deg,#fde047,#fbbf24);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero-sub {
+      font-size:0.92rem; color:rgba(254,252,232,0.5);
+      max-width:480px; margin:0 auto 1.8rem; line-height:1.65;
+    }
+    /* Playground CTA */
+    .pg-cta {
+      display:inline-flex; flex-direction:column; align-items:center;
+      background:rgba(234,179,8,0.1); border:1.5px solid rgba(234,179,8,0.35);
+      border-radius:16px; padding:1.25rem 2rem; max-width:400px;
+      cursor:pointer; text-decoration:none; margin:0 auto 0.8rem;
+      transition:background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .pg-cta:hover {
+      background:rgba(234,179,8,0.18); border-color:rgba(234,179,8,0.6);
+      transform:translateY(-2px); box-shadow:0 8px 28px rgba(234,179,8,0.22);
+    }
+    .pg-cta-label {
+      font-family:var(--rw-font-display); font-size:0.65rem; font-weight:700;
+      color:#fde047; text-transform:uppercase; letter-spacing:0.09em; margin-bottom:0.3rem;
+    }
+    .pg-cta-title {
+      font-family:var(--rw-font-display); font-size:1.15rem; font-weight:800;
+      color:#fefce8; margin-bottom:0.2rem;
+    }
+    .pg-cta-url {
+      font-family:var(--rw-font-mono); font-size:0.75rem; color:#fde047; opacity:0.7;
+      margin-bottom:0.75rem;
+    }
+    .pg-cta-btn {
+      background:#eab308; color:#1c1202;
+      font-family:var(--rw-font-display); font-size:0.82rem; font-weight:800;
+      padding:0.5rem 1.4rem; border-radius:9999px;
+      display:inline-flex; align-items:center; gap:0.35rem;
+    }
+    .pg-cta:hover .pg-cta-btn { background:#fde047; }
+    .hero-note { font-size:0.72rem; color:rgba(254,252,232,0.28); font-family:var(--rw-font-display); }
+
+    /* ── Stats strip ──────────────────────────────────────── */
+    .stats-strip {
+      display:flex; align-items:center; justify-content:center;
+      flex-wrap:wrap; gap:0;
+      background:var(--rw-card); border-bottom:1px solid var(--rw-border);
+      padding:0.6rem 1.5rem;
+    }
+    .stat-item {
+      display:flex; align-items:center; gap:0.3rem;
+      padding:0.2rem 1rem; font-family:var(--rw-font-display);
+      font-size:0.72rem; color:var(--rw-text-muted);
+    }
+    .stat-item em {
+      font-style:normal; font-size:1.05rem; font-weight:800; color:var(--pg);
+    }
+    .stat-sep { color:var(--rw-border); }
+
+    /* ── Wrap ─────────────────────────────────────────────── */
+    .wrap { max-width:1100px; margin:0 auto; padding:2.5rem 1.5rem 3rem; }
+
+    /* ── Section header ───────────────────────────────────── */
+    .sec-head {
+      display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;
+    }
+    .sec-head h2 {
+      font-family:var(--rw-font-display); font-size:0.72rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.1em;
+      color:var(--rw-text-muted); margin:0; white-space:nowrap;
+    }
+    .sec-head-line { flex:1; height:1px; background:var(--rw-border); }
+
+    /* ── Map area — desktop side-by-side ──────────────────── */
+    .map-area {
+      display:grid; grid-template-columns:1fr;
+      gap:1rem; margin-bottom:2.5rem; align-items:start;
+    }
+    @media (min-width:768px) {
+      .map-area { grid-template-columns:1fr 340px; gap:1.5rem; }
+    }
+
+    /* Map grid */
+    .map-grid {
+      display:grid; grid-template-columns:repeat(2,1fr);
+      gap:0.45rem; margin-bottom:0.45rem;
+    }
+    @media (min-width:480px) { .map-grid { grid-template-columns:repeat(3,1fr); } }
+
+    .map-node {
+      background:var(--rw-card); border:1.5px solid var(--rw-border);
+      border-radius:10px; padding:0.8rem 0.9rem;
+      cursor:pointer; user-select:none;
+      transition:border-color 0.18s, box-shadow 0.15s, background 0.15s;
+    }
+    .map-node:hover { border-color:rgba(234,179,8,0.45); background:var(--pg-glow); }
+    .map-node.active {
+      border-color:var(--pg); background:var(--pg-glow);
+      box-shadow:0 0 0 3px var(--pg-glo2);
+    }
+    .map-node.beyond { border-style:dashed; }
+    .map-node.beyond.active { border-style:solid; }
+    .node-num {
+      font-family:var(--rw-font-display); font-size:0.55rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.1em; color:var(--pg); margin-bottom:0.15rem;
+    }
+    .map-node.beyond .node-num { color:var(--rw-text-subtle); }
+    .map-node.beyond.active .node-num { color:var(--pg); }
+    .node-title {
+      font-family:var(--rw-font-display); font-size:0.82rem; font-weight:700;
+      color:var(--rw-text); line-height:1.25;
+    }
+
+    /* LiveAgent card */
+    .la-card {
+      display:flex; align-items:center; gap:0.85rem;
+      background:var(--rw-card); border:1.5px dashed rgba(234,179,8,0.28);
+      border-radius:10px; padding:0.7rem 1rem;
+      cursor:pointer; user-select:none;
+      transition:border-color 0.18s, background 0.15s;
+    }
+    .la-card:hover { border-color:var(--pg); background:var(--pg-glow); }
+    .la-card.active { border-color:var(--pg); border-style:solid; background:var(--pg-glow); }
+    .la-icon { font-size:1.25rem; flex-shrink:0; }
+    .la-body { flex:1; min-width:0; }
+    .la-tag {
+      font-family:var(--rw-font-display); font-size:0.55rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.1em; color:var(--pg); margin-bottom:0.08rem;
+    }
+    .la-name {
+      font-family:var(--rw-font-display); font-size:0.88rem; font-weight:800; color:var(--rw-text);
+    }
+    .la-meta { font-size:0.7rem; color:var(--rw-text-subtle); font-family:var(--rw-font-display); }
+    .la-arrow { color:var(--rw-text-subtle); font-size:1rem; flex-shrink:0; transition:color 0.15s; }
+    .la-card:hover .la-arrow, .la-card.active .la-arrow { color:var(--pg); }
+
+    .map-hint {
+      font-size:0.7rem; color:var(--rw-text-subtle);
+      font-family:var(--rw-font-display); margin-top:0.35rem; text-align:center;
+    }
+
+    /* ── Detail panel ─────────────────────────────────────── */
+    .detail-panel {
+      background:var(--rw-card); border:1.5px solid var(--rw-border);
+      border-radius:12px; overflow:hidden;
+    }
+    /* Mobile: hidden until activated */
+    @media (max-width:767px) {
+      .detail-panel { display:none; margin-top:0.75rem; }
+      .detail-panel.visible { display:block; animation:panelIn 0.2s ease; }
+    }
+    /* Desktop: always visible, sticky */
+    @media (min-width:768px) {
+      .detail-panel { display:block !important; position:sticky; top:72px; }
+    }
+    @keyframes panelIn {
+      from { opacity:0; transform:translateY(6px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* Placeholder */
+    .dp-placeholder {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding:3rem 1.5rem; gap:0.5rem; min-height:220px;
+    }
+    .dp-placeholder.hidden { display:none !important; }
+    .dp-placeholder-icon { font-size:1.6rem; opacity:0.25; }
+    .dp-placeholder-text {
+      font-family:var(--rw-font-display); font-size:0.78rem;
+      color:var(--rw-text-subtle); line-height:1.5;
+    }
+
+    /* Detail content */
+    .dp-content { display:none; }
+    .dp-content.visible { display:block; }
+
+    .dp-header {
+      padding:1rem 1.2rem 0.7rem;
+      border-bottom:1px solid var(--rw-border);
+    }
+    .dp-sub {
+      font-family:var(--rw-font-display); font-size:0.58rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.1em; color:var(--pg); margin-bottom:0.12rem;
+    }
+    .dp-heading {
+      font-family:var(--rw-font-display); font-size:1rem; font-weight:800;
+      color:var(--rw-text); display:flex; align-items:center; gap:0.45rem;
+    }
+    .dp-icon { font-size:1.1rem; }
+
+    .dp-bullets {
+      list-style:none; padding:0.85rem 1.2rem; margin:0;
+      display:flex; flex-direction:column; gap:0.45rem;
+      border-bottom:1px solid var(--rw-border);
+    }
+    .dp-bullets li {
+      display:flex; align-items:flex-start; gap:0.45rem;
+      font-size:0.8rem; color:var(--rw-text-muted); line-height:1.45;
+    }
+    .dp-bullets li::before {
+      content:'→'; color:var(--pg); flex-shrink:0;
+      font-size:0.72rem; margin-top:0.08rem;
+      font-family:var(--rw-font-display); font-weight:800;
+    }
+
+    .dp-insight {
+      padding:0.75rem 1.2rem; margin:0;
+      font-size:0.78rem; color:var(--rw-text-muted); line-height:1.55;
+      background:var(--pg-glow); border-bottom:1px solid var(--rw-border);
+    }
+    .dp-insight strong { color:var(--pg-h); font-weight:700; }
+
+    .dp-footer {
+      padding:0.6rem 1.2rem;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .dp-unlock {
+      font-family:var(--rw-font-display); font-size:0.68rem; color:var(--rw-text-subtle);
+    }
+    .dp-unlock strong { color:var(--rw-text-muted); font-weight:600; }
+    .dp-try {
+      font-family:var(--rw-font-display); font-size:0.72rem; font-weight:700;
+      color:var(--pg); text-decoration:none; transition:color 0.15s;
+    }
+    .dp-try:hover { color:var(--pg-h); }
+
+    /* ── Framework ────────────────────────────────────────── */
+    .fw-row {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:0.65rem; margin-bottom:2.5rem;
+    }
+    .fw-card {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:10px; padding:0.9rem 1rem;
+    }
+    .fw-name {
+      font-family:var(--rw-font-display); font-size:0.9rem; font-weight:800;
+      color:var(--rw-text); margin-bottom:0.22rem;
+    }
+    .fw-tag {
+      display:inline-block; font-family:var(--rw-font-display); font-size:0.57rem;
+      font-weight:700; text-transform:uppercase; letter-spacing:0.07em;
+      padding:0.08rem 0.42rem; border-radius:4px; margin-bottom:0.45rem;
+    }
+    .fw-tag.ag { background:var(--pg-glow); color:var(--pg-h); }
+    .fw-tag.lg { background:rgba(99,102,241,0.1); color:#6366f1; }
+    .fw-tag.cr { background:rgba(16,185,129,0.1); color:#059669; }
+    .fw-take { font-size:0.78rem; color:var(--rw-text-muted); line-height:1.5; }
+
+    /* ── FAQ ──────────────────────────────────────────────── */
+    .faq-filters {
+      display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:1rem;
+    }
+    .faq-pill {
+      padding:0.26rem 0.8rem; border-radius:9999px;
+      border:1.5px solid var(--rw-border); background:transparent; cursor:pointer;
+      font-family:var(--rw-font-display); font-size:0.7rem; font-weight:700;
+      color:var(--rw-text-muted); transition:all 0.15s;
+    }
+    .faq-pill.active, .faq-pill:hover {
+      background:var(--pg); border-color:var(--pg); color:#1c1202;
+    }
+    .faq-group { margin-bottom:1.25rem; }
+    .faq-group-label {
+      font-family:var(--rw-font-display); font-size:0.58rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.1em;
+      color:var(--rw-text-subtle); margin-bottom:0.4rem;
+    }
+    .faq-list { display:flex; flex-direction:column; gap:0.3rem; }
+    @media (min-width:768px) {
+      .faq-list { display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; align-items:start; }
+    }
+    .faq-item {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:10px; overflow:hidden; transition:border-color 0.18s;
+    }
+    .faq-item.open { border-color:rgba(234,179,8,0.35); }
+    .faq-q {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      padding:0.75rem 0.9rem; cursor:pointer;
+      font-family:var(--rw-font-display); font-size:0.8rem; font-weight:700;
+      color:var(--rw-text); gap:0.55rem; user-select:none; line-height:1.3;
+    }
+    .faq-chev {
+      flex-shrink:0; width:15px; height:15px; border-radius:50%;
+      background:var(--pg-glow); display:flex; align-items:center; justify-content:center;
+      font-size:0.56rem; color:var(--pg); transition:transform 0.22s; margin-top:0.1rem;
+    }
+    .faq-item.open .faq-chev { transform:rotate(180deg); }
+    .faq-a {
+      max-height:0; overflow:hidden;
+      transition:max-height 0.3s ease, padding 0.18s;
+      font-size:0.79rem; color:var(--rw-text-muted); line-height:1.65; padding:0 0.9rem;
+    }
+    .faq-item.open .faq-a { max-height:220px; padding:0 0.9rem 0.85rem; }
+
+    /* ── Closing CTA ──────────────────────────────────────── */
+    .closing-cta {
+      background:linear-gradient(135deg,rgba(234,179,8,0.08) 0%,rgba(234,179,8,0.03) 100%);
+      border:1px solid rgba(234,179,8,0.22); border-radius:16px;
+      padding:2rem; text-align:center; margin-top:2rem;
+    }
+    .closing-cta h3 {
+      font-family:var(--rw-font-display); font-size:1.05rem; font-weight:800;
+      color:var(--rw-text); margin-bottom:0.4rem;
+    }
+    .closing-cta p {
+      font-size:0.83rem; color:var(--rw-text-muted); margin-bottom:1rem; line-height:1.6;
+    }
+
+    /* ── Light mode ───────────────────────────────────────── */
+    [data-theme="light"] .hero { background:linear-gradient(135deg,#fffbeb 0%,#fefce8 55%,#f0f9ff 100%); }
+    [data-theme="light"] .hero h1  { color:#1c1202; }
+    [data-theme="light"] .hero-sub { color:rgba(28,18,2,0.5); }
+    [data-theme="light"] .hero-eyebrow { color:#92400e; background:rgba(234,179,8,0.12); border-color:rgba(234,179,8,0.3); }
+    [data-theme="light"] .hero-byline { color:rgba(28,18,2,0.4); }
+    [data-theme="light"] .hero-byline strong { color:rgba(28,18,2,0.6); }
+    [data-theme="light"] .pg-cta  { background:rgba(234,179,8,0.08); }
+    [data-theme="light"] .pg-cta-title { color:#1c1202; }
+    [data-theme="light"] .pg-cta-label,
+    [data-theme="light"] .pg-cta-url   { color:#92400e; }
+    [data-theme="light"] .hero-note { color:rgba(28,18,2,0.28); }
+    [data-theme="light"] .hero::before { background:radial-gradient(circle,rgba(234,179,8,0.1) 0%,transparent 65%); }
+    [data-theme="light"] .node-num { color:var(--pg-h); }
+    [data-theme="light"] .map-node.beyond .node-num { color:var(--rw-text-subtle); }
+    [data-theme="light"] .map-node.beyond.active .node-num { color:var(--pg-h); }
+    [data-theme="light"] .la-tag  { color:var(--pg-h); }
+    [data-theme="light"] .la-card:hover .la-arrow,
+    [data-theme="light"] .la-card.active .la-arrow { color:var(--pg-h); }
+    [data-theme="light"] .dp-sub  { color:var(--pg-h); }
+    [data-theme="light"] .dp-bullets li::before { color:var(--pg-h); }
+    [data-theme="light"] .dp-insight strong { color:var(--pg-h); }
+    [data-theme="light"] .dp-try  { color:var(--pg-h); }
+    [data-theme="light"] .fw-tag.ag { color:var(--pg-h); }
+    [data-theme="light"] .faq-chev { color:var(--pg-h); }
+    [data-theme="light"] .faq-pill.active,
+    [data-theme="light"] .faq-pill:hover { color:#fff; }
+
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width:640px) { .fw-row { grid-template-columns:1fr; } }
+    @media (max-width:380px) { .map-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ══ HERO ═══════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <span class="hero-eyebrow">⚡ GenAcademy · AG2 Beta Workshop</span>
+    <p class="hero-byline">Session led by <strong>Vasily Radostev</strong> · Head of Engineering, AG2</p>
+    <h1>AG2 Beta Workshop, <em>Mapped</em></h1>
+    <p class="hero-sub">10 session concepts. Click any card to explore. All of them run live on the playground — free, no account needed.</p>
+
+    <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="pg-cta">
+      <span class="pg-cta-label">✦ Try it live — no install, no key</span>
+      <span class="pg-cta-title">AG2 Playground</span>
+      <span class="pg-cta-url">playground.ag2.ai</span>
+      <span class="pg-cta-btn">Open Playground →</span>
+    </a>
+    <div class="hero-note">Use the Beta column only — Classic and Beta share a UI but differ architecturally</div>
+  </div>
+</div>
+
+<!-- ══ STATS STRIP ════════════════════════════════════════════════ -->
+<div class="stats-strip">
+  <span class="stat-item"><em>6</em>&nbsp;Coding Parts</span>
+  <span class="stat-sep">·</span>
+  <span class="stat-item"><em>3</em>&nbsp;Production Topics</span>
+  <span class="stat-sep">·</span>
+  <span class="stat-item"><em>1</em>&nbsp;Voice Mode</span>
+  <span class="stat-sep">·</span>
+  <span class="stat-item"><em>20×</em>&nbsp;Max Cost Savings</span>
+  <span class="stat-sep">·</span>
+  <span class="stat-item">Async-first, community fork</span>
+</div>
+
+<!-- ══ CONTENT ════════════════════════════════════════════════════ -->
+<div class="wrap">
+
+  <!-- ── Session Map ──────────────────────────────────────── -->
+  <div class="sec-head">
+    <h2>Session Map</h2>
+    <div class="sec-head-line"></div>
+  </div>
+
+  <div class="map-area">
+
+    <!-- Left: nodes -->
+    <div class="map-left">
+      <div class="map-grid">
+        <div class="map-node" onclick="showDetail(0)">
+          <div class="node-num">Part 01</div>
+          <div class="node-title">Agents &amp; Tools</div>
+        </div>
+        <div class="map-node" onclick="showDetail(1)">
+          <div class="node-num">Part 02</div>
+          <div class="node-title">Sub-agent Delegation</div>
+        </div>
+        <div class="map-node" onclick="showDetail(2)">
+          <div class="node-num">Part 03</div>
+          <div class="node-title">Middleware</div>
+        </div>
+        <div class="map-node" onclick="showDetail(3)">
+          <div class="node-num">Part 04</div>
+          <div class="node-title">Input Control</div>
+        </div>
+        <div class="map-node" onclick="showDetail(4)">
+          <div class="node-num">Part 05</div>
+          <div class="node-title">Structured Output</div>
+        </div>
+        <div class="map-node" onclick="showDetail(5)">
+          <div class="node-num">Part 06</div>
+          <div class="node-title">Networks of Agents</div>
+        </div>
+        <div class="map-node beyond" onclick="showDetail(6)">
+          <div class="node-num">Beyond · Quality</div>
+          <div class="node-title">Evaluation</div>
+        </div>
+        <div class="map-node beyond" onclick="showDetail(7)">
+          <div class="node-num">Beyond · Scale</div>
+          <div class="node-title">Cost &amp; Distribution</div>
+        </div>
+        <div class="map-node beyond" onclick="showDetail(8)">
+          <div class="node-num">Beyond · Safety</div>
+          <div class="node-title">Human in the Loop</div>
+        </div>
+      </div>
+
+      <!-- LiveAgent bonus card -->
+      <div class="la-card" onclick="showDetail(9)">
+        <div class="la-icon">🎙️</div>
+        <div class="la-body">
+          <div class="la-tag">Bonus · Voice Mode</div>
+          <div class="la-name">LiveAgent</div>
+          <div class="la-meta">Full-duplex · &lt;500ms · Barge-in · Audio-to-audio</div>
+        </div>
+        <div class="la-arrow">→</div>
+      </div>
+
+      <div class="map-hint">solid border = coding part · dashed = production topic · click to explore</div>
+    </div>
+
+    <!-- Right: detail panel (sticky on desktop) -->
+    <div class="detail-panel" id="detail-panel">
+      <div class="dp-placeholder" id="dp-placeholder">
+        <div class="dp-placeholder-icon">←</div>
+        <div class="dp-placeholder-text">Select any concept<br>to see details</div>
+      </div>
+      <div class="dp-content" id="dp-content">
+        <div class="dp-header">
+          <div class="dp-sub" id="dp-sub"></div>
+          <div class="dp-heading">
+            <span class="dp-icon" id="dp-icon"></span>
+            <span id="dp-heading"></span>
+          </div>
+        </div>
+        <ul class="dp-bullets" id="dp-bullets"></ul>
+        <div class="dp-insight" id="dp-insight"></div>
+        <div class="dp-footer">
+          <div class="dp-unlock">Unlocks: <strong id="dp-unlock"></strong></div>
+          <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="dp-try">Try on Playground →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /map-area -->
+
+  <!-- ── Framework at a Glance ────────────────────────────── -->
+  <div class="sec-head">
+    <h2>Framework at a Glance</h2>
+    <div class="sec-head-line"></div>
+  </div>
+
+  <div class="fw-row">
+    <div class="fw-card">
+      <div class="fw-name">AG2 Beta</div>
+      <span class="fw-tag ag">Enterprise multi-agent</span>
+      <div class="fw-take">Async-first, Hub orchestration, identity via Passport, 4 typed channel patterns. Higher setup — higher ceiling. Community fork of AutoGen.</div>
+    </div>
+    <div class="fw-card">
+      <div class="fw-name">LangGraph</div>
+      <span class="fw-tag lg">Durable pipelines</span>
+      <div class="fw-take">Built for stateful, resumable workflows. Best entry point when migrating from deterministic code into agentic territory.</div>
+    </div>
+    <div class="fw-card">
+      <div class="fw-name">CrewAI</div>
+      <span class="fw-tag cr">Fast prototype</span>
+      <div class="fw-take">Quickest path to a running crew. High-level abstractions that make deep customization harder as you scale to production.</div>
+    </div>
+  </div>
+
+  <!-- ── FAQ ──────────────────────────────────────────────── -->
+  <div class="sec-head">
+    <h2>From the Q&amp;A</h2>
+    <div class="sec-head-line"></div>
+  </div>
+
+  <div class="faq-filters">
+    <button class="faq-pill active" onclick="filterFaq('all',this)">All</button>
+    <button class="faq-pill" onclick="filterFaq('setup',this)">Getting Started</button>
+    <button class="faq-pill" onclick="filterFaq('arch',this)">Architecture</button>
+    <button class="faq-pill" onclick="filterFaq('prod',this)">Production</button>
+  </div>
+
+  <div class="faq-group" data-cat="setup">
+    <div class="faq-group-label">Getting Started</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Is chaining — ask() then another ask() on the reply — supported?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Yes. The reply object is itself askable — that is the multi-turn pattern. Context is retained automatically across the chain.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Is the playground free? Account required?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Free, no account. AG2 powers the LLM. Use only the Beta column — Classic and Beta look similar but differ architecturally enough to cause confusion.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          How do I teach my coding assistant AG2 Beta patterns?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Run <code>npx skills add ag2ai/ag2-skills</code>. This installs AG2 Beta knowledge into Claude, Cursor, and others — so the assistant reaches for Beta APIs instead of hallucinating Classic patterns.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          What's the relationship between AG2 Beta and classic AutoGen?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">AutoGen (2023, Microsoft Research) was forked by the community into AG2 (2024). AG2 Beta is a from-scratch async rewrite under <code>autogen.beta</code>. Classic patterns (ConversableAgent, group/sequential chat) are replaced entirely. Vasily's advice: focus only on Beta going forward.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-group" data-cat="arch">
+    <div class="faq-group-label">Architecture</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Hub vs A2A — what's the difference?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Hub = in-org orchestration (audit log, Passport identity, 4 typed channels). A2A = Google's cross-org, cross-framework standard. AG2 supports both. Hub internally; A2A when connecting to agents from other frameworks or companies.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Is there an identity or trust system for agent networks?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Partially. Passport verifies identity and prevents unauthorized connections. Audit logs record who sent what. Fine-grained inter-agent trust (what agent A may share with B) is still evolving — no framework has fully solved it.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Middleware vs assembly policies — what's the difference?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Middleware changes what <em>happens</em> — HistoryLimiter permanently deletes. Assembly policies change what the model <em>sees</em> — the full event log is preserved, only the assembled context window changes. Same layer, different intent.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          What are the 4 channel types in the Hub?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Consulting: one Q, one A, auto-closes. Conversation: free-form pair. Discussion: round-robin N agents. Workflow: declarative TransitionGraph with conditions and targets — most used in enterprise.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-group" data-cat="prod">
+    <div class="faq-group-label">Production</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Can I A/B test agent configurations?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Yes — use your existing A/B framework. Treat the agent as a standard service component and route users to different middleware stacks, prompts, or models the same way you would any backend variant.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          How do token budgets control cost?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">At ~90% of budget, pass the remaining count back and prompt the agent to wrap up. Forces a coherent final answer instead of a silent cutoff. Cheap models can run 20× cheaper — a workflow of cheap calls often matches expensive smart-loop quality.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          What's the right permission model for production agents?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">Read-only: let it run, control spend. Anything that writes, deletes, sends, or charges: require human approval. Vasily's own agent destroyed $2,000 of data before this session — no gate, full permissions. The lesson is not hypothetical.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          How does agent-as-judge evaluation work?
+          <span class="faq-chev">▾</span>
+        </div>
+        <div class="faq-a">A separate agent scores outputs against defined criteria (conciseness, source quality, topic coverage). Calibrate the judge against real user feedback first — even 100 satisfied/unsatisfied sessions is enough to align it. Then run it at thousands of interactions automatically.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Closing CTA ───────────────────────────────────────── -->
+  <div class="closing-cta">
+    <h3>Every concept in this reference runs live</h3>
+    <p>The playground has interactive examples for all 10 topics — no install, no account, no API key. Use the Beta column.</p>
+    <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="rw-btn rw-btn-primary">Open playground.ag2.ai →</a>
+  </div>
+
+</div><!-- /wrap -->
+
+<div id="rw-footer"
+     data-related='[
+       {"label":"Agent Autonomy Dial","url":"/guide/agent-autonomy-dial.html"},
+       {"label":"MCP Practitioner Playbook","url":"/guide/mcp-practitioner-playbook.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+/* ── Node data ─────────────────────────────────────────────── */
+const NODES = [
+  {
+    icon:'🧠', sub:'Part 01 · Foundations', heading:'Agents & Tools',
+    bullets:[
+      'Agent = name + system prompt + model config',
+      'ask() returns a reply — the reply is itself re-askable (multi-turn)',
+      'Tools: @tool decorator · AG2 built-ins (web/code/memory) · any MCP server',
+    ],
+    insight:'<strong>15–20 model configs supported.</strong> Switching OpenAI → Anthropic → Google is a one-line swap. Agent logic is unchanged.',
+    unlock:'Working agent in ~10 lines',
+  },
+  {
+    icon:'⚡', sub:'Part 02 · Routing', heading:'Sub-agent Delegation',
+    bullets:[
+      'run_subtask() fans out sequentially or in parallel',
+      'run_subtasks(parallel=True) — rate limits, not the framework, are your ceiling',
+      'Agent.as_tool() wraps a whole specialist as a named callable for the coordinator',
+    ],
+    insight:'<strong>No Hub needed.</strong> This is recursion, not a network — useful to decompose complex tasks before you need the full channel machinery of Part 06.',
+    unlock:'Task decomposition without a Hub',
+  },
+  {
+    icon:'🔧', sub:'Part 03 · Harness', heading:'Middleware',
+    bullets:[
+      '4 hooks: on_turn · on_llm_call · on_tool_execution · on_human_input',
+      'Stack layers in any order — entry top→down, unwind in reverse',
+      'Built-ins: LoggingMiddleware · RetryMiddleware(max_retries) · HistoryLimiter(max_events)',
+    ],
+    insight:'<strong>HistoryLimiter permanently deletes.</strong> It does NOT hide history — it removes it from the log. If you need filtering without deletion, use assembly policies (Part 04) instead.',
+    unlock:'Cross-cutting concerns without touching agent logic',
+  },
+  {
+    icon:'👁️', sub:'Part 04 · Perception', heading:'Input Control',
+    bullets:[
+      'Assembly policies filter what the model SEES — the full event log is always preserved',
+      'SlidingWindowPolicy(max_events=N) · TokenBudgetPolicy · WorkingMemoryPolicy',
+      'WorkingMemoryPolicy = curated view across runs → enables autonomous self-improvement',
+    ],
+    insight:'<strong>Live demo:</strong> with a 6-event window and 3-word memory test, the agent forgot the first word — still in the log, just not assembled into context. Middleware mutates; policies filter.',
+    unlock:'Context control without destroying history',
+  },
+  {
+    icon:'📋', sub:'Part 05 · Schema', heading:'Structured Output',
+    bullets:[
+      'Define a Pydantic BaseModel → model returns a validated typed object',
+      'reply.body = raw text · await reply.content() = typed instance',
+      'response_schema= set on Agent (all replies) or per individual ask() call',
+    ],
+    insight:'<strong>Chain typed agents.</strong> One agent takes a typed input, returns a typed output. The next picks up without parsing. No glue code between stages.',
+    unlock:'Typed pipelines with no string parsing',
+  },
+  {
+    icon:'🕸️', sub:'Part 06 · Network', heading:'Networks of Agents',
+    bullets:[
+      'Hub = registry + post office + audit log in one',
+      'Agents register with a Passport (identity) to receive an AgentClient',
+      '4 channel types: Consulting · Conversation · Discussion · Workflow (TransitionGraph)',
+    ],
+    insight:'<strong>Hub = in-org. A2A = cross-org.</strong> AG2 supports both. Mix Google ADK, Agno, and AG2 agents via A2A with no custom adapters. TransitionGraph is the most-used pattern in enterprise deployments.',
+    unlock:'Multi-agent systems with identity and audit trails',
+  },
+  {
+    icon:'📊', sub:'Beyond · Quality', heading:'Evaluation',
+    bullets:[
+      'Telemetry middleware → every trace in a store; see what ran, not what you intended',
+      'Agent-as-judge: second agent scores outputs against your defined criteria',
+      'Calibrate judge against real user sessions before running at scale',
+    ],
+    insight:'<strong>100 sessions can represent all interactions</strong> when used to align the judge. Once calibrated, it scores thousands of runs automatically. Score on conciseness, source quality, topic coverage — whatever matters.',
+    unlock:'Scalable quality beyond pass/fail tests',
+  },
+  {
+    icon:'💰', sub:'Beyond · Scale', heading:'Cost & Distribution',
+    bullets:[
+      'Cheap models can cost 20× less than flagship — measure before optimizing',
+      'TokenBudgetPolicy: at 90% usage, signal the agent to wrap up with remaining budget',
+      'A2A protocol: span agents across processes, machines, or organizations',
+    ],
+    insight:'<strong>A workflow of cheap model calls often matches an expensive smart loop on quality</strong> at a fraction of the cost. A2A (Google\'s cross-framework standard) is natively supported in AG2.',
+    unlock:'Predictable spend and cross-framework scale',
+  },
+  {
+    icon:'🧑‍✈️', sub:'Beyond · Safety', heading:'Human in the Loop',
+    bullets:[
+      'Thinking steps = prompt the agent to narrate reasoning before acting',
+      'Approval gates = pause before any write, delete, send, or charge action',
+      'Rule: read-only → let it run · destructive → require explicit sign-off',
+    ],
+    insight:'<strong>Vasily\'s own agent destroyed $2,000 of data</strong> the evening before this session. No approval gate, full permissions. It did exactly what it was told — thoroughly. The lesson is not hypothetical.',
+    unlock:'Safe production deployment',
+  },
+  {
+    icon:'🎙️', sub:'Bonus · Voice Mode', heading:'LiveAgent',
+    bullets:[
+      'Full-duplex voice — agent speaks while you talk; barge-in is supported',
+      'Sub-500ms latency via OpenAI real-time API; audio-to-audio, no transcript loop',
+      'Separate primitive from Agent — handles interruption logic the standard loop cannot',
+    ],
+    insight:'<strong>LiveAgent is NOT a wrapper around ask().</strong> It\'s a distinct primitive purpose-built for real-time voice. Vasily demoed a live pirate voice interaction during the session.',
+    unlock:'Real-time voice apps without custom audio scaffolding',
+  },
+];
+
+/* ── State ──────────────────────────────────────────────────── */
+let activeIdx = -1;
+const allNodes = () => document.querySelectorAll('.map-node, .la-card');
+const isDesktop = () => window.innerWidth >= 768;
+
+/* ── Show detail ────────────────────────────────────────────── */
+function showDetail(idx) {
+  const panel       = document.getElementById('detail-panel');
+  const placeholder = document.getElementById('dp-placeholder');
+  const content     = document.getElementById('dp-content');
+  const nodes       = allNodes();
+
+  if (activeIdx === idx && !isDesktop()) {
+    nodes[idx].classList.remove('active');
+    panel.classList.remove('visible');
+    placeholder.classList.remove('hidden');
+    content.classList.remove('visible');
+    activeIdx = -1;
+    return;
+  }
+
+  nodes.forEach(n => n.classList.remove('active'));
+  nodes[idx].classList.add('active');
+
+  const d = NODES[idx];
+  document.getElementById('dp-sub').textContent     = d.sub;
+  document.getElementById('dp-icon').textContent    = d.icon;
+  document.getElementById('dp-heading').textContent = d.heading;
+  document.getElementById('dp-insight').innerHTML   = d.insight;
+  document.getElementById('dp-unlock').textContent  = d.unlock;
+
+  const ul = document.getElementById('dp-bullets');
+  ul.innerHTML = d.bullets.map(b => `<li>${b}</li>`).join('');
+
+  placeholder.classList.add('hidden');
+  content.classList.add('visible');
+  panel.classList.add('visible');
+  activeIdx = idx;
+
+  if (!isDesktop()) {
+    setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+  }
+}
+
+/* ── FAQ ────────────────────────────────────────────────────── */
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+function filterFaq(cat, pill) {
+  document.querySelectorAll('.faq-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  document.querySelectorAll('.faq-group').forEach(g => {
+    g.style.display = (cat === 'all' || g.dataset.cat === cat) ? '' : 'none';
+  });
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+}
+</script>
+
+</body>
+</html>

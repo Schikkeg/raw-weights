@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "AG2 Beta — Session Quick Reference",
+        excerpt: "10 concepts from the AG2 Beta hands-on workshop with Vasily Radostev. Click the session map to explore each concept, then try them live on the playground.",
+        date: "June 16, 2026",
+        image: "./images/ag2.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/ag2-quickref.html",
+        linkedin: null
+      },
+      {
         title: "MCP: The Practitioner's Playbook",
         excerpt: "Part 2 of MCP on RawWeights — authentication patterns, transport layer, the full 4-capability map including Sampling, security threats, and a decision gate for when MCP makes sense.",
         date: "June 14, 2026",
         image: "./images/mcp_practise.png",
         type: "Guide",
         link: "https://rawweights.com/guide/mcp-practitioner-playbook.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_mcp-the-practitioners-playbook-rawweights-activity-7472168088621207552-HVPX"
       },
       {
         title: "Blueprint: How an Agent Rebuilds a Website From the Ground Up",
