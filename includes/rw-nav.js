@@ -94,7 +94,12 @@
               { label: 'Pinecone Retrieval',    url: '/guide/pinecone-retrieval-playbook.html',        desc: 'Vector search playbook' },
               { label: 'Passive Safety',        url: '/guide/passive-safety-watchdog.html',            desc: 'AI safety monitoring patterns' },
               { label: 'NVIDIA Post-Training',  url: '/blog/nvidia-llm-post-training.html',            desc: 'LLM fine-tuning strategies' },
-              { label: 'LlamaIndex Intel',      url: '/guide/llamaindex-document-intelligence.html',   desc: 'Document AI with LlamaIndex' }
+              { label: 'LlamaIndex Intel',      url: '/guide/llamaindex-document-intelligence.html',   desc: 'Document AI with LlamaIndex' },
+              { label: 'MCP Practitioner',      url: '/guide/mcp-practitioner-playbook.html',          desc: 'Hands-on MCP server patterns & real integrations' },
+              { label: 'AG2 Quick Reference',   url: '/guide/ag2-quickref.html',                       desc: 'AG2 — 10 key concepts from the beta session' },
+              { label: 'ContextCal',            url: '/sample/ContextCal.html',                        desc: 'Agentic scheduling across language contexts' },
+              { label: 'ElevenLabs Builder Map',url: '/guide/elevenlabs-builders-map.html',            desc: 'Five practical decisions for voice AI builders' }
+
             ]
           }
         ]

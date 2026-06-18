@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Builder's Map: Practical Decisions for Voice AI with ElevenLabs | RawWeights</title>
+  <meta name="description" content="Five decisions that shape every voice agent deployment — from which build path to choose, through the real enterprise questions nobody covers in a demo.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/blog/elevenlabs-builders-map.html">
+  <meta property="og:image" content="https://rawweights.com/images/elevenlabs.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/blog/elevenlabs-builders-map.html">
+  <meta property="og:title" content="The Builder's Map — ElevenLabs Voice AI | RawWeights">
+  <meta property="og:description" content="Speech Engine or full agent? IVC or PVC? How do you ship safely? Five practical decisions for anyone building with ElevenLabs.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Page tokens: warm orange + violet ─────────────────────── */
+    :root {
+      --pg:          #f97316;
+      --pg-hover:    #ea580c;
+      --pg-glow:     rgba(249,115,22,0.10);
+      --pg-glow-str: rgba(249,115,22,0.20);
+      --pg2:         #7c3aed;
+      --pg2-glow:    rgba(124,58,237,0.10);
+      --pg2-hover:   #6d28d9;
+    }
+
+    /* ── Hero ──────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0f0700 0%, #0c0814 55%, #080808 100%);
+      padding: 4.5rem 1.5rem 3.5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -15%; right: -4%;
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(249,115,22,0.13) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: ''; position: absolute; bottom: -12%; left: -5%;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(124,58,237,0.11) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    [data-theme="light"] .hero {
+      background: linear-gradient(135deg, #fff7ed 0%, #fdf8ff 55%, #f8f8ff 100%);
+    }
+    [data-theme="light"] .hero::before {
+      background: radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 65%);
+    }
+    [data-theme="light"] .hero::after {
+      background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 65%);
+    }
+    .hero-inner { max-width: 840px; margin: 0 auto; position: relative; }
+    .hero-label {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(249,115,22,0.12);
+      border: 1px solid rgba(249,115,22,0.30);
+      border-radius: 9999px; padding: 0.3rem 0.9rem;
+      font-size: 0.72rem; font-weight: 700; color: #fb923c;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      font-family: var(--rw-font-display); margin-bottom: 1.2rem;
+    }
+    [data-theme="light"] .hero-label { color: #c2410c; background: rgba(249,115,22,0.09); }
+    .hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.9rem, 5vw, 3.4rem); font-weight: 800;
+      color: #faf5ff; line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 1rem;
+    }
+    [data-theme="light"] .hero h1 { color: #1e1b4b; }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #fb923c 0%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1rem; color: rgba(250,245,255,0.60);
+      max-width: 620px; margin: 0 auto 1.6rem; line-height: 1.78;
+    }
+    [data-theme="light"] .hero-sub { color: rgba(30,27,75,0.62); }
+    .hero-meta {
+      display: flex; align-items: center; justify-content: center;
+      gap: 1.25rem; flex-wrap: wrap; font-size: 0.78rem;
+      color: rgba(250,245,255,0.40); font-family: var(--rw-font-display); margin-bottom: 2rem;
+    }
+    [data-theme="light"] .hero-meta { color: rgba(30,27,75,0.40); }
+    .stat-strip {
+      display: flex; max-width: 560px; margin: 0 auto;
+      border: 1px solid rgba(249,115,22,0.20); border-radius: 12px; overflow: hidden;
+    }
+    .stat-cell {
+      flex: 1; padding: 0.9rem 0.5rem; text-align: center;
+      border-right: 1px solid rgba(249,115,22,0.13);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val {
+      display: block; font-family: var(--rw-font-display);
+      font-size: 1.45rem; font-weight: 800; color: #fb923c; line-height: 1;
+    }
+    [data-theme="light"] .stat-val { color: #c2410c; }
+    .stat-lbl {
+      display: block; font-size: 0.62rem; color: rgba(250,245,255,0.38);
+      margin-top: 0.2rem; font-family: var(--rw-font-display);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    [data-theme="light"] .stat-lbl { color: rgba(30,27,75,0.40); }
+
+    /* ── Layout ────────────────────────────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 210px 1fr;
+      gap: 2.5rem; max-width: 1200px;
+      margin: 3rem auto; padding: 0 1.5rem; align-items: start;
+    }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .toc-label {
+      font-family: var(--rw-font-display); font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--rw-text-subtle); margin-bottom: 0.75rem;
+    }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.07rem; }
+    .toc-list a {
+      font-size: 0.79rem; color: var(--rw-text-muted); text-decoration: none;
+      padding: 0.27rem 0.6rem; border-left: 2px solid transparent;
+      display: block; border-radius: 0 4px 4px 0;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      font-family: var(--rw-font-display);
+    }
+    .toc-list a:hover, .toc-list a.toc-active {
+      color: var(--pg); border-left-color: var(--pg); background: var(--pg-glow);
+    }
+    [data-theme="light"] .toc-list a:hover,
+    [data-theme="light"] .toc-list a.toc-active { color: #c2410c; border-left-color: #f97316; }
+
+    /* ── Sections ──────────────────────────────────────────────── */
+    .section { margin-bottom: 4rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .sec-label {
+      display: inline-block; font-family: var(--rw-font-display);
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--pg); margin-bottom: 0.45rem;
+    }
+    [data-theme="light"] .sec-label { color: #c2410c; }
+    .sec-label.vio { color: var(--pg2); }
+    [data-theme="light"] .sec-label.vio { color: #5b21b6; }
+    .section h2 {
+      font-family: var(--rw-font-display); font-size: 1.6rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem; border-bottom: 2px solid var(--pg-glow);
+    }
+    .section h3 {
+      font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700;
+      color: var(--rw-text); margin: 1.6rem 0 0.45rem;
+    }
+    .section p { font-size: 0.97rem; color: var(--rw-text-muted); line-height: 1.78; margin-bottom: 1rem; }
+
+    /* ── Signal row (static) ───────────────────────────────────── */
+    .signal-row {
+      display: flex; align-items: stretch; gap: 0; margin: 1.5rem 0;
+      border: 1px solid rgba(249,115,22,0.18); border-radius: 14px;
+      overflow: hidden;
+    }
+    .sig-stage {
+      flex: 1; padding: 1.25rem 1rem; display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      background: var(--rw-surface); border-right: 1px solid var(--rw-border);
+    }
+    .sig-stage:last-child { border-right: none; }
+    .sig-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .sig-abbr {
+      font-family: var(--rw-font-mono); font-size: 0.88rem; font-weight: 800;
+      color: var(--pg); margin-bottom: 0.2rem;
+    }
+    [data-theme="light"] .sig-abbr { color: #c2410c; }
+    .sig-abbr.vio { color: var(--pg2); }
+    [data-theme="light"] .sig-abbr.vio { color: #5b21b6; }
+    .sig-name {
+      font-family: var(--rw-font-display); font-size: 0.7rem;
+      color: var(--rw-text-muted); margin-bottom: 0.6rem;
+    }
+    .sig-tag {
+      font-family: var(--rw-font-mono); font-size: 0.68rem;
+      background: rgba(249,115,22,0.10); border: 1px solid rgba(249,115,22,0.22);
+      color: #fb923c; border-radius: 5px; padding: 0.18rem 0.5rem;
+      display: inline-block;
+    }
+    [data-theme="light"] .sig-tag { background: rgba(249,115,22,0.08); color: #c2410c; border-color: rgba(249,115,22,0.25); }
+    .sig-tag.vio {
+      background: rgba(124,58,237,0.10); border-color: rgba(124,58,237,0.22);
+      color: #a78bfa;
+    }
+    [data-theme="light"] .sig-tag.vio { background: rgba(124,58,237,0.07); color: #5b21b6; border-color: rgba(124,58,237,0.25); }
+    .sig-arrow {
+      display: flex; align-items: center; padding: 0 0.35rem;
+      color: rgba(249,115,22,0.35); font-size: 1.2rem; flex-shrink: 0;
+      background: var(--rw-surface); border-right: 1px solid var(--rw-border);
+    }
+    .tag-pill {
+      font-family: var(--rw-font-mono); font-size: 0.78rem;
+      background: rgba(249,115,22,0.09); border: 1px solid rgba(249,115,22,0.20);
+      color: #fb923c; border-radius: 6px; padding: 0.2rem 0.55rem;
+      display: inline-block; margin: 0.15rem 0.1rem;
+    }
+    [data-theme="light"] .tag-pill { background: rgba(249,115,22,0.08); color: #c2410c; border-color: rgba(249,115,22,0.22); }
+    .tag-pill.vio {
+      background: rgba(124,58,237,0.09); border-color: rgba(124,58,237,0.20); color: #a78bfa;
+    }
+    [data-theme="light"] .tag-pill.vio { background: rgba(124,58,237,0.07); color: #5b21b6; border-color: rgba(124,58,237,0.22); }
+    .callout-orange {
+      border-left: 3px solid var(--pg); background: var(--pg-glow);
+      border-radius: 0 8px 8px 0; padding: 0.9rem 1.1rem; margin: 1rem 0;
+      font-size: 0.85rem; color: var(--rw-text-muted); line-height: 1.65;
+    }
+    .callout-orange strong { color: var(--pg); }
+    [data-theme="light"] .callout-orange strong { color: #c2410c; }
+    .callout-vio {
+      border-left: 3px solid var(--pg2); background: var(--pg2-glow);
+      border-radius: 0 8px 8px 0; padding: 0.9rem 1.1rem; margin: 1rem 0;
+      font-size: 0.85rem; color: var(--rw-text-muted); line-height: 1.65;
+    }
+    .callout-vio strong { color: var(--pg2); }
+    [data-theme="light"] .callout-vio strong { color: #5b21b6; }
+
+    /* ── Build decision matrix ─────────────────────────────────── */
+    .decision-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; margin-top: 1.25rem;
+    }
+    .dec-card {
+      border-radius: 12px; padding: 1.25rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface);
+      display: flex; flex-direction: column; gap: 0.5rem;
+      transition: border-color 0.2s;
+    }
+    .dec-card.recommended { border-color: rgba(249,115,22,0.35); }
+    .dec-badge {
+      display: inline-block; font-family: var(--rw-font-display); font-size: 0.65rem;
+      font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+      border-radius: 5px; padding: 0.15rem 0.5rem;
+      background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.22);
+      align-self: flex-start;
+    }
+    [data-theme="light"] .dec-badge { color: #c2410c; background: rgba(249,115,22,0.09); }
+    .dec-badge.neutral { background: var(--rw-surface); color: var(--rw-text-subtle); border-color: var(--rw-border); }
+    .dec-name {
+      font-family: var(--rw-font-display); font-size: 0.95rem; font-weight: 800;
+      color: var(--rw-text);
+    }
+    .dec-desc { font-size: 0.8rem; color: var(--rw-text-muted); line-height: 1.6; flex: 1; }
+    .dec-use {
+      font-size: 0.73rem; font-weight: 700; font-family: var(--rw-font-display);
+      color: var(--pg); border-top: 1px solid var(--rw-border);
+      padding-top: 0.5rem; margin-top: 0.25rem;
+    }
+    [data-theme="light"] .dec-use { color: #c2410c; }
+    .dec-use.vio { color: var(--pg2); }
+    [data-theme="light"] .dec-use.vio { color: #5b21b6; }
+
+    /* ── Use case tabs ─────────────────────────────────────────── */
+    .uc-tabs {
+      display: flex; border-bottom: 1px solid var(--rw-border);
+      margin-bottom: 0; overflow-x: auto; gap: 0;
+    }
+    .uc-btn {
+      padding: 0.65rem 1.05rem; font-size: 0.79rem; font-weight: 700;
+      font-family: var(--rw-font-display); color: var(--rw-text-muted);
+      background: none; border: none; cursor: pointer;
+      border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .uc-btn.active { color: var(--pg2); border-bottom-color: var(--pg2); }
+    [data-theme="light"] .uc-btn.active { color: #5b21b6; border-bottom-color: #7c3aed; }
+    .uc-btn:hover:not(.active) { color: var(--rw-text); }
+    .uc-panel { display: none; padding: 1.75rem 0 0; }
+    .uc-panel.active { display: block; }
+    .uc-panel h4 {
+      font-family: var(--rw-font-display); font-size: 1.02rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 0.5rem;
+    }
+    .uc-panel p { font-size: 0.88rem; color: var(--rw-text-muted); line-height: 1.72; margin-bottom: 0.85rem; }
+
+    /* ── Flow diagrams ─────────────────────────────────────────── */
+    .flow-wrap {
+      background: var(--rw-surface); border: 1px solid var(--rw-border);
+      border-radius: 12px; padding: 1.1rem 1.25rem; margin: 0.85rem 0;
+    }
+    .flow-label {
+      font-family: var(--rw-font-display); font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--pg2);
+      margin-bottom: 0.85rem;
+    }
+    [data-theme="light"] .flow-label { color: #5b21b6; }
+    .flow-row { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+    .flow-box {
+      border-radius: 7px; padding: 0.38rem 0.75rem;
+      font-family: var(--rw-font-display); font-size: 0.73rem; font-weight: 700;
+      border: 1px solid rgba(249,115,22,0.28);
+      background: rgba(249,115,22,0.09); color: #fb923c;
+    }
+    [data-theme="light"] .flow-box { background: rgba(249,115,22,0.07); color: #c2410c; border-color: rgba(249,115,22,0.25); }
+    .flow-box.vio {
+      border-color: rgba(124,58,237,0.28); background: rgba(124,58,237,0.09); color: #a78bfa;
+    }
+    [data-theme="light"] .flow-box.vio { background: rgba(124,58,237,0.07); color: #5b21b6; border-color: rgba(124,58,237,0.25); }
+    .flow-box.neutral {
+      border-color: var(--rw-border); background: transparent; color: var(--rw-text-muted);
+    }
+    .flow-box.ok {
+      border-color: rgba(34,197,94,0.28); background: rgba(34,197,94,0.09); color: #4ade80;
+    }
+    [data-theme="light"] .flow-box.ok { color: #15803d; border-color: rgba(34,197,94,0.28); background: rgba(34,197,94,0.07); }
+    .flow-box.fail {
+      border-color: rgba(239,68,68,0.28); background: rgba(239,68,68,0.09); color: #fca5a5;
+    }
+    [data-theme="light"] .flow-box.fail { color: #b91c1c; border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.07); }
+    .flow-arr { color: var(--rw-text-subtle); font-size: 0.85rem; }
+    .flow-note { font-size: 0.7rem; color: var(--rw-text-subtle); font-style: italic; }
+
+    /* ── Status pills ──────────────────────────────────────────── */
+    .s-pill {
+      display: inline-block; border-radius: 5px; padding: 0.14rem 0.48rem;
+      font-size: 0.65rem; font-weight: 700; font-family: var(--rw-font-display);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem;
+    }
+    .s-good { background: rgba(34,197,94,0.13); color: #4ade80; }
+    [data-theme="light"] .s-good { color: #15803d; background: rgba(34,197,94,0.10); }
+    .s-partial { background: rgba(234,179,8,0.13); color: #fbbf24; }
+    [data-theme="light"] .s-partial { color: #a16207; background: rgba(234,179,8,0.10); }
+    .s-open { background: rgba(239,68,68,0.13); color: #fca5a5; }
+    [data-theme="light"] .s-open { color: #b91c1c; background: rgba(239,68,68,0.10); }
+
+    .dialect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin: 1rem 0; }
+    .d-card {
+      border-radius: 10px; padding: 1rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface);
+    }
+    .d-card h5 { font-family: var(--rw-font-display); font-size: 0.79rem; font-weight: 700; color: var(--rw-text); margin-bottom: 0.3rem; }
+    .d-card p { font-size: 0.74rem; color: var(--rw-text-muted); line-height: 1.55; margin: 0; }
+
+    .audit-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin: 1rem 0; }
+    .a-card {
+      border-radius: 10px; padding: 1.1rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface);
+    }
+    .a-num { font-family: var(--rw-font-display); font-size: 1.4rem; font-weight: 800; color: var(--pg); margin-bottom: 0.3rem; }
+    [data-theme="light"] .a-num { color: #c2410c; }
+    .a-card h5 { font-family: var(--rw-font-display); font-size: 0.8rem; font-weight: 700; color: var(--rw-text); margin-bottom: 0.3rem; }
+    .a-card p { font-size: 0.75rem; color: var(--rw-text-muted); line-height: 1.55; margin: 0; }
+
+    /* ── Ship checklist ────────────────────────────────────────── */
+    .ship-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 1.25rem; }
+    .ship-card {
+      border-radius: 12px; padding: 1.2rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .ship-card:hover { border-color: rgba(249,115,22,0.30); background: rgba(249,115,22,0.03); }
+    .ship-num {
+      font-family: var(--rw-font-display); font-size: 1.6rem; font-weight: 800;
+      color: rgba(249,115,22,0.22); margin-bottom: 0.5rem; line-height: 1;
+    }
+    [data-theme="light"] .ship-num { color: rgba(194,65,12,0.20); }
+    .ship-card h4 { font-family: var(--rw-font-display); font-size: 0.9rem; font-weight: 700; color: var(--rw-text); margin-bottom: 0.35rem; }
+    .ship-card p { font-size: 0.78rem; color: var(--rw-text-muted); line-height: 1.62; margin: 0; }
+    .ship-tip { font-size: 0.72rem; color: var(--pg); font-weight: 600; font-family: var(--rw-font-display); margin-top: 0.5rem; }
+    [data-theme="light"] .ship-tip { color: #c2410c; }
+
+    /* ── Voice + LLM choices ───────────────────────────────────── */
+    .choice-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.25rem; }
+    .choice-card {
+      border-radius: 12px; padding: 1.2rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface);
+    }
+    .choice-card.orange { border-color: rgba(249,115,22,0.28); }
+    .choice-card.vio { border-color: rgba(124,58,237,0.28); }
+    .choice-title {
+      font-family: var(--rw-font-display); font-size: 0.7rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.4rem;
+    }
+    .choice-card.orange .choice-title { color: #fb923c; }
+    [data-theme="light"] .choice-card.orange .choice-title { color: #c2410c; }
+    .choice-card.vio .choice-title { color: #a78bfa; }
+    [data-theme="light"] .choice-card.vio .choice-title { color: #5b21b6; }
+    .choice-name { font-family: var(--rw-font-display); font-size: 1rem; font-weight: 800; color: var(--rw-text); margin-bottom: 0.75rem; }
+    .cr { display: flex; justify-content: space-between; margin-bottom: 0.32rem; align-items: baseline; }
+    .cr-k { font-size: 0.73rem; color: var(--rw-text-subtle); font-family: var(--rw-font-display); }
+    .cr-v { font-size: 0.77rem; font-weight: 700; color: var(--rw-text); font-family: var(--rw-font-display); }
+    .cr-v.accent { color: var(--pg); }
+    [data-theme="light"] .cr-v.accent { color: #c2410c; }
+    .llm-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; margin-top: 1.25rem; }
+    .llm-card {
+      border-radius: 10px; padding: 0.85rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface); text-align: center;
+    }
+    .llm-label { font-family: var(--rw-font-display); font-size: 0.75rem; font-weight: 800; color: var(--rw-text); margin-bottom: 0.2rem; }
+    .llm-note { font-size: 0.7rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .decision-grid, .ship-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 640px) {
+      .decision-grid, .ship-grid, .choice-pair, .dialect-grid,
+      .audit-pair, .llm-row { grid-template-columns: 1fr; }
+      .signal-row { flex-direction: column; }
+      .sig-arrow { transform: rotate(90deg); padding: 0.25rem 0; border-right: none; border-bottom: 1px solid var(--rw-border); }
+    }
+
+    /* ── Get Started journey ───────────────────────────────────── */
+    .journey {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1rem; margin-top: 1.25rem; position: relative;
+    }
+    .j-step {
+      border-radius: 12px; padding: 1.25rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface);
+      display: flex; flex-direction: column; gap: 0.4rem;
+      transition: border-color 0.2s;
+    }
+    .j-step:hover { border-color: rgba(249,115,22,0.30); }
+    .j-num {
+      font-family: var(--rw-font-display); font-size: 0.65rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(249,115,22,0.50); margin-bottom: 0.1rem;
+    }
+    [data-theme="light"] .j-num { color: rgba(194,65,12,0.45); }
+    .j-title {
+      font-family: var(--rw-font-display); font-size: 0.95rem; font-weight: 800;
+      color: var(--rw-text);
+    }
+    .j-desc { font-size: 0.8rem; color: var(--rw-text-muted); line-height: 1.62; }
+    .j-items {
+      list-style: none; margin-top: 0.2rem; display: flex;
+      flex-direction: column; gap: 0.3rem;
+    }
+    .j-items li {
+      font-size: 0.76rem; color: var(--rw-text-muted); padding-left: 1rem;
+      position: relative; line-height: 1.5;
+    }
+    .j-items li::before {
+      content: '→'; position: absolute; left: 0;
+      color: var(--pg); font-size: 0.7rem;
+    }
+    [data-theme="light"] .j-items li::before { color: #c2410c; }
+    .j-tip {
+      font-size: 0.72rem; font-weight: 700; color: var(--pg2);
+      font-family: var(--rw-font-display); margin-top: 0.2rem;
+      border-top: 1px solid var(--rw-border); padding-top: 0.5rem;
+    }
+    [data-theme="light"] .j-tip { color: #5b21b6; }
+
+    /* ── Abbreviations ─────────────────────────────────────────── */
+    .abbr-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem; margin-top: 1.25rem;
+    }
+    .abbr-item {
+      border-radius: 9px; padding: 0.8rem 0.9rem;
+      border: 1px solid var(--rw-border); background: var(--rw-surface);
+    }
+    .abbr-term {
+      font-family: var(--rw-font-mono); font-size: 0.88rem; font-weight: 800;
+      color: var(--pg); display: block; margin-bottom: 0.15rem;
+    }
+    [data-theme="light"] .abbr-term { color: #c2410c; }
+    .abbr-term.vio { color: var(--pg2); }
+    [data-theme="light"] .abbr-term.vio { color: #5b21b6; }
+    .abbr-full {
+      font-family: var(--rw-font-display); font-size: 0.74rem; font-weight: 700;
+      color: var(--rw-text); display: block; margin-bottom: 0.18rem;
+    }
+    .abbr-note { font-size: 0.7rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    @media (max-width: 640px) {
+      .journey { grid-template-columns: 1fr; }
+      .abbr-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <span class="hero-label">🗺 Companion Guide · ElevenLabs Voice AI</span>
+    <h1>The <em>Builder's Map</em></h1>
+    <p class="hero-sub">
+      Five practical decisions shape every voice agent deployment.
+      This is the companion to The Emotion Engine — less theory, more choices.
+      What to build, how to voice it, and how to ship it without breaking anything.
+    </p>
+    <div class="hero-meta">
+      <span>🎙 ElevenLabs Session</span>
+      <span>🧭 5 Key Decisions</span>
+      <span>🔍 One Use Case, Deep</span>
+      <span>⚡ Companion to The Emotion Engine</span>
+    </div>
+    <div class="stat-strip">
+      <div class="stat-cell"><span class="stat-val">3</span><span class="stat-lbl">Build Paths</span></div>
+      <div class="stat-cell"><span class="stat-val">4</span><span class="stat-lbl">Use Case Layers</span></div>
+      <div class="stat-cell"><span class="stat-val">3</span><span class="stat-lbl">Ship Checks</span></div>
+      <div class="stat-cell"><span class="stat-val">3</span><span class="stat-lbl">LLM Options</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     LAYOUT
+════════════════════════════════════════════════════════════════ -->
+<div class="guide-layout">
+  <aside class="guide-sidebar">
+    <div class="toc-label">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#signal">The Core Signal</a></li>
+      <li><a href="#build-path">Which Build Path?</a></li>
+      <li><a href="#use-case">One Use Case, Deep</a></li>
+      <li><a href="#ship">Before You Ship</a></li>
+      <li><a href="#voice-llm">Voice &amp; LLM Choices</a></li>
+      <li><a href="#get-started">Get Started</a></li>
+      <li><a href="#abbreviations">Abbreviations</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ══ THE CORE SIGNAL ════════════════════════════════════ -->
+    <section class="section" id="signal">
+      <span class="sec-label">The Key Idea</span>
+      <h2>The Signal That Makes It Human</h2>
+      <p>One concept from the session unlocks everything else. Voice agents used to sound robotic because emotion got lost at every stage handoff. The fix is a small token — an <strong>audio tag</strong> — that carries feeling through the entire pipeline as plain text.</p>
+
+      <div class="signal-row">
+        <div class="sig-stage">
+          <span class="sig-icon">👂</span>
+          <span class="sig-abbr">STT</span>
+          <span class="sig-name">Speech-to-Text</span>
+          <span class="sig-tag">Detects emotion → outputs tags</span>
+        </div>
+        <div class="sig-arrow">→</div>
+        <div class="sig-stage">
+          <span class="sig-icon">🧠</span>
+          <span class="sig-abbr">LLM</span>
+          <span class="sig-name">Language Model</span>
+          <span class="sig-tag">Reads tags, generates new ones</span>
+        </div>
+        <div class="sig-arrow">→</div>
+        <div class="sig-stage">
+          <span class="sig-icon">🔊</span>
+          <span class="sig-abbr vio">TTS</span>
+          <span class="sig-name">Text-to-Speech</span>
+          <span class="sig-tag vio">Tags → sounds like a human</span>
+        </div>
+      </div>
+
+      <p>The STT model doesn't just transcribe words — it adds tags like <span class="tag-pill">[ laughing ]</span> <span class="tag-pill">[ background music ]</span> when it detects them. The LLM learns to pass those tags through and generate new ones in its response. The TTS V3 model reads <span class="tag-pill vio">[ excited ]</span> <span class="tag-pill vio">[ whispering ]</span> <span class="tag-pill vio">[ French accent ]</span> and changes how it sounds accordingly. No extra code at any step — the signal is just text.</p>
+
+      <div class="callout-orange">
+        <strong>Why this matters for builders:</strong> LLMs are naturally good at copying patterns. Once you understand that audio tags are just text tokens in the prompt, you can instruct your agent to generate them, suppress them, or mirror them from the user's input. Emotion becomes a first-class parameter in your system prompt, not an afterthought.
+      </div>
+    </section>
+
+    <!-- ══ BUILD PATH ════════════════════════════════════════ -->
+    <section class="section" id="build-path">
+      <span class="sec-label">Decision 1</span>
+      <h2>Which Build Path Is Right for You?</h2>
+      <p>ElevenLabs offers three distinct integration patterns. The right one depends entirely on whether you already have a working agent or are starting from scratch.</p>
+
+      <div class="decision-grid">
+        <div class="dec-card">
+          <span class="dec-badge neutral">Existing Agent</span>
+          <div class="dec-name">Speech Engine</div>
+          <div class="dec-desc">You already have a chatbot or RAG pipeline and just need voice added on top. You keep your LLM. ElevenLabs handles STT, TTS, and turn-taking. When a response is needed, ElevenLabs sends you the transcript — you reply with text — ElevenLabs speaks it.</div>
+          <div class="dec-use vio">Best for: teams with working RAG agents, LangGraph pipelines, or existing LLMs who want voice without rebuilding.</div>
+        </div>
+        <div class="dec-card recommended">
+          <span class="dec-badge">Starting Fresh</span>
+          <div class="dec-name">Full Agent</div>
+          <div class="dec-desc">Build natively inside the ElevenLabs agent platform. You get the full dashboard: system prompt, voice, LLM choice, procedures, tools, branching, topic discovery, and coaching — all in one place. Turn-taking and audio tag routing happen automatically.</div>
+          <div class="dec-use">Best for: new voice agent projects where you want the full ops layer (procedures, branching, testing) out of the box.</div>
+        </div>
+        <div class="dec-card">
+          <span class="dec-badge neutral">Targeted Use</span>
+          <div class="dec-name">TTS / STT APIs</div>
+          <div class="dec-desc">You only need one direction — either speaking text or transcribing audio. Call the TTS or STT API directly. Useful for podcast enrichment, audio generation pipelines, or transcription workflows where you don't need a full conversational agent.</div>
+          <div class="dec-use vio">Best for: audio production pipelines, content enrichment, batch transcription — not real-time voice agents.</div>
+        </div>
+      </div>
+
+      <div class="callout-vio" style="margin-top:1.25rem;">
+        <strong>The SDK options:</strong> Python, JavaScript, WebSocket, WebRTC, React Native, Kotlin. If your platform runs any of these, you can embed an ElevenLabs voice layer. For platforms like Salesforce, an active partnership exists but the native integration is still developing — WebSocket is the current path.
+      </div>
+    </section>
+
+    <!-- ══ USE CASE ═══════════════════════════════════════════ -->
+    <section class="section" id="use-case">
+      <span class="sec-label vio">Real World</span>
+      <h2>One Use Case, Four Questions</h2>
+      <p>During the Q&amp;A, an attendee was building a voice layer on top of a multi-agent system for a regulated industry. They asked four connected questions that added up to a complete enterprise deployment challenge — we went deep on all four. Each one revealed something the demos don't show.</p>
+
+      <div class="uc-tabs">
+        <button class="uc-btn active" onclick="switchUC('async', this)">Async Approval</button>
+        <button class="uc-btn" onclick="switchUC('auth', this)">Identity Verification</button>
+        <button class="uc-btn" onclick="switchUC('dialect', this)">Dialects</button>
+        <button class="uc-btn" onclick="switchUC('audit', this)">Audit</button>
+      </div>
+
+      <!-- Async Approval -->
+      <div class="uc-panel active" id="ucp-async">
+        <h4>The problem: your backend needs a human to approve before the agent can act</h4>
+        <p>A common multi-agent pattern — especially in LangGraph — is to pause before any write action and wait for a human to click Approve. In a chat interface, the user just sees a loading state. In a live voice call, that same pause creates dead silence on the line, and the webhook times out.</p>
+
+        <div class="flow-wrap">
+          <div class="flow-label">What breaks — the naive approach</div>
+          <div class="flow-row">
+            <div class="flow-box">User speaks</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box">Agent calls tool</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box neutral">Webhook waits for human click</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box fail">⏱ Timeout — call drops</div>
+          </div>
+        </div>
+
+        <div class="flow-wrap">
+          <div class="flow-label">What works — async tool calls</div>
+          <div class="flow-row" style="margin-bottom:0.4rem;">
+            <div class="flow-box">Agent fires tool</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box neutral">Agent keeps chatting</div>
+            <span class="flow-note">&nbsp;No blocking. No silence.</span>
+          </div>
+          <div class="flow-row">
+            <div class="flow-box neutral">Human approves (whenever)</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box">Backend returns</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box vio">New tools / knowledge unlock live</div>
+          </div>
+        </div>
+
+        <p>ElevenLabs supports <strong>asynchronous tool calls</strong> — the agent fires the webhook and carries on the conversation without waiting. When the backend eventually returns, the platform injects new capabilities into the live call: new tools become available, a knowledge-base entry gets added to context. The agent picks it up naturally — "I can now see your account details" — with no awkward pause.</p>
+        <div class="callout-orange">
+          <strong>Practical example:</strong> A 2-minute identity verification flow. Agent fires the auth webhook async, chats normally in the meantime. Once verification completes, the agent gains access to account-level tools it didn't have before — and mentions it naturally in conversation.
+        </div>
+      </div>
+
+      <!-- Identity Verification -->
+      <div class="uc-panel" id="ucp-auth">
+        <h4>The problem: verifying caller identity before (or at the start of) the conversation</h4>
+        <p>Regulated industries need to know who is calling before the agent does anything sensitive. The question was whether voice recognition, emotion detection, and STT could handle authentication in the brief window before the agent starts speaking. The answer: yes — with the right pattern.</p>
+
+        <div class="flow-wrap">
+          <div class="flow-label">Pattern A — Pre-call webhook (the 5-second gap)</div>
+          <div class="flow-row" style="margin-bottom:0.4rem;">
+            <div class="flow-box neutral">Caller dials</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box">5-second telephony setup gap</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box">Fire pre-call webhook with phone number</div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-box neutral">Authenticated in last 24h?</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box ok">Yes → straight to agent</div>
+            <span class="flow-arr" style="margin-left:0.6rem;">or</span>
+            <div class="flow-box vio" style="margin-left:0.4rem;">No → OTP flow</div>
+          </div>
+        </div>
+
+        <div class="flow-wrap">
+          <div class="flow-label">Pattern B — OTP spoken aloud (most common for regulated industries)</div>
+          <div class="flow-row" style="margin-bottom:0.35rem;">
+            <div class="flow-box">Agent says: "I'll send a 4-digit code by SMS"</div>
+          </div>
+          <div class="flow-row" style="margin-bottom:0.35rem;">
+            <div class="flow-box neutral">SMS arrives</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box">User reads aloud: "3, 4, 5, 6"</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box">STT transcribes: "3456"</div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-box">Agent calls verify tool with "3456"</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box neutral">Backend checks code</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box ok">✓ Authenticated</div>
+          </div>
+        </div>
+
+        <p>The OTP approach converts a traditionally robotic step (DTMF tones, "enter your PIN on the keypad") into a natural voice conversation. STT handles the number extraction. The agent just asks, listens, and verifies — no keypad required.</p>
+      </div>
+
+      <!-- Dialects -->
+      <div class="uc-panel" id="ucp-dialect">
+        <h4>The problem: your users speak different dialects of the same language</h4>
+        <p>Accents and dialects aren't the same problem. Accents are handled within a language model. Dialects — especially those with completely different pronunciation — are treated as separate sub-languages. The gap in coverage comes down to one thing: how much training data exists on the internet for that dialect.</p>
+
+        <div class="dialect-grid">
+          <div class="d-card">
+            <span class="s-pill s-good">Well Supported</span>
+            <h5>Major dialect pairs</h5>
+            <p>Portuguese vs Brazilian Portuguese. Standard Spanish vs Latin American Spanish. These are modeled as separate sub-languages but share training data intelligence — coverage of one helps the other.</p>
+          </div>
+          <div class="d-card">
+            <span class="s-pill s-partial">Data-limited</span>
+            <h5>Mandarin vs Cantonese</h5>
+            <p>Similar grammar, completely different pronunciation. Mandarin has enormous training data; Cantonese has far less. Quality gap is a data problem, not an architecture one — the model can only learn what it's seen.</p>
+          </div>
+          <div class="d-card">
+            <span class="s-pill s-good">Broad Coverage</span>
+            <h5>Indian languages</h5>
+            <p>9–10 Indian languages are supported, covering 99% of the world's population. Specific regional dialect coverage within each language was not detailed in the session.</p>
+          </div>
+          <div class="d-card">
+            <span class="s-pill s-open">Unsolved</span>
+            <h5>Low-resource dialects</h5>
+            <p>"A bit of an unsolved problem." If a dialect lacks internet training data, architecture can't compensate. PVC (Professional Voice Clone) is the best mitigation for accent-critical deployments — it learns from your specific audio, not general data.</p>
+          </div>
+        </div>
+
+        <div class="callout-vio">
+          <strong>How to configure it:</strong> Dialects aren't auto-detected mid-call. You specify which languages and sub-languages your agent supports in the dashboard. For accent-sensitive use cases, the audio tag system allows the LLM to inject accent directives into TTS — but only works well when the dialect is within the model's training coverage.
+        </div>
+      </div>
+
+      <!-- Audit -->
+      <div class="uc-panel" id="ucp-audit">
+        <h4>The problem: proving your voice agent behaves correctly when regulators ask</h4>
+        <p>Regulated industries can't just deploy and hope. Conversations that change account data, offer credits, or handle complaints need to be auditable — adversarially tested and human-validated before going live. The session covered how ElevenLabs approaches this with a specialist audit partner.</p>
+
+        <div class="audit-pair">
+          <div class="a-card">
+            <div class="a-num">10,000</div>
+            <h5>Phase 1 — Automated Adversarial Testing</h5>
+            <p>Synthetic agent callers run nefarious scenarios: prompt injection, aggressive language, attempts to make the agent contradict its policy or say something it shouldn't. Fully automated. Measures whether the agent stays on-policy under pressure.</p>
+          </div>
+          <div class="a-card">
+            <div class="a-num">100</div>
+            <h5>Phase 2 — Human Red-Team Testing</h5>
+            <p>Real humans call the agent with fabricated but realistic scenarios. Each person is given a character and a goal. Human raters score whether the agent handled each call correctly, helpfully, and within policy.</p>
+          </div>
+        </div>
+
+        <p>The two phases answer different questions. Phase 1 asks: <em>can this agent be manipulated?</em> Phase 2 asks: <em>does this agent actually help real people?</em> Both are needed. Neither replaces the other. The output is a formal audit report — the kind a regulated industry can present to a compliance function.</p>
+
+        <div class="callout-orange">
+          <strong>On AI safety more broadly:</strong> ElevenLabs has a large dedicated AI safety team. Their primary concern is voice fraud — the risk that someone clones a real person's voice and uses it for a scam call. When emotion tags like "crying" are tested in a suspicious context, the system refuses to generate the audio. Child protection and non-consensual cloning detection are active areas. PVC (Professional Voice Clone) requires identity verification before the clone can be created.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ BEFORE YOU SHIP ════════════════════════════════════ -->
+    <section class="section" id="ship">
+      <span class="sec-label">Decision 4</span>
+      <h2>Before You Ship — Three Practices That Actually Matter</h2>
+      <p>The session was direct about what separates a demo from a production agent. Three practices came up repeatedly as non-negotiable once you have real call volume.</p>
+
+      <div class="ship-grid">
+        <div class="ship-card">
+          <div class="ship-num">01</div>
+          <h4>Procedures, not one giant prompt</h4>
+          <p>Instead of a single system prompt covering every edge case, write trigger-based procedures — each one loads only when its trigger fires. The agent's context stays lean, the LLM stays focused, and your costs stay predictable.</p>
+          <div class="ship-tip">→ The industry is moving from monolithic prompts to SOPs + Skills. Start here before you have 5,000 tokens in a single prompt.</div>
+        </div>
+        <div class="ship-card">
+          <div class="ship-num">02</div>
+          <h4>Branch before you commit</h4>
+          <p>Every configuration change — new LLM, new voice, new procedure — should go to a traffic branch first. Send 3% of real calls to the experiment. Measure sentiment, call duration, and resolution rate before promoting. Never change main directly.</p>
+          <div class="ship-tip">→ Run synthetic tests (10–50 calls) before even the 3% slice. Voice agents are non-deterministic; one pass proves nothing.</div>
+        </div>
+        <div class="ship-card">
+          <div class="ship-num">03</div>
+          <h4>Find where sentiment drops</h4>
+          <p>Topic Discovery clusters your past conversations semantically and groups them. Find the clusters where sentiment trends DOWN over the call's duration — those are the scenarios your agent is actively making worse. Build procedures specifically for those.</p>
+          <div class="ship-tip">→ Once you have volume, this can be automated: point an agent at the API, ask it to find downward-trending topics and draft procedures. It works.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ VOICE + LLM ════════════════════════════════════════ -->
+    <section class="section" id="voice-llm">
+      <span class="sec-label">Decisions 2 &amp; 3</span>
+      <h2>Voice Clone and LLM — The Two Other Choices</h2>
+      <p>Two configuration decisions have an outsized impact on how the agent sounds and how it reasons. Both are set in the dashboard per agent.</p>
+
+      <div class="choice-pair">
+        <div class="choice-card orange">
+          <div class="choice-title">IVC</div>
+          <div class="choice-name">Instant Voice Clone</div>
+          <div class="cr"><span class="cr-k">Audio required</span><span class="cr-v">2–3 samples</span></div>
+          <div class="cr"><span class="cr-k">Setup</span><span class="cr-v">Seconds</span></div>
+          <div class="cr"><span class="cr-k">Quality</span><span class="cr-v">Best effort</span></div>
+          <div class="cr"><span class="cr-k">Accent fidelity</span><span class="cr-v cr-v accent">Variable — can drift</span></div>
+          <p style="font-size:0.76rem;color:var(--rw-text-muted);line-height:1.55;margin-top:0.75rem;margin-bottom:0;">Works well for many voices. For non-English accents, the model fills phonetic gaps from its general training data — which often sounds like a different accent. If accent fidelity matters, upgrade to PVC.</p>
+        </div>
+        <div class="choice-card vio">
+          <div class="choice-title">PVC</div>
+          <div class="choice-name">Professional Voice Clone</div>
+          <div class="cr"><span class="cr-k">Audio required</span><span class="cr-v">~2 hours</span></div>
+          <div class="cr"><span class="cr-k">Setup</span><span class="cr-v">Hours to days</span></div>
+          <div class="cr"><span class="cr-k">Quality</span><span class="cr-v">Near-indistinguishable</span></div>
+          <div class="cr"><span class="cr-k">Accent fidelity</span><span class="cr-v" style="color:var(--pg2);">Full — accent preserved</span></div>
+          <p style="font-size:0.76rem;color:var(--rw-text-muted);line-height:1.55;margin-top:0.75rem;margin-bottom:0;">The 2-hour requirement exists so the model has enough phonetic range to reconstruct your voice across all sounds it will encounter. Requires identity verification. Separate paid tier.</p>
+        </div>
+      </div>
+
+      <h3>LLM Choice</h3>
+      <p>The LLM is the reasoning brain. ElevenLabs gives you three paths — and you can swap them without rebuilding the agent.</p>
+      <div class="llm-row">
+        <div class="llm-card">
+          <div class="llm-label">Self-Hosted</div>
+          <div class="llm-note">ElevenLabs runs open models on their own GPU clusters. Lowest latency path. Good for high-volume deployments where API call costs compound.</div>
+        </div>
+        <div class="llm-card">
+          <div class="llm-label">Third-Party API</div>
+          <div class="llm-note">Claude, GPT-4, Gemini — called via their APIs. Use the model you already trust. Easy to swap as models improve.</div>
+        </div>
+        <div class="llm-card">
+          <div class="llm-label">Your Own LLM</div>
+          <div class="llm-note">Plug in any custom endpoint. For teams with fine-tuned models, proprietary data, or compliance requirements around data leaving their infrastructure.</div>
+        </div>
+      </div>
+
+      <div class="callout-orange" style="margin-top:1.25rem;">
+        <strong>The session recommendation:</strong> Start with a third-party API model you already know well. Once you have stable call volume and your procedures are working, evaluate whether self-hosted inference makes sense at your scale. Don't optimise LLM cost before you know what your agent actually does in production.
+      </div>
+    </section>
+
+    <!-- ══ GET STARTED ═══════════════════════════════════════════ -->
+    <section class="section" id="get-started">
+      <span class="sec-label">Your Path</span>
+      <h2>Get Started — The Recommended Journey</h2>
+      <p>The session presenter walked through how ElevenLabs recommends you build — from the self-serve platform through to a production agent that improves itself. Not a waterfall. A loop: build, run, learn, refine.</p>
+
+      <div class="journey">
+        <div class="j-step">
+          <div class="j-num">Stage 1</div>
+          <div class="j-title">Try it in the dashboard</div>
+          <div class="j-desc">The ElevenLabs platform has a self-serve tier. No forward-deployed engineer needed. You can have a working voice agent in under 10 minutes.</div>
+          <ul class="j-items">
+            <li>Write a system prompt and first message</li>
+            <li>Pick a voice from the library (or upload an IVC sample)</li>
+            <li>Choose your LLM — start with Claude or GPT-4 via their APIs</li>
+            <li>Call it. Hear it. Adjust the prompt.</li>
+          </ul>
+          <div class="j-tip">→ Don't overthink the first agent. Get something speaking first, tune later.</div>
+        </div>
+
+        <div class="j-step">
+          <div class="j-num">Stage 2</div>
+          <div class="j-title">Connect it to your data</div>
+          <div class="j-desc">A bare agent is a blank slate. The value comes from wiring it to what your business already knows.</div>
+          <ul class="j-items">
+            <li>Add a knowledge base for RAG over your docs</li>
+            <li>Wire webhooks to your existing APIs (CRM, ticketing, booking)</li>
+            <li>Or use native integrations for one-click platform connections</li>
+            <li>If you have an existing chatbot — try Speech Engine instead of rebuilding</li>
+          </ul>
+          <div class="j-tip">→ MCP servers also work if you're already on that ecosystem.</div>
+        </div>
+
+        <div class="j-step">
+          <div class="j-num">Stage 3</div>
+          <div class="j-title">Learn from real calls</div>
+          <div class="j-desc">Once calls are flowing, the platform gives you tools to find where the agent is failing — before your customers tell you.</div>
+          <ul class="j-items">
+            <li>Topic Discovery clusters your conversations semantically</li>
+            <li>Find clusters where sentiment trends downward over the call</li>
+            <li>Those are your gaps — where the agent is making things worse</li>
+            <li>Use Coaching to talk to the agent about a bad call and get its own suggestions</li>
+          </ul>
+          <div class="j-tip">→ Claude Code pointed at the ElevenLabs API can read topics and draft procedures automatically.</div>
+        </div>
+
+        <div class="j-step">
+          <div class="j-num">Stage 4</div>
+          <div class="j-title">Refine and ship safely</div>
+          <div class="j-desc">Every change to a production agent should go through a safety gate — even small ones. Voice agents are non-deterministic; surprises happen.</div>
+          <ul class="j-items">
+            <li>Write Procedures for the topics found in Stage 3</li>
+            <li>Run synthetic tests 10–50 times before any live traffic</li>
+            <li>Branch the change: 3% of real calls to the new config first</li>
+            <li>Compare sentiment and resolution rate across branches</li>
+          </ul>
+          <div class="j-tip">→ This loop repeats. Stage 3 → Stage 4 is the continuous improvement cycle.</div>
+        </div>
+      </div>
+
+      <div class="callout-vio" style="margin-top:1.25rem;">
+        <strong>Who to involve:</strong> ElevenLabs has three access tiers. Self-serve for builders experimenting on their own. A growth team for teams scaling up. And forward-deployed engineers who embed directly inside enterprise customers to run the Stage 3–4 loop with them. The session presenter works on the agent platform and specifically supports the enterprise path — if you're building for regulated industries, that's the lane.
+      </div>
+    </section>
+
+    <!-- ══ ABBREVIATIONS ═════════════════════════════════════════ -->
+    <section class="section" id="abbreviations">
+      <span class="sec-label vio">Reference</span>
+      <h2>Abbreviations — Quick Reference for Newcomers</h2>
+      <p>Every acronym used across this page and its companion, in one place.</p>
+
+      <div class="abbr-grid">
+        <div class="abbr-item">
+          <span class="abbr-term">STT</span>
+          <span class="abbr-full">Speech-to-Text</span>
+          <span class="abbr-note">Converts spoken audio into written words. The "ears" of a voice agent. Also called ASR.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">TTS</span>
+          <span class="abbr-full">Text-to-Speech</span>
+          <span class="abbr-note">Converts written text into spoken audio. The "mouth." ElevenLabs V3 is their current flagship model.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">ASR</span>
+          <span class="abbr-full">Automatic Speech Recognition</span>
+          <span class="abbr-note">Older term for STT. Same technology — you'll see both in ElevenLabs documentation.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">LLM</span>
+          <span class="abbr-full">Large Language Model</span>
+          <span class="abbr-note">The reasoning brain — Claude, GPT-4, Gemini, or a self-hosted open model. Decides what the agent says next.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term vio">IVC</span>
+          <span class="abbr-full">Instant Voice Clone</span>
+          <span class="abbr-note">Upload 2–3 audio samples, voice clone ready in seconds. Best-effort quality. May not preserve accent.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term vio">PVC</span>
+          <span class="abbr-full">Professional Voice Clone</span>
+          <span class="abbr-note">Upload ~2 hours of audio. Near-indistinguishable from real voice. Requires identity verification. Paid tier.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">IVR</span>
+          <span class="abbr-full">Interactive Voice Response</span>
+          <span class="abbr-note">The old "press 1 for billing" phone tree. What ElevenLabs voice agents replace with natural conversation.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">RAG</span>
+          <span class="abbr-full">Retrieval-Augmented Generation</span>
+          <span class="abbr-note">Agent looks up a knowledge base before answering. ElevenLabs supports RAG over docs attached to an agent.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">SOP</span>
+          <span class="abbr-full">Standard Operating Procedure</span>
+          <span class="abbr-note">Step-by-step guide for handling a specific situation. ElevenLabs "Procedures" are SOPs wired to trigger words.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">API</span>
+          <span class="abbr-full">Application Programming Interface</span>
+          <span class="abbr-note">A standard way for software to talk to software. ElevenLabs exposes APIs for STT, TTS, agents, and more.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">SDK</span>
+          <span class="abbr-full">Software Development Kit</span>
+          <span class="abbr-note">Pre-built code libraries. ElevenLabs has SDKs in Python, JavaScript, WebSocket, WebRTC, React Native, and Kotlin.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">OTP</span>
+          <span class="abbr-full">One-Time Password</span>
+          <span class="abbr-note">A short code sent by SMS or email to verify identity. Used in the bank authentication pattern covered in this page.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">MCP</span>
+          <span class="abbr-full">Model Context Protocol</span>
+          <span class="abbr-note">Standard for connecting AI agents to external tools and data. ElevenLabs agents support MCP servers natively.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">CRM</span>
+          <span class="abbr-full">Customer Relationship Management</span>
+          <span class="abbr-note">Salesforce, HubSpot, etc. Voice agents connect to these via webhooks or native ElevenLabs integrations.</span>
+        </div>
+        <div class="abbr-item">
+          <span class="abbr-term">WebRTC</span>
+          <span class="abbr-full">Web Real-Time Communication</span>
+          <span class="abbr-note">Browser-native protocol for real-time audio. One of ElevenLabs' SDK transport options — preferred for browser-based voice.</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════════════ -->
+<div id="rw-footer"
+     data-related='[
+       {"label":"The Emotion Engine","url":"/blog/elevenlabs-emotion-engine.html"},
+       {"label":"MCP Practitioner Playbook","url":"/blog/mcp-practitioner-playbook.html"},
+       {"label":"Agent Autonomy Dial","url":"/blog/agent-autonomy-dial.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260615"></script>
+
+<script>
+/* ── Use case tabs ──────────────────────────────────────────── */
+function switchUC(id, btn) {
+  document.querySelectorAll('.uc-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.uc-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ucp-' + id).classList.add('active');
+}
+
+/* ── Scrollspy ──────────────────────────────────────────────── */
+(function () {
+  const sections = document.querySelectorAll('.section[id]');
+  const links = document.querySelectorAll('.toc-list a');
+  if (!sections.length || !links.length) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(l =>
+          l.classList.toggle('toc-active', l.getAttribute('href') === '#' + id)
+        );
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+})();
+</script>
+
+<!-- Cloudflare beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{"token":"YOUR_TOKEN"}'></script>
+
+</body>
+</html>
