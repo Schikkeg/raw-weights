@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic Scheduling Without Calendar Access — ContextCal | RawWeights</title>
+  <meta name="description" content="How ContextCal replaces 3 hours of email back-and-forth with a link — parsing multilingual availability, normalizing timezones, and computing meeting overlap without ever touching a calendar API.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/guide/contextcal-react-agent.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/contextcal.png">
+
+  <meta property="og:url" content="https://rawweights.com/guide/contextcal-react-agent.html">
+  <meta property="og:title" content="Agentic Scheduling Without Calendar Access — ContextCal | RawWeights">
+  <meta property="og:description" content="Parsing multilingual availability, normalizing timezones, computing overlap — no calendar API, no OAuth, no calendar screenshots.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], mono: ['JetBrains Mono','monospace'] } } }
+    }
+  </script>
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* ── HERO light mode ─────────────────────────────────────────── */
+    [data-theme="light"] header.cc-hero {
+      background: linear-gradient(135deg,#eef2ff 0%,#f5f3ff 50%,#eff6ff 100%) !important;
+      border-color: #c7d2fe !important;
+    }
+    [data-theme="light"] header.cc-hero h1 { color: #0f172a !important; }
+    [data-theme="light"] header.cc-hero .hero-sub { color: #475569 !important; }
+    /* Badge pills in hero */
+    [data-theme="light"] header.cc-hero span[class*="text-indigo-3"] { color: #4338ca !important; }
+    [data-theme="light"] header.cc-hero span[class*="text-violet-3"] { color: #6d28d9 !important; }
+    [data-theme="light"] header.cc-hero span[class*="text-green-3"]  { color: #047857 !important; }
+    /* Tech stack chips in hero */
+    [data-theme="light"] header.cc-hero .font-mono {
+      background: #e0e7ff !important; border-color: #c7d2fe !important; color: #3730a3 !important;
+    }
+    /* Stats grid in hero */
+    [data-theme="light"] header.cc-hero [class*="bg-slate-8"] {
+      background: #ffffff !important; border-color: #c7d2fe !important;
+    }
+    [data-theme="light"] header.cc-hero .stat-val,
+    [data-theme="light"] header.cc-hero [class*="text-indigo-4"] { color: #4338ca !important; }
+    [data-theme="light"] header.cc-hero .stat-lab,
+    [data-theme="light"] header.cc-hero [class*="text-slate-5"] { color: #64748b !important; }
+
+    /* ── MAIN light mode ─────────────────────────────────────────── */
+    [data-theme="light"] main.cc-main { background: #f1f5f9 !important; }
+    [data-theme="light"] main.cc-main .section-wrap { border-color: #cbd5e1 !important; }
+
+    /* Backgrounds — catch plain and opacity variants */
+    [data-theme="light"] main.cc-main [class*="bg-slate-800"] { background: #ffffff !important; }
+    [data-theme="light"] main.cc-main [class*="bg-slate-900"] { background: #f8fafc !important; }
+    [data-theme="light"] main.cc-main [class*="bg-slate-950"] { background: #f1f5f9 !important; }
+    [data-theme="light"] main.cc-main [class*="bg-red-950"]   { background: #fff1f2 !important; }
+    [data-theme="light"] main.cc-main [class*="bg-green-950"] { background: #f0fdf4 !important; }
+
+    /* Borders */
+    [data-theme="light"] main.cc-main [class*="border-slate-700"] { border-color: #cbd5e1 !important; }
+    [data-theme="light"] main.cc-main [class*="border-slate-800"] { border-color: #e2e8f0 !important; }
+    [data-theme="light"] main.cc-main [class*="divide-slate-800"] > * + * { border-color: #e2e8f0 !important; }
+    [data-theme="light"] main.cc-main [class*="border-indigo-500"] { border-color: #a5b4fc !important; }
+    [data-theme="light"] main.cc-main [class*="border-red-800"]    { border-color: #fca5a5 !important; }
+    [data-theme="light"] main.cc-main [class*="border-red-900"]    { border-color: #fca5a5 !important; }
+    [data-theme="light"] main.cc-main [class*="border-green-800"]  { border-color: #86efac !important; }
+    [data-theme="light"] main.cc-main [class*="border-green-500"]  { border-color: #86efac !important; }
+
+    /* Text */
+    [data-theme="light"] main.cc-main .text-white,
+    [data-theme="light"] main.cc-main strong { color: #0f172a !important; }
+    [data-theme="light"] main.cc-main .text-slate-100,
+    [data-theme="light"] main.cc-main .text-slate-200 { color: #1e293b !important; }
+    [data-theme="light"] main.cc-main .text-slate-300 { color: #334155 !important; }
+    [data-theme="light"] main.cc-main .text-slate-400 { color: #475569 !important; }
+    [data-theme="light"] main.cc-main .text-slate-500 { color: #64748b !important; }
+    [data-theme="light"] main.cc-main .text-indigo-300,
+    [data-theme="light"] main.cc-main .text-indigo-400 { color: #4338ca !important; }
+    [data-theme="light"] main.cc-main .text-violet-300,
+    [data-theme="light"] main.cc-main .text-violet-400 { color: #6d28d9 !important; }
+    [data-theme="light"] main.cc-main .text-green-300,
+    [data-theme="light"] main.cc-main .text-green-400 { color: #047857 !important; }
+    [data-theme="light"] main.cc-main .text-amber-300,
+    [data-theme="light"] main.cc-main .text-amber-400 { color: #b45309 !important; }
+    [data-theme="light"] main.cc-main .text-blue-400  { color: #1d4ed8 !important; }
+    [data-theme="light"] main.cc-main .text-red-400   { color: #b91c1c !important; }
+
+    /* Step number circles (blue/amber/violet/green) */
+    [data-theme="light"] main.cc-main [class*="bg-blue-500"]   { background: #dbeafe !important; }
+    [data-theme="light"] main.cc-main [class*="bg-amber-500"]  { background: #fef3c7 !important; }
+    [data-theme="light"] main.cc-main [class*="bg-violet-500"] { background: #ede9fe !important; }
+    [data-theme="light"] main.cc-main [class*="bg-green-500"]  { background: #d1fae5 !important; }
+    [data-theme="light"] main.cc-main [class*="bg-indigo-500"] { background: #e0e7ff !important; }
+    [data-theme="light"] main.cc-main [class*="text-blue-400"] { color: #1d4ed8 !important; }
+    [data-theme="light"] main.cc-main [class*="text-amber-400"]  { color: #b45309 !important; }
+    [data-theme="light"] main.cc-main [class*="text-violet-400"] { color: #6d28d9 !important; }
+
+    /* Inline code inside paragraphs */
+    [data-theme="light"] main.cc-main code {
+      background: #e0e7ff !important; color: #3730a3 !important; border-color: #c7d2fe !important;
+    }
+    /* Section number circles */
+    [data-theme="light"] main.cc-main .text-indigo-400.font-bold { color: #4338ca !important; }
+
+    /* ── cc-code blocks ──────────────────────────────────────────── */
+    .cc-code {
+      background: #0d1117; border: 1px solid #1e293b; border-radius: 10px;
+      padding: 1.1rem 1.25rem; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.79rem; color: #94a3b8; overflow-x: auto; line-height: 1.7;
+    }
+    [data-theme="light"] .cc-code { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
+    .kw  { color: #818cf8; } [data-theme="light"] .kw  { color: #4f46e5; }
+    .str { color: #86efac; } [data-theme="light"] .str { color: #059669; }
+    .cm  { color: #475569; } [data-theme="light"] .cm  { color: #94a3b8; }
+    .fn  { color: #67e8f9; } [data-theme="light"] .fn  { color: #0284c7; }
+
+    /* ── Agentic flow cells ──────────────────────────────────────── */
+    .flow-think { background: rgba(139,92,246,.09); border: 1px solid rgba(139,92,246,.28); border-radius: 10px; padding: 1rem; }
+    .flow-act   { background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.28); border-radius: 10px; padding: 1rem; }
+    .flow-obs   { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.28); border-radius: 10px; padding: 1rem; }
+    [data-theme="light"] .flow-think { background: #f5f3ff; border-color: #c4b5fd; }
+    [data-theme="light"] .flow-act   { background: #ecfdf5; border-color: #a7f3d0; }
+    [data-theme="light"] .flow-obs   { background: #fffbeb; border-color: #fde68a; }
+    [data-theme="light"] .flow-think .text-slate-300,
+    [data-theme="light"] .flow-act   .text-slate-300,
+    [data-theme="light"] .flow-obs   .text-slate-300 { color: #334155 !important; }
+    [data-theme="light"] .flow-think pre,
+    [data-theme="light"] .flow-act   pre,
+    [data-theme="light"] .flow-obs   pre { color: #334155 !important; }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- HERO -->
+<header class="cc-hero bg-slate-900 text-white pt-20 pb-16 relative overflow-hidden border-b border-slate-800">
+  <div class="absolute inset-0 pointer-events-none">
+    <div style="position:absolute;top:-20%;right:-5%;width:540px;height:540px;background:radial-gradient(circle,rgba(99,102,241,.18) 0%,transparent 65%);"></div>
+    <div style="position:absolute;bottom:-10%;left:-5%;width:380px;height:380px;background:radial-gradient(circle,rgba(139,92,246,.12) 0%,transparent 65%);"></div>
+  </div>
+  <div class="max-w-5xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+
+    <!-- Left: text -->
+    <div class="lg:w-1/2 space-y-6">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Agentic AI</span>
+        <span class="bg-violet-500/15 text-violet-300 border border-violet-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Multilingual</span>
+        <span class="bg-green-500/15 text-green-300 border border-green-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">No Calendar Sharing</span>
+      </div>
+
+      <h1 class="text-4xl lg:text-5xl font-extrabold leading-tight">
+        The Meeting Scheduler<br>
+        <span class="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">That Speaks Every Language</span>
+      </h1>
+
+      <p class="hero-sub text-slate-300 text-base leading-relaxed">
+        Teams spread across multiple countries and timezones know the cost: scheduling a joint call takes 3 hours of email chains, manual timezone math, and calendar screenshots nobody should be sharing.
+      </p>
+      <p class="hero-sub text-slate-400 text-sm leading-relaxed">
+        Participants reply in their own words — Hindi, French, Chinese, casual English, voice. The agent parses it all, normalizes timezones, and finds the slot. Zero calendar access. iCal invite ready in under 5 minutes.
+      </p>
+
+      <div class="flex flex-wrap gap-2">
+        <span class="bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-mono">LangGraph 1.2</span>
+        <span class="bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-mono">Nebius AI</span>
+        <span class="bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-mono">Llama-3.3-70B</span>
+        <span class="bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-mono">Streamlit</span>
+        <span class="bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-mono">faster-whisper</span>
+        <span class="bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-mono">Python 3.12</span>
+      </div>
+
+      <div class="flex gap-3">
+        <a href="https://github.com/researchsite/ContextCal" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          View on GitHub →
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: video + stats -->
+    <div class="lg:w-1/2 w-full space-y-4">
+      <div class="relative w-full aspect-video bg-slate-950 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden flex items-center justify-center">
+        <video class="w-full h-full object-cover" controls playsinline preload="metadata">
+          <source src="../images/videos/ContextCal.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-600 gap-2 pointer-events-none">
+          <svg class="w-12 h-12 opacity-20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <p class="text-xs opacity-30">Video coming soon</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+          <div class="stat-val text-2xl font-black text-indigo-400">5 min</div>
+          <div class="stat-lab text-xs text-slate-500 uppercase tracking-wider mt-1">Email → iCal</div>
+        </div>
+        <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+          <div class="stat-val text-2xl font-black text-indigo-400">6+</div>
+          <div class="stat-lab text-xs text-slate-500 uppercase tracking-wider mt-1">Languages</div>
+        </div>
+        <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+          <div class="stat-val text-2xl font-black text-indigo-400">0</div>
+          <div class="stat-lab text-xs text-slate-500 uppercase tracking-wider mt-1">Calendar OAuth</div>
+        </div>
+        <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
+          <div class="stat-val text-2xl font-black text-indigo-400">4</div>
+          <div class="stat-lab text-xs text-slate-500 uppercase tracking-wider mt-1">Agent Tools</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="cc-main bg-slate-900 flex-1">
+
+  <!-- 01 THE PROBLEM -->
+  <section class="section-wrap max-w-5xl mx-auto px-6 py-16 border-b border-slate-800">
+    <div class="flex items-start gap-4 mb-8">
+      <div class="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 mt-1">
+        <span class="text-indigo-400 font-bold text-sm">01</span>
+      </div>
+      <div>
+        <h2 class="text-white text-2xl font-bold mb-1">The Problem Nobody Talks About</h2>
+        <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">Why cross-timezone scheduling is silently eating team hours</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="space-y-4 text-slate-300 leading-relaxed">
+        <p>Global teams face a universal friction point: scheduling joint meetings. Both sides have calendars. Neither wants to share them. So the organizer sends an email asking for availability.</p>
+        <p>Responses trickle in over 24 hours. Some say <em class="text-slate-200">"9–5 IST"</em>, others say <em class="text-slate-200">"mornings only"</em>, one says <em class="text-slate-200">"je suis libre mercredi après-midi"</em>. Someone converts timezones in their head and gets it wrong.</p>
+        <p><strong class="text-white">The information exists. The friction is transforming it.</strong> That's exactly where an agent adds value.</p>
+      </div>
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+        <p class="text-red-400 font-bold text-xs uppercase tracking-widest mb-4">The manual workflow cost</p>
+        <div class="space-y-3">
+          <div class="flex items-start gap-3">
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Email thread for availability — 1–2 rounds = 24–48 hrs</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Manual timezone math — error-prone across multiple regions</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Calendar screenshots — privacy risk, stale within hours</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Doodle/When2meet — requires structured input, no casual phrasing, no multilingual support</p>
+          </div>
+          <div class="border-t border-slate-700 pt-3 mt-2 flex items-start gap-3">
+            <span class="text-green-400 mt-0.5 flex-shrink-0 font-bold">✓</span>
+            <p class="text-white text-sm font-semibold">ContextCal: participants reply in their own words — agent parses and finds the slot in 5 minutes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="mt-10">
+      <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4">ContextCal vs When2meet / Doodle</p>
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-slate-900/60 border-b border-slate-700">
+              <th class="text-left px-5 py-3 text-slate-500 font-bold text-xs uppercase tracking-wider w-1/3">Capability</th>
+              <th class="px-5 py-3 text-slate-500 font-bold text-xs uppercase tracking-wider text-center w-1/3">When2meet / Doodle</th>
+              <th class="px-5 py-3 text-indigo-400 font-bold text-xs uppercase tracking-wider text-center w-1/3">ContextCal</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr class="hover:bg-slate-700/20 transition-colors">
+              <td class="px-5 py-3 text-slate-300 text-xs font-medium">Input method</td>
+              <td class="px-5 py-3 text-center"><span class="text-slate-400 text-xs">Click a grid UI</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">Free text or voice, any phrasing</span></td>
+            </tr>
+            <tr class="hover:bg-slate-700/20 transition-colors">
+              <td class="px-5 py-3 text-slate-300 text-xs font-medium">Language support</td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">English structured input only</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">Any language — Hindi, French, Chinese…</span></td>
+            </tr>
+            <tr class="hover:bg-slate-700/20 transition-colors">
+              <td class="px-5 py-3 text-slate-300 text-xs font-medium">Timezone handling</td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">User converts manually</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">Agent normalizes all to UTC</span></td>
+            </tr>
+            <tr class="hover:bg-slate-700/20 transition-colors">
+              <td class="px-5 py-3 text-slate-300 text-xs font-medium">Privacy</td>
+              <td class="px-5 py-3 text-center"><span class="text-amber-400 text-xs">Grid visible to everyone</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">Organizer sees intersection only</span></td>
+            </tr>
+            <tr class="hover:bg-slate-700/20 transition-colors">
+              <td class="px-5 py-3 text-slate-300 text-xs font-medium">Vague availability ("mornings only")</td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">✗ Not supported</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">✓ LLM resolves to time window</span></td>
+            </tr>
+            <tr class="hover:bg-slate-700/20 transition-colors">
+              <td class="px-5 py-3 text-slate-300 text-xs font-medium">Voice input</td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">✗ Not supported</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">✓ Whisper STT (local, multilingual)</span></td>
+            </tr>
+            <tr class="hover:bg-slate-700/20 transition-colors">
+              <td class="px-5 py-3 text-slate-300 text-xs font-medium">Programmable / A2A</td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">✗ No API</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">✓ A2A Agent Card — any orchestrator</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 THE 9-STEP FLOW -->
+  <section class="section-wrap max-w-5xl mx-auto px-6 py-16 border-b border-slate-800">
+    <div class="flex items-start gap-4 mb-8">
+      <div class="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 mt-1">
+        <span class="text-indigo-400 font-bold text-sm">02</span>
+      </div>
+      <div>
+        <h2 class="text-white text-2xl font-bold mb-1">How It Works — The 9-Step Flow</h2>
+        <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">LangGraph orchestrates everything end-to-end</p>
+      </div>
+    </div>
+
+    <div class="space-y-0">
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs flex-shrink-0 mt-0.5">1</div>
+        <div>
+          <span class="text-white font-semibold text-sm">Organizer creates session</span>
+          <span class="ml-2 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Human</span>
+          <p class="text-slate-400 text-sm mt-1">Sets meeting title, date range, and participant names in the admin UI.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xs flex-shrink-0 mt-0.5">2</div>
+        <div>
+          <span class="text-white font-semibold text-sm">Unique token links generated</span>
+          <span class="ml-2 bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">System</span>
+          <p class="text-slate-400 text-sm mt-1">SHA-256 secure token per participant, stored in SQLite. Organizer shares each link individually.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs flex-shrink-0 mt-0.5">3</div>
+        <div>
+          <span class="text-white font-semibold text-sm">Participants respond in any language</span>
+          <span class="ml-2 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Human</span>
+          <p class="text-slate-400 text-sm mt-1">Free-text typed or spoken via Whisper STT. No calendar access. No structured format required.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold text-xs flex-shrink-0 mt-0.5">4</div>
+        <div>
+          <span class="text-white font-semibold text-sm">LLM parses each response → structured JSON</span>
+          <span class="ml-2 bg-violet-500/15 text-violet-300 border border-violet-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">LLM</span>
+          <p class="text-slate-400 text-sm mt-1">Llama-3.3-70B extracts timezone, time windows, hard constraints, soft preferences, and flexibility flag — from any language.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-xs flex-shrink-0 mt-0.5">5</div>
+        <div>
+          <span class="text-white font-semibold text-sm">Normalize all timezones → UTC</span>
+          <span class="ml-2 bg-green-500/15 text-green-300 border border-green-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Python</span>
+          <p class="text-slate-400 text-sm mt-1">Pure Python via pytz. Every timezone converted to UTC — deterministic. The LLM never touches time math.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-xs flex-shrink-0 mt-0.5">6</div>
+        <div>
+          <span class="text-white font-semibold text-sm">Compute slot overlap — interval intersection math</span>
+          <span class="ml-2 bg-green-500/15 text-green-300 border border-green-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Python</span>
+          <p class="text-slate-400 text-sm mt-1">Event-sweep algorithm finds N-way intersections. Slots ranked by coverage %. Near-miss path triggered if no full overlap.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold text-xs flex-shrink-0 mt-0.5">7</div>
+        <div>
+          <span class="text-white font-semibold text-sm">LLM generates human-friendly summary</span>
+          <span class="ml-2 bg-violet-500/15 text-violet-300 border border-violet-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">LLM</span>
+          <p class="text-slate-400 text-sm mt-1">Llama-3.3-70B drafts a meeting announcement with slot details and actionable next steps for the organizer.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
+        <div class="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xs flex-shrink-0 mt-0.5">8</div>
+        <div>
+          <span class="text-white font-semibold text-sm">Generate iCal (.ics) file</span>
+          <span class="ml-2 bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">System</span>
+          <p class="text-slate-400 text-sm mt-1">RFC 5545 compliant with VTIMEZONE blocks. Works with Google Calendar, Outlook, Apple Calendar.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 py-4 items-start">
+        <div class="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs flex-shrink-0 mt-0.5">9</div>
+        <div>
+          <span class="text-white font-semibold text-sm">Organizer reviews &amp; downloads invite</span>
+          <span class="ml-2 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Human</span>
+          <p class="text-slate-400 text-sm mt-1">Human-in-the-loop approval gate. Agent never sends or posts anything autonomously. Organizer confirms before any calendar action.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 AGENTIC FLOW -->
+  <section class="section-wrap max-w-5xl mx-auto px-6 py-16 border-b border-slate-800">
+    <div class="flex items-start gap-4 mb-8">
+      <div class="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 mt-1">
+        <span class="text-indigo-400 font-bold text-sm">03</span>
+      </div>
+      <div>
+        <h2 class="text-white text-2xl font-bold mb-1">Inside the Agent — The Agentic Flow</h2>
+        <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">What happens internally for each participant response</p>
+      </div>
+    </div>
+
+    <p class="text-slate-300 text-base leading-relaxed mb-8 max-w-2xl">
+      Each LangGraph node operates in a <strong class="text-white">Think → Act → Observe</strong> cycle. Here's what runs when a Hinglish response hits the agent:
+    </p>
+
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">── Cycle 1: Parse the Response</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+      <div class="flow-think">
+        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">🧠 Think</div>
+        <p class="text-slate-300 text-sm leading-relaxed">"Response is Hinglish. 'baje' = time in Hindi. 'raat' = night. Should extract Wednesday 9:30 PM–11:30 PM IST."</p>
+      </div>
+      <div class="flow-act">
+        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">⚡ Act</div>
+        <p class="text-slate-300 text-sm leading-relaxed">Call <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">parse_availability()</code> with the raw Hinglish text as input.</p>
+      </div>
+      <div class="flow-obs">
+        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">👁 Observe</div>
+        <pre class="text-slate-300 text-xs leading-relaxed font-mono">{ timezone: "Asia/Kolkata",
+  windows: [{ day: "Wednesday",
+    start: "21:30",
+    end: "23:30" }],
+  flexible: true }</pre>
+      </div>
+    </div>
+
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">── Cycle 2: Normalize to UTC (Python only)</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+      <div class="flow-think">
+        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">🧠 Think</div>
+        <p class="text-slate-300 text-sm leading-relaxed">"Multiple timezones parsed. Must convert to UTC. LLM must NOT compute this — use Python pytz. Resolve relative day names against the session date range."</p>
+      </div>
+      <div class="flow-act">
+        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">⚡ Act</div>
+        <p class="text-slate-300 text-sm leading-relaxed">Call Python <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">normalize_to_utc()</code> → pytz localizes each window to the correct absolute UTC datetime.</p>
+      </div>
+      <div class="flow-obs">
+        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">👁 Observe</div>
+        <pre class="text-slate-300 text-xs leading-relaxed font-mono">Wed IST 21:30–23:30
+→ UTC T16:00Z–T18:00Z
+
+All participants now
+aligned to UTC.</pre>
+      </div>
+    </div>
+
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">── Cycle 3: Compute Overlap + Handle Near-Miss</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+      <div class="flow-think">
+        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">🧠 Think</div>
+        <p class="text-slate-300 text-sm leading-relaxed">"Run event-sweep. Full N-way overlap fails — one participant's window misses. Route to near-miss path and surface best partial slot."</p>
+      </div>
+      <div class="flow-act">
+        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">⚡ Act</div>
+        <p class="text-slate-300 text-sm leading-relaxed">Call Python <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">compute_overlap()</code> → conditional edge routes graph to summarize node.</p>
+      </div>
+      <div class="flow-obs">
+        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">👁 Observe</div>
+        <pre class="text-slate-300 text-xs leading-relaxed font-mono">best_slot: Wed 16:00–18:00Z
+coverage: 83% (5/6)
+duration: 120 min
+→ human decision needed</pre>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 border border-indigo-500/25 rounded-xl p-5">
+      <p class="text-white font-semibold text-sm mb-1">The critical design boundary</p>
+      <p class="text-slate-400 text-sm leading-relaxed">The LLM handles <strong class="text-white">language understanding</strong> and <strong class="text-white">prose generation</strong>. Python handles all <strong class="text-green-400">time math</strong>. LLMs hallucinate datetime arithmetic — by making this boundary explicit in the LangGraph node types, overlap computation is provably correct regardless of which model is used.</p>
+    </div>
+  </section>
+
+  <!-- 04 PRIVACY + NUANCE -->
+  <section class="section-wrap max-w-5xl mx-auto px-6 py-16 border-b border-slate-800">
+    <div class="flex items-start gap-4 mb-8">
+      <div class="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 mt-1">
+        <span class="text-indigo-400 font-bold text-sm">04</span>
+      </div>
+      <div>
+        <h2 class="text-white text-2xl font-bold mb-1">Blind Privacy &amp; Contextual Nuance</h2>
+        <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">Two design decisions that make this work in the real world</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/30 flex items-center justify-center text-lg">🔒</div>
+          <h3 class="text-white font-bold text-base">Blind Privacy Integration</h3>
+        </div>
+        <div class="space-y-3">
+          <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+            <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-1.5">Token-scoped access</p>
+            <p class="text-slate-400 text-sm">Each participant gets a unique SHA-256 token. Their URL only shows their own response page — no participant list, no other responses visible.</p>
+          </div>
+          <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+            <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-1.5">No calendar data stored</p>
+            <p class="text-slate-400 text-sm">Only free-text availability descriptions in SQLite. No calendar events, no event titles, no recurring data — just words.</p>
+          </div>
+          <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+            <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-1.5">Organizer sees only the intersection</p>
+            <p class="text-slate-400 text-sm">Results show computed overlap slots. Individual responses stay private — the agent consolidates without exposing raw inputs.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-lg">🧠</div>
+          <h3 class="text-white font-bold text-base">Contextual Nuance Handling</h3>
+        </div>
+        <div class="space-y-3">
+          <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+            <p class="text-violet-400 text-xs font-bold uppercase tracking-wide mb-1.5">Vague time words → default windows</p>
+            <p class="text-slate-400 text-sm"><em>"mornings only"</em> → 09:00–12:00 · <em>"afternoon"</em> → 13:00–17:00 · <em>"evenings"</em> → 18:00–21:00. Defaults baked into the LLM prompt.</p>
+          </div>
+          <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+            <p class="text-violet-400 text-xs font-bold uppercase tracking-wide mb-1.5">Hard vs soft constraints</p>
+            <p class="text-slate-400 text-sm"><em>"I can't do Friday"</em> → hard exclusion. <em>"I prefer not early mornings"</em> → soft preference. Both preserved in parsed JSON.</p>
+          </div>
+          <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+            <p class="text-violet-400 text-xs font-bold uppercase tracking-wide mb-1.5">Flexibility signals</p>
+            <p class="text-slate-400 text-sm"><em>"I'm flexible"</em> / <em>"whatever works"</em> → <code class="bg-slate-900 text-violet-300 border border-slate-700 px-1 rounded text-xs font-mono">flexible: true</code>. Overlap engine weights flexible participants lower in near-miss ranking.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4">Real inputs → parsed JSON</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="cc-code">
+<span class="cm"># Hinglish input:</span><br/>
+<span class="str">"Wednesday raat ko 9:30 baje<br/> se available hun. Thursday<br/> bhi chal sakta hai"</span><br/>
+<br/>
+<span class="cm"># Parsed:</span><br/>
+{ <span class="str">"timezone"</span>: <span class="str">"Asia/Kolkata"</span>,<br/>
+  <span class="str">"windows"</span>: [<br/>
+    { <span class="str">"day"</span>: <span class="str">"Wednesday"</span>,<br/>
+      <span class="str">"start"</span>: <span class="str">"21:30"</span> },<br/>
+    { <span class="str">"day"</span>: <span class="str">"Thursday"</span>,<br/>
+      <span class="str">"start"</span>: <span class="str">"09:00"</span> }],<br/>
+  <span class="str">"flexible"</span>: <span class="kw">true</span> }
+      </div>
+      <div class="cc-code">
+<span class="cm"># French input:</span><br/>
+<span class="str">"Je suis disponible mercredi<br/> après-midi et jeudi matin,<br/> pas vendredi SVP"</span><br/>
+<br/>
+<span class="cm"># Parsed:</span><br/>
+{ <span class="str">"timezone"</span>: <span class="str">"Europe/Paris"</span>,<br/>
+  <span class="str">"windows"</span>: [<br/>
+    { <span class="str">"day"</span>: <span class="str">"Wednesday"</span>,<br/>
+      <span class="str">"start"</span>: <span class="str">"13:00"</span> },<br/>
+    { <span class="str">"day"</span>: <span class="str">"Thursday"</span>,<br/>
+      <span class="str">"start"</span>: <span class="str">"09:00"</span> }],<br/>
+  <span class="str">"hard_constraints"</span>: [<span class="str">"no Friday"</span>] }
+      </div>
+      <div class="cc-code">
+<span class="cm"># Casual English:</span><br/>
+<span class="str">"Honestly I'm pretty flexible,<br/> mornings work best,<br/> avoid Thu afternoon"</span><br/>
+<br/>
+<span class="cm"># Parsed:</span><br/>
+{ <span class="str">"timezone"</span>: <span class="str">"America/New_York"</span>,<br/>
+  <span class="str">"windows"</span>: [<br/>
+    { <span class="str">"day"</span>: <span class="str">"Mon–Wed,Fri"</span>,<br/>
+      <span class="str">"start"</span>: <span class="str">"09:00"</span> }],<br/>
+  <span class="str">"flexible"</span>: <span class="kw">true</span>,<br/>
+  <span class="str">"soft_prefs"</span>: [<span class="str">"avoid Thu PM"</span>] }
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 ARCHITECTURE -->
+  <section class="section-wrap max-w-5xl mx-auto px-6 py-16 border-b border-slate-800">
+    <div class="flex items-start gap-4 mb-8">
+      <div class="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 mt-1">
+        <span class="text-indigo-400 font-bold text-sm">05</span>
+      </div>
+      <div>
+        <h2 class="text-white text-2xl font-bold mb-1">Component Architecture</h2>
+        <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">What's under the hood</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden mb-8">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-slate-900/60">
+            <th class="text-left px-5 py-3 text-slate-500 font-bold text-xs uppercase tracking-wider border-b border-slate-700">Component</th>
+            <th class="text-left px-5 py-3 text-slate-500 font-bold text-xs uppercase tracking-wider border-b border-slate-700">Technology</th>
+            <th class="text-left px-5 py-3 text-slate-500 font-bold text-xs uppercase tracking-wider border-b border-slate-700">Role</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">app.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">Streamlit 1.58</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Single-page UI, query-param routing (<code class="bg-slate-900 text-slate-300 px-1 rounded">?token</code>, <code class="bg-slate-900 text-slate-300 px-1 rounded">?view</code>)</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">agents/graph.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">LangGraph 1.2</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">5-node stateful graph, MemorySaver checkpointing, conditional error routing</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">agents/parser.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">Llama-3.3-70B / Nebius</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Free-text → structured JSON (timezone, windows, constraints, flexibility)</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">agents/normalizer.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">Python / pytz</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Resolves weekday names to dates, converts all windows to UTC</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">agents/overlap.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">Python / datetime</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Event-sweep N-way interval intersection, near-miss path</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">agents/summarizer.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">Llama-3.3-70B / Nebius</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Generates human-friendly meeting announcement</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">tools/ical_generator.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">icalendar library</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">RFC 5545 .ics with VTIMEZONE blocks</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">tools/whisper_stt.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">faster-whisper (local)</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Voice → text, CPU inference, multilingual Whisper model</td>
+          </tr>
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="px-5 py-3 font-mono text-indigo-300 text-xs">db/database.py</td>
+            <td class="px-5 py-3 text-white font-medium text-xs">SQLite</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Sessions, participants (raw + parsed JSON), consolidated results</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cc-code">
+<span class="cm"># LangGraph node chain — agents/graph.py (simplified)</span><br/>
+<span class="kw">def</span> <span class="fn">build_graph</span>():<br/>
+    graph = <span class="fn">StateGraph</span>(AgentState)<br/>
+<br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"parse"</span>,    parse_node)     <span class="cm"># LLM → JSON</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"normalize"</span>, normalize_node) <span class="cm"># Python TZ math</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"overlap"</span>,   overlap_node)   <span class="cm"># Python interval math</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"summarize"</span>, summarize_node) <span class="cm"># LLM → prose</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"ical"</span>,      ical_node)      <span class="cm"># System → .ics</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"error"</span>,     error_node)     <span class="cm"># Graceful recovery</span><br/>
+<br/>
+    graph.<span class="fn">add_conditional_edges</span>(<span class="str">"parse"</span>,   route_after_parse,   {...})<br/>
+    graph.<span class="fn">add_conditional_edges</span>(<span class="str">"overlap"</span>, route_after_overlap, {...})<br/>
+    <span class="cm"># Each node routes to "error" on failure — agent never crashes the UI</span><br/>
+<br/>
+    <span class="kw">return</span> graph.<span class="fn">compile</span>(checkpointer=<span class="fn">MemorySaver</span>())
+    </div>
+  </section>
+
+  <!-- 06 A2A -->
+  <section class="section-wrap max-w-5xl mx-auto px-6 py-16">
+    <div class="flex items-start gap-4 mb-8">
+      <div class="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 mt-1">
+        <span class="text-indigo-400 font-bold text-sm">06</span>
+      </div>
+      <div>
+        <h2 class="text-white text-2xl font-bold mb-1">Next Step — Agent-to-Agent (A2A) Compatible</h2>
+        <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">Don't build adapters for every platform. Become a discoverable agent.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div class="space-y-4 text-slate-300 leading-relaxed">
+        <p>The current framing — "build an email adapter, then a Slack adapter, then a REST adapter" — means ContextCal does integration work for every platform indefinitely.</p>
+        <p>The smarter move: expose ContextCal as an <strong class="text-white">A2A-compatible agent</strong>. Publish an Agent Card at <code class="bg-slate-800 border border-slate-700 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono">/.well-known/agent.json</code>. Any A2A-aware orchestrator — Gmail AI, Outlook Copilot, a LangGraph workflow — discovers ContextCal and delegates scheduling to it.</p>
+        <p><strong class="text-white">ContextCal stops being a feature and becomes infrastructure.</strong> The LangGraph pipeline inside stays unchanged. You add one A2A HTTP layer on top.</p>
+      </div>
+      <div class="space-y-3">
+        <div class="bg-red-950/30 border border-red-800/40 rounded-xl p-4">
+          <p class="text-red-400 text-xs font-bold uppercase tracking-wide mb-2">Before — ContextCal owns every integration</p>
+          <p class="text-slate-400 text-sm">Gmail adapter → Outlook adapter → Slack adapter…</p>
+          <p class="text-red-400 text-xs mt-2">∞ integrations, all maintained by ContextCal</p>
+        </div>
+        <div class="bg-green-950/20 border border-green-800/30 rounded-xl p-4">
+          <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-2">After — Platforms discover ContextCal via A2A</p>
+          <div class="space-y-1.5 text-sm">
+            <div class="flex items-center gap-2 text-slate-300">
+              <span class="text-slate-500 w-24 text-xs">Gmail AI</span>
+              <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded text-xs font-bold">A2A</span>
+              <span class="text-slate-500">──▶</span>
+              <span class="text-green-400 font-semibold">ContextCal</span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-300">
+              <span class="text-slate-500 w-24 text-xs">Copilot</span>
+              <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded text-xs font-bold">A2A</span>
+              <span class="text-slate-500">──▶</span>
+              <span class="text-green-400 font-semibold">ContextCal</span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-300">
+              <span class="text-slate-500 w-24 text-xs">AG2 Agent</span>
+              <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded text-xs font-bold">A2A</span>
+              <span class="text-slate-500">──▶</span>
+              <span class="text-green-400 font-semibold">ContextCal</span>
+            </div>
+            <p class="text-green-400 text-xs mt-2">1 spec · zero per-platform maintenance</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4">The A2A Agent Card</p>
+    <div class="cc-code mb-8">
+<span class="cm"># /.well-known/agent.json — ContextCal A2A Agent Card</span><br/>
+{<br/>
+  <span class="str">"name"</span>: <span class="str">"ContextCal"</span>,<br/>
+  <span class="str">"description"</span>: <span class="str">"Schedules meetings from free-text availability in any language"</span>,<br/>
+  <span class="str">"url"</span>: <span class="str">"https://your-host/a2a"</span>,<br/>
+  <span class="str">"capabilities"</span>: { <span class="str">"streaming"</span>: <span class="kw">true</span>, <span class="str">"pushNotifications"</span>: <span class="kw">false</span> },<br/>
+  <span class="str">"skills"</span>: [{<br/>
+    <span class="str">"id"</span>: <span class="str">"schedule_meeting"</span>,<br/>
+    <span class="str">"name"</span>: <span class="str">"Schedule a Meeting"</span>,<br/>
+    <span class="str">"inputModes"</span>:  [<span class="str">"text"</span>],<br/>
+    <span class="str">"outputModes"</span>: [<span class="str">"text"</span>, <span class="str">"file"</span>],<br/>
+    <span class="str">"examples"</span>: [<br/>
+      <span class="str">"Schedule: Participant A says raat ko 9 baje, B says mercredi après-midi"</span><br/>
+    ]<br/>
+  }]<br/>
+}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-slate-800 rounded-xl border border-slate-700 p-5">
+        <p class="text-2xl mb-3">🔒</p>
+        <p class="text-white font-bold text-sm mb-1">What stays identical</p>
+        <p class="text-slate-400 text-xs leading-relaxed">The entire LangGraph pipeline — parse, normalize, overlap, summarize, iCal. Zero changes to agent logic.</p>
+      </div>
+      <div class="bg-slate-800 rounded-xl border border-indigo-500/30 p-5">
+        <p class="text-2xl mb-3">➕</p>
+        <p class="text-white font-bold text-sm mb-1">What gets added</p>
+        <p class="text-slate-400 text-xs leading-relaxed">A FastAPI A2A endpoint that receives tasks, runs the pipeline, and streams status back per the A2A protocol spec.</p>
+      </div>
+      <div class="bg-slate-800 rounded-xl border border-green-500/20 p-5">
+        <p class="text-2xl mb-3">🌐</p>
+        <p class="text-white font-bold text-sm mb-1">What becomes possible</p>
+        <p class="text-slate-400 text-xs leading-relaxed">Any A2A-compatible orchestrator can delegate scheduling without a custom integration per platform.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[{"label":"Agent Autonomy Dial","url":"/guide/agent-autonomy-dial.html"},{"label":"Passive Safety Watchdog","url":"/guide/passive-safety-watchdog.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+</body>
+</html>

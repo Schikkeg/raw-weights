@@ -15,6 +15,16 @@
   'use strict';
   window.SITE_CONTENT = {
     articles: [
+    
+      {
+        title: "Agentic Scheduling Without Calendar Access — ContextCal",
+        excerpt: "How ContextCal replaces 3 hours of email back-and-forth with a link — parsing multilingual availability, normalizing timezones, and computing meeting overlap without ever touching a calendar API.",
+        date: "June 17, 2026",
+        image: "./images/contextcal.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/contextCal.html",
+        linkedin: null
+      },
       {
         title: "AG2 Beta — Session Quick Reference",
         excerpt: "10 concepts from the AG2 Beta hands-on workshop with Vasily Radostev. Click the session map to explore each concept, then try them live on the playground.",
@@ -22,7 +32,7 @@
         image: "./images/ag2.png",
         type: "Guide",
         link: "https://rawweights.com/guide/ag2-quickref.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_ag2-aiagents-genai-activity-7472826958184218624-1coU"
       },
       {
         title: "MCP: The Practitioner's Playbook",
