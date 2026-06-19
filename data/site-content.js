@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "The Production Checklist: From Demo to Live ",
+        excerpt: "Four pillars, one real case study (ECOS Health), and an interactive checklist for shipping AI applications to production — no hand-waving.",
+        date: "June 19, 2026",
+        image: "./images/checklist.png",
+        type: "Guide",
+        link: "https://rawweights.com/usecase/production-readiness-checklist.html",
+        linkedin: null
+      },
+      {
         title: "The Builder's Map: Practical Decisions for Voice AI with ElevenLabs ",
         excerpt: "Five decisions that shape every voice agent deployment — from which build path to choose, through the real enterprise questions nobody covers in a demo.",
         date: "June 18, 2026",
         image: "./images/elevenlabs.png",
         type: "Guide",
         link: "https://rawweights.com/guide/elevenlabs-builders-map.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-voiceai-elevenlabs-activity-7473451233601830912-8BDR/"
       },
       {
         title: "Agentic Scheduling Without Calendar Access — ContextCal",

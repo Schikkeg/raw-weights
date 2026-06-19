@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Production Checklist: From Demo to Live | RawWeights</title>
+  <meta name="description" content="Four pillars, one real case study (ECOS Health), and an interactive checklist for shipping AI applications to production — no hand-waving.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/production-readiness-checklist.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/checklist.png">
+  <meta property="og:url" content="https://rawweights.com/usecase/production-readiness-checklist.html">
+  <meta property="og:title" content="The Production Checklist — From Demo to Live | RawWeights">
+  <meta property="og:description" content="Four pillars, one real case study (ECOS Health). Use the interactive checklist to score your own AI project before you ship.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Page tokens: amber-gold + deep teal ──────────────────────── */
+    :root {
+      --pg:          #d97706;
+      --pg-hover:    #b45309;
+      --pg-glow:     rgba(217,119,6,0.10);
+      --pg-glow-str: rgba(217,119,6,0.22);
+      --pg2:         #0d9488;
+      --pg2-glow:    rgba(13,148,136,0.10);
+      --pg2-hover:   #0f766e;
+    }
+
+    /* ── Hero ─────────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0a0700 0%, #071212 55%, #080808 100%);
+      padding: 4.5rem 1.5rem 3.5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -15%; right: -4%;
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(217,119,6,0.14) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: ''; position: absolute; bottom: -12%; left: -5%;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(13,148,136,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    [data-theme="light"] .hero {
+      background: linear-gradient(135deg, #fffbeb 0%, #f0fdfa 55%, #f8f8f8 100%);
+    }
+    [data-theme="light"] .hero::before {
+      background: radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 65%);
+    }
+    [data-theme="light"] .hero::after {
+      background: radial-gradient(circle, rgba(13,148,136,0.07) 0%, transparent 65%);
+    }
+    .hero-inner { max-width: 840px; margin: 0 auto; position: relative; }
+    .hero-label {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(217,119,6,0.12); border: 1px solid rgba(217,119,6,0.30);
+      border-radius: 9999px; padding: 0.3rem 0.9rem;
+      font-size: 0.72rem; font-weight: 700; color: #fbbf24;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      font-family: var(--rw-font-display); margin-bottom: 1.2rem;
+    }
+    [data-theme="light"] .hero-label { color: #92400e; background: rgba(217,119,6,0.09); }
+    .hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.9rem, 5vw, 3.4rem); font-weight: 800;
+      color: #fefce8; line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 1rem;
+    }
+    [data-theme="light"] .hero h1 { color: #1c1917; }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #fbbf24 0%, #2dd4bf 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      color: #a8a29e; max-width: 640px; margin: 0 auto 1.6rem;
+      line-height: 1.6;
+    }
+    [data-theme="light"] .hero-sub { color: #57534e; }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+    .hero-tag {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 9999px; padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; color: #a8a29e; font-family: var(--rw-font-mono);
+    }
+    [data-theme="light"] .hero-tag {
+      background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.10); color: #57534e;
+    }
+    .hero-nav {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
+    }
+    .hero-nav a {
+      padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 600;
+      color: #d6d3d1; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04);
+      transition: all 0.15s; font-family: var(--rw-font-display);
+    }
+    .hero-nav a:hover { color: #fbbf24; border-color: rgba(217,119,6,0.45); background: rgba(217,119,6,0.08); }
+    [data-theme="light"] .hero-nav a { color: #57534e; border-color: rgba(0,0,0,0.12); background: rgba(0,0,0,0.03); }
+    [data-theme="light"] .hero-nav a:hover { color: #92400e; border-color: rgba(217,119,6,0.4); }
+
+    /* ── Layout: sidebar + content ────────────────────────────────── */
+    .page-wrap {
+      max-width: 1120px; margin: 0 auto; padding: 0 1.5rem 4rem;
+      display: grid; grid-template-columns: 210px 1fr; gap: 3rem;
+    }
+    @media(max-width: 860px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+    .toc-sidebar {
+      position: sticky; top: 5.5rem; height: fit-content; padding-top: 2rem;
+    }
+    .toc-label {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #6b7280; margin-bottom: 0.75rem; font-family: var(--rw-font-display);
+    }
+    .toc-list { list-style: none; padding: 0; margin: 0; }
+    .toc-list li { margin-bottom: 0.2rem; }
+    .toc-list a {
+      display: block; padding: 0.3rem 0.6rem; border-radius: 0.375rem;
+      font-size: 0.8rem; color: #9ca3af; text-decoration: none;
+      transition: color 0.15s, background 0.15s; border-left: 2px solid transparent;
+    }
+    .toc-list a:hover { color: var(--pg); background: var(--pg-glow); border-left-color: var(--pg); }
+    .toc-list a.active { color: var(--pg); font-weight: 600; border-left-color: var(--pg); background: var(--pg-glow); }
+    [data-theme="light"] .toc-list a { color: #6b7280; }
+    [data-theme="light"] .toc-list a:hover,
+    [data-theme="light"] .toc-list a.active { color: var(--pg-hover); }
+
+    /* ── Content area ─────────────────────────────────────────────── */
+    .content-col { padding-top: 2rem; }
+    .content-section { margin-bottom: 3.5rem; scroll-margin-top: 5rem; }
+    .section-heading {
+      font-family: var(--rw-font-display);
+      font-size: 1.45rem; font-weight: 700;
+      color: var(--rw-text-primary); margin-bottom: 1.4rem;
+      padding-bottom: 0.6rem; border-bottom: 1px solid var(--rw-border);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-heading .num {
+      background: var(--pg-glow-str); color: var(--pg);
+      border-radius: 0.375rem; padding: 0.1rem 0.5rem;
+      font-size: 0.78rem; font-weight: 700; font-family: var(--rw-font-mono);
+    }
+
+    /* ── Core Thesis ──────────────────────────────────────────────── */
+    .thesis-quote {
+      background: linear-gradient(135deg, rgba(217,119,6,0.08) 0%, rgba(13,148,136,0.06) 100%);
+      border: 1px solid rgba(217,119,6,0.25); border-left: 4px solid var(--pg);
+      border-radius: 0.75rem; padding: 1.5rem 1.75rem; margin-bottom: 1.75rem;
+    }
+    .thesis-quote p {
+      font-size: clamp(1.05rem, 2.2vw, 1.22rem); font-style: italic;
+      color: var(--rw-text-primary); line-height: 1.55; margin: 0;
+    }
+    .thesis-quote cite {
+      display: block; margin-top: 0.6rem; font-size: 0.82rem;
+      color: var(--pg); font-style: normal; font-weight: 600;
+    }
+    [data-theme="light"] .thesis-quote { background: rgba(217,119,6,0.05); }
+    .thesis-points {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;
+    }
+    .thesis-point {
+      background: var(--rw-card-bg); border: 1px solid var(--rw-border);
+      border-radius: 0.75rem; padding: 1.2rem;
+    }
+    .thesis-point .tp-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .thesis-point strong {
+      display: block; font-size: 0.88rem; font-weight: 700;
+      color: var(--rw-text-primary); margin-bottom: 0.3rem;
+    }
+    .thesis-point p { font-size: 0.82rem; color: var(--rw-text-secondary); margin: 0; line-height: 1.5; }
+
+    /* ── Checklist Tool ───────────────────────────────────────────── */
+    .pillar-tabs {
+      display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+    }
+    .pillar-tab {
+      padding: 0.45rem 1.1rem; border-radius: 9999px; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      background: var(--rw-card-bg); border: 1px solid var(--rw-border);
+      color: var(--rw-text-secondary); font-family: var(--rw-font-display);
+    }
+    .pillar-tab:hover { border-color: var(--pg); color: var(--pg); }
+    .pillar-tab.active { background: var(--pg); border-color: var(--pg); color: #fff; }
+    .pillar-panel { display: none; }
+    .pillar-panel.active { display: block; }
+
+    .score-bar-wrap {
+      background: var(--rw-card-bg); border: 1px solid var(--rw-border);
+      border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem;
+    }
+    .score-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;
+    }
+    .score-label { font-size: 0.85rem; font-weight: 600; color: var(--rw-text-primary); }
+    .score-num { font-family: var(--rw-font-mono); font-size: 1.1rem; font-weight: 700; color: var(--pg); }
+    .score-track {
+      height: 10px; background: rgba(255,255,255,0.07); border-radius: 9999px;
+      overflow: hidden; margin-bottom: 0.75rem;
+    }
+    [data-theme="light"] .score-track { background: rgba(0,0,0,0.08); }
+    .score-fill {
+      height: 100%; border-radius: 9999px; width: 0%; transition: width 0.35s ease;
+      background: linear-gradient(90deg, var(--pg) 0%, var(--pg2) 100%);
+    }
+    .score-verdict { font-size: 0.82rem; color: var(--rw-text-secondary); font-style: italic; margin: 0; }
+
+    .check-list { list-style: none; padding: 0; margin: 0; }
+    .check-item {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.9rem 1rem; border-radius: 0.6rem;
+      border: 1px solid var(--rw-border); background: var(--rw-card-bg);
+      margin-bottom: 0.6rem; cursor: pointer; transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .check-item:hover { border-color: rgba(217,119,6,0.35); }
+    .check-item.checked { border-color: rgba(217,119,6,0.45); background: rgba(217,119,6,0.05); }
+    [data-theme="light"] .check-item.checked { background: rgba(217,119,6,0.04); }
+    .check-box {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 0.375rem;
+      border: 2px solid var(--rw-border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; margin-top: 0.15rem;
+    }
+    .check-item.checked .check-box { border-color: var(--pg); background: var(--pg); }
+    .check-tick { color: #fff; font-size: 0.72rem; display: none; font-weight: 700; }
+    .check-item.checked .check-tick { display: block; }
+    .check-content { flex: 1; }
+    .check-title { font-size: 0.9rem; font-weight: 600; color: var(--rw-text-primary); margin-bottom: 0.25rem; }
+    .check-desc { font-size: 0.8rem; color: var(--rw-text-secondary); line-height: 1.45; margin: 0 0 0.45rem; }
+    .check-ecos {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.72rem; color: var(--pg2); font-family: var(--rw-font-mono);
+      background: rgba(13,148,136,0.10); border: 1px solid rgba(13,148,136,0.22);
+      border-radius: 0.375rem; padding: 0.15rem 0.55rem;
+    }
+    [data-theme="light"] .check-ecos { background: rgba(13,148,136,0.07); color: var(--pg2-hover); }
+
+    /* ── Architecture Cards ───────────────────────────────────────── */
+    .arch-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;
+    }
+    .arch-card {
+      background: var(--rw-card-bg); border: 1px solid var(--rw-border);
+      border-radius: 0.75rem; padding: 1.1rem 1.1rem 1rem; position: relative;
+      padding-top: 1.5rem;
+    }
+    .arch-card::before {
+      content: attr(data-layer);
+      position: absolute; top: -0.55rem; left: 0.9rem;
+      font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.12rem 0.55rem; border-radius: 9999px;
+      background: var(--pg); color: #fff;
+    }
+    .arch-service { font-size: 0.95rem; font-weight: 700; color: var(--rw-text-primary); margin-bottom: 0.3rem; }
+    .arch-why { font-size: 0.78rem; color: var(--rw-text-secondary); line-height: 1.45; margin: 0; }
+
+    /* ── Accordion (Trade-offs) ───────────────────────────────────── */
+    .accordion-item {
+      border: 1px solid var(--rw-border); border-radius: 0.75rem; overflow: hidden;
+      margin-bottom: 0.65rem;
+    }
+    .accordion-trigger {
+      width: 100%; text-align: left; background: var(--rw-card-bg);
+      padding: 1rem 1.1rem; cursor: pointer; transition: background 0.15s;
+      display: flex; justify-content: space-between; align-items: center;
+      border: none; color: var(--rw-text-primary); font-family: inherit;
+    }
+    .accordion-trigger:hover { background: var(--pg-glow); }
+    .accordion-title { font-size: 0.9rem; font-weight: 600; }
+    .accordion-arrow { color: var(--pg); font-size: 1.1rem; transition: transform 0.2s; flex-shrink: 0; margin-left: 0.75rem; }
+    .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+    .accordion-body {
+      display: none; padding: 1rem 1.25rem;
+      border-top: 1px solid var(--rw-border); background: var(--rw-card-bg);
+    }
+    .accordion-item.open .accordion-body { display: block; }
+    .accordion-body p { font-size: 0.85rem; color: var(--rw-text-secondary); line-height: 1.55; margin: 0 0 0.75rem; }
+    .accordion-body p:last-of-type { margin-bottom: 0.75rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .decision-chip {
+      display: inline-flex; gap: 0.4rem; align-items: center;
+      font-size: 0.73rem; padding: 0.2rem 0.6rem; border-radius: 0.375rem; font-weight: 600;
+    }
+    .chip-kept { background: rgba(13,148,136,0.12); color: #2dd4bf; border: 1px solid rgba(13,148,136,0.25); }
+    .chip-traded { background: rgba(217,119,6,0.12); color: #fbbf24; border: 1px solid rgba(217,119,6,0.25); }
+    [data-theme="light"] .chip-kept { color: var(--pg2-hover); background: rgba(13,148,136,0.08); }
+    [data-theme="light"] .chip-traded { color: var(--pg-hover); background: rgba(217,119,6,0.08); }
+
+    /* ── Metric Cards ─────────────────────────────────────────────── */
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;
+    }
+    .metric-card {
+      background: var(--rw-card-bg); border: 1px solid var(--rw-border);
+      border-radius: 0.75rem; padding: 1.1rem;
+    }
+    .metric-name {
+      font-family: var(--rw-font-mono); font-size: 0.73rem; color: var(--pg2);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem; font-weight: 700;
+    }
+    [data-theme="light"] .metric-name { color: var(--pg2-hover); }
+    .metric-full { font-size: 0.9rem; font-weight: 700; color: var(--rw-text-primary); margin-bottom: 0.35rem; }
+    .metric-why { font-size: 0.78rem; color: var(--rw-text-secondary); line-height: 1.45; margin: 0; }
+
+    /* ── Security Cards ───────────────────────────────────────────── */
+    .security-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;
+    }
+    .security-card {
+      background: var(--rw-card-bg); border: 1px solid rgba(217,119,6,0.22);
+      border-radius: 0.75rem; padding: 1.2rem;
+    }
+    .security-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .security-title { font-size: 0.92rem; font-weight: 700; color: var(--rw-text-primary); margin-bottom: 0.5rem; }
+    .sec-label {
+      font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 0.25rem;
+    }
+    .sec-threat { color: #fca5a5; }
+    .sec-defense { color: #6ee7b7; margin-top: 0.6rem; }
+    [data-theme="light"] .sec-threat { color: #dc2626; }
+    [data-theme="light"] .sec-defense { color: #059669; }
+    .security-card p { font-size: 0.8rem; color: var(--rw-text-secondary); line-height: 1.5; margin: 0; }
+
+    /* ── Deploy Path ──────────────────────────────────────────────── */
+    .deploy-steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; position: relative;
+    }
+    .deploy-step {
+      background: var(--rw-card-bg); border: 1px solid var(--rw-border);
+      padding: 1.1rem; text-align: center; position: relative;
+    }
+    .deploy-step:first-child { border-radius: 0.75rem 0 0 0.75rem; }
+    .deploy-step:last-child { border-radius: 0 0.75rem 0.75rem 0; }
+    @media(max-width: 600px) {
+      .deploy-step:first-child { border-radius: 0.75rem 0.75rem 0 0; }
+      .deploy-step:last-child { border-radius: 0 0 0.75rem 0.75rem; }
+      .deploy-steps { grid-template-columns: 1fr; }
+    }
+    .deploy-tier {
+      font-family: var(--rw-font-mono); font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--pg);
+      margin-bottom: 0.3rem;
+    }
+    .deploy-name { font-size: 1rem; font-weight: 700; color: var(--rw-text-primary); margin-bottom: 0.5rem; }
+    .deploy-when { font-size: 0.78rem; color: var(--rw-text-secondary); line-height: 1.4; margin: 0; }
+    .deploy-step.current { border-color: rgba(217,119,6,0.45); }
+    .deploy-step.current .deploy-name::after {
+      content: ' ← ECOS'; font-size: 0.65rem; color: var(--pg); font-weight: 700;
+      font-family: var(--rw-font-mono);
+    }
+
+    /* ── Abbr Grid ────────────────────────────────────────────────── */
+    .abbr-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;
+    }
+    .abbr-item {
+      background: var(--rw-card-bg); border: 1px solid var(--rw-border);
+      border-radius: 0.6rem; padding: 0.85rem 1rem;
+    }
+    .abbr-term { font-family: var(--rw-font-mono); font-size: 0.9rem; font-weight: 700; color: var(--pg); }
+    .abbr-full { font-size: 0.83rem; font-weight: 600; color: var(--rw-text-primary); margin-bottom: 0.2rem; }
+    .abbr-note { font-size: 0.75rem; color: var(--rw-text-secondary); line-height: 1.4; margin: 0; }
+    [data-theme="light"] .abbr-term { color: var(--pg-hover); }
+  </style>
+</head>
+<body>
+  <div id="rw-nav"></div>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-label">GenAcademy · Lightning Session · Production AI</div>
+      <h1>The Production<br><em>Checklist</em></h1>
+      <p class="hero-sub">Four pillars, one real project, zero hand-waving. ECOS Health — a WhatsApp AI for Indian doctors — as the annotated reference implementation.</p>
+      <div class="hero-meta">
+        <span class="hero-tag">Arpit · Distributed Systems</span>
+        <span class="hero-tag">ECOS Health · WhatsApp AI</span>
+        <span class="hero-tag">AWS · LangChain · Groq</span>
+        <span class="hero-tag">18-point checklist</span>
+      </div>
+      <nav class="hero-nav" aria-label="Page sections">
+        <a href="#thesis">Core Thesis</a>
+        <a href="#checklist">Checklist</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#tradeoffs">Trade-offs</a>
+        <a href="#deploy">Deploy Path</a>
+        <a href="#metrics">Metrics</a>
+        <a href="#security">Security</a>
+        <a href="#glossary">Glossary</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-wrap">
+    <aside class="toc-sidebar">
+      <p class="toc-label">On this page</p>
+      <ul class="toc-list">
+        <li><a href="#thesis">Core Thesis</a></li>
+        <li><a href="#checklist">Production Checklist</a></li>
+        <li><a href="#architecture">ECOS Architecture</a></li>
+        <li><a href="#tradeoffs">Decision Trade-offs</a></li>
+        <li><a href="#deploy">Deploy Path</a></li>
+        <li><a href="#metrics">Observability</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+      </ul>
+    </aside>
+
+    <main class="content-col">
+
+      <!-- 01 Core Thesis -->
+      <section class="content-section" id="thesis">
+        <h2 class="section-heading"><span class="num">01</span> Core Thesis</h2>
+        <div class="thesis-quote">
+          <p>"Everything around the prompt is plain old distributed systems."</p>
+          <cite>— Arpit, ECOS Health co-founder &amp; distributed systems engineer</cite>
+        </div>
+        <div class="thesis-points">
+          <div class="thesis-point">
+            <div class="tp-icon">🔩</div>
+            <strong>Your LLM is one node</strong>
+            <p>An LLM call is an unreliable service call — the same way a database can return garbage or an API can time out. You already know how to handle those. Apply the same patterns here.</p>
+          </div>
+          <div class="thesis-point">
+            <div class="tp-icon">♻️</div>
+            <strong>You already know the patterns</strong>
+            <p>Retry logic, schema validation, rate limiting, circuit breakers, structured logging — these are distributed systems primitives, not AI inventions. They transfer directly.</p>
+          </div>
+          <div class="thesis-point">
+            <div class="tp-icon">🗺️</div>
+            <strong>Four pillars organise it all</strong>
+            <p>Reliability · Cost Effectiveness · Speed · Context Awareness. Every production decision maps to at least one of these four. Navigate by pillar, not by gut.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 Production Checklist -->
+      <section class="content-section" id="checklist">
+        <h2 class="section-heading"><span class="num">02</span> Production Readiness Checklist</h2>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Click each item to check it off. Each item includes what ECOS Health actually did — use it as your reference implementation.</p>
+
+        <div class="score-bar-wrap">
+          <div class="score-header">
+            <span class="score-label">Your readiness score</span>
+            <span class="score-num" id="score-display">0 / 18</span>
+          </div>
+          <div class="score-track">
+            <div class="score-fill" id="score-fill"></div>
+          </div>
+          <p class="score-verdict" id="score-verdict">Click items across all four pillars to see where you stand.</p>
+        </div>
+
+        <div class="pillar-tabs" role="tablist">
+          <button class="pillar-tab active" data-pillar="reliability" role="tab">Reliability (5)</button>
+          <button class="pillar-tab" data-pillar="cost" role="tab">Cost (4)</button>
+          <button class="pillar-tab" data-pillar="speed" role="tab">Speed (4)</button>
+          <button class="pillar-tab" data-pillar="context" role="tab">Context (5)</button>
+        </div>
+
+        <!-- Reliability -->
+        <div class="pillar-panel active" id="panel-reliability" role="tabpanel">
+          <ul class="check-list">
+            <li class="check-item" data-id="r1">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Break your monolith prompt into sequential steps</p>
+                <p class="check-desc">Extract intent → validate parameters → confirm with user → execute. Each step is independently testable. A failure in step 2 doesn't re-run step 1.</p>
+                <span class="check-ecos">ECOS: 4-step LangChain pipeline per appointment action</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="r2">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Add a JSON schema contract between each step</p>
+                <p class="check-desc">Define exactly what each step must output. Malformed LLM output triggers a retry at that step only — not at the whole request level. Schema validation is deterministic; LLMs are not.</p>
+                <span class="check-ecos">ECOS: typed output schema on every LangChain step</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="r3">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Gate irreversible actions behind user confirmation</p>
+                <p class="check-desc">The LLM proposes; the user (or a deterministic rule) authorises. Never let the model execute a delete, send, or transfer autonomously. LLMs suggest — code and humans act.</p>
+                <span class="check-ecos">ECOS: cancellation and reschedule surface a confirmation step before writing to DB</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="r4">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Configure retry count per step, not per request</p>
+                <p class="check-desc">Global retry means re-running expensive upstream steps. Per-step retries are cheaper, faster, and preserve partial progress. Retry where it failed, not from the top.</p>
+                <span class="check-ecos">ECOS: step-level retry limits in LangChain</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="r5">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Run automated quality evaluation on a sample of live responses</p>
+                <p class="check-desc">Route ~2% of production conversations through a judge LLM that scores for helpfulness, accuracy, and policy compliance. Human review can't scale — automated scoring at volume is table stakes.</p>
+                <span class="check-ecos">ECOS: LangSmith evaluation with judge model scoring per sampled conversation</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Cost -->
+        <div class="pillar-panel" id="panel-cost" role="tabpanel">
+          <ul class="check-list">
+            <li class="check-item" data-id="c1">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Route cheap models to simple steps</p>
+                <p class="check-desc">Intent classification, output formatting, and parameter extraction don't need your most capable model. Reserve expensive reasoning for steps that genuinely need it. Mixing models per step is the unlock.</p>
+                <span class="check-ecos">ECOS: AWS Bedrock multi-model — smaller model for classification, larger for reasoning steps</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="c2">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Rate limit on token spend, not just request count</p>
+                <p class="check-desc">A user who sends 3 requests with 10,000-token prompts costs far more than 30 normal requests. Request-count limits don't protect you. Token quota per user per day — tracked in your application code — is the right lever.</p>
+                <span class="check-ecos">ECOS: token quota enforced inside Lambda; API Gateway handles RPS per IP</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="c3">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Add a regex guardrail before the LLM</p>
+                <p class="check-desc">Obvious off-topic requests, injection attempts, and profanity should never reach the LLM. A simple regex filter catches these for effectively zero cost. Fast, deterministic, free.</p>
+                <span class="check-ecos">ECOS: regex layer is the first filter in the Lambda handler</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="c4">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Add intent classification to catch scope creep</p>
+                <p class="check-desc">The "Chipotle chatbot writing Python" problem: no keyword filter catches that. A lightweight classifier runs after regex and before your main prompt — it denies requests outside your defined scope before running the expensive model.</p>
+                <span class="check-ecos">ECOS: dedicated intent classification step — non-appointment requests denied here</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Speed -->
+        <div class="pillar-panel" id="panel-speed" role="tabpanel">
+          <ul class="check-list">
+            <li class="check-item" data-id="s1">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Track TTFT P95, not average latency</p>
+                <p class="check-desc">Time to First Token at the 95th percentile shows worst-case experience for 19 in 20 users. Averages hide the tail where users abandon. P95 is your SLA anchor — track it per step, not just end-to-end.</p>
+                <span class="check-ecos">ECOS: TTFT P95 per step tracked via LangSmith</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="s2">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Stream outputs — or show a working indicator immediately</p>
+                <p class="check-desc">Streaming drops perceived latency dramatically. If your channel doesn't support streaming (WhatsApp Business API doesn't), send a typing indicator the moment you receive the message. Users see activity; they wait more tolerantly.</p>
+                <span class="check-ecos">ECOS: WhatsApp typing indicator sent on receipt — streaming not available via WhatsApp API</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="s3">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Prompt for crisp, channel-appropriate output</p>
+                <p class="check-desc">Verbose LLM responses cost more tokens, take longer to generate, and are harder to read on mobile. Explicitly prompt for concise, conversational replies — especially on messaging channels where walls of text fail.</p>
+                <span class="check-ecos">ECOS: system prompt specifies short WhatsApp-friendly responses</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="s4">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Move post-response work to an async job</p>
+                <p class="check-desc">Sending notifications, writing analytics, updating audit logs — none of this belongs in the critical path. Fire an async job after the user's response is sent. They don't wait; the work still happens.</p>
+                <span class="check-ecos">ECOS: separate notification Lambda fires async after user receives response — sends WhatsApp + email to patient, doctor, and admins</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Context -->
+        <div class="pillar-panel" id="panel-context" role="tabpanel">
+          <ul class="check-list">
+            <li class="check-item" data-id="x1">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Use a fast KV store for conversation and checkpoint memory</p>
+                <p class="check-desc">Active conversation history needs sub-millisecond reads. DynamoDB, Redis, or any fast KV store — not S3, not a relational DB. Speed matters here because it's in every request's critical path.</p>
+                <span class="check-ecos">ECOS: DynamoDB for conversation history and LangChain checkpoint state</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="x2">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Use a separate knowledge base for reference content</p>
+                <p class="check-desc">FAQs, policies, product documentation — these don't change per conversation but need semantic search to retrieve. A knowledge base keeps your conversation context clean and your system prompt lean.</p>
+                <span class="check-ecos">ECOS: AWS Bedrock Knowledge Base for doctor profiles, office hours, cancellation policies</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="x3">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Keep app data in your application database</p>
+                <p class="check-desc">Appointments, users, orders — these belong in your existing app DB with proper indices and relationships. The LLM only gets IDs. Your code resolves them after the LLM responds. Separation of concerns applies here too.</p>
+                <span class="check-ecos">ECOS: MongoDB for appointment records; LLM sees appointment IDs only, never patient names</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="x4">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Set a TTL on conversation records</p>
+                <p class="check-desc">Old conversations cost storage and are a privacy liability. Set a TTL and let the store delete them automatically — handles compliance without a scheduled job, migration, or manual cleanup.</p>
+                <span class="check-ecos">ECOS: DynamoDB TTL configured — conversations auto-deleted after N days</span>
+              </div>
+            </li>
+            <li class="check-item" data-id="x5">
+              <div class="check-box"><span class="check-tick">✓</span></div>
+              <div class="check-content">
+                <p class="check-title">Never send PII to the LLM</p>
+                <p class="check-desc">The LLM does not need a patient's name to cancel their appointment. Pass an ID; your code resolves it after the LLM responds. This limits blast radius if a prompt is ever extracted, and simplifies compliance logging.</p>
+                <span class="check-ecos">ECOS: LLM sees only appointment IDs — Lambda resolves patient identity after LLM returns its action</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 03 Architecture -->
+      <section class="content-section" id="architecture">
+        <h2 class="section-heading"><span class="num">03</span> ECOS Architecture</h2>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">WhatsApp + website → API Gateway → Lambda → LLM + 3 stores → async notifications. Entire stack defined in code; recreatable with one command.</p>
+        <div class="arch-grid">
+          <div class="arch-card" data-layer="Channel">
+            <div class="arch-service">WhatsApp + Website</div>
+            <p class="arch-why">WhatsApp sends a webhook to API Gateway per message. Website makes direct API calls. Both end up at the same Lambda handler.</p>
+          </div>
+          <div class="arch-card" data-layer="Auth">
+            <div class="arch-service">Cognito + WhatsApp phone #</div>
+            <p class="arch-why">Website users authenticate via AWS Cognito. WhatsApp users: Meta vouches for the phone number — ECOS trusts that. No separate auth flow needed for WhatsApp channel.</p>
+          </div>
+          <div class="arch-card" data-layer="Gateway">
+            <div class="arch-service">API Gateway</div>
+            <p class="arch-why">RPS rate limit per IP — first line of defence against DoS. Routes authenticated requests to the appropriate Lambda.</p>
+          </div>
+          <div class="arch-card" data-layer="Compute">
+            <div class="arch-service">AWS Lambda (Node.js + Express)</div>
+            <p class="arch-why">All business logic lives here. Express used deliberately (not Lambda-native APIs) — keeps the code portable to ECS Fargate if cold starts become a blocker at scale.</p>
+          </div>
+          <div class="arch-card" data-layer="Orchestration">
+            <div class="arch-service">LangChain</div>
+            <p class="arch-why">Breaks the flow into steps, handles per-step retries, validates schemas, and routes different steps to different models. Also provides the LangSmith integration for tracing and evaluation.</p>
+          </div>
+          <div class="arch-card" data-layer="LLM">
+            <div class="arch-service">Groq API</div>
+            <p class="arch-why">Chosen for inference speed over AWS-native consolidation. Fast TTFT matters on WhatsApp where users expect near-instant replies. Bedrock used for model-per-step routing on cost-sensitive steps.</p>
+          </div>
+          <div class="arch-card" data-layer="Conversation">
+            <div class="arch-service">DynamoDB</div>
+            <p class="arch-why">Active conversation history and LangChain checkpoint state. Fast KV reads, no connection overhead. TTL set for automatic privacy-compliant deletion after retention window.</p>
+          </div>
+          <div class="arch-card" data-layer="Knowledge">
+            <div class="arch-service">AWS Bedrock KB</div>
+            <p class="arch-why">Doctor profiles, office hours, FAQs, cancellation policies. Semantic retrieval lets the agent answer open-ended questions without bloating the system prompt with static content.</p>
+          </div>
+          <div class="arch-card" data-layer="App DB">
+            <div class="arch-service">MongoDB</div>
+            <p class="arch-why">Appointment records, patient data, doctor schedules. LLM only ever sees IDs — Lambda resolves them post-response. Known trade-off: Lambda cold start + MongoDB connection overhead adds first-request latency.</p>
+          </div>
+          <div class="arch-card" data-layer="Async">
+            <div class="arch-service">Notification Lambda</div>
+            <p class="arch-why">Fires after user receives response (fire-and-forget). Sends WhatsApp + email (AWS SES) to patient, doctor, admins. Also pushes metrics to CloudWatch for dashboards and alerts.</p>
+          </div>
+          <div class="arch-card" data-layer="Frontend">
+            <div class="arch-service">AWS Amplify + Sentry</div>
+            <p class="arch-why">Amplify serves the web interface. Sentry captures frontend errors and performance. CloudWatch covers the backend; Sentry covers the browser.</p>
+          </div>
+          <div class="arch-card" data-layer="IaC">
+            <div class="arch-service">AWS CDK (TypeScript)</div>
+            <p class="arch-why">Every resource defined as code. If a Lambda is deleted or misconfigured, one CDK deploy rebuilds everything. New region = run deploy again. Only databases can't be recreated from code — their data is irreplaceable.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 Trade-offs -->
+      <section class="content-section" id="tradeoffs">
+        <h2 class="section-heading"><span class="num">04</span> Real Trade-offs ECOS Made</h2>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Every architectural decision is a trade. These are ECOS's actual calls — the thing gained and the thing accepted.</p>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title">MongoDB + Lambda: accepted the cold start penalty</span>
+            <span class="accordion-arrow">▾</span>
+          </button>
+          <div class="accordion-body">
+            <p>MongoDB requires persistent connections. Lambda cold starts must re-establish that connection each time a new instance spins up — adding latency before any business logic runs. The combination is known to be sub-optimal.</p>
+            <p>ECOS kept it because Lambda's near-zero cost at low volume outweighed the latency cost. The system is functional, just "slightly slower than expected." Arpit's take: not a make-or-break situation at their current scale.</p>
+            <div class="chips">
+              <span class="decision-chip chip-kept">✓ near-zero infra cost</span>
+              <span class="decision-chip chip-traded">↕ first-request cold start latency</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title">Groq for inference over staying all-in on AWS Bedrock</span>
+            <span class="accordion-arrow">▾</span>
+          </button>
+          <div class="accordion-body">
+            <p>AWS Bedrock was already powering the knowledge base. Using it for inference calls too would have simplified billing, IAM policies, and the overall AWS footprint. But Groq's inference speed was significantly faster — and on WhatsApp, TTFT is the user-facing metric that matters most.</p>
+            <p>They still use Bedrock for multi-model step routing (cheap model for classification steps), but the primary inference path runs through Groq.</p>
+            <div class="chips">
+              <span class="decision-chip chip-kept">✓ inference speed</span>
+              <span class="decision-chip chip-traded">↕ AWS consolidation</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title">Express inside Lambda: portability over Lambda-native simplicity</span>
+            <span class="accordion-arrow">▾</span>
+          </button>
+          <div class="accordion-body">
+            <p>Lambda's native handler API is simpler and slightly leaner. But ECOS used Express as their framework inside Lambda — same code that would run on ECS, locally, or on any container. The trade: a slightly larger deployment bundle and a bit more setup.</p>
+            <p>The upside: if Lambda ever stops being the right compute layer — cold starts at scale, long-running LLM chains, persistent connection requirements — the migration to ECS Fargate is a config change, not a rewrite.</p>
+            <div class="chips">
+              <span class="decision-chip chip-kept">✓ compute portability</span>
+              <span class="decision-chip chip-traded">↕ Lambda-native simplicity</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title">Typing indicator instead of streaming responses</span>
+            <span class="accordion-arrow">▾</span>
+          </button>
+          <div class="accordion-body">
+            <p>WhatsApp Business API does not support streaming — you can't push tokens as they arrive the way a web chat widget can. The workaround: send a WhatsApp "typing…" indicator the instant a message arrives, then send the full response when the LLM finishes.</p>
+            <p>Real latency is unchanged. Perceived latency drops because the user sees immediate activity. It turns out that knowing something is happening matters more to users than how quickly the first word arrives.</p>
+            <div class="chips">
+              <span class="decision-chip chip-kept">✓ reduced perceived latency</span>
+              <span class="decision-chip chip-traded">↕ true token streaming</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title">Intent classification as guardrail layer 2</span>
+            <span class="accordion-arrow">▾</span>
+          </button>
+          <div class="accordion-body">
+            <p>A regex filter catches keywords and obvious injection patterns. But it can't catch semantic scope creep — someone asking a medical appointment bot to write code, translate a poem, or answer geography questions. A lightweight intent classifier runs after regex and before the main LLM, rejecting anything outside the defined domain.</p>
+            <p>The cost: an extra LLM call on every request that passes regex. The saving: the main, expensive model never runs on out-of-scope inputs. Also reduces attack surface — adversarial prompts that defeat the regex layer often fail intent classification.</p>
+            <div class="chips">
+              <span class="decision-chip chip-kept">✓ cost control + reduced attack surface</span>
+              <span class="decision-chip chip-traded">↕ extra classification call per request</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title">AWS CDK from day one</span>
+            <span class="accordion-arrow">▾</span>
+          </button>
+          <div class="accordion-body">
+            <p>Writing every resource in TypeScript CDK from the start has an upfront cost: learning curve, more initial setup, and a compile step before every deploy. The alternative — click through the AWS console — is faster day one and unrecoverable later.</p>
+            <p>With CDK: if a Lambda is accidentally deleted, one deploy brings it back. If the entire environment needs to be reproduced in a different region, it's a config change and a deploy. The only data you can't recreate is what's in the databases — which is exactly why you take backups.</p>
+            <div class="chips">
+              <span class="decision-chip chip-kept">✓ full reproducibility + multi-region readiness</span>
+              <span class="decision-chip chip-traded">↕ upfront CDK learning curve</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 Deploy Path -->
+      <section class="content-section" id="deploy">
+        <h2 class="section-heading"><span class="num">05</span> The Deployment Progression</h2>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Not a ladder you have to climb — a set of options matched to scale and complexity. Start where you are.</p>
+        <div class="deploy-steps">
+          <div class="deploy-step current">
+            <div class="deploy-tier">Tier 1</div>
+            <div class="deploy-name">Lambda</div>
+            <p class="deploy-when">Start here. Pay per invocation, scale to zero, near-zero cost at low volume. Caveat: you pay for idle CPU during LLM wait time; cold starts add first-request latency. Fine for most early-stage AI apps.</p>
+          </div>
+          <div class="deploy-step">
+            <div class="deploy-tier">Tier 2</div>
+            <div class="deploy-name">ECS Fargate</div>
+            <p class="deploy-when">Move here when cold starts become user-facing, when you need persistent connections, or when workloads are too long-running for Lambda's timeout limit. More control, predictable latency.</p>
+          </div>
+          <div class="deploy-step">
+            <div class="deploy-tier">Tier 3</div>
+            <div class="deploy-name">Kubernetes</div>
+            <p class="deploy-when">When you need fine-grained workload scheduling, multi-tenant isolation, or cloud portability. High operational overhead. Only warranted at genuine scale or specific compliance requirements.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 Observability -->
+      <section class="content-section" id="metrics">
+        <h2 class="section-heading"><span class="num">06</span> Observability Targets</h2>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Track these six. If you're not measuring it, you won't know when it breaks — or why users stopped using it.</p>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-name">TTFT P95</div>
+            <div class="metric-full">Time to First Token — 95th pct.</div>
+            <p class="metric-why">Your slowest 5% of users. Use P95, not average — the tail is where trust is lost. Track per step, not just end-to-end. ECOS: via LangSmith per-step tracing.</p>
+          </div>
+          <div class="metric-card">
+            <div class="metric-name">E2E Latency</div>
+            <div class="metric-full">Full conversation turn — P95</div>
+            <p class="metric-why">From user message received to user response sent. Captures everything: auth, routing, LLM, post-processing. This is the number users actually feel.</p>
+          </div>
+          <div class="metric-card">
+            <div class="metric-name">Error + Retry Rate</div>
+            <div class="metric-full">Per step, not per request</div>
+            <p class="metric-why">A spike in step-2 retries means step 2's schema is too strict or the model is drifting. Invisible if you only track top-level errors.</p>
+          </div>
+          <div class="metric-card">
+            <div class="metric-name">Token Spend</div>
+            <div class="metric-full">By user and by step</div>
+            <p class="metric-why">Shows which users are expensive, which steps are over-engineered, and which inputs cost 10× the baseline. Your cost forecast lives here.</p>
+          </div>
+          <div class="metric-card">
+            <div class="metric-name">Judge Score</div>
+            <div class="metric-full">Automated quality evaluation</div>
+            <p class="metric-why">Sample ~2% of live conversations through a judge LLM. Score for helpfulness, accuracy, policy compliance. Catches quality regressions before users tell you.</p>
+          </div>
+          <div class="metric-card">
+            <div class="metric-name">Flag + Refusal</div>
+            <div class="metric-full">User flags and model refusals</div>
+            <p class="metric-why">Users flagging responses = signal you can't get any other way. High refusal rate = guardrails too aggressive or prompt too ambiguous. Both need action.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 Security -->
+      <section class="content-section" id="security">
+        <h2 class="section-heading"><span class="num">07</span> Security Surfaces</h2>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Three places prompt injection can enter your system. Each needs its own defence — not the same one applied three times.</p>
+        <div class="security-grid">
+          <div class="security-card">
+            <div class="security-icon">💬</div>
+            <div class="security-title">User Messages</div>
+            <p class="sec-label sec-threat">Threat</p>
+            <p>Conversational prompt injection — "ignore previous instructions and…" Arrives as plain text in the user's message.</p>
+            <p class="sec-label sec-defense" style="margin-top:0.6rem;">Defence</p>
+            <p>Intent classification rejects out-of-scope inputs before the main LLM. User content is isolated from system instructions in the context window — never concatenated without a clear role boundary.</p>
+          </div>
+          <div class="security-card">
+            <div class="security-icon">🔧</div>
+            <div class="security-title">Tool Responses</div>
+            <p class="sec-label sec-threat">Threat</p>
+            <p>If your agent calls external APIs or MCP servers, a malicious response can inject instructions into the tool result that the LLM then follows.</p>
+            <p class="sec-label sec-defense" style="margin-top:0.6rem;">Defence</p>
+            <p>Zero-trust on all model output. The LLM proposes (returns an action); your code validates, authorises, and executes. The model never directly triggers a write, send, or delete.</p>
+          </div>
+          <div class="security-card">
+            <div class="security-icon">📚</div>
+            <div class="security-title">RAG / Knowledge Base</div>
+            <p class="sec-label sec-threat">Threat</p>
+            <p>Poisoned documents in your knowledge base arrive as retrieved context. The LLM may follow instructions embedded in a document it was told to summarise.</p>
+            <p class="sec-label sec-defense" style="margin-top:0.6rem;">Defence</p>
+            <p>Isolate retrieved content from system instructions in the prompt structure. Treat RAG content as untrusted user input, not as authoritative directives. Validate that chunks don't contain instruction-like patterns before inclusion.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 08 Glossary -->
+      <section class="content-section" id="glossary">
+        <h2 class="section-heading"><span class="num">08</span> Glossary</h2>
+        <div class="abbr-grid">
+          <div class="abbr-item">
+            <div class="abbr-term">LLM</div>
+            <div class="abbr-full">Large Language Model</div>
+            <p class="abbr-note">The AI reasoning component — GPT-4, Claude, Gemini, or self-hosted models. In Arpit's framing: just one unreliable node in your distributed system.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">TTFT</div>
+            <div class="abbr-full">Time to First Token</div>
+            <p class="abbr-note">How long until the first character of LLM output arrives. The primary latency metric for streaming interfaces; for WhatsApp use E2E latency instead.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">P95</div>
+            <div class="abbr-full">95th Percentile</div>
+            <p class="abbr-note">The latency value below which 95% of requests fall. Better than average for SLA tracking — averages hide the worst 5% who are most likely to churn.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">RAG</div>
+            <div class="abbr-full">Retrieval-Augmented Generation</div>
+            <p class="abbr-note">Fetch relevant documents from a knowledge base and inject them into the LLM prompt before generation. Reduces hallucination on domain-specific questions without retraining.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">PII</div>
+            <div class="abbr-full">Personally Identifiable Information</div>
+            <p class="abbr-note">Names, phone numbers, emails, medical record IDs. Never send these to the LLM. Pass opaque IDs; resolve them in your application code after the LLM responds.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">TTL</div>
+            <div class="abbr-full">Time to Live</div>
+            <p class="abbr-note">A database setting that auto-deletes records after N days. DynamoDB TTL handles ECOS's conversation retention policy — zero application code, zero scheduled jobs.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">IaC</div>
+            <div class="abbr-full">Infrastructure as Code</div>
+            <p class="abbr-note">Define cloud resources (functions, databases, queues, permissions) in code files. The entire environment becomes reproducible, version-controlled, and auditable.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">CDK</div>
+            <div class="abbr-full">AWS Cloud Development Kit</div>
+            <p class="abbr-note">AWS's IaC tool — write infrastructure in TypeScript or Python, deploy as CloudFormation. ECOS uses it so the entire stack can be recreated with one command.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">Lambda</div>
+            <div class="abbr-full">AWS Lambda</div>
+            <p class="abbr-note">Serverless compute — pay only when your code runs. Scales to zero. Known AI-specific downside: you pay for idle CPU while waiting for LLM response; cold starts add first-request latency.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">ECS</div>
+            <div class="abbr-full">Elastic Container Service</div>
+            <p class="abbr-note">AWS service for running Docker containers (Fargate = serverless containers). The recommended next step from Lambda when cold starts or connection management become a bottleneck.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">RPS</div>
+            <div class="abbr-full">Requests Per Second</div>
+            <p class="abbr-note">API Gateway rate limit metric. ECOS limits RPS per IP to prevent any single user or bot from exhausting shared capacity. Separate from token quotas.</p>
+          </div>
+          <div class="abbr-item">
+            <div class="abbr-term">MCP</div>
+            <div class="abbr-full">Model Context Protocol</div>
+            <p class="abbr-note">Open standard for exposing tools to AI agents. Trade-off: exposes your tools to any agent (broad reach) but you cede control over invocation context and rate. If you own the agentic layer, you maintain reliability control.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="rw-footer" data-related='[
+    {"title":"The Emotion Engine","url":"elevenlabs-emotion-engine.html","desc":"ElevenLabs voice AI — STT, TTS, audio tags, and agent reliability architecture."},
+    {"title":"Agent Autonomy Dial","url":"agent-autonomy-dial.html","desc":"Five levels of autonomy, ReAct loops, and when to keep humans in the loop."},
+    {"title":"MCP Practitioner Playbook","url":"mcp-practitioner-playbook.html","desc":"When to use MCP, auth wizard, security threats, and the 8-gate decision checker."}
+  ]'></div>
+  <script src="../includes/rw-nav.js?v=20260618"></script>
+  <script src="../includes/rw-footer.js?v=20260618"></script>
+
+  <script>
+    /* ── Checklist scoring ──────────────────────────────────────── */
+    const TOTAL = 18;
+    const checked = new Set();
+
+    function updateScore() {
+      const n = checked.size;
+      const pct = (n / TOTAL) * 100;
+      document.getElementById('score-display').textContent = n + ' / ' + TOTAL;
+      document.getElementById('score-fill').style.width = pct + '%';
+      let v;
+      if (n === 0) v = 'Click items across all four pillars to see where you stand.';
+      else if (n <= 5) v = 'Demo-level readiness. Real users will find the gaps you haven\'t checked.';
+      else if (n <= 10) v = 'Getting there. You\'ve thought about production — now stress-test the unchecked items.';
+      else if (n <= 15) v = 'Strong foundation. A few items remain — check whether they apply to your stack.';
+      else if (n < TOTAL) v = 'Almost there. One or two gaps left.';
+      else v = 'All 18 checked. This is what production-grade looks like.';
+      document.getElementById('score-verdict').textContent = v;
+    }
+
+    document.querySelectorAll('.check-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.dataset.id;
+        if (checked.has(id)) { checked.delete(id); item.classList.remove('checked'); }
+        else { checked.add(id); item.classList.add('checked'); }
+        updateScore();
+      });
+    });
+
+    /* ── Pillar tabs ────────────────────────────────────────────── */
+    document.querySelectorAll('.pillar-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.pillar-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.pillar-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.pillar).classList.add('active');
+      });
+    });
+
+    /* ── Accordion ──────────────────────────────────────────────── */
+    document.querySelectorAll('.accordion-trigger').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.accordion-item').classList.toggle('open');
+      });
+    });
+
+    /* ── Scrollspy TOC ──────────────────────────────────────────── */
+    const sections = document.querySelectorAll('.content-section[id]');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const a = document.querySelector('.toc-list a[href="#' + e.target.id + '"]');
+          if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -65% 0px' });
+    sections.forEach(s => obs.observe(s));
+  </script>
+
+</body>
+</html>
