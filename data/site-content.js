@@ -26,7 +26,7 @@
       },
       {
         title: "The Production Checklist: From Demo to Live ",
-        excerpt: "Four pillars, one real case study (ECOS Health), and an interactive checklist for shipping AI applications to production — no hand-waving.",
+        excerpt: "Four pillars, one real case study (Eikos Health), and an interactive checklist for shipping AI applications to production — no hand-waving.",
         date: "June 19, 2026",
         image: "./images/checklist.png",
         type: "Guide",

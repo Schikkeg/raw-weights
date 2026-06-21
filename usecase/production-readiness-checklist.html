@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Production Checklist: From Demo to Live | RawWeights</title>
-  <meta name="description" content="Four pillars, one real case study (ECOS Health), and an interactive checklist for shipping AI applications to production — no hand-waving.">
+  <meta name="description" content="Four pillars, one real case study (Eikos Health), and an interactive checklist for shipping AI applications to production — no hand-waving.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/usecase/production-readiness-checklist.html">
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://rawweights.com/images/checklist.png">
   <meta property="og:url" content="https://rawweights.com/usecase/production-readiness-checklist.html">
   <meta property="og:title" content="The Production Checklist — From Demo to Live | RawWeights">
-  <meta property="og:description" content="Four pillars, one real case study (ECOS Health). Use the interactive checklist to score your own AI project before you ship.">
+  <meta property="og:description" content="Four pillars, one real case study (Eikos Health). Use the interactive checklist to score your own AI project before you ship.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
   <link rel="stylesheet" href="../includes/brand.css">
@@ -360,7 +360,7 @@
     .deploy-when { font-size: 0.78rem; color: var(--rw-text-secondary); line-height: 1.4; margin: 0; }
     .deploy-step.current { border-color: rgba(217,119,6,0.45); }
     .deploy-step.current .deploy-name::after {
-      content: ' ← ECOS'; font-size: 0.65rem; color: var(--pg); font-weight: 700;
+      content: ' ← Eikos Health'; font-size: 0.65rem; color: var(--pg); font-weight: 700;
       font-family: var(--rw-font-mono);
     }
 
@@ -385,10 +385,10 @@
     <div class="hero-inner">
       <div class="hero-label">GenAcademy · Lightning Session · Production AI</div>
       <h1>The Production<br><em>Checklist</em></h1>
-      <p class="hero-sub">Four pillars, one real project, zero hand-waving. ECOS Health — a WhatsApp AI for Indian doctors — as the annotated reference implementation.</p>
+      <p class="hero-sub">Four pillars, one real project, zero hand-waving. Eikos Health — a WhatsApp AI for Indian doctors — as the annotated reference implementation.</p>
       <div class="hero-meta">
         <span class="hero-tag">Arpit · Distributed Systems</span>
-        <span class="hero-tag">ECOS Health · WhatsApp AI</span>
+        <span class="hero-tag">Eikos Health · WhatsApp AI</span>
         <span class="hero-tag">AWS · LangChain · Groq</span>
         <span class="hero-tag">18-point checklist</span>
       </div>
@@ -411,7 +411,7 @@
       <ul class="toc-list">
         <li><a href="#thesis">Core Thesis</a></li>
         <li><a href="#checklist">Production Checklist</a></li>
-        <li><a href="#architecture">ECOS Architecture</a></li>
+        <li><a href="#architecture">Eikos Health Architecture</a></li>
         <li><a href="#tradeoffs">Decision Trade-offs</a></li>
         <li><a href="#deploy">Deploy Path</a></li>
         <li><a href="#metrics">Observability</a></li>
@@ -427,7 +427,7 @@
         <h2 class="section-heading"><span class="num">01</span> Core Thesis</h2>
         <div class="thesis-quote">
           <p>"Everything around the prompt is plain old distributed systems."</p>
-          <cite>— Arpit, ECOS Health co-founder &amp; distributed systems engineer</cite>
+          <cite>— Arpit, Eikos Health co-founder &amp; distributed systems engineer</cite>
         </div>
         <div class="thesis-points">
           <div class="thesis-point">
@@ -451,7 +451,7 @@
       <!-- 02 Production Checklist -->
       <section class="content-section" id="checklist">
         <h2 class="section-heading"><span class="num">02</span> Production Readiness Checklist</h2>
-        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Click each item to check it off. Each item includes what ECOS Health actually did — use it as your reference implementation.</p>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Click each item to check it off. Each item includes what Eikos Health actually did — use it as your reference implementation.</p>
 
         <div class="score-bar-wrap">
           <div class="score-header">
@@ -479,7 +479,7 @@
               <div class="check-content">
                 <p class="check-title">Break your monolith prompt into sequential steps</p>
                 <p class="check-desc">Extract intent → validate parameters → confirm with user → execute. Each step is independently testable. A failure in step 2 doesn't re-run step 1.</p>
-                <span class="check-ecos">ECOS: 4-step LangChain pipeline per appointment action</span>
+                <span class="check-ecos">Eikos Health: 4-step LangChain pipeline per appointment action</span>
               </div>
             </li>
             <li class="check-item" data-id="r2">
@@ -487,7 +487,7 @@
               <div class="check-content">
                 <p class="check-title">Add a JSON schema contract between each step</p>
                 <p class="check-desc">Define exactly what each step must output. Malformed LLM output triggers a retry at that step only — not at the whole request level. Schema validation is deterministic; LLMs are not.</p>
-                <span class="check-ecos">ECOS: typed output schema on every LangChain step</span>
+                <span class="check-ecos">Eikos Health: typed output schema on every LangChain step</span>
               </div>
             </li>
             <li class="check-item" data-id="r3">
@@ -495,7 +495,7 @@
               <div class="check-content">
                 <p class="check-title">Gate irreversible actions behind user confirmation</p>
                 <p class="check-desc">The LLM proposes; the user (or a deterministic rule) authorises. Never let the model execute a delete, send, or transfer autonomously. LLMs suggest — code and humans act.</p>
-                <span class="check-ecos">ECOS: cancellation and reschedule surface a confirmation step before writing to DB</span>
+                <span class="check-ecos">Eikos Health: cancellation and reschedule surface a confirmation step before writing to DB</span>
               </div>
             </li>
             <li class="check-item" data-id="r4">
@@ -503,7 +503,7 @@
               <div class="check-content">
                 <p class="check-title">Configure retry count per step, not per request</p>
                 <p class="check-desc">Global retry means re-running expensive upstream steps. Per-step retries are cheaper, faster, and preserve partial progress. Retry where it failed, not from the top.</p>
-                <span class="check-ecos">ECOS: step-level retry limits in LangChain</span>
+                <span class="check-ecos">Eikos Health: step-level retry limits in LangChain</span>
               </div>
             </li>
             <li class="check-item" data-id="r5">
@@ -511,7 +511,7 @@
               <div class="check-content">
                 <p class="check-title">Run automated quality evaluation on a sample of live responses</p>
                 <p class="check-desc">Route ~2% of production conversations through a judge LLM that scores for helpfulness, accuracy, and policy compliance. Human review can't scale — automated scoring at volume is table stakes.</p>
-                <span class="check-ecos">ECOS: LangSmith evaluation with judge model scoring per sampled conversation</span>
+                <span class="check-ecos">Eikos Health: LangSmith evaluation with judge model scoring per sampled conversation</span>
               </div>
             </li>
           </ul>
@@ -525,7 +525,7 @@
               <div class="check-content">
                 <p class="check-title">Route cheap models to simple steps</p>
                 <p class="check-desc">Intent classification, output formatting, and parameter extraction don't need your most capable model. Reserve expensive reasoning for steps that genuinely need it. Mixing models per step is the unlock.</p>
-                <span class="check-ecos">ECOS: AWS Bedrock multi-model — smaller model for classification, larger for reasoning steps</span>
+                <span class="check-ecos">Eikos Health: AWS Bedrock multi-model — smaller model for classification, larger for reasoning steps</span>
               </div>
             </li>
             <li class="check-item" data-id="c2">
@@ -533,7 +533,7 @@
               <div class="check-content">
                 <p class="check-title">Rate limit on token spend, not just request count</p>
                 <p class="check-desc">A user who sends 3 requests with 10,000-token prompts costs far more than 30 normal requests. Request-count limits don't protect you. Token quota per user per day — tracked in your application code — is the right lever.</p>
-                <span class="check-ecos">ECOS: token quota enforced inside Lambda; API Gateway handles RPS per IP</span>
+                <span class="check-ecos">Eikos Health: token quota enforced inside Lambda; API Gateway handles RPS per IP</span>
               </div>
             </li>
             <li class="check-item" data-id="c3">
@@ -541,7 +541,7 @@
               <div class="check-content">
                 <p class="check-title">Add a regex guardrail before the LLM</p>
                 <p class="check-desc">Obvious off-topic requests, injection attempts, and profanity should never reach the LLM. A simple regex filter catches these for effectively zero cost. Fast, deterministic, free.</p>
-                <span class="check-ecos">ECOS: regex layer is the first filter in the Lambda handler</span>
+                <span class="check-ecos">Eikos Health: regex layer is the first filter in the Lambda handler</span>
               </div>
             </li>
             <li class="check-item" data-id="c4">
@@ -549,7 +549,7 @@
               <div class="check-content">
                 <p class="check-title">Add intent classification to catch scope creep</p>
                 <p class="check-desc">The "Chipotle chatbot writing Python" problem: no keyword filter catches that. A lightweight classifier runs after regex and before your main prompt — it denies requests outside your defined scope before running the expensive model.</p>
-                <span class="check-ecos">ECOS: dedicated intent classification step — non-appointment requests denied here</span>
+                <span class="check-ecos">Eikos Health: dedicated intent classification step — non-appointment requests denied here</span>
               </div>
             </li>
           </ul>
@@ -563,7 +563,7 @@
               <div class="check-content">
                 <p class="check-title">Track TTFT P95, not average latency</p>
                 <p class="check-desc">Time to First Token at the 95th percentile shows worst-case experience for 19 in 20 users. Averages hide the tail where users abandon. P95 is your SLA anchor — track it per step, not just end-to-end.</p>
-                <span class="check-ecos">ECOS: TTFT P95 per step tracked via LangSmith</span>
+                <span class="check-ecos">Eikos Health: TTFT P95 per step tracked via LangSmith</span>
               </div>
             </li>
             <li class="check-item" data-id="s2">
@@ -571,7 +571,7 @@
               <div class="check-content">
                 <p class="check-title">Stream outputs — or show a working indicator immediately</p>
                 <p class="check-desc">Streaming drops perceived latency dramatically. If your channel doesn't support streaming (WhatsApp Business API doesn't), send a typing indicator the moment you receive the message. Users see activity; they wait more tolerantly.</p>
-                <span class="check-ecos">ECOS: WhatsApp typing indicator sent on receipt — streaming not available via WhatsApp API</span>
+                <span class="check-ecos">Eikos Health: WhatsApp typing indicator sent on receipt — streaming not available via WhatsApp API</span>
               </div>
             </li>
             <li class="check-item" data-id="s3">
@@ -579,7 +579,7 @@
               <div class="check-content">
                 <p class="check-title">Prompt for crisp, channel-appropriate output</p>
                 <p class="check-desc">Verbose LLM responses cost more tokens, take longer to generate, and are harder to read on mobile. Explicitly prompt for concise, conversational replies — especially on messaging channels where walls of text fail.</p>
-                <span class="check-ecos">ECOS: system prompt specifies short WhatsApp-friendly responses</span>
+                <span class="check-ecos">Eikos Health: system prompt specifies short WhatsApp-friendly responses</span>
               </div>
             </li>
             <li class="check-item" data-id="s4">
@@ -587,7 +587,7 @@
               <div class="check-content">
                 <p class="check-title">Move post-response work to an async job</p>
                 <p class="check-desc">Sending notifications, writing analytics, updating audit logs — none of this belongs in the critical path. Fire an async job after the user's response is sent. They don't wait; the work still happens.</p>
-                <span class="check-ecos">ECOS: separate notification Lambda fires async after user receives response — sends WhatsApp + email to patient, doctor, and admins</span>
+                <span class="check-ecos">Eikos Health: separate notification Lambda fires async after user receives response — sends WhatsApp + email to patient, doctor, and admins</span>
               </div>
             </li>
           </ul>
@@ -601,7 +601,7 @@
               <div class="check-content">
                 <p class="check-title">Use a fast KV store for conversation and checkpoint memory</p>
                 <p class="check-desc">Active conversation history needs sub-millisecond reads. DynamoDB, Redis, or any fast KV store — not S3, not a relational DB. Speed matters here because it's in every request's critical path.</p>
-                <span class="check-ecos">ECOS: DynamoDB for conversation history and LangChain checkpoint state</span>
+                <span class="check-ecos">Eikos Health: DynamoDB for conversation history and LangChain checkpoint state</span>
               </div>
             </li>
             <li class="check-item" data-id="x2">
@@ -609,7 +609,7 @@
               <div class="check-content">
                 <p class="check-title">Use a separate knowledge base for reference content</p>
                 <p class="check-desc">FAQs, policies, product documentation — these don't change per conversation but need semantic search to retrieve. A knowledge base keeps your conversation context clean and your system prompt lean.</p>
-                <span class="check-ecos">ECOS: AWS Bedrock Knowledge Base for doctor profiles, office hours, cancellation policies</span>
+                <span class="check-ecos">Eikos Health: AWS Bedrock Knowledge Base for doctor profiles, office hours, cancellation policies</span>
               </div>
             </li>
             <li class="check-item" data-id="x3">
@@ -617,7 +617,7 @@
               <div class="check-content">
                 <p class="check-title">Keep app data in your application database</p>
                 <p class="check-desc">Appointments, users, orders — these belong in your existing app DB with proper indices and relationships. The LLM only gets IDs. Your code resolves them after the LLM responds. Separation of concerns applies here too.</p>
-                <span class="check-ecos">ECOS: MongoDB for appointment records; LLM sees appointment IDs only, never patient names</span>
+                <span class="check-ecos">Eikos Health: MongoDB for appointment records; LLM sees appointment IDs only, never patient names</span>
               </div>
             </li>
             <li class="check-item" data-id="x4">
@@ -625,7 +625,7 @@
               <div class="check-content">
                 <p class="check-title">Set a TTL on conversation records</p>
                 <p class="check-desc">Old conversations cost storage and are a privacy liability. Set a TTL and let the store delete them automatically — handles compliance without a scheduled job, migration, or manual cleanup.</p>
-                <span class="check-ecos">ECOS: DynamoDB TTL configured — conversations auto-deleted after N days</span>
+                <span class="check-ecos">Eikos Health: DynamoDB TTL configured — conversations auto-deleted after N days</span>
               </div>
             </li>
             <li class="check-item" data-id="x5">
@@ -633,7 +633,7 @@
               <div class="check-content">
                 <p class="check-title">Never send PII to the LLM</p>
                 <p class="check-desc">The LLM does not need a patient's name to cancel their appointment. Pass an ID; your code resolves it after the LLM responds. This limits blast radius if a prompt is ever extracted, and simplifies compliance logging.</p>
-                <span class="check-ecos">ECOS: LLM sees only appointment IDs — Lambda resolves patient identity after LLM returns its action</span>
+                <span class="check-ecos">Eikos Health: LLM sees only appointment IDs — Lambda resolves patient identity after LLM returns its action</span>
               </div>
             </li>
           </ul>
@@ -642,7 +642,7 @@
 
       <!-- 03 Architecture -->
       <section class="content-section" id="architecture">
-        <h2 class="section-heading"><span class="num">03</span> ECOS Architecture</h2>
+        <h2 class="section-heading"><span class="num">03</span> Eikos Health Architecture</h2>
         <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">WhatsApp + website → API Gateway → Lambda → LLM + 3 stores → async notifications. Entire stack defined in code; recreatable with one command.</p>
         <div class="arch-grid">
           <div class="arch-card" data-layer="Channel">
@@ -651,7 +651,7 @@
           </div>
           <div class="arch-card" data-layer="Auth">
             <div class="arch-service">Cognito + WhatsApp phone #</div>
-            <p class="arch-why">Website users authenticate via AWS Cognito. WhatsApp users: Meta vouches for the phone number — ECOS trusts that. No separate auth flow needed for WhatsApp channel.</p>
+            <p class="arch-why">Website users authenticate via AWS Cognito. WhatsApp users: Meta vouches for the phone number — Eikos Health trusts that. No separate auth flow needed for WhatsApp channel.</p>
           </div>
           <div class="arch-card" data-layer="Gateway">
             <div class="arch-service">API Gateway</div>
@@ -698,8 +698,8 @@
 
       <!-- 04 Trade-offs -->
       <section class="content-section" id="tradeoffs">
-        <h2 class="section-heading"><span class="num">04</span> Real Trade-offs ECOS Made</h2>
-        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Every architectural decision is a trade. These are ECOS's actual calls — the thing gained and the thing accepted.</p>
+        <h2 class="section-heading"><span class="num">04</span> Real Trade-offs Eikos Health Made</h2>
+        <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin-bottom:1.25rem;">Every architectural decision is a trade. These are Eikos Health's actual calls — the thing gained and the thing accepted.</p>
 
         <div class="accordion-item">
           <button class="accordion-trigger">
@@ -708,7 +708,7 @@
           </button>
           <div class="accordion-body">
             <p>MongoDB requires persistent connections. Lambda cold starts must re-establish that connection each time a new instance spins up — adding latency before any business logic runs. The combination is known to be sub-optimal.</p>
-            <p>ECOS kept it because Lambda's near-zero cost at low volume outweighed the latency cost. The system is functional, just "slightly slower than expected." Arpit's take: not a make-or-break situation at their current scale.</p>
+            <p>Eikos Health kept it because Lambda's near-zero cost at low volume outweighed the latency cost. The system is functional, just "slightly slower than expected." Arpit's take: not a make-or-break situation at their current scale.</p>
             <div class="chips">
               <span class="decision-chip chip-kept">✓ near-zero infra cost</span>
               <span class="decision-chip chip-traded">↕ first-request cold start latency</span>
@@ -737,7 +737,7 @@
             <span class="accordion-arrow">▾</span>
           </button>
           <div class="accordion-body">
-            <p>Lambda's native handler API is simpler and slightly leaner. But ECOS used Express as their framework inside Lambda — same code that would run on ECS, locally, or on any container. The trade: a slightly larger deployment bundle and a bit more setup.</p>
+            <p>Lambda's native handler API is simpler and slightly leaner. But Eikos Health used Express as their framework inside Lambda — same code that would run on ECS, locally, or on any container. The trade: a slightly larger deployment bundle and a bit more setup.</p>
             <p>The upside: if Lambda ever stops being the right compute layer — cold starts at scale, long-running LLM chains, persistent connection requirements — the migration to ECS Fargate is a config change, not a rewrite.</p>
             <div class="chips">
               <span class="decision-chip chip-kept">✓ compute portability</span>
@@ -823,7 +823,7 @@
           <div class="metric-card">
             <div class="metric-name">TTFT P95</div>
             <div class="metric-full">Time to First Token — 95th pct.</div>
-            <p class="metric-why">Your slowest 5% of users. Use P95, not average — the tail is where trust is lost. Track per step, not just end-to-end. ECOS: via LangSmith per-step tracing.</p>
+            <p class="metric-why">Your slowest 5% of users. Use P95, not average — the tail is where trust is lost. Track per step, not just end-to-end. Eikos Health: via LangSmith per-step tracing.</p>
           </div>
           <div class="metric-card">
             <div class="metric-name">E2E Latency</div>
@@ -917,7 +917,7 @@
           <div class="abbr-item">
             <div class="abbr-term">TTL</div>
             <div class="abbr-full">Time to Live</div>
-            <p class="abbr-note">A database setting that auto-deletes records after N days. DynamoDB TTL handles ECOS's conversation retention policy — zero application code, zero scheduled jobs.</p>
+            <p class="abbr-note">A database setting that auto-deletes records after N days. DynamoDB TTL handles Eikos Health's conversation retention policy — zero application code, zero scheduled jobs.</p>
           </div>
           <div class="abbr-item">
             <div class="abbr-term">IaC</div>
@@ -927,7 +927,7 @@
           <div class="abbr-item">
             <div class="abbr-term">CDK</div>
             <div class="abbr-full">AWS Cloud Development Kit</div>
-            <p class="abbr-note">AWS's IaC tool — write infrastructure in TypeScript or Python, deploy as CloudFormation. ECOS uses it so the entire stack can be recreated with one command.</p>
+            <p class="abbr-note">AWS's IaC tool — write infrastructure in TypeScript or Python, deploy as CloudFormation. Eikos Health uses it so the entire stack can be recreated with one command.</p>
           </div>
           <div class="abbr-item">
             <div class="abbr-term">Lambda</div>
@@ -942,7 +942,7 @@
           <div class="abbr-item">
             <div class="abbr-term">RPS</div>
             <div class="abbr-full">Requests Per Second</div>
-            <p class="abbr-note">API Gateway rate limit metric. ECOS limits RPS per IP to prevent any single user or bot from exhausting shared capacity. Separate from token quotas.</p>
+            <p class="abbr-note">API Gateway rate limit metric. Eikos Health limits RPS per IP to prevent any single user or bot from exhausting shared capacity. Separate from token quotas.</p>
           </div>
           <div class="abbr-item">
             <div class="abbr-term">MCP</div>
