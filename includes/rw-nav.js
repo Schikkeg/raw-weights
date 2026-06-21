@@ -83,7 +83,8 @@
               { label: 'Agent Autonomy Dial',   url: '/guide/agent-autonomy-dial.html',           desc: 'How much should an AI agent decide?' },
               { label: 'Digital Colleague',     url: '/blog/digital-colleague-masterclass.html',  desc: 'Masterclass: AI as a team member' },
               { label: 'Threatscope',           url: '/blog/threatscope.html',                    desc: 'AI-powered threat intelligence' },
-              { label: 'Voice AI Insights',     url: '/blog/voice-ai-insights.html',              desc: 'Building voice-first AI interfaces' }
+              { label: 'Voice AI Insights',     url: '/blog/voice-ai-insights.html',              desc: 'Building voice-first AI interfaces' },
+              { label: 'Agent Memory',     url: '/usecase/mem0-b2b-signal-memory.html',              desc: 'Beyond RAG,across sessions' }
             ]
           },
           {

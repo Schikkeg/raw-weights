@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Signal Memory Problem | RawWeights</title>
+  <meta name="description" content="Why B2B AI agents forget everything between sessions — and how Mem0 fixes deduplication, contradiction management, and graph retrieval without you rebuilding it from scratch.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/mem0-b2b-signal-memory.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/memo.png">
+  <meta property="og:url" content="https://rawweights.com/usecase/mem0-b2b-signal-memory.html">
+  <meta property="og:title" content="The Signal Memory Problem | RawWeights">
+  <meta property="og:description" content="Why B2B AI agents forget everything between sessions — and how Mem0 fixes it without rebuilding from scratch.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Page accent: violet + cyan ── */
+    :root {
+      --ac: #7c3aed;
+      --ac-h: #6d28d9;
+      --ac-lt: rgba(124,58,237,0.1);
+      --ac-br: rgba(124,58,237,0.25);
+      --ac2: #06b6d4;
+      --ac2-lt: rgba(6,182,212,0.1);
+      --ac2-br: rgba(6,182,212,0.25);
+    }
+
+    /* ── Hero ── */
+    .guide-hero {
+      background: linear-gradient(135deg, #060614 0%, #0c0620 55%, #060e1a 100%);
+      padding: 5rem 1.5rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-hero::before {
+      content: '';
+      position: absolute; top: -15%; right: -5%;
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(124,58,237,0.22) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: '';
+      position: absolute; bottom: -10%; left: -5%;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero-inner { max-width: 860px; margin: 0 auto; position: relative; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 9999px; padding: 0.3rem 0.9rem;
+      font-size: 0.72rem; font-weight: 700; color: #a78bfa;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 1rem;
+    }
+    .guide-hero h1 span { color: #a78bfa; }
+    .guide-hero-sub {
+      font-size: 1.05rem; color: rgba(240,244,255,0.72);
+      max-width: 620px; margin: 0 auto 0.75rem; line-height: 1.7;
+    }
+    .guide-hero-note {
+      font-size: 0.88rem; color: rgba(240,244,255,0.42);
+      max-width: 580px; margin: 0 auto 1.75rem;
+      line-height: 1.6; font-style: italic;
+    }
+
+    /* ── Persona bar ── */
+    .persona-bar { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .persona-btn {
+      padding: 0.45rem 1rem; border-radius: 9999px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      background: transparent; color: rgba(255,255,255,0.7);
+      font-family: var(--rw-font-display); font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .persona-btn:hover, .persona-btn.active { background:#7c3aed; border-color:#7c3aed; color:#fff; }
+    [data-theme="light"] .persona-btn { border-color:rgba(0,0,0,0.2); color:rgba(0,0,0,0.6); }
+    [data-theme="light"] .persona-btn:hover,
+    [data-theme="light"] .persona-btn.active { background:#7c3aed; border-color:#7c3aed; color:#fff; }
+
+    /* ── Layout ── */
+    .guide-layout {
+      display: grid; grid-template-columns: 240px 1fr;
+      gap: 2.5rem; max-width: 1200px;
+      margin: 3rem auto; padding: 0 1.5rem; align-items: start;
+    }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label {
+      font-family: var(--rw-font-display); font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--rw-text-subtle); margin-bottom: 0.75rem;
+    }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:0.15rem; }
+    .guide-toc a {
+      font-size: 0.83rem; color: var(--rw-text-muted); text-decoration: none;
+      padding: 0.3rem 0.6rem; border-left: 2px solid transparent;
+      display: block; border-radius: 0 4px 4px 0;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .guide-toc a:hover, .guide-toc a.active {
+      color: var(--ac); border-left-color: var(--ac); background: var(--ac-lt);
+    }
+    .guide-toc .toc-sub { padding-left: 1rem; font-size: 0.78rem; }
+
+    /* ── Sections ── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display); font-size: 1.6rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 1rem; padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--ac-lt);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 {
+      font-family: var(--rw-font-display); font-size: 1.15rem; font-weight: 700;
+      color: var(--rw-text); margin: 1.75rem 0 0.5rem;
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section p { font-size: 1rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
+
+    /* ── Feature grid ── */
+    .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .feature-card {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.25rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover { border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-lt); }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: 0.9rem; font-weight: 700; color: var(--rw-text); margin-bottom: 0.35rem; }
+    .feature-card p { font-size: 0.82rem; color: var(--rw-text-muted); margin: 0; line-height: 1.55; }
+
+    /* ── Persona blocks ── */
+    .persona-content { display: none; }
+    .persona-content.active { display: block; }
+
+    /* ── Step list ── */
+    .step-list { list-style:none; display:flex; flex-direction:column; gap:1.25rem; margin:1.5rem 0; }
+    .step-item { display:flex; gap:1rem; align-items:flex-start; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--ac); color: #fff;
+      font-family: var(--rw-font-display); font-weight: 800; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: 0.95rem; color: var(--rw-text); margin-bottom: 0.3rem; }
+    .step-body p { font-size: 0.875rem; color: var(--rw-text-muted); margin: 0; line-height: 1.65; }
+    .step-body ul { margin: 0.5rem 0 0 1rem; font-size: 0.85rem; color: var(--rw-text-muted); line-height: 1.8; }
+    .step-body ul li strong { color: var(--rw-text); }
+
+    /* ── Comparison table ── */
+    .comparison-table { width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:0.875rem; }
+    .comparison-table th {
+      background: var(--rw-bg-subtle); font-family: var(--rw-font-display);
+      font-weight: 700; font-size: 0.78rem; text-align: left;
+      padding: 0.75rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text);
+    }
+    .comparison-table td {
+      padding: 0.65rem 1rem; border-bottom: 1px solid var(--rw-border);
+      color: var(--rw-text-muted); vertical-align: top; line-height: 1.5;
+    }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+    .ok { color: #22c55e; font-weight: 700; }
+    .no { color: #ef4444; font-weight: 700; }
+    .partial { color: #f59e0b; font-weight: 700; }
+
+    /* ── Callouts ── */
+    .callout-v {
+      background: var(--ac-lt); border-left: 3px solid var(--ac);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem; font-size: 0.9rem; color: var(--rw-text-muted); margin: 1rem 0;
+    }
+    .callout-v strong { color: var(--ac); }
+    .callout-c {
+      background: var(--ac2-lt); border-left: 3px solid var(--ac2);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem; font-size: 0.9rem; color: var(--rw-text-muted); margin: 1rem 0;
+    }
+    .callout-c strong { color: var(--ac2); }
+
+    /* ── Retrieval trinity ── */
+    .trinity-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .trinity-card {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.25rem;
+      border-top: 3px solid transparent;
+    }
+    .trinity-card.t-vector { border-top-color: var(--ac); }
+    .trinity-card.t-keyword { border-top-color: var(--ac2); }
+    .trinity-card.t-graph { border-top-color: #22c55e; }
+    .trinity-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      border-radius: 9999px; padding: 0.15rem 0.5rem; margin-bottom: 0.5rem;
+    }
+    .t-vector .trinity-badge { background: var(--ac-lt); color: var(--ac); }
+    .t-keyword .trinity-badge { background: var(--ac2-lt); color: var(--ac2); }
+    .t-graph .trinity-badge { background: rgba(34,197,94,0.1); color: #22c55e; }
+    .trinity-card h4 { font-family: var(--rw-font-display); font-size: 0.9rem; font-weight: 700; color: var(--rw-text); margin-bottom: 0.5rem; }
+    .trinity-card p { font-size: 0.82rem; color: var(--rw-text-muted); margin: 0 0 0.75rem; line-height: 1.55; }
+    .trinity-example {
+      font-size: 0.76rem; color: var(--rw-text-subtle);
+      background: var(--rw-bg-subtle); border-radius: 6px;
+      padding: 0.55rem 0.75rem; font-style: italic; line-height: 1.5;
+    }
+
+    /* ── Performance triangle ── */
+    .perf-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .perf-card {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.5rem; text-align: center;
+    }
+    .perf-icon { font-size: 1.75rem; margin-bottom: 0.6rem; }
+    .perf-label {
+      font-family: var(--rw-font-display); font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--rw-text-subtle); margin-bottom: 0.4rem;
+    }
+    .perf-val {
+      font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
+      color: var(--ac); line-height: 1.1; margin-bottom: 0.4rem;
+    }
+    .perf-desc { font-size: 0.78rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Scoping chain ── */
+    .scope-chain {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 0; margin: 1.75rem 0;
+    }
+    .scope-node {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: 10px; padding: 0.85rem 1rem; text-align: center; min-width: 96px;
+    }
+    .scope-node .sc-icon { font-size: 1.2rem; margin-bottom: 0.2rem; }
+    .scope-node .sc-label {
+      font-family: var(--rw-font-display); font-size: 0.68rem; font-weight: 700;
+      color: var(--ac); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.15rem;
+    }
+    .scope-node .sc-eg { font-size: 0.7rem; color: var(--rw-text-subtle); }
+    .scope-arrow { color: var(--rw-text-subtle); font-size: 1rem; padding: 0 0.4rem; }
+
+    /* ── Credit card ── */
+    .credit-card {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      background: var(--ac-lt); border: 1px solid var(--ac-br);
+      border-radius: var(--rw-r-md); padding: 1.5rem; margin: 1.5rem 0;
+    }
+    .credit-icon { font-size: 2rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .credit-card strong { font-family: var(--rw-font-display); font-size: 1rem; color: var(--rw-text); display: block; margin-bottom: 0.4rem; }
+    .credit-card p { font-size: 0.875rem; color: var(--rw-text-muted); margin: 0 0 0.75rem; line-height: 1.65; }
+    .credit-card a { color: var(--ac); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
+    .credit-card a:hover { text-decoration: underline; }
+
+    /* ════════════════════════════════════════════════
+       INTERACTIVE MEMORY BUILDER
+    ════════════════════════════════════════════════ */
+    .mem-builder {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-xl); overflow: hidden; margin: 1.5rem 0;
+    }
+    .mem-header {
+      background: var(--rw-bg-subtle); border-bottom: 1px solid var(--rw-border);
+      padding: 1rem 1.5rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .mem-header-title {
+      font-family: var(--rw-font-display); font-size: 1rem; font-weight: 700;
+      color: var(--rw-text); margin: 0 0 0.15rem;
+    }
+    .mem-header-sub { font-size: 0.78rem; color: var(--rw-text-muted); margin: 0; }
+    .reset-btn {
+      background: transparent; border: 1px solid var(--rw-border);
+      color: var(--rw-text-muted); border-radius: 9999px; padding: 0.35rem 0.85rem;
+      font-family: var(--rw-font-display); font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .reset-btn:hover { border-color: var(--ac); color: var(--ac); }
+
+    /* Sessions + Pool split */
+    .mem-body {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 340px;
+    }
+    .mem-sessions { border-right: 1px solid var(--rw-border); }
+
+    .session-tabs {
+      display: flex; background: var(--rw-bg-alt);
+      border-bottom: 1px solid var(--rw-border);
+    }
+    .stab {
+      flex: 1; padding: 0.6rem 0.5rem;
+      border: none; background: transparent;
+      font-family: var(--rw-font-display); font-size: 0.78rem; font-weight: 600;
+      color: var(--rw-text-muted); cursor: pointer;
+      border-bottom: 2px solid transparent; transition: all 0.15s;
+    }
+    .stab.active { color: var(--ac); border-bottom-color: var(--ac); background: var(--rw-bg); }
+    .stab.done { color: #22c55e; }
+
+    .spanel { display: none; padding: 1.25rem; }
+    .spanel.active { display: block; }
+    .spanel-date {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--rw-text-subtle); margin-bottom: 0.75rem;
+    }
+    .spanel-notes {
+      font-size: 0.82rem; color: var(--rw-text-muted); line-height: 1.65;
+      background: var(--rw-bg-subtle); border-radius: 6px;
+      padding: 0.85rem 1rem; margin-bottom: 1rem;
+    }
+    .extract-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--ac); color: #fff; border: none; border-radius: 9999px;
+      font-family: var(--rw-font-display); font-size: 0.82rem; font-weight: 700;
+      padding: 0.5rem 1.15rem; cursor: pointer; transition: opacity 0.15s;
+    }
+    .extract-btn:hover { opacity: 0.85; }
+    .extract-btn:disabled { background: #22c55e; cursor: default; opacity: 1; }
+
+    /* Pool */
+    .mem-pool { padding: 1.25rem; }
+    .pool-label {
+      font-family: var(--rw-font-display); font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em; color: var(--rw-text-subtle);
+      margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .pool-count {
+      background: var(--ac); color: #fff; border-radius: 9999px;
+      padding: 0.08rem 0.42rem; font-size: 0.68rem;
+    }
+    .pool-empty {
+      font-size: 0.82rem; color: var(--rw-text-subtle);
+      text-align: center; padding: 2.25rem 1rem;
+      border: 1.5px dashed var(--rw-border); border-radius: 8px;
+    }
+    .pool-cards { display: flex; flex-direction: column; gap: 0.45rem; max-height: 272px; overflow-y: auto; }
+    .mem-card {
+      display: flex; gap: 0.6rem; align-items: flex-start;
+      background: var(--rw-bg-subtle); border: 1px solid var(--rw-border);
+      border-radius: 7px; padding: 0.6rem 0.8rem;
+      animation: cardIn 0.28s ease;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mc-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+    .mc-label {
+      font-family: var(--rw-font-display); font-size: 0.65rem; font-weight: 700;
+      color: var(--ac); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.1rem;
+    }
+    .mc-text { font-size: 0.76rem; color: var(--rw-text-muted); line-height: 1.4; }
+
+    /* Query section */
+    .query-section {
+      border-top: 1px solid var(--rw-border); padding: 1.25rem 1.5rem;
+    }
+    .query-row {
+      display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem;
+    }
+    .query-input {
+      flex: 1; padding: 0.6rem 0.85rem;
+      border: 1px solid var(--rw-border); border-radius: var(--rw-r-sm);
+      background: var(--rw-bg); color: var(--rw-text);
+      font-size: 0.875rem; font-family: var(--rw-font-body);
+    }
+    .query-input:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-lt); }
+    .query-btn {
+      padding: 0.6rem 1.15rem; border: none; border-radius: 9999px;
+      background: var(--ac); color: #fff;
+      font-family: var(--rw-font-display); font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: opacity 0.15s;
+    }
+    .query-btn:hover { opacity: 0.85; }
+
+    .query-results { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .qr-box { border-radius: 8px; overflow: hidden; }
+    .qr-head {
+      padding: 0.45rem 0.9rem;
+      font-family: var(--rw-font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+    }
+    .qr-box.without .qr-head { background: rgba(239,68,68,0.1); color: #ef4444; }
+    .qr-box.with    .qr-head { background: rgba(34,197,94,0.1);  color: #22c55e; }
+    .qr-body {
+      padding: 0.85rem; font-size: 0.8rem; color: var(--rw-text-muted);
+      line-height: 1.6; background: var(--rw-bg-subtle);
+      border: 1px solid var(--rw-border); border-top: none; border-radius: 0 0 8px 8px;
+    }
+    .qr-box.with .qr-body { border-color: rgba(34,197,94,0.2); }
+    .qr-highlight { color: #22c55e; font-weight: 600; }
+    .qr-urgent { color: var(--rw-orange); font-weight: 600; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .feature-grid, .perf-grid, .trinity-grid { grid-template-columns: repeat(2,1fr); }
+      .mem-body { grid-template-columns: 1fr; }
+      .mem-sessions { border-right: none; border-bottom: 1px solid var(--rw-border); }
+      .query-results { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .feature-grid, .perf-grid, .trinity-grid { grid-template-columns: 1fr; }
+      .scope-chain { flex-direction: column; align-items: center; }
+      .scope-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ══ HERO ══ -->
+<div class="guide-hero">
+  <div class="guide-hero-inner">
+    <span class="guide-hero-label">📡 B2B Intelligence</span>
+    <h1>The <span>Signal Memory</span> Problem</h1>
+    <p class="guide-hero-sub">Your B2B AI agent runs a perfect discovery call — extracts pain points, budget signals, stakeholder dynamics. Then the session ends, and it forgets everything.</p>
+    <p class="guide-hero-note">RAG retrieves documents. Claude reasons about them. Neither remembers what your prospect said last Tuesday. Here's the architecture that fixes that — without rebuilding deduplication, contradiction management, or graph retrieval from scratch.</p>
+
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#section-problem" class="rw-btn rw-btn-primary">Explore the Problem ↓</a>
+      <a href="#section-demo" class="rw-btn rw-btn-ghost" style="border-color:rgba(167,139,250,0.4);color:#a78bfa;">Try the Demo →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="guide-layout">
+  <!-- Sidebar -->
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-problem">The Amnesia Tax</a></li>
+      <li><a href="#section-engine">The Memory Engine</a></li>
+      <li><a href="#section-rag" class="toc-sub">What RAG Won't Fix</a></li>
+      <li><a href="#section-retrieval">The Retrieval Trinity</a></li>
+      <li><a href="#section-demo">Prospect Memory Builder</a></li>
+      <li><a href="#section-perf">Performance Triangle</a></li>
+      <li><a href="#section-scoping">Enterprise Scoping</a></li>
+      <li><a href="#section-cdp">CDP: Complementary</a></li>
+      <li><a href="#section-edgecase" class="toc-sub">Edge Case: Dual Context</a></li>
+      <li><a href="#section-credit">Source &amp; Credit</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main -->
+  <main>
+
+    <!-- ── 1. AMNESIA TAX ── -->
+    <section class="guide-section" id="section-problem">
+      <h2>The Amnesia Tax</h2>
+      <p>Every time your B2B AI agent starts a new session — a follow-up call, a CRM update, a renewal check-in — it starts from zero. The qualification signals from last month's discovery call are gone. The stakeholder dynamics from the technical deep-dive? Gone. The budget signal the prospect dropped in passing? Gone.</p>
+      <p>This isn't a model quality problem. It's a memory architecture problem. And it compounds across every account in your pipeline.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">📉</div>
+          <h4>Qualification Signal Loss</h4>
+          <p>Pain points, budget cycles, tech stack preferences — re-discovered from scratch every session instead of compounding across touchpoints.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">👥</div>
+          <h4>Stakeholder Blindness</h4>
+          <p>Who's the technical veto? Who controls budget sign-off? B2B deals involve 5–8 decision-makers. Your agent greets them fresh every time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔄</div>
+          <h4>Context Reconstruction Cost</h4>
+          <p>Reps spend 20–30 minutes per call re-reading CRM notes doing what a memory layer should do automatically — rebuilding account context.</p>
+        </div>
+      </div>
+
+      <div class="callout-v">
+        <strong>The core framing:</strong> B2B AI isn't a single-session problem. It's a longitudinal intelligence problem across weeks of prospect interactions, months of onboarding, and years of account management. Long context windows don't fix this — you need a memory layer that persists, deduplicates, and resolves contradictions between sessions.
+      </div>
+    </section>
+
+    <!-- ── 2. MEMORY ENGINE ── -->
+    <section class="guide-section" id="section-engine">
+      <h2>The Memory Engine: 3 Phases</h2>
+      <p>A proper memory algorithm runs three distinct phases for every interaction. Each phase has a clear job — and each is where naive approaches break down at B2B scale.</p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Extraction</h4>
+            <p>After each conversation turn, an LLM pass identifies what's worth persisting. Not the full transcript — distilled facts: <em>"Marcus confirmed $120K budget,"</em> <em>"Sarah is the engineering veto,"</em> <em>"APAC expansion targeted Q3."</em> Custom instructions let you tune what gets extracted: prioritise tech-stack signals over personal preferences, never store names but always store timelines.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Storage & Consolidation</h4>
+            <p>This is the hard part that CLAUDE.md files and naive file-system approaches get wrong. Three sub-problems run simultaneously on every write:</p>
+            <ul>
+              <li><strong>Deduplication:</strong> Marcus mentioned LangChain across 3 sessions. Store it once — don't pile up redundant entries.</li>
+              <li><strong>Contradiction management:</strong> Budget was $80K in session 1, confirmed $120K in session 3. The newer signal wins and the old one is retired.</li>
+              <li><strong>Temporal decay:</strong> A tech-stack preference from 8 months ago that was never retrieved again scores lower than one from last week.</li>
+            </ul>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Retrieval</h4>
+            <p>When the agent needs context for a new session, three parallel searches run against the memory store, results are fused and re-ranked, and the top 3–5 most relevant memories are injected. This is the difference between a sharp pre-call brief and a 25K-token context dump that costs a fortune and buries the signal.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout-c">
+        <strong>Why CLAUDE.md-style file memory breaks at B2B scale:</strong> No deduplication, no contradiction resolution, no decay scoring. After 12 months of account activity across 200 prospects, you'd have thousands of conflicting, stale, redundant notes with no way to rank them.
+      </div>
+    </section>
+
+    <!-- ── 3. RAG GAP ── -->
+    <section class="guide-section" id="section-rag">
+      <h2>What RAG &amp; Claude Won't Save You From</h2>
+      <p>If you've already built a RAG pipeline, you might think you're close. You're not — for longitudinal B2B memory specifically. Here's exactly where the gaps are, and why each one is a rebuild project if you go alone:</p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Challenge</th>
+            <th>File System / CLAUDE.md</th>
+            <th>RAG + Claude alone</th>
+            <th>Mem0</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Cross-session persistence</strong></td>
+            <td><span class="no">✗</span> Wiped each session</td>
+            <td><span class="no">✗</span> Documents — not conversations</td>
+            <td><span class="ok">✓</span> Persistent memory store</td>
+          </tr>
+          <tr>
+            <td><strong>Deduplication</strong></td>
+            <td><span class="no">✗</span> Piles up on every write</td>
+            <td><span class="no">✗</span> No dedup layer on write</td>
+            <td><span class="ok">✓</span> Semantic dedup on every write</td>
+          </tr>
+          <tr>
+            <td><strong>Contradiction management</strong></td>
+            <td><span class="no">✗</span> Both versions stored forever</td>
+            <td><span class="no">✗</span> No conflict detection</td>
+            <td><span class="ok">✓</span> Newer signals supersede old</td>
+          </tr>
+          <tr>
+            <td><strong>Memory decay &amp; staleness</strong></td>
+            <td><span class="no">✗</span> Everything lives forever</td>
+            <td><span class="no">✗</span> No time-weighted scoring</td>
+            <td><span class="ok">✓</span> Decay scoring + auto-pruning</td>
+          </tr>
+          <tr>
+            <td><strong>Entity relationship hops</strong></td>
+            <td><span class="no">✗</span> No graph structure</td>
+            <td><span class="partial">~</span> Metadata filters only</td>
+            <td><span class="ok">✓</span> Knowledge graph with multi-hop</td>
+          </tr>
+          <tr>
+            <td><strong>Token cost at scale</strong></td>
+            <td><span class="no">✗</span> Full context dump</td>
+            <td><span class="no">✗</span> High chunk overhead</td>
+            <td><span class="ok">✓</span> ~7K tokens vs ~25K full-context</td>
+          </tr>
+          <tr>
+            <td><strong>Multi-user isolation</strong></td>
+            <td><span class="no">✗</span> Manual file management</td>
+            <td><span class="partial">~</span> Namespace filters only</td>
+            <td><span class="ok">✓</span> First-class scoping primitives</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout-v">
+        <strong>The compounding problem:</strong> Each gap is independently solvable. But solving all seven for a production B2B agent at 40K DAUs and 2M events/month is 6–9 months of infrastructure work. Mem0 ships them as a single API call.
+      </div>
+    </section>
+
+    <!-- ── 4. RETRIEVAL TRINITY ── -->
+    <section class="guide-section" id="section-retrieval">
+      <h2>The Retrieval Trinity</h2>
+      <p>When your agent prepares for a call with Marcus at TechVision, three searches run in parallel against the memory store. Results are fused and re-ranked before anything touches the LLM.</p>
+
+      <div class="trinity-grid">
+        <div class="trinity-card t-vector">
+          <span class="trinity-badge">Vector</span>
+          <h4>Semantic Similarity</h4>
+          <p>"APAC expansion" also surfaces regional compliance notes, multi-timezone stakeholder preferences, budget approval chains. Catches the contextually relevant signal that keyword search misses.</p>
+          <div class="trinity-example">"Prepare for Marcus" → surfaces APAC timeline, Q2 urgency, $120K budget confirmation — without exact keywords</div>
+        </div>
+        <div class="trinity-card t-keyword">
+          <span class="trinity-badge">Keyword</span>
+          <h4>Exact Match Recall</h4>
+          <p>When accuracy of specific facts matters — product names, contract numbers, competitor references. Prevents semantic drift from surfacing vaguely related but wrong memories.</p>
+          <div class="trinity-example">"LangChain" → retrieves exact tech-stack notes, not just "AI orchestration" adjacent memories</div>
+        </div>
+        <div class="trinity-card t-graph">
+          <span class="trinity-badge">Graph / Entity</span>
+          <h4>Relationship Hops</h4>
+          <p>Fills in implicit context. Marcus → TechVision → APAC expansion → Q3 timeline → multi-region compliance. The downstream nodes surface without explicit queries.</p>
+          <div class="trinity-example">"Marcus" → hops to Sarah (eng veto), Dev (arch veto), TechVision → all linked memories scored higher</div>
+        </div>
+      </div>
+
+      <h3>Re-ranking: From 100 Candidates to 5 Injected</h3>
+      <p>After parallel search you might have 50–100 candidate memories. You can't inject all of them — that defeats the purpose and blows the token budget. A re-ranking pass fuses scores from all three searches into a single relevance number per memory. <strong style="color:var(--rw-text);">Top 3–5 injected per turn</strong> captures the signal in production. Beyond 10–20 you're paying for noise.</p>
+
+      <div class="callout-c">
+        <strong>Voice agent constraint:</strong> If your B2B agent handles live sales calls or real-time customer success calls, the retrieval budget is tight. Mem0's full pipeline runs at ~200–300ms — fast enough to inject context before the agent speaks its first sentence.
+      </div>
+    </section>
+
+    <!-- ── 5. INTERACTIVE DEMO ── -->
+    <section class="guide-section" id="section-demo">
+      <h2>Prospect Memory Builder</h2>
+      <p>Three sales sessions with Marcus Chen, CTO of TechVision Inc., evaluating an AI orchestration layer. Process each session to extract memories into the pool — then query it to see what a memory-powered agent knows before the next call.</p>
+
+      <div class="mem-builder">
+        <!-- Header -->
+        <div class="mem-header">
+          <div>
+            <p class="mem-header-title">TechVision Inc — Account Intelligence</p>
+            <p class="mem-header-sub">Marcus Chen · CTO · AI Orchestration Evaluation · $120K opportunity</p>
+          </div>
+          <button class="reset-btn" onclick="resetDemo()">↺ Reset</button>
+        </div>
+
+        <!-- Sessions + Pool -->
+        <div class="mem-body">
+
+          <!-- Sessions -->
+          <div class="mem-sessions">
+            <div class="session-tabs">
+              <button class="stab active" id="stab-0" onclick="showSession(0)">Session 1</button>
+              <button class="stab"        id="stab-1" onclick="showSession(1)">Session 2</button>
+              <button class="stab"        id="stab-2" onclick="showSession(2)">Session 3</button>
+            </div>
+
+            <div class="spanel active" id="sp-0">
+              <div class="spanel-date">📞 Discovery Call — March 12, 2026</div>
+              <div class="spanel-notes">Marcus Chen (CTO) joined with two engineers. Current stack: LangChain + Pinecone. Core pain: agents lose context between customer touchpoints — they lost a real deal last month because the agent forgot a key stakeholder had changed roles. Budget cycle closes end of Q2. Three engineers available for integration. One other vendor being evaluated. Hard requirement: GDPR compliance, EU data must stay in-region.</div>
+              <button class="extract-btn" id="ebtn-0" onclick="processSession(0)">⚡ Extract Memories</button>
+            </div>
+            <div class="spanel" id="sp-1">
+              <div class="spanel-date">🔬 Technical Deep-Dive — March 26, 2026</div>
+              <div class="spanel-notes">Full committee joined: Sarah (Head of Engineering) and Dev (AI Architect). Scale confirmed: 40K daily active users, ~2M conversation events per month. Six months ago they built an in-house memory layer — it failed specifically at deduplication when users repeated the same preferences. Sarah asked about Neo4j graph integration. Budget officially confirmed at $120K annual (up from initial $80K estimate). Competitor: custom Redis-based solution.</div>
+              <button class="extract-btn" id="ebtn-1" onclick="processSession(1)">⚡ Extract Memories</button>
+            </div>
+            <div class="spanel" id="sp-2">
+              <div class="spanel-date">🎯 Objection Handling — April 9, 2026</div>
+              <div class="spanel-notes">Marcus raised a hard ceiling: voice sales agent cannot tolerate more than 300ms memory overhead — breaks conversation flow. Sarah pushed on token cost impact at their 2M events/month volume. Dev (AI Architect) is the integration-complexity veto — he decides build vs buy. Marcus mentioned APAC office expansion in Q3 2026, which will require multi-region memory scoping with per-country data residency rules.</div>
+              <button class="extract-btn" id="ebtn-2" onclick="processSession(2)">⚡ Extract Memories</button>
+            </div>
+          </div>
+
+          <!-- Memory pool -->
+          <div class="mem-pool">
+            <div class="pool-label">
+              Memory Pool
+              <span class="pool-count" id="pool-count">0</span>
+            </div>
+            <div class="pool-empty" id="pool-empty">Process a session to see extracted memories appear here.</div>
+            <div class="pool-cards" id="pool-cards" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- Query -->
+        <div class="query-section">
+          <div class="query-row">
+            <input class="query-input" id="q-input" type="text" value="Prepare me for tomorrow's call with Marcus at TechVision" readonly>
+            <button class="query-btn" onclick="runQuery()">Query Memory →</button>
+          </div>
+          <div id="q-results" style="display:none;" class="query-results">
+            <div class="qr-box without">
+              <div class="qr-head">✗ WITHOUT MEM0</div>
+              <div class="qr-body">
+                Here are some tips for your upcoming call with Marcus Chen. In enterprise sales it's important to understand the prospect's technical stack, budget timeline, and key stakeholders. Make sure to ask about their current pain points and any compliance requirements they may have. Building genuine rapport is important for advancing the deal.
+              </div>
+            </div>
+            <div class="qr-box with">
+              <div class="qr-head">✓ WITH MEM0</div>
+              <div class="qr-body">
+                <strong style="color:var(--rw-text);display:block;margin-bottom:0.6rem;">Pre-call brief · Marcus Chen, CTO · TechVision Inc</strong>
+                <span class="qr-highlight">Hard requirements first:</span> Voice agent latency ceiling is 300ms — confirm Mem0 runs 200–300ms. GDPR EU data residency is non-negotiable, prepare regional deployment overview.<br><br>
+                <span class="qr-highlight">Navigate the committee:</span> Dev (AI Architect) is the integration-complexity veto — lead with API simplicity. Sarah (Eng Head) is focused on token cost at 2M events/month — bring the 7K vs 25K token comparison. Marcus holds emotional buy-in from the lost deal (agent forgot a stakeholder role change).<br><br>
+                <span class="qr-highlight">Pre-empt the objection:</span> Their in-house attempt failed at deduplication. Open by showing dedup working live — it's the reason they stopped building.<br><br>
+                <span class="qr-highlight">APAC signal:</span> Q3 2026 expansion — prepare multi-region scoping overview before they ask.<br><br>
+                <span class="qr-urgent">⏱ Timeline:</span> Q2 budget close is ~6 weeks away. Push for technical pilot commitment this session.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6. PERFORMANCE TRIANGLE ── -->
+    <section class="guide-section" id="section-perf">
+      <h2>The Performance Triangle</h2>
+      <p>Memory systems have three levers — and you cannot maximize all three simultaneously. Production B2B agents learned this the hard way: chasing accuracy at the cost of latency and token spend destroys unit economics.</p>
+
+      <div class="perf-grid">
+        <div class="perf-card">
+          <div class="perf-icon">🎯</div>
+          <div class="perf-label">Accuracy</div>
+          <div class="perf-val">98%+</div>
+          <div class="perf-desc">Benchmarked on LoCoMo, LongMemEval, BEAM 1M &amp; 10M. Improving iteratively — the other two levers matter more in production at scale.</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-icon">⚡</div>
+          <div class="perf-label">Latency</div>
+          <div class="perf-val">200–300ms</div>
+          <div class="perf-desc">Full retrieval pipeline end-to-end. Clears the voice-agent budget — the hardest real-time constraint in B2B AI.</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-icon">💰</div>
+          <div class="perf-label">Token Cost</div>
+          <div class="perf-val">3–4× cheaper</div>
+          <div class="perf-desc">~7K tokens per turn vs ~25K full-context. At 2M events/month, this single lever determines whether the unit economics work at all.</div>
+        </div>
+      </div>
+
+      <p>The practical production rule: <strong style="color:var(--rw-text);">top 3–5 memories per turn</strong> captures the signal without collapsing token efficiency. Aggressive cases push to top 10–20. Beyond 20, you're funding noise that dilutes the signal you worked to extract.</p>
+
+      <div class="callout-v">
+        <strong>Why this matters for B2B specifically:</strong> At 40K users × 10 call sessions/week, the gap between 7K and 25K tokens per call is the difference between a profitable product and an account you'd rather drop. Token cost is where B2B AI economics are won or lost.
+      </div>
+    </section>
+
+    <!-- ── 7. ENTERPRISE SCOPING ── -->
+    <section class="guide-section" id="section-scoping">
+      <h2>Enterprise Memory Scoping</h2>
+      <p>In B2B, memory isolation isn't a nice-to-have — it's a compliance requirement. TechVision's account memories must never surface in a query about another prospect. A sales rep's private call notes can't reach their manager without explicit permission. Memory scoping is the architecture that makes enterprise deployment possible.</p>
+
+      <div class="scope-chain">
+        <div class="scope-node">
+          <div class="sc-icon">🏢</div>
+          <div class="sc-label">Org</div>
+          <div class="sc-eg">Your company</div>
+        </div>
+        <div class="scope-arrow">→</div>
+        <div class="scope-node">
+          <div class="sc-icon">📁</div>
+          <div class="sc-label">Project</div>
+          <div class="sc-eg">CRM Agent</div>
+        </div>
+        <div class="scope-arrow">→</div>
+        <div class="scope-node">
+          <div class="sc-icon">👤</div>
+          <div class="sc-label">User</div>
+          <div class="sc-eg">Marcus Chen</div>
+        </div>
+        <div class="scope-arrow">→</div>
+        <div class="scope-node">
+          <div class="sc-icon">🔁</div>
+          <div class="sc-label">Run ID</div>
+          <div class="sc-eg">Session #14</div>
+        </div>
+        <div class="scope-arrow">→</div>
+        <div class="scope-node">
+          <div class="sc-icon">📱</div>
+          <div class="sc-label">App</div>
+          <div class="sc-eg">Mobile / Web</div>
+        </div>
+      </div>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">A</div>
+          <div class="step-body">
+            <h4>User-level walls are absolute</h4>
+            <p>TechVision's memories never surface in a query about a different account. This isn't a filter you implement — it's a first-class primitive in the memory architecture enforced at write time.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">B</div>
+          <div class="step-body">
+            <h4>Run IDs for session-level filtering</h4>
+            <p>Need to query only last week's sessions? Pass the Run ID filter. Want full longitudinal history across all sessions? Query without the filter. Same memory store, different retrieval scope — no schema changes.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">C</div>
+          <div class="step-body">
+            <h4>Shared team memory is configuration, not a feature request</h4>
+            <p>A sales manager needs visibility into their team's account memories. Scope those signals at the project level rather than user level. Hierarchical access is configurable — you define the boundary, the memory system enforces it.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── 8. CDP COMPLEMENTARY ── -->
+    <section class="guide-section" id="section-cdp">
+      <h2>CDP Is Complementary, Not Competing</h2>
+      <p>A natural question: if we already have a Customer Data Platform — Segment, Salesforce CDP, Adobe — do we need Mem0? They solve genuinely different problems and run at different latency profiles. They belong together, not as alternatives.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">📊</div>
+          <h4>CDP captures what you observe</h4>
+          <p>Clicks, page visits, email opens, product usage, purchase events — structured behavioral signals ingested from your tech stack, unified into a customer identity record.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">💬</div>
+          <h4>Mem0 captures what users disclose</h4>
+          <p>Conversational intelligence extracted from AI dialogue — "Marcus confirmed $120K budget," "APAC expansion is Q3," "voice latency is a hard ceiling." Facts your CDP will never see.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔗</div>
+          <h4>Together: full account context</h4>
+          <p>CDP tells your agent Marcus hit the pricing page 4 times this week. Mem0 tells your agent what Marcus said privately about his timeline and the deal he lost. Both layers, one agent.</p>
+        </div>
+      </div>
+
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Dimension</th><th>CDP</th><th>Mem0</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Data source</strong></td>
+            <td>Structured events from your tech stack (web, email, CRM, product)</td>
+            <td>Semantic facts extracted from AI conversation turns</td>
+          </tr>
+          <tr>
+            <td><strong>Data type</strong></td>
+            <td>Events, attributes, traits — structured and queryable</td>
+            <td>Natural-language facts, entities, relationships — unstructured</td>
+          </tr>
+          <tr>
+            <td><strong>Primary use</strong></td>
+            <td>Segmentation, marketing personalization, analytics, audience targeting</td>
+            <td>Real-time agent context injection across sessions</td>
+          </tr>
+          <tr>
+            <td><strong>Retrieval</strong></td>
+            <td>SQL queries, segment exports, batch pipelines</td>
+            <td>Vector + keyword + graph at &lt;300ms for LLM injection</td>
+          </tr>
+          <tr>
+            <td><strong>Contradiction handling</strong></td>
+            <td>Field-level overwrites on structured schema</td>
+            <td>Semantic resolution of conflicting unstructured memories</td>
+          </tr>
+          <tr>
+            <td><strong>Memory decay</strong></td>
+            <td>Not applicable — events are immutable records</td>
+            <td>Staleness scoring and auto-pruning of unused memories</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout-c">
+        <strong>The architecture decision:</strong> Don't replace your CDP with Mem0. Pipe your CDP's behavioral signals into the agent's system prompt as structured context, and let Mem0 handle the conversational memory layer. Two different signal types, two different retrieval patterns — one agent that knows everything.
+      </div>
+    </section>
+
+    <!-- ── 9. EDGE CASE: DUAL CONTEXT ── -->
+    <section class="guide-section" id="section-edgecase">
+      <h2>Edge Case: One User, Two Memory Contexts</h2>
+      <p>A question raised in the session Q&amp;A that Rudraj flagged as genuinely unsolved territory: what happens when the same user ID carries memories from two contexts that must never cross-contaminate?</p>
+      <p>The B2B version of this: a platform where the same person is both a <em>seller</em> (CRM agent, deal strategy, competitor positioning) and a <em>buyer</em> (procurement agent, vendor evaluation, internal budget). Their seller memories cannot leak into their buyer context, and vice versa.</p>
+
+      <div class="callout-v">
+        <strong>Rudraj's take from the session:</strong> "That's an interesting edge case. I don't think we've seen that use case yet… there's no dynamic way to deal with this right now." Today it requires deliberate builder architecture — the memory system won't automatically detect which context a fact belongs to.
+      </div>
+
+      <h3>How to think about building this today</h3>
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Treat each context as a separate Run ID namespace</h4>
+            <p>Prefix Run IDs by context — <code class="rw-code">seller-{userId}</code> vs <code class="rw-code">buyer-{userId}</code>. Retrieval scoped to the active context's namespace won't surface the other side's memories. Simple, manual, works today.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Write context-specific extraction instructions</h4>
+            <p>Tell the seller context's extraction layer: "never extract pricing strategy or competitor intelligence." Tell the buyer context's extraction: "never extract procurement budget or internal scoring criteria." Siloed at write time — not just at retrieval.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Explicitly promote shared signals to a global namespace</h4>
+            <p>Some signals are legitimately cross-context — name, timezone, communication preferences. These need explicit tagging as "global" and retrieval by both contexts, rather than being auto-extracted into either silo and then duplicated.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout-c">
+        <strong>Worth whiteboarding before you build:</strong> If your use case has genuinely conflicting memory contexts for the same user — multi-role platforms, healthcare (patient vs caregiver perspective), regulated industries with role separation — design the scoping boundaries before you configure the memory layer. Retrofitting isolation is significantly harder than designing for it from the start.
+      </div>
+    </section>
+
+    <!-- ── 10. CREDIT ── -->
+    <section class="guide-section" id="section-credit">
+      <h2>Source &amp; Credit</h2>
+
+      <div class="credit-card">
+        <div class="credit-icon">🎓</div>
+        <div>
+          <strong>Rudraj, Product Lead at Mem0 — live session via GenAcademy</strong>
+          <p>The memory architecture on this page comes directly from a GenAcademy session where Rudraj walked through the Mem0 pipeline from first principles: extraction, storage consolidation (deduplication, contradiction management, temporal decay), the three-parallel-search retrieval strategy, re-ranking to top 3–5, and memory scoping. All performance numbers — 200–300ms latency, 7K vs 25K token comparison, 3–4× cost advantage — are from that session.</p>
+          <p>The examples here use a B2B lead-enrichment and CRM-agent context rather than the consumer food-ordering demo from the session. The architecture is identical — we've reframed it to where enterprise builders spend their time.</p>
+          <a href="https://mem0.ai" target="_blank" rel="noopener">Explore Mem0 at mem0.ai →</a>
+        </div>
+      </div>
+
+      <h3>B2B Use Cases Where This Architecture Applies</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🎯</div>
+          <h4>Lead Enrichment Agents</h4>
+          <p>Accumulate qualification signals across outbound sequences. Every touchpoint adds to the prospect profile — pain points, tech stack, budget cycle, stakeholder map.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🤝</div>
+          <h4>CRM Intelligence Agents</h4>
+          <p>Auto-enrich records after every call. No manual notes. Contradiction management handles when deal stage, stakeholders, or budget figures change mid-cycle.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔄</div>
+          <h4>Customer Success Agents</h4>
+          <p>Longitudinal account health memory across months of interactions. Surface renewal signals, feature adoption gaps, and relationship risk before the QBR.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[{"label":"RAG Pipeline Guide","url":"/guide/rag.html"},{"label":"Agent Autonomy Dial","url":"/guide/agent-autonomy-dial.html"},{"label":"Production Readiness Checklist","url":"/usecase/production-readiness-checklist.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// ── TOC scrollspy ─────────────────────────────────────────────
+(function() {
+  const secs = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!secs.length || !links.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  secs.forEach(s => obs.observe(s));
+})();
+
+// ── Memory Builder ────────────────────────────────────────────
+const SESSIONS = [
+  {
+    memories: [
+      { icon:'🏗️', label:'Tech Stack',      text:'LangChain + Pinecone — current AI orchestration layer' },
+      { icon:'😣', label:'Core Pain',        text:'Agents lose context between customer touchpoints — lost a deal when agent forgot a stakeholder role change' },
+      { icon:'📅', label:'Budget Cycle',     text:'Decision required before Q2 end — time pressure high' },
+      { icon:'🔐', label:'Hard Requirement', text:'GDPR compliance — EU data must stay in-region, non-negotiable' },
+      { icon:'🔢', label:'Team Size',        text:'3 engineers available for integration work' }
+    ]
+  },
+  {
+    memories: [
+      { icon:'📊', label:'Scale Confirmed',  text:'40K DAUs · ~2M conversation events/month' },
+      { icon:'👥', label:'New Stakeholders', text:'Sarah (Head of Engineering) + Dev (AI Architect) now in buying committee' },
+      { icon:'⚠️', label:'Prior Failure',    text:'In-house memory layer failed specifically at deduplication — the primary emotional driver for buying vs building' },
+      { icon:'💰', label:'Budget Locked',    text:'$120K annual confirmed (revised up from initial $80K estimate)' },
+      { icon:'🔄', label:'Competition',      text:'Evaluating custom Redis-based solution as alternative' }
+    ]
+  },
+  {
+    memories: [
+      { icon:'⚡', label:'Latency Ceiling',  text:'Voice agent hard limit: <300ms memory overhead — make-or-break requirement' },
+      { icon:'💸', label:'Token Cost Focus', text:'Sarah specifically asked about token cost impact at 2M events/month scale' },
+      { icon:'🔑', label:'Technical Veto',   text:'Dev (AI Architect) decides build vs buy — integration complexity is his primary concern' },
+      { icon:'📉', label:'Lost Deal Story',  text:'Lost deal because agent forgot prospect\'s job change — Marcus has strong emotional buy-in for this problem' },
+      { icon:'🌏', label:'Expansion Signal', text:'APAC office launch Q3 2026 — needs multi-region memory scoping with per-country data residency' }
+    ]
+  }
+];
+
+let count = 0;
+const processed = new Set();
+
+function showSession(i) {
+  document.querySelectorAll('.stab').forEach((t, j) => t.classList.toggle('active', j === i));
+  document.querySelectorAll('.spanel').forEach((p, j) => p.classList.toggle('active', j === i));
+}
+
+function processSession(i) {
+  if (processed.has(i)) return;
+  processed.add(i);
+
+  const btn = document.getElementById('ebtn-' + i);
+  btn.disabled = true;
+  btn.textContent = '✓ Extracted';
+
+  document.getElementById('stab-' + i).classList.add('done');
+
+  const empty = document.getElementById('pool-empty');
+  const cards = document.getElementById('pool-cards');
+  empty.style.display = 'none';
+  cards.style.display = 'flex';
+
+  SESSIONS[i].memories.forEach((m, j) => {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'mem-card';
+      el.innerHTML = `<div class="mc-icon">${m.icon}</div><div><div class="mc-label">${m.label}</div><div class="mc-text">${m.text}</div></div>`;
+      cards.appendChild(el);
+      count++;
+      document.getElementById('pool-count').textContent = count;
+    }, j * 110);
+  });
+
+  if (i < 2) setTimeout(() => showSession(i + 1), 700);
+}
+
+function runQuery() {
+  const r = document.getElementById('q-results');
+  r.style.display = 'grid';
+  r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetDemo() {
+  count = 0;
+  processed.clear();
+  document.getElementById('pool-count').textContent = '0';
+  document.getElementById('pool-cards').innerHTML = '';
+  document.getElementById('pool-cards').style.display = 'none';
+  document.getElementById('pool-empty').style.display = 'block';
+  document.getElementById('q-results').style.display = 'none';
+  [0,1,2].forEach(i => {
+    const btn = document.getElementById('ebtn-' + i);
+    btn.disabled = false;
+    btn.textContent = '⚡ Extract Memories';
+    document.getElementById('stab-' + i).classList.remove('done');
+  });
+  showSession(0);
+}
+</script>
+
+</body>
+</html>

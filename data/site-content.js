@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "The Signal Memory Problem  ",
+        excerpt: "Why B2B AI agents forget everything between sessions — and how Mem0 fixes deduplication, contradiction management, and graph retrieval without you rebuilding it from scratch.",
+        date: "June 21, 2026",
+        image: "./images/memo.png",
+        type: "Guide",
+        link: "https://rawweights.com/usecase/mem0-b2b-signal-memory.html",
+        linkedin: null
+      },
+      {
         title: "The Production Checklist: From Demo to Live ",
         excerpt: "Four pillars, one real case study (ECOS Health), and an interactive checklist for shipping AI applications to production — no hand-waving.",
         date: "June 19, 2026",
         image: "./images/checklist.png",
         type: "Guide",
         link: "https://rawweights.com/usecase/production-readiness-checklist.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-ai-machinelearning-activity-7473796842556923904-z923"
       },
       {
         title: "The Builder's Map: Practical Decisions for Voice AI with ElevenLabs ",
