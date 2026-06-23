@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "The Proving Ground ",
+        excerpt: "Why benchmarks lie, what modern AI eval actually looks like, and how to build the measurement layer your system deserves — RAGAS, G-Eval, cascade math, coverage matrices, and the Iron Triangle.",
+        date: "June 22, 2026",
+        image: "./images/proving.png",
+        type: "Guide",
+        link: "https://rawweights.com/tools/eval-proving-ground.html",
+        linkedin: null
+      },
+      {
         title: "The Signal Memory Problem  ",
         excerpt: "Why B2B AI agents forget everything between sessions — and how Mem0 fixes deduplication, contradiction management, and graph retrieval without you rebuilding it from scratch.",
         date: "June 21, 2026",
         image: "./images/memo.png",
         type: "Guide",
         link: "https://rawweights.com/usecase/mem0-b2b-signal-memory.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-mem0-b2bai-activity-7474427956254277632-Oths"
       },
       {
         title: "The Production Checklist: From Demo to Live ",
