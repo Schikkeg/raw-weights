@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Iteration Machine | RawWeights</title>
+  <meta name="description" content="Six AI practitioners share what it actually takes to build agents that improve: the observation loop, calibrated evals, simulation, model-independent harnesses, and efficient training.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/iteration-machine.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://rawweights.com/images/iteration.png">
+  <meta property="og:url" content="https://rawweights.com/usecase/iteration-machine.html">
+  <meta property="og:title" content="The Iteration Machine | RawWeights">
+  <meta property="og:description" content="Six AI practitioners share what it actually takes to build agents that improve in production.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    :root {
+      --ac: #0369a1;
+      --ac2: #ea580c;
+      --ac-lt: rgba(3,105,161,0.08);
+      --ac2-lt: rgba(234,88,12,0.08);
+      --ac-mid: rgba(3,105,161,0.18);
+      --ac2-mid: rgba(234,88,12,0.18);
+    }
+
+    /* ── Layout ── */
+    .guide-layout {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 3rem;
+      align-items: start;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+    @media (max-width: 800px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-toc { display: none; }
+    }
+
+    /* ── TOC ── */
+    .guide-toc {
+      position: sticky;
+      top: 5rem;
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+    }
+    .guide-toc h3 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--rw-text-muted);
+      margin: 0 0 0.75rem;
+    }
+    .guide-toc ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      counter-reset: toc;
+    }
+    .guide-toc ol li { counter-increment: toc; margin-bottom: 0.5rem; }
+    .guide-toc ol li::before {
+      content: counter(toc) ".";
+      font-size: 0.7rem;
+      color: var(--ac);
+      font-weight: 700;
+      margin-right: 0.4rem;
+    }
+    .guide-toc a {
+      font-size: 0.8rem;
+      color: var(--rw-text-muted);
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .guide-toc a:hover { color: var(--ac); }
+
+    /* ── Sections ── */
+    .guide-section { margin-bottom: 3.5rem; scroll-margin-top: 5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--rw-text);
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.02em;
+    }
+    .section-meta {
+      font-size: 0.78rem;
+      color: var(--rw-text-muted);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* ── Speaker Cards ── */
+    .speaker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+    .speaker-card {
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+    .speaker-card-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ac);
+      margin-bottom: 0.35rem;
+    }
+    .speaker-card h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin: 0 0 0.2rem;
+    }
+    .speaker-card p {
+      font-size: 0.75rem;
+      color: var(--rw-text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ── Quote block ── */
+    .pullquote {
+      border-left: 3px solid var(--ac);
+      background: var(--ac-lt);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.25rem 0;
+    }
+    .pullquote p {
+      font-size: 1.05rem;
+      font-style: italic;
+      font-weight: 600;
+      color: var(--rw-text);
+      margin: 0 0 0.35rem;
+      line-height: 1.5;
+    }
+    .pullquote cite {
+      font-size: 0.75rem;
+      color: var(--rw-text-muted);
+      font-style: normal;
+    }
+    .pullquote2 {
+      border-left: 3px solid var(--ac2);
+      background: var(--ac2-lt);
+    }
+
+    /* ── Interactive Loop ── */
+    .loop-wrapper {
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      margin: 1.25rem 0;
+    }
+    .loop-nodes {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: nowrap;
+      margin-bottom: 1.5rem;
+    }
+    .loop-node-btn {
+      cursor: pointer;
+      background: var(--rw-bg);
+      border: 2px solid var(--rw-border);
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      transition: all 0.2s;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+    .loop-node-btn:hover { border-color: var(--ac); transform: scale(1.06); }
+    .loop-node-btn.active {
+      border-color: var(--ac);
+      background: var(--ac-lt);
+      box-shadow: 0 0 0 4px var(--ac-mid);
+    }
+    .loop-node-icon { font-size: 1.4rem; }
+    .loop-node-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--rw-text-muted);
+    }
+    .loop-node-btn.active .loop-node-label { color: var(--ac); }
+
+    .loop-arrow {
+      color: var(--rw-text-muted);
+      font-size: 1.1rem;
+      padding: 0 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .loop-detail {
+      background: var(--rw-bg);
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      display: none;
+    }
+    .loop-detail.visible { display: block; }
+    .loop-detail h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--ac);
+      margin: 0 0 0.6rem;
+    }
+    .loop-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+    }
+    @media (max-width: 600px) {
+      .loop-detail-grid { grid-template-columns: 1fr; }
+      .loop-nodes { gap: 0; }
+      .loop-node-btn { width: 72px; height: 72px; }
+      .loop-node-icon { font-size: 1.1rem; }
+    }
+    .loop-chip {
+      background: var(--ac-lt);
+      border: 1px solid var(--ac-mid);
+      border-radius: 8px;
+      padding: 0.5rem 0.7rem;
+      font-size: 0.78rem;
+      color: var(--rw-text);
+      line-height: 1.5;
+    }
+    .loop-chip strong { color: var(--ac); display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem; }
+
+    /* ── Callout ── */
+    .callout {
+      border-left: 3px solid var(--ac2);
+      background: var(--ac2-lt);
+      padding: 0.9rem 1.1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.87rem;
+      color: var(--rw-text);
+      line-height: 1.7;
+      margin: 1rem 0;
+    }
+    .callout strong { color: var(--ac2); }
+
+    /* ── Efficiency visual ── */
+    .eff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    @media (max-width: 600px) { .eff-grid { grid-template-columns: 1fr; } }
+    .eff-card {
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .eff-card h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0 0 0.5rem;
+    }
+    .eff-bar-wrap { margin: 0.5rem 0; }
+    .eff-bar-label { font-size: 0.72rem; color: var(--rw-text-muted); margin-bottom: 0.2rem; }
+    .eff-bar {
+      height: 18px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 0.5rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* ── Step list ── */
+    .step-list { list-style: none; padding: 0; margin: 1rem 0; counter-reset: steps; }
+    .step-list li {
+      counter-increment: steps;
+      display: flex;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+      align-items: flex-start;
+    }
+    .step-list li::before {
+      content: counter(steps);
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      background: var(--ac);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-top: 0.1rem;
+    }
+    .step-list li p { margin: 0; font-size: 0.88rem; line-height: 1.7; color: var(--rw-text); }
+    .step-list li strong { color: var(--ac); }
+
+    /* ── Panel Tabs ── */
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .tab-btn {
+      cursor: pointer;
+      padding: 0.45rem 0.9rem;
+      border-radius: 9999px;
+      border: 1.5px solid var(--rw-border);
+      background: var(--rw-bg-alt);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--rw-text-muted);
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { border-color: var(--ac); color: var(--ac); }
+    .tab-btn.active {
+      background: var(--ac);
+      border-color: var(--ac);
+      color: #fff;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    .panel-insight {
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 12px;
+      padding: 1.25rem 1.4rem;
+    }
+    .panel-insight-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .panel-insight-avatar {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .panel-insight-meta h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin: 0 0 0.15rem;
+    }
+    .panel-insight-meta p {
+      font-size: 0.75rem;
+      color: var(--rw-text-muted);
+      margin: 0;
+    }
+
+    /* ── Accordion ── */
+    .accord-item {
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      margin-bottom: 0.6rem;
+      overflow: hidden;
+    }
+    .accord-trigger {
+      width: 100%;
+      text-align: left;
+      background: var(--rw-bg-alt);
+      border: none;
+      padding: 0.9rem 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--rw-text);
+      transition: background 0.15s;
+    }
+    .accord-trigger:hover { background: var(--ac-lt); }
+    .accord-trigger.open { color: var(--ac); }
+    .accord-arrow { font-size: 0.8rem; transition: transform 0.2s; }
+    .accord-trigger.open .accord-arrow { transform: rotate(90deg); }
+    .accord-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .accord-body-inner {
+      padding: 0 1.1rem 1.1rem;
+      font-size: 0.87rem;
+      line-height: 1.75;
+      color: var(--rw-text-muted);
+      background: var(--rw-bg-alt);
+    }
+
+    /* ── Tier list / comparison ── */
+    .tier-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      align-items: stretch;
+    }
+    .tier-label {
+      flex-shrink: 0;
+      width: 110px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--rw-text-muted);
+      display: flex;
+      align-items: center;
+    }
+    .tier-content {
+      flex: 1;
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.83rem;
+      color: var(--rw-text);
+      line-height: 1.6;
+    }
+
+    /* ── Prompt spec visual ── */
+    .spec-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin: 1rem 0;
+    }
+    .spec-layer {
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: default;
+    }
+    .spec-layer-name { font-size: 0.82rem; font-weight: 700; color: #fff; }
+    .spec-layer-desc { font-size: 0.75rem; color: rgba(255,255,255,0.75); text-align: right; }
+
+    /* ── Key number / stat ── */
+    .stat-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .stat-box {
+      flex: 1;
+      min-width: 100px;
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      text-align: center;
+    }
+    .stat-box .stat-num {
+      font-family: var(--rw-font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--ac);
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+    .stat-box .stat-lbl {
+      font-size: 0.72rem;
+      color: var(--rw-text-muted);
+      line-height: 1.4;
+    }
+
+    /* ── Inline tag ── */
+    .tag {
+      display: inline-block;
+      background: var(--ac-lt);
+      border: 1px solid var(--ac-mid);
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--ac);
+    }
+    .tag2 {
+      background: var(--ac2-lt);
+      border-color: var(--ac2-mid);
+      color: var(--ac2);
+    }
+
+    /* ── Related CTA ── */
+    .related-cta {
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+      text-decoration: none;
+    }
+    .related-cta:hover { border-color: var(--ac); background: var(--ac-lt); }
+    .related-cta-text h4 { font-size: 0.9rem; font-weight: 700; color: var(--rw-text); margin: 0 0 0.2rem; }
+    .related-cta-text p { font-size: 0.78rem; color: var(--rw-text-muted); margin: 0; }
+    .related-cta-arrow { font-size: 1.1rem; color: var(--ac); }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- Hero -->
+<div style="background:linear-gradient(135deg,#020a14 0%,#051525 50%,#0a1a20 100%);padding:5rem 1.5rem 4rem;text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-20%;right:-5%;width:500px;height:500px;background:radial-gradient(circle,rgba(3,105,161,0.22) 0%,transparent 60%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-30%;left:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(234,88,12,0.14) 0%,transparent 60%);pointer-events:none;"></div>
+  <div style="max-width:800px;margin:0 auto;position:relative;">
+    <span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(3,105,161,0.15);border:1px solid rgba(3,105,161,0.35);border-radius:9999px;padding:0.3rem 0.9rem;font-size:0.72rem;font-weight:700;color:#38bdf8;text-transform:uppercase;letter-spacing:0.07em;font-family:var(--rw-font-display);margin-bottom:1.25rem;">
+      Conference Dispatch &middot; June 2026
+    </span>
+    <h1 style="font-family:var(--rw-font-display);font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;color:#f0f4ff;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1rem;">
+      The <span style="color:#38bdf8;">Iteration</span> Machine
+    </h1>
+    <p style="font-size:1.05rem;color:rgba(240,244,255,0.7);max-width:580px;margin:0 auto 0.75rem;line-height:1.75;">
+      Six practitioners. Two hours. What it actually takes to build AI that gets better in production.
+    </p>
+    <p style="font-size:0.88rem;color:rgba(240,244,255,0.45);max-width:520px;margin:0 auto 2rem;line-height:1.7;font-style:italic;">
+      "Agent quality is a function of velocity. The loop is the product." — Aman Gupta, Nubank
+    </p>
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#section-loop" class="rw-btn rw-btn-primary">Explore the Loop ↓</a>
+      <a href="/blog.html" class="rw-btn" style="background:rgba(255,255,255,0.08);color:#fff;border:1.5px solid rgba(255,255,255,0.18);">Back to Blog</a>
+    </div>
+    <!-- Hero stats -->
+    <div style="display:flex;gap:2rem;justify-content:center;margin-top:2.5rem;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-family:var(--rw-font-display);font-size:1.8rem;font-weight:800;color:#38bdf8;line-height:1;">6</div>
+        <div style="font-size:0.72rem;color:rgba(240,244,255,0.45);text-transform:uppercase;letter-spacing:0.06em;">Speakers</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:var(--rw-font-display);font-size:1.8rem;font-weight:800;color:#38bdf8;line-height:1;">3</div>
+        <div style="font-size:0.72rem;color:rgba(240,244,255,0.45);text-transform:uppercase;letter-spacing:0.06em;">Companies</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:var(--rw-font-display);font-size:1.8rem;font-weight:800;color:#ea580c;line-height:1;">1</div>
+        <div style="font-size:0.72rem;color:rgba(240,244,255,0.45);text-transform:uppercase;letter-spacing:0.06em;">Core thesis</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main id="content">
+  <div class="guide-layout">
+
+    <!-- TOC Sidebar -->
+    <aside class="guide-toc">
+      <h3>In this page</h3>
+      <ol>
+        <li><a href="#section-speakers">The Evening</a></li>
+        <li><a href="#section-thesis">The Core Thesis</a></li>
+        <li><a href="#section-loop">The Iteration Loop</a></li>
+        <li><a href="#section-calibration">Building Robust Evals</a></li>
+        <li><a href="#section-context">Context Engineering</a></li>
+        <li><a href="#section-shao">Training at Scale</a></li>
+        <li><a href="#section-panel">Four Panel Takes</a></li>
+        <li><a href="#section-hard">What Stays Hard</a></li>
+      </ol>
+    </aside>
+
+    <!-- Main content -->
+    <div>
+
+      <!-- ═══════════════════════════════════════════
+           Section 1: The Evening
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-speakers">
+        <h2>The Evening</h2>
+        <div class="section-meta">
+          <span>Who spoke and what they covered</span>
+        </div>
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          A Nubank AI event brought together six practitioners — two researchers sharing production systems at scale, and four panelists representing different layers of the AI tooling stack. The connecting thread across all six talks: <strong style="color:var(--rw-text);">the hard part is not building agents, it's building the loop that makes agents better.</strong>
+        </p>
+        <div class="speaker-grid">
+          <div class="speaker-card" style="border-top:3px solid var(--ac);">
+            <div class="speaker-card-label">Nubank &middot; Talk</div>
+            <h4>Aman Gupta</h4>
+            <p>Principal ML Engineer. Built the eval + iteration system powering AI at 135M users.</p>
+          </div>
+          <div class="speaker-card" style="border-top:3px solid var(--ac);">
+            <div class="speaker-card-label">Nubank &middot; Talk</div>
+            <h4>Shao Tang</h4>
+            <p>Senior Staff ML Engineer. Research on 8-bit Muon optimizer for efficient pre-training.</p>
+          </div>
+          <div class="speaker-card" style="border-top:3px solid var(--ac2);">
+            <div class="speaker-card-label">Braintrust &middot; Panel</div>
+            <h4>Ameya Bhatawdekar</h4>
+            <p>Field CTO. AI-shaped data and what it takes to get signal at production scale.</p>
+          </div>
+          <div class="speaker-card" style="border-top:3px solid var(--ac2);">
+            <div class="speaker-card-label">Snowglobe &middot; Panel</div>
+            <h4>Shreya Rajpal</h4>
+            <p>CEO & Cofounder. Simulation as a probing tool — two modes, two different jobs.</p>
+          </div>
+          <div class="speaker-card" style="border-top:3px solid var(--ac2);">
+            <div class="speaker-card-label">Factory &middot; Panel</div>
+            <h4>Eno Reyes</h4>
+            <p>CTO & Cofounder. Model-independent harnesses and the eval ladder nobody climbs.</p>
+          </div>
+          <div class="speaker-card" style="border-top:3px solid var(--ac2);">
+            <div class="speaker-card-label">Nubank AI &middot; Panel</div>
+            <h4>Rohan Ramanath</h4>
+            <p>GM of AI Division. Moderating and pushing on judge calibration: how do you trust your judges?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+           Section 2: The Core Thesis
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-thesis">
+        <h2>The Core Thesis</h2>
+        <div class="section-meta"><span>Aman Gupta, Nubank</span></div>
+
+        <div class="pullquote">
+          <p>"Agent quality is a function of velocity. The loop is the product."</p>
+          <cite>— Aman Gupta, Principal ML Engineer, Nubank (135M users)</cite>
+        </div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          This is the entire talk in two sentences. Not: build a better model. Not: add more tools. The team that improves fastest wins. The bottleneck is never the model — it's how fast you can observe failures, evaluate what went wrong, and iterate on a fix.
+        </p>
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          Everything Aman described — observation sources, eval design, prompt optimization — is in service of one goal: compress the cycle time of the loop.
+        </p>
+        <div class="callout">
+          <strong>Why this matters:</strong> Most teams focus on the prompt or the model. Aman's argument is that those are outputs of the loop, not the loop itself. If you don't have a fast, reliable loop, every improvement is a lucky guess.
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+           Section 3: The Iteration Loop
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-loop">
+        <h2>The Iteration Loop</h2>
+        <div class="section-meta"><span>Click a node to explore each stage</span></div>
+
+        <div class="loop-wrapper">
+          <div class="loop-nodes">
+            <button class="loop-node-btn active" data-node="observe" onclick="setNode('observe')">
+              <span class="loop-node-icon">👁️</span>
+              <span class="loop-node-label">Observe</span>
+            </button>
+            <span class="loop-arrow">→</span>
+            <button class="loop-node-btn" data-node="evaluate" onclick="setNode('evaluate')">
+              <span class="loop-node-icon">⚖️</span>
+              <span class="loop-node-label">Evaluate</span>
+            </button>
+            <span class="loop-arrow">→</span>
+            <button class="loop-node-btn" data-node="iterate" onclick="setNode('iterate')">
+              <span class="loop-node-icon">🔁</span>
+              <span class="loop-node-label">Iterate</span>
+            </button>
+            <span class="loop-arrow">↩</span>
+          </div>
+
+          <!-- Observe detail -->
+          <div class="loop-detail visible" id="node-observe">
+            <h4>👁️ Observe — Two Sources of Truth</h4>
+            <p style="font-size:0.85rem;color:var(--rw-text-muted);line-height:1.7;margin:0 0 0.75rem;">
+              You can't evaluate what you haven't seen. Aman's team uses two complementary observation pipelines running in parallel.
+            </p>
+            <div class="loop-detail-grid">
+              <div class="loop-chip">
+                <strong>Production Traces</strong>
+                Real user conversations logged from live traffic. Shows you exactly how users actually talk to your agent — including the edge cases you never anticipated.
+              </div>
+              <div class="loop-chip">
+                <strong>Synthetic Simulation</strong>
+                Controlled environments where you generate test conversations. Lets you cover edge cases before they reach users, and measure specific behaviors on demand.
+              </div>
+            </div>
+            <div style="margin-top:0.75rem;padding:0.65rem 0.85rem;background:var(--rw-bg);border-radius:7px;font-size:0.8rem;color:var(--rw-text-muted);border:1px solid var(--rw-border);">
+              <strong style="color:var(--rw-text);">Nubank's simulation win:</strong> In a recent experiment, simulation caught the same failure rates as production traffic — in a fraction of the time and cost. For a 135M-user system, waiting for real traffic to surface a failure can mean millions of bad interactions before you know something's wrong.
+            </div>
+          </div>
+
+          <!-- Evaluate detail -->
+          <div class="loop-detail" id="node-evaluate">
+            <h4>⚖️ Evaluate — Binary, Not Beautiful</h4>
+            <p style="font-size:0.85rem;color:var(--rw-text-muted);line-height:1.7;margin:0 0 0.75rem;">
+              Aman's team tried 1–10 scales. They moved to pass/fail. Here's why that's actually smarter.
+            </p>
+            <div class="loop-detail-grid">
+              <div class="loop-chip">
+                <strong>Pass / Fail Only</strong>
+                Binary evals are easier for human raters to agree on. "Did the agent answer the question correctly?" is clearer than "Rate this answer from 1–10."
+              </div>
+              <div class="loop-chip">
+                <strong>Inter-Annotator Agreement</strong>
+                100 conversations × 5 human labelers = 500 labels. Measure how often they agree. High agreement = your eval criteria is clear. Low agreement = fix the criteria, not the model.
+              </div>
+              <div class="loop-chip">
+                <strong>Judge Calibration</strong>
+                Once humans agree, tune your LLM judge to match human labels. If the judge diverges, the judge is wrong — not the humans.
+              </div>
+              <div class="loop-chip">
+                <strong>Recalibrate Continuously</strong>
+                Models update. User behavior shifts. Data distribution drifts. Your judges must be re-calibrated whenever anything significant changes.
+              </div>
+            </div>
+          </div>
+
+          <!-- Iterate detail -->
+          <div class="loop-detail" id="node-iterate">
+            <h4>🔁 Iterate — Four Speeds</h4>
+            <p style="font-size:0.85rem;color:var(--rw-text-muted);line-height:1.7;margin:0 0 0.75rem;">
+              Iteration isn't one thing — it's a ladder. Each rung is faster and more automated than the one below.
+            </p>
+            <div class="loop-detail-grid">
+              <div class="loop-chip">
+                <strong>Manual</strong>
+                Read evals, rewrite prompts by hand. Slow. No guarantee of improvement. Good for initial exploration only.
+              </div>
+              <div class="loop-chip">
+                <strong>JEPA via DSPy</strong>
+                LLM-assisted prompt optimization. Generates candidate prompt rewrites, scores them against your evals, keeps the best. Faster than manual, more principled.
+              </div>
+              <div class="loop-chip">
+                <strong>PPO (Internal)</strong>
+                Proximal Prompt Optimization — Nubank's internal tool. Epsilon-clipped changes prevent wild divergence. Now drives 60%+ of prompt edits at Nubank.
+              </div>
+              <div class="loop-chip">
+                <strong>Deployment Gate</strong>
+                Changes must pass simulation → evals → 1–5% A/B test → human fallback. Any step failing sends it back to the loop.
+              </div>
+            </div>
+            <div style="margin-top:0.75rem;padding:0.65rem 0.85rem;background:var(--rw-bg);border-radius:7px;font-size:0.8rem;color:var(--rw-text-muted);border:1px solid var(--rw-border);">
+              <strong style="color:#ea580c;">GPT-4.1 → GPT-5 lesson:</strong> When Nubank upgraded to GPT-5, prompts that worked fine on 4.1 broke. GPT-5 follows instructions more strictly — which exposed ambiguities in prompts that 4.1 tolerated. The iteration loop caught this in simulation before it hit users.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+           Section 4: Building Robust Evals
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-calibration">
+        <h2>Building Robust Evals</h2>
+        <div class="section-meta"><span>Aman Gupta + Ameya Bhatawdekar</span></div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          An eval that isn't calibrated is just vibes in a spreadsheet. The process Aman described — echoed by Ameya from Braintrust — is a five-step loop, not a one-time setup.
+        </p>
+
+        <ul class="step-list">
+          <li>
+            <p><strong>Define your guidelines.</strong> Write what "good" looks like for your specific use case. These are not generic — "accurate" means something different for a financial AI than a creative writing tool. Be specific enough that two people reading them reach the same conclusion.</p>
+          </li>
+          <li>
+            <p><strong>Test human agreement first.</strong> Have multiple annotators label the same 100 conversations independently. Calculate inter-annotator agreement. If they disagree often, your guidelines are ambiguous — fix the guidelines before touching any model.</p>
+          </li>
+          <li>
+            <p><strong>Run your LLM judge.</strong> Once humans agree, run the same conversations through your LLM judge. Compare its labels to human labels. The judge should track human agreement closely (Spearman correlation is a common measure).</p>
+          </li>
+          <li>
+            <p><strong>Measure and close the gap.</strong> Where the judge diverges from humans, refine the judge's instructions. The judge is wrong; the humans are the ground truth. Iterate on the judge like you iterate on the agent.</p>
+          </li>
+          <li>
+            <p><strong>Re-calibrate on change.</strong> Any significant change — new model, new data distribution, new user behavior — requires you to restart from step 2. <strong>This is not a one-and-done process.</strong></p>
+          </li>
+        </ul>
+
+        <div class="callout">
+          <strong>Ameya's point:</strong> Production data is what forces this process to stay honest. When you're in a planning room writing evals by hand, you make assumptions about how users will behave. Everyone is surprised by the variance when they hit production. The loop only works if production feeds back into your eval set.
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+           Section 5: Context Engineering
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-context">
+        <h2>Context Engineering</h2>
+        <div class="section-meta"><span>Aman Gupta, Nubank · The real lever in agent systems</span></div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          Prompt engineering is a small subset of context engineering. The whole question is: what information does the model have when it generates a response, and is that the right information? Aman's team structures prompts into five layers — each with a specific job.
+        </p>
+
+        <!-- Prompt spec layers -->
+        <div class="spec-layers">
+          <div class="spec-layer" style="background:linear-gradient(90deg,#1d4ed8,#2563eb);">
+            <span class="spec-layer-name">Role</span>
+            <span class="spec-layer-desc">Who is this agent? What is its identity and boundaries?</span>
+          </div>
+          <div class="spec-layer" style="background:linear-gradient(90deg,#0369a1,#0284c7);">
+            <span class="spec-layer-name">Instructions</span>
+            <span class="spec-layer-desc">What must it always do? What must it never do?</span>
+          </div>
+          <div class="spec-layer" style="background:linear-gradient(90deg,#0e7490,#0891b2);">
+            <span class="spec-layer-name">Routines</span>
+            <span class="spec-layer-desc">Step-by-step procedures for specific task types</span>
+          </div>
+          <div class="spec-layer" style="background:linear-gradient(90deg,#065f46,#059669);">
+            <span class="spec-layer-name">Macros</span>
+            <span class="spec-layer-desc">Reusable templates and standard responses</span>
+          </div>
+          <div class="spec-layer" style="background:linear-gradient(90deg,#4d7c0f,#65a30d);">
+            <span class="spec-layer-name">Working Memory</span>
+            <span class="spec-layer-desc">Dynamic context: retrieved facts, conversation history, user state</span>
+          </div>
+        </div>
+
+        <p style="font-size:0.85rem;line-height:1.75;color:var(--rw-text-muted);margin:1rem 0;">
+          The shift Aman highlighted: teams are moving <strong style="color:var(--rw-text);">away from RAG</strong> toward <strong style="color:var(--rw-text);">dynamic context discovery</strong>. Instead of a fixed retrieval step, the agent decides what it needs and fetches it. The prompt becomes a scaffold; the content is assembled at runtime.
+        </p>
+
+        <h3 style="font-size:1rem;font-weight:700;color:var(--rw-text);margin:1.5rem 0 0.75rem;">Tool Design Principles</h3>
+        <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 0.85rem;">Tools are part of context — their names, descriptions, and return values shape what the model does. Aman's team learned these rules the hard way:</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;margin-top:0.75rem;">
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.8rem 0.95rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac);margin-bottom:0.3rem;">Idempotent</div>
+            <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.6;">Calling a tool twice should produce the same result as calling it once. Agents retry on uncertainty.</div>
+          </div>
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.8rem 0.95rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac);margin-bottom:0.3rem;">Structured Errors</div>
+            <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.6;">Return machine-readable errors with context. Vague error strings make the model guess wrong next step.</div>
+          </div>
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.8rem 0.95rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac);margin-bottom:0.3rem;">Don't Chain Tools</div>
+            <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.6;">One tool, one job. If a tool calls another tool internally, failures become invisible and debugging becomes impossible.</div>
+          </div>
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.8rem 0.95rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac);margin-bottom:0.3rem;">Write Real Descriptions</div>
+            <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.6;">Tool descriptions are part of the prompt. "Gets data" is useless. "Returns last 30 days of transaction history for account ID" is useful.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+           Section 6: Shao Tang — Training at Scale
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-shao">
+        <h2>Training at Scale</h2>
+        <div class="section-meta"><span>Shao Tang, Nubank · The efficiency layer under everything</span></div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          Aman's loop runs on top of models. Shao Tang works on what goes into making those models cheaper and more efficient to build. This is deeper ML research — but the punchline is practical: <strong style="color:var(--rw-text);">train bigger models on the same hardware by compressing the optimizer's memory footprint.</strong>
+        </p>
+
+        <h3 style="font-size:0.95rem;font-weight:700;color:var(--rw-text);margin:0 0 0.75rem;">Start here: what is an optimizer?</h3>
+        <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          When you train a language model, you run examples through it, measure the error, and adjust the model's weights to reduce that error. The optimizer is the component that decides how to adjust the weights. It keeps notes between updates — called <strong style="color:var(--rw-text);">optimizer state</strong> — to make smarter adjustments.
+        </p>
+        <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1.25rem;">
+          The problem: optimizer state is huge. For a large model, it can take as much memory as the model itself — sometimes more. This directly limits how large a model you can train on a given set of hardware.
+        </p>
+
+        <h3 style="font-size:0.95rem;font-weight:700;color:var(--rw-text);margin:0 0 0.75rem;">Adam vs. Muon — what's different</h3>
+
+        <div class="eff-grid">
+          <div class="eff-card">
+            <h4 style="color:var(--rw-text-muted);">Adam W (traditional)</h4>
+            <p style="font-size:0.8rem;color:var(--rw-text-muted);line-height:1.6;margin:0 0 0.75rem;">Tracks two types of momentum — first-order (direction) and second-order (how fast the direction is changing). Both stored at full precision.</p>
+            <div class="eff-bar-wrap">
+              <div class="eff-bar-label">Optimizer state memory</div>
+              <div class="eff-bar" style="width:100%;background:#dc2626;">Full (100%) — two momentum buffers</div>
+            </div>
+            <div style="margin-top:0.6rem;font-size:0.78rem;color:var(--rw-text-muted);padding:0.5rem 0.7rem;background:var(--rw-bg);border-radius:6px;border:1px solid var(--rw-border);">
+              Compressing to 8-bit with simple linear quantization causes training to diverge. Needs expensive dynamic quantization to be stable.
+            </div>
+          </div>
+          <div class="eff-card" style="border-color:var(--ac);">
+            <h4 style="color:var(--ac);">Muon (newer)</h4>
+            <p style="font-size:0.8rem;color:var(--rw-text-muted);line-height:1.6;margin:0 0 0.75rem;">Tracks only first-order momentum, but structures it as a matrix update (Newton-Schulz iteration). Better convergence than Adam in pre-training experiments.</p>
+            <div class="eff-bar-wrap">
+              <div class="eff-bar-label">Optimizer state after 8-bit compression</div>
+              <div class="eff-bar" style="width:38%;background:#0369a1;">38% of original</div>
+            </div>
+            <div style="margin-top:0.6rem;font-size:0.78rem;color:var(--rw-text-muted);padding:0.5rem 0.7rem;background:var(--ac-lt);border-radius:6px;border:1px solid var(--ac-mid);">
+              <strong style="color:var(--ac);">Key finding:</strong> Muon's matrix structure is mathematically robust to simple linear quantization. No dynamic quantization needed.
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-num">62%</div>
+            <div class="stat-lbl">optimizer state memory saved with 8-bit Muon</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">Parity</div>
+            <div class="stat-lbl">validation loss matches full-precision Muon on benchmarks</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">Larger</div>
+            <div class="stat-lbl">models now trainable on the same hardware budget</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Why this matters for the rest of the talks:</strong> Every agent system the panelists described runs on top of a base model. Shao's work means those base models can be larger — better reasoning, better instruction following — without needing proportionally more expensive hardware. The efficiency layer is what makes the iteration layer sustainable.
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+           Section 7: Four Panel Takes
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-panel">
+        <h2>Four Panel Takes</h2>
+        <div class="section-meta"><span>Click a name to see their key insight</span></div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab(this,'panel-ameya')">Ameya</button>
+          <button class="tab-btn" onclick="switchTab(this,'panel-shreya')">Shreya</button>
+          <button class="tab-btn" onclick="switchTab(this,'panel-eno')">Eno</button>
+          <button class="tab-btn" onclick="switchTab(this,'panel-rohan')">Rohan</button>
+        </div>
+
+        <!-- Ameya -->
+        <div class="tab-pane active" id="panel-ameya">
+          <div class="panel-insight">
+            <div class="panel-insight-head">
+              <div class="panel-insight-avatar" style="background:#0369a1;">A</div>
+              <div class="panel-insight-meta">
+                <h4>Ameya Bhatawdekar</h4>
+                <p>Field CTO · Braintrust</p>
+              </div>
+            </div>
+            <h3 style="font-size:1rem;font-weight:700;color:var(--rw-text);margin:0 0 0.65rem;">AI-Shaped Data is Different — and Traditional Tools Can't Handle It</h3>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+              When you start building AI products, traditional observability tools feel fine. You log traces, you look at dashboards, you ship. Then you get product-market fit and suddenly you have millions of traces — and each trace isn't a number, it's a document.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+              <div style="background:var(--rw-bg);border:1px solid var(--rw-border);border-radius:8px;padding:0.75rem 0.9rem;">
+                <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--rw-text-muted);margin-bottom:0.35rem;">Traditional observability data</div>
+                <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.5;">Numbers. CPU %, latency, error rates. Fits in rows, queryable in seconds, scales easily with standard tools.</div>
+              </div>
+              <div style="background:var(--ac-lt);border:1px solid var(--ac-mid);border-radius:8px;padding:0.75rem 0.9rem;">
+                <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--ac);margin-bottom:0.35rem;">AI-shaped data</div>
+                <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.5;">Gigabytes per trace. Tool calls, reasoning chains, context windows, multi-turn conversations. Traditional tools choke.</div>
+              </div>
+            </div>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 0.85rem;">
+              Ameya's framing: at production scale, you face two new challenges simultaneously. First, the volume — hundreds of millions of traces per day. Second, the unknown-unknown problem: your scoring functions can only catch failures you've already defined. The interesting failures are the ones you haven't anticipated yet.
+            </p>
+            <div class="pullquote" style="margin:0;">
+              <p>"Almost everyone is surprised by the variance they observe in production. You need to harvest production data to build out your evals — you can't write them in a planning room."</p>
+              <cite>— Ameya Bhatawdekar, Braintrust</cite>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shreya -->
+        <div class="tab-pane" id="panel-shreya">
+          <div class="panel-insight">
+            <div class="panel-insight-head">
+              <div class="panel-insight-avatar" style="background:#7c3aed;">S</div>
+              <div class="panel-insight-meta">
+                <h4>Shreya Rajpal</h4>
+                <p>CEO & Cofounder · Snowglobe</p>
+              </div>
+            </div>
+            <h3 style="font-size:1rem;font-weight:700;color:var(--rw-text);margin:0 0 0.65rem;">Simulation Has Two Jobs — Don't Confuse Them</h3>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+              Shreya's background is self-driving cars. In autonomous vehicles, you don't wait for the car to encounter a pedestrian running a red light before you test for it. You simulate. AI agents have the same problem: waiting for real users to find edge cases is costly.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+              <div style="background:var(--rw-bg);border:1px solid var(--rw-border);border-radius:8px;padding:0.75rem 0.9rem;">
+                <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;margin-bottom:0.35rem;">Mode 1: Robustness / Probing</div>
+                <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.5;">Oversample edge cases. Scores will look <em>worse</em> than production. That's intentional — you're drawing the boundary of where your agent fails, not measuring average performance.</div>
+              </div>
+              <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:0.75rem 0.9rem;">
+                <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;margin-bottom:0.35rem;">Mode 2: Distribution Match</div>
+                <div style="font-size:0.82rem;color:var(--rw-text-muted);line-height:1.5;">Mimic production distribution. Scores look realistic. Used for rapid iteration — fast feedback on whether a change actually helped on typical inputs.</div>
+              </div>
+            </div>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 0.85rem;">
+              The trap: teams run simulation in robustness mode, see lower scores, panic and think their agent is broken. Shreya's point is that in robustness mode, a high failure rate is the correct output — you designed it to fail at the edges. The metric isn't "pass rate," it's "how far from my normal distribution does failure start?"
+            </p>
+            <div class="callout" style="margin:0;">
+              <strong>When you have no production data yet:</strong> Snowglobe benchmarks against general conversational datasets, then augments for the specific domain (customer success, coding, etc.). Out of the box, zero-data simulation still beats engineers manually writing test scenarios — and it's dramatically faster.
+            </div>
+          </div>
+        </div>
+
+        <!-- Eno -->
+        <div class="tab-pane" id="panel-eno">
+          <div class="panel-insight">
+            <div class="panel-insight-head">
+              <div class="panel-insight-avatar" style="background:#ea580c;">E</div>
+              <div class="panel-insight-meta">
+                <h4>Eno Reyes</h4>
+                <p>CTO & Cofounder · Factory</p>
+              </div>
+            </div>
+            <h3 style="font-size:1rem;font-weight:700;color:var(--rw-text);margin:0 0 0.65rem;">The Eval Ladder — Start at the Bottom, Not the Top</h3>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+              Most teams building agents jump straight to LLM-as-judge evaluation. Eno's argument: you're starting at the wrong end. There's a whole ladder of cheaper, faster, more reliable evaluations that teams skip past, leaving enormous value on the table.
+            </p>
+
+            <!-- Eval ladder tiers -->
+            <div style="margin-bottom:1rem;">
+              <div class="tier-row">
+                <div class="tier-label" style="color:#16a34a;">Type Checkers<br>& Linters</div>
+                <div class="tier-content" style="border-color:#16a34a;background:rgba(22,163,74,0.05);">Free, instant, no AI required. Does the output parse? Is it valid JSON? Does it match the expected schema? "A massive upgrade in agent abilities" just from adding these.</div>
+              </div>
+              <div class="tier-row">
+                <div class="tier-label" style="color:#0369a1;">Unit Tests</div>
+                <div class="tier-content" style="border-color:#0369a1;background:var(--ac-lt);">Spot checks on single behaviors. "Does the agent respond appropriately? Is prompt caching set up?" Run on every commit. Fast and deterministic.</div>
+              </div>
+              <div class="tier-row">
+                <div class="tier-label" style="color:#7c3aed;">Integration<br>/ E2E Tests</div>
+                <div class="tier-content" style="border-color:#7c3aed;background:rgba(124,58,237,0.06);">Run the full agent loop end-to-end on a curated set of scenarios. Like CI/CD but for agents. Connects the whole system together.</div>
+              </div>
+              <div class="tier-row">
+                <div class="tier-label" style="color:#ea580c;">LLM Judge<br>Rubrics</div>
+                <div class="tier-content" style="border-color:#ea580c;background:var(--ac2-lt);">Last resort, not first resort. Expensive, non-deterministic, requires calibration. But necessary for open-ended quality judgments that can't be codified.</div>
+              </div>
+            </div>
+
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 0.85rem;">
+              Factory's AutoWiki (an agent that auto-generates internal wikis from codebases) illustrates this full stack: sub-agents explore the codebase, synthesis merges findings, validator agents independently check the work, and finally rubric-based judges assess quality. Each layer catches different failure modes.
+            </p>
+            <div class="pullquote pullquote2" style="margin:0;">
+              <p>"LLMs checking LLMs — if your probes are precise enough, it works. The question is precision."</p>
+              <cite>— Eno Reyes, Factory</cite>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rohan -->
+        <div class="tab-pane" id="panel-rohan">
+          <div class="panel-insight">
+            <div class="panel-insight-head">
+              <div class="panel-insight-avatar" style="background:#0369a1;">R</div>
+              <div class="panel-insight-meta">
+                <h4>Rohan Ramanath</h4>
+                <p>GM of AI Division · Nubank</p>
+              </div>
+            </div>
+            <h3 style="font-size:1rem;font-weight:700;color:var(--rw-text);margin:0 0 0.65rem;">Eval and Observability Are Inherently Coupled</h3>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+              Rohan moderated the panel, but his most pointed contribution was a framing challenge he kept returning to: tracing is only half the product. You can log every interaction in perfect detail and still know nothing about quality. Eval is what connects traces to meaning.
+            </p>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+              His sharpest question of the evening — aimed at Ameya — was about the trust problem with LLM judges: <em>"Braintrust has a product called Scorers, which is essentially an LLM that takes in a prompt and gives you a judgment on your eval dataset. How do you measure the quality of your LLM judges?"</em>
+            </p>
+            <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 0.85rem;">
+              The answer Ameya gave — and Aman had illustrated earlier — is that you calibrate. You never just "vibe" an LLM judge. You establish human ground truth first, then measure how closely the judge tracks it. A judge you haven't calibrated is a judge you can't trust.
+            </p>
+            <div class="callout" style="margin:0;">
+              <strong>The model-change risk:</strong> Rohan also surfaced a future concern — in a world where LLMs are nearly infallible, using one LLM to evaluate another becomes circular. But in the real world today, LLMs make errors, and knowing when the judge is wrong is itself an unsolved problem. Human calibration stays load-bearing until models become deterministic.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+           Section 8: What Stays Hard
+      ════════════════════════════════════════════ -->
+      <section class="guide-section" id="section-hard">
+        <h2>What Stays Hard</h2>
+        <div class="section-meta"><span>Panel closing thoughts · What optimization doesn't solve</span></div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1.25rem;">
+          The panel closed with predictions. There was surprising agreement on one thing: the tools for optimization will keep getting better. What won't get easier is everything upstream of optimization.
+        </p>
+
+        <div class="accord-item">
+          <button class="accord-trigger open" onclick="toggleAccord(this)">
+            <span>Defining "good" stays hard</span>
+            <span class="accord-arrow">▶</span>
+          </button>
+          <div class="accord-body" style="max-height:300px;">
+            <div class="accord-body-inner">
+              What does a good answer look like for your specific product? This question sounds simple and is actually the hardest part. It's application-specific, it can't be borrowed from a benchmark, and it requires domain expertise to even articulate. MMLU can tell you if a model knows facts. It can't tell you if your fintech agent is giving the right balance of caution and helpfulness for your user base. That definition is yours to write — and it will change as your product evolves.
+            </div>
+          </div>
+        </div>
+
+        <div class="accord-item">
+          <button class="accord-trigger" onclick="toggleAccord(this)">
+            <span>Human calibration remains until models become deterministic</span>
+            <span class="accord-arrow">▶</span>
+          </button>
+          <div class="accord-body">
+            <div class="accord-body-inner">
+              LLM judges reduce the load on humans but don't eliminate it. As long as models are probabilistic — producing different outputs for the same input across runs — you need humans to establish ground truth, detect drift, and catch the categories of failure that LLM judges systematically miss. The moment judges become reliable enough to replace human calibration, the problem mostly goes away. We're not there yet.
+            </div>
+          </div>
+        </div>
+
+        <div class="accord-item">
+          <button class="accord-trigger" onclick="toggleAccord(this)">
+            <span>Production data will always surprise you</span>
+            <span class="accord-arrow">▶</span>
+          </button>
+          <div class="accord-body">
+            <div class="accord-body-inner">
+              Every panelist echoed the same observation independently: teams are consistently surprised by how users actually behave in production. Users are creative, inconsistent, and often use your product in ways you never anticipated. Simulation helps, but it's constrained by your imagination. Production expands the edges of what's possible in ways that can't be fully anticipated. The gap between "we tested it well" and "users found a way to break it" never fully closes.
+            </div>
+          </div>
+        </div>
+
+        <div class="accord-item">
+          <button class="accord-trigger" onclick="toggleAccord(this)">
+            <span>Optimization is getting easier — data and evals are not</span>
+            <span class="accord-arrow">▶</span>
+          </button>
+          <div class="accord-body">
+            <div class="accord-body-inner">
+              This was the strongest prediction from the panel — said almost verbatim by Ameya: "Data and evals are always the hard part. Optimization gets easier." Tools like PPO, DSPy, and automated prompt optimization mean that once you have good evals, the iteration step is increasingly automated. But you still have to define what you're optimizing for. No tool can do that for you.
+            </div>
+          </div>
+        </div>
+
+        <div class="accord-item">
+          <button class="accord-trigger" onclick="toggleAccord(this)">
+            <span>Closed-loop, human-managed software factories — within 12 months</span>
+            <span class="accord-arrow">▶</span>
+          </button>
+          <div class="accord-body">
+            <div class="accord-body-inner">
+              The panel's shared bet for the near term: software development will look increasingly like a closed loop where agents write, test, and evaluate their own code — but humans remain in the management role. Not fully autonomous, not fully manual. A hybrid where the iteration machine runs mostly on its own, but humans set the direction, calibrate the judges, and handle the cases where automated evals can't reach a confident answer.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Related CTA -->
+      <a href="/tools/eval-proving-ground.html" class="related-cta">
+        <div class="related-cta-text">
+          <h4>AI Evaluations: Practitioner Guide</h4>
+          <p>The foundations behind everything discussed here — RAGAS, G-Eval, calibration, EDD, and the full maturity path from manual to automated evals.</p>
+        </div>
+        <span class="related-cta-arrow">→</span>
+      </a>
+
+    </div><!-- end main content -->
+  </div><!-- end guide-layout -->
+</main>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[
+       {"label":"AI Evals Guide","url":"/tools/eval-proving-ground.html"},
+       {"label":"Production Readiness Checklist","url":"/usecase/production-readiness-checklist.html"},
+       {"label":"Agent Autonomy Dial","url":"/guide/agent-autonomy-dial.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+  // Loop node interaction
+  function setNode(id) {
+    document.querySelectorAll('.loop-node-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.loop-detail').forEach(d => d.classList.remove('visible'));
+    document.querySelector('[data-node="' + id + '"]').classList.add('active');
+    document.getElementById('node-' + id).classList.add('visible');
+  }
+
+  // Panel tabs
+  function switchTab(btn, paneId) {
+    btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('section').querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(paneId).classList.add('active');
+  }
+
+  // Accordion
+  function toggleAccord(trigger) {
+    const body = trigger.nextElementSibling;
+    const isOpen = trigger.classList.contains('open');
+    if (isOpen) {
+      trigger.classList.remove('open');
+      body.style.maxHeight = '0';
+    } else {
+      trigger.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  // Open first accordion on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const firstAccord = document.querySelector('.accord-trigger.open');
+    if (firstAccord) {
+      const body = firstAccord.nextElementSibling;
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  });
+</script>
+
+</body>
+</html>

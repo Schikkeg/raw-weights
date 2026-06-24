@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "The Iteration Machine ",
+        excerpt: "Six AI practitioners share what it actually takes to build agents that improve: the observation loop, calibrated evals, simulation, model-independent harnesses, and efficient training.",
+        date: "June 23, 2026",
+        image: "./images/iteration.png",
+        type: "Guide",
+        link: "https://rawweights.com/usecase/iteration-machine.html",
+        linkedin: null
+      },
+      {
         title: "The Proving Ground ",
         excerpt: "Why benchmarks lie, what modern AI eval actually looks like, and how to build the measurement layer your system deserves — RAGAS, G-Eval, cascade math, coverage matrices, and the Iron Triangle.",
         date: "June 22, 2026",
         image: "./images/proving.png",
         type: "Guide",
         link: "https://rawweights.com/tools/eval-proving-ground.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_we-buy-cars-knowing-theyve-been-crash-tested-activity-7475055975343775744-7rIU"
       },
       {
         title: "The Signal Memory Problem  ",
