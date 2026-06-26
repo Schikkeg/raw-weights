@@ -99,7 +99,7 @@
               { label: 'LlamaIndex Intel',      url: '/guide/llamaindex-document-intelligence.html',   desc: 'Document AI with LlamaIndex' },
               { label: 'MCP Practitioner',      url: '/guide/mcp-practitioner-playbook.html',          desc: 'Hands-on MCP server patterns & real integrations' },
               { label: 'AG2 Quick Reference',   url: '/guide/ag2-quickref.html',                       desc: 'AG2 — 10 key concepts from the beta session' },
-              { label: 'ContextCal',            url: '/sample/ContextCal.html',                        desc: 'Agentic scheduling across language contexts' },
+              { label: 'ContextCal',            url: '/guide/ContextCal.html',                        desc: 'Agentic scheduling across language contexts' },
               { label: 'ElevenLabs Builder Map',url: '/guide/elevenlabs-builders-map.html',            desc: 'Five practical decisions for voice AI builders' }
 
             ]
