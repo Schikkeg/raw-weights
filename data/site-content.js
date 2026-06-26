@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "SentTriage — Behavioral Email Classifier",
+        excerpt: "Most email filters ask what an email is about. SentTriage asks what it requires from you. A builder's log: 6 buckets, 8 behavioral signals, 5 prompt iterations, and what the eval loop actually taught me.",
+        date: "June 25, 2026",
+        image: "./images/senttriage.png",
+        type: "Guide",
+        link: "https://rawweights.com/usecase/sent-triage.html",
+        linkedin: null
+      },
+      {
         title: "The Iteration Machine ",
         excerpt: "Six AI practitioners share what it actually takes to build agents that improve: the observation loop, calibrated evals, simulation, model-independent harnesses, and efficient training.",
         date: "June 23, 2026",
         image: "./images/iteration.png",
         type: "Guide",
         link: "https://rawweights.com/usecase/iteration-machine.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_nubank-svai-aicamp-share-7475445541116694528-NikD/"
       },
       {
         title: "The Proving Ground ",

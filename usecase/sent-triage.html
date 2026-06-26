@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentTriage — Behavioral Email Classifier | RawWeights</title>
+  <meta name="description" content="Most email filters ask what an email is about. SentTriage asks what it requires from you. A builder's log: 6 buckets, 8 behavioral signals, 5 prompt iterations, and what the eval loop actually taught me.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/sent-triage.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rawweights.com/usecase/sent-triage.html">
+  <meta property="og:image" content="https://rawweights.com/images/senttriage.png">
+  <meta property="og:title" content="SentTriage — Behavioral Email Classifier | RawWeights">
+  <meta property="og:description" content="Email triage built on what it requires from you — not what it's about.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    :root {
+      --ac: #1e40af;
+      --ac2: #15803d;
+      --ac-lt: rgba(30,64,175,0.08);
+      --ac2-lt: rgba(21,128,61,0.08);
+      --ac-mid: rgba(30,64,175,0.2);
+      --ac2-mid: rgba(21,128,61,0.2);
+    }
+
+    /* ── Layout ── */
+    .guide-layout {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 3rem;
+      align-items: start;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+    @media (max-width: 800px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-toc { display: none; }
+    }
+
+    /* ── TOC ── */
+    .guide-toc {
+      position: sticky;
+      top: 5rem;
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+    }
+    .guide-toc h3 { font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--rw-text-muted);margin:0 0 0.75rem; }
+    .guide-toc ol { list-style:none;padding:0;margin:0;counter-reset:toc; }
+    .guide-toc ol li { counter-increment:toc;margin-bottom:0.5rem; }
+    .guide-toc ol li::before { content:counter(toc)".";font-size:0.7rem;color:var(--ac);font-weight:700;margin-right:0.4rem; }
+    .guide-toc a { font-size:0.8rem;color:var(--rw-text-muted);text-decoration:none;line-height:1.4; }
+    .guide-toc a:hover { color:var(--ac); }
+
+    /* ── Sections ── */
+    .guide-section { margin-bottom:3.5rem;scroll-margin-top:5rem; }
+    .guide-section h2 { font-family:var(--rw-font-display);font-size:1.45rem;font-weight:800;color:var(--rw-text);margin:0 0 0.3rem;letter-spacing:-0.02em; }
+    .section-meta { font-size:0.78rem;color:var(--rw-text-muted);margin-bottom:1.25rem; }
+
+    /* ── Video container ── */
+    .video-wrap {
+      background:#000;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 1.5rem 0;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .video-wrap video {
+      width: 100%;
+      display: block;
+      max-height: 500px;
+    }
+
+    /* ── Comparison table ── */
+    .compare-table { width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.83rem; }
+    .compare-table th { background:var(--rw-bg-alt);padding:0.6rem 0.85rem;text-align:left;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--rw-text-muted);border-bottom:2px solid var(--rw-border); }
+    .compare-table td { padding:0.65rem 0.85rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);vertical-align:top;line-height:1.5; }
+    .compare-table tr.highlight td { background:var(--ac-lt);color:var(--rw-text); }
+    .compare-table tr.highlight td:first-child { font-weight:700;color:var(--ac); }
+    .compare-table td:first-child { font-weight:600;color:var(--rw-text); }
+    .check { color:#15803d;font-weight:700; }
+    .cross { color:#dc2626;font-weight:700; }
+
+    /* ── 6 Bucket cards ── */
+    .bucket-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0.75rem;margin:1rem 0; }
+    .bucket-card { border-radius:10px;padding:0.9rem 1rem;border:1px solid var(--rw-border);background:var(--rw-bg-alt); }
+    .bucket-icon { font-size:1.4rem;margin-bottom:0.3rem; }
+    .bucket-label { font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.2rem; }
+    .bucket-card h4 { font-size:0.85rem;font-weight:700;color:var(--rw-text);margin:0 0 0.3rem; }
+    .bucket-card p { font-size:0.75rem;color:var(--rw-text-muted);margin:0;line-height:1.5; }
+
+    /* ── 8 Signals ── */
+    .signal-grid { display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin:1rem 0; }
+    @media (max-width:600px) { .signal-grid { grid-template-columns:1fr; } .bucket-grid { grid-template-columns:1fr 1fr; } }
+    .signal-row { display:flex;align-items:flex-start;gap:0.75rem;padding:0.65rem 0.85rem;background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:8px; }
+    .signal-num { flex-shrink:0;width:22px;height:22px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;margin-top:0.05rem; }
+    .signal-text strong { display:block;font-size:0.8rem;font-weight:700;color:var(--rw-text); }
+    .signal-text span { font-size:0.73rem;color:var(--rw-text-muted); }
+
+    /* ── Version bars ── */
+    .version-row { display:flex;align-items:center;gap:0.85rem;margin-bottom:0.75rem; }
+    .version-label { flex-shrink:0;width:36px;font-size:0.78rem;font-weight:700;color:var(--rw-text); }
+    .version-bar-bg { flex:1;height:26px;background:var(--rw-bg-alt);border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);position:relative; }
+    .version-bar-fill { height:100%;display:flex;align-items:center;padding:0 0.6rem;font-size:0.72rem;font-weight:700;color:#fff;transition:width 0.8s ease; }
+    .version-acc { flex-shrink:0;width:42px;font-size:0.82rem;font-weight:700;text-align:right; }
+    .version-note { font-size:0.75rem;color:var(--rw-text-muted);margin-top:0.2rem;margin-left:calc(36px + 0.85rem);margin-bottom:0.75rem; }
+
+    /* ── Failure category cards ── */
+    .fail-card { background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:12px;margin-bottom:0.85rem;overflow:hidden; }
+    .fail-trigger { width:100%;text-align:left;background:none;border:none;padding:1rem 1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:0.75rem; }
+    .fail-trigger:hover { background:var(--ac-lt); }
+    .fail-trigger-left { display:flex;align-items:center;gap:0.85rem; }
+    .fail-count { flex-shrink:0;background:var(--ac);color:#fff;border-radius:6px;padding:0.25rem 0.5rem;font-size:0.72rem;font-weight:800; }
+    .fail-name { font-size:0.88rem;font-weight:700;color:var(--rw-text);font-family:monospace; }
+    .fail-arrow { font-size:0.8rem;color:var(--rw-text-muted);transition:transform 0.2s; }
+    .fail-trigger.open .fail-arrow { transform:rotate(90deg); }
+    .fail-body { max-height:0;overflow:hidden;transition:max-height 0.3s ease; }
+    .fail-body-inner { padding:0 1.1rem 1.1rem; }
+
+    /* ── Insight examples ── */
+    .example-row { display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:0.5rem;margin-bottom:0.5rem;font-size:0.78rem; }
+    .example-truth { background:var(--ac2-lt);border:1px solid var(--ac2-mid);border-radius:6px;padding:0.35rem 0.6rem;color:var(--rw-text); }
+    .example-pred { background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.2);border-radius:6px;padding:0.35rem 0.6rem;color:var(--rw-text); }
+    .example-arrow { font-size:0.9rem;color:var(--rw-text-muted);text-align:center; }
+
+    /* ── Callout ── */
+    .callout { border-left:3px solid var(--ac2);background:var(--ac2-lt);padding:0.9rem 1.1rem;border-radius:0 8px 8px 0;font-size:0.87rem;color:var(--rw-text);line-height:1.7;margin:1rem 0; }
+    .callout strong { color:var(--ac2); }
+    .callout-blue { border-color:var(--ac);background:var(--ac-lt); }
+    .callout-blue strong { color:var(--ac); }
+
+    /* ── Journey cards ── */
+    .journey-grid { display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin:1rem 0; }
+    @media (max-width:700px) { .journey-grid { grid-template-columns:1fr; } }
+    .journey-card { background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:10px;padding:1rem 1.1rem;text-decoration:none;transition:border-color 0.15s; }
+    .journey-card:hover { border-color:var(--ac); }
+    .journey-step { font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--ac);margin-bottom:0.35rem; }
+    .journey-card h4 { font-size:0.88rem;font-weight:700;color:var(--rw-text);margin:0 0 0.25rem; }
+    .journey-card p { font-size:0.75rem;color:var(--rw-text-muted);margin:0;line-height:1.5; }
+
+    /* ── Stat row ── */
+    .stat-row { display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0; }
+    .stat-box { flex:1;min-width:100px;background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:10px;padding:0.85rem 1rem;text-align:center; }
+    .stat-num { font-family:var(--rw-font-display);font-size:1.9rem;font-weight:800;color:var(--ac);line-height:1;margin-bottom:0.2rem; }
+    .stat-num.green { color:var(--ac2); }
+    .stat-lbl { font-size:0.72rem;color:var(--rw-text-muted);line-height:1.4; }
+
+    /* ── Related CTA ── */
+    .related-cta { background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:12px;padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:0.6rem;text-decoration:none; }
+    .related-cta:hover { border-color:var(--ac);background:var(--ac-lt); }
+    .related-cta h4 { font-size:0.9rem;font-weight:700;color:var(--rw-text);margin:0 0 0.2rem; }
+    .related-cta p { font-size:0.78rem;color:var(--rw-text-muted);margin:0; }
+    .related-arrow { font-size:1.1rem;color:var(--ac); }
+
+    /* ── Tag ── */
+    .tag { display:inline-block;background:var(--ac-lt);border:1px solid var(--ac-mid);border-radius:4px;padding:0.15rem 0.45rem;font-size:0.72rem;font-weight:600;color:var(--ac); }
+    .tag-green { background:var(--ac2-lt);border-color:var(--ac2-mid);color:var(--ac2); }
+    .tag-red { background:rgba(220,38,38,0.08);border-color:rgba(220,38,38,0.2);color:#dc2626; }
+
+    /* ── Pullquote ── */
+    .pullquote { border-left:3px solid var(--ac);background:var(--ac-lt);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.25rem 0; }
+    .pullquote p { font-size:1.05rem;font-style:italic;font-weight:600;color:var(--rw-text);margin:0 0 0.35rem;line-height:1.5; }
+    .pullquote cite { font-size:0.75rem;color:var(--rw-text-muted);font-style:normal; }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<div style="background:linear-gradient(135deg,#020b04 0%,#061226 50%,#020b10 100%);padding:5rem 1.5rem 0;text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-20%;right:-5%;width:500px;height:500px;background:radial-gradient(circle,rgba(30,64,175,0.2) 0%,transparent 60%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:0%;left:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(21,128,61,0.15) 0%,transparent 60%);pointer-events:none;"></div>
+
+  <div style="max-width:820px;margin:0 auto;position:relative;">
+    <span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(30,64,175,0.15);border:1px solid rgba(30,64,175,0.4);border-radius:9999px;padding:0.3rem 0.9rem;font-size:0.72rem;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:0.07em;font-family:var(--rw-font-display);margin-bottom:1.25rem;">
+      Builder's Log &middot; GenAcademy Evals Project
+    </span>
+    <h1 style="font-family:var(--rw-font-display);font-size:clamp(2.4rem,5.5vw,4rem);font-weight:800;color:#f0f4ff;line-height:1.05;letter-spacing:-0.03em;margin-bottom:0.85rem;">
+      <span style="color:#93c5fd;">Sent</span>Triage
+    </h1>
+    <p style="font-size:1.15rem;font-weight:600;color:rgba(240,244,255,0.85);max-width:560px;margin:0 auto 0.75rem;line-height:1.5;">
+      Email triage built on what it <em>requires</em> from you — not what it's about.
+    </p>
+    <p style="font-size:0.9rem;color:rgba(240,244,255,0.5);max-width:520px;margin:0 auto 2rem;line-height:1.7;">
+      6 buckets. 8 behavioral signals. 5 prompt iterations. 86% accuracy.<br>And what the eval loop actually taught me.
+    </p>
+
+    <!-- Stats -->
+    <div style="display:flex;gap:2rem;justify-content:center;margin-bottom:2.5rem;flex-wrap:wrap;">
+      <div style="text-align:center;"><div style="font-family:var(--rw-font-display);font-size:1.8rem;font-weight:800;color:#86efac;line-height:1;">86%</div><div style="font-size:0.72rem;color:rgba(240,244,255,0.4);text-transform:uppercase;letter-spacing:0.06em;">Best accuracy</div></div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div style="text-align:center;"><div style="font-family:var(--rw-font-display);font-size:1.8rem;font-weight:800;color:#93c5fd;line-height:1;">5</div><div style="font-size:0.72rem;color:rgba(240,244,255,0.4);text-transform:uppercase;letter-spacing:0.06em;">Prompt versions</div></div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div style="text-align:center;"><div style="font-family:var(--rw-font-display);font-size:1.8rem;font-weight:800;color:#93c5fd;line-height:1;">6</div><div style="font-size:0.72rem;color:rgba(240,244,255,0.4);text-transform:uppercase;letter-spacing:0.06em;">Action buckets</div></div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div style="text-align:center;"><div style="font-family:var(--rw-font-display);font-size:1.8rem;font-weight:800;color:#93c5fd;line-height:1;">100</div><div style="font-size:0.72rem;color:rgba(240,244,255,0.4);text-transform:uppercase;letter-spacing:0.06em;">Emails tested</div></div>
+    </div>
+
+    <!-- Video -->
+    <div class="video-wrap" style="max-width:820px;margin:0 auto;">
+      <video controls preload="metadata" poster="../images/senttriage.png"
+             style="width:100%;display:block;max-height:480px;background:#000;">
+        <source src="../images/videos/SentTriage.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</div>
+
+<main id="content">
+  <div class="guide-layout">
+
+    <!-- TOC -->
+    <aside class="guide-toc">
+      <h3>In this page</h3>
+      <ol>
+        <li><a href="#section-problem">The Real Problem</a></li>
+        <li><a href="#section-why">Why I Built This</a></li>
+        <li><a href="#section-comparison">vs. Other Tools</a></li>
+        <li><a href="#section-how">How It Works</a></li>
+        <li><a href="#section-eval">The Eval Story</a></li>
+        <li><a href="#section-failures">Failure Analysis</a></li>
+        <li><a href="#section-next">What's Next</a></li>
+      </ol>
+    </aside>
+
+    <div>
+
+      <!-- ═══ 1: The Real Problem ═══ -->
+      <section class="guide-section" id="section-problem">
+        <h2>The Real Problem</h2>
+        <div class="section-meta">Why a full inbox isn't really about volume</div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          Your inbox isn't overwhelming because there are too many emails. It's overwhelming because every email is a micro-decision. <em>Do I need to act on this? Now? Later? Did I already handle it? Is it even for me?</em>
+        </p>
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          Most tools solve the wrong thing. They sort by topic — newsletters here, promotions there, "important" emails somewhere else. But <strong style="color:var(--rw-text);">the anxiety isn't about what the email is. It's about what it requires.</strong>
+        </p>
+
+        <div class="pullquote">
+          <p>"Gmail can tell you this email is from a company you bought from. SentTriage asks: have you ever replied to them? Did you start this conversation? Is anyone waiting on you?"</p>
+          <cite>— The behavioral signal that changes everything</cite>
+        </div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          The insight behind SentTriage: if you know what an email <em>requires</em> from you, you don't need to open it. You just need the right bucket. Six buckets, one decision, done.
+        </p>
+
+        <!-- The 6 buckets preview -->
+        <div class="bucket-grid">
+          <div class="bucket-card" style="border-top:3px solid #16a34a;">
+            <div class="bucket-icon">⭐</div>
+            <div class="bucket-label" style="color:#16a34a;">VIP_ENGAGED</div>
+            <h4>Keep in Inbox</h4>
+            <p>People you've emailed before. Known contacts. Always stays.</p>
+          </div>
+          <div class="bucket-card" style="border-top:3px solid #0369a1;">
+            <div class="bucket-icon">💬</div>
+            <div class="bucket-label" style="color:#0369a1;">GHOSTED_THREAD</div>
+            <h4>Follow Up</h4>
+            <p>You started this conversation. They replied. You forgot. They're waiting.</p>
+          </div>
+          <div class="bucket-card" style="border-top:3px solid #7c3aed;">
+            <div class="bucket-icon">📄</div>
+            <div class="bucket-label" style="color:#7c3aed;">VITAL_LOGISTICS</div>
+            <h4>Keep — Important</h4>
+            <p>Tax docs, bank alerts, medical, active shipping, appointment reminders.</p>
+          </div>
+          <div class="bucket-card" style="border-top:3px solid #d97706;">
+            <div class="bucket-icon">⏰</div>
+            <div class="bucket-label" style="color:#d97706;">EXPIRED_LOGISTICS</div>
+            <h4>Archive</h4>
+            <p>OTP codes, delivered package notifications. Their moment has passed.</p>
+          </div>
+          <div class="bucket-card" style="border-top:3px solid #9333ea;">
+            <div class="bucket-icon">🎭</div>
+            <div class="bucket-label" style="color:#9333ea;">DECOY_MARKETING</div>
+            <h4>Archive + Unsubscribe</h4>
+            <p>Marketing disguised as personal. "Hey, quick question for you…" from strangers.</p>
+          </div>
+          <div class="bucket-card" style="border-top:3px solid #dc2626;">
+            <div class="bucket-icon">🧟</div>
+            <div class="bucket-label" style="color:#dc2626;">ZOMBIE_NOISE</div>
+            <h4>Delete Instantly</h4>
+            <p>Bulk noise you've ignored for months, or senders who defied your unsubscribe request.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 2: Why I Built This ═══ -->
+      <section class="guide-section" id="section-why">
+        <h2>Why I Built This</h2>
+        <div class="section-meta">From studying evals to applying them on a real problem</div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          This project started in a GenAcademy class on AI Evaluations. The first thing I built was a study guide on <em>why evals matter</em>. The second was a conference dispatch on <em>how practitioners run the iteration loop at production scale</em>. And then I thought: I should actually do it myself.
+        </p>
+        <div class="journey-grid">
+          <a href="eval-proving-ground.html" class="journey-card">
+            <div class="journey-step">Step 1 — Study</div>
+            <h4>AI Evals: Practitioner Guide</h4>
+            <p>Why benchmarks lie, how to design evals that catch real failures, the full calibration process.</p>
+          </a>
+          <a href="iteration-machine.html" class="journey-card">
+            <div class="journey-step">Step 2 — Conference</div>
+            <h4>The Iteration Machine</h4>
+            <p>Nubank running evals at 135M users. "Quality is a function of velocity. The loop is the product."</p>
+          </a>
+          <div class="journey-card" style="border-color:var(--ac);">
+            <div class="journey-step" style="color:var(--ac2);">Step 3 — Build</div>
+            <h4>SentTriage</h4>
+            <p>Apply the loop to a real personal problem. 100 emails. 5 iterations. Find out where the prompt breaks.</p>
+          </div>
+        </div>
+
+        <div class="callout callout-blue">
+          <strong>The key thing I wanted to test:</strong> Could I actually do what the practitioners described — read all failures before naming any categories, let the patterns emerge, then fix only the specific mechanism that broke? Not guess at a fix. Actually diagnose.
+        </div>
+      </section>
+
+      <!-- ═══ 3: vs Other Tools ═══ -->
+      <section class="guide-section" id="section-comparison">
+        <h2>vs. Other Tools</h2>
+        <div class="section-meta">What exists and why behavioral signals are different</div>
+
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>How it decides</th>
+              <th>Reply history</th>
+              <th>Thread direction</th>
+              <th>Time decay</th>
+              <th>Unsubscribe enforcement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Gmail Priority Inbox</td>
+              <td>Open/reply patterns + sender frequency</td>
+              <td><span class="check">Partial</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+            </tr>
+            <tr>
+              <td>SaneBox</td>
+              <td>Sender importance + interaction history</td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+            </tr>
+            <tr>
+              <td>Unroll.me</td>
+              <td>Subscription detection only</td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="check">Partial</span></td>
+            </tr>
+            <tr>
+              <td>Clean Email</td>
+              <td>Sender type + volume rules</td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr class="highlight">
+              <td>SentTriage</td>
+              <td>8 behavioral signals — what it <em>requires</em> from you</td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:1rem 0;">
+          The gap that none of the existing tools fill: <strong style="color:var(--rw-text);">GHOSTED_THREAD detection</strong>. No tool currently tells you "you started this conversation, the other person replied three days ago, and they're waiting." That's the highest-anxiety category in an inbox — and the easiest to miss. SentTriage specifically looks for it by checking thread direction and reply history together.
+        </p>
+        <p style="font-size:0.87rem;line-height:1.75;color:var(--rw-text-muted);margin:0;">
+          Also unique: <strong style="color:var(--rw-text);">time-decay for logistics</strong>. An OTP code from 2 hours ago is EXPIRED_LOGISTICS, not VITAL_LOGISTICS. A package delivery notification from 3 weeks ago is noise. No existing tool makes this distinction automatically.
+        </p>
+      </section>
+
+      <!-- ═══ 4: How It Works ═══ -->
+      <section class="guide-section" id="section-how">
+        <h2>How It Works</h2>
+        <div class="section-meta">8 behavioral signals, structured metadata, one LLM call per email</div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          SentTriage doesn't read the full email body. It reads a structured metadata record — 8 behavioral signals extracted from the email headers and sent-folder history. This makes it faster, cheaper, and privacy-preserving: no raw body text leaves your machine.
+        </p>
+
+        <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:10px;padding:1rem 1.25rem;font-family:monospace;font-size:0.8rem;line-height:1.8;margin:0.75rem 0 1.25rem;color:var(--rw-text-muted);">
+          <div style="color:var(--rw-text-muted);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;">Example email record sent to classifier</div>
+          <span style="color:#86efac;">Subject:</span> Re: Contract draft — version 2<br>
+          <span style="color:#86efac;">From:</span> legal@partnerco.com<br>
+          <span style="color:#93c5fd;">Days old:</span> 2<br>
+          <span style="color:#93c5fd;">Reply history:</span> Have replied before<br>
+          <span style="color:#93c5fd;">Thread initiated:</span> By me<br>
+          <span style="color:#93c5fd;">Has attachment:</span> Yes<br>
+          <span style="color:#fbbf24;">Preview:</span> Attached is the revised contract incorporating your redlines…
+        </div>
+
+        <div class="signal-grid">
+          <div class="signal-row"><div class="signal-num">1</div><div class="signal-text"><strong>Reply history</strong><span>Have you ever emailed this person before? Key to VIP vs. cold sender</span></div></div>
+          <div class="signal-row"><div class="signal-num">2</div><div class="signal-text"><strong>Thread direction</strong><span>Who started the conversation? "By me" + reply from them = possible GHOSTED</span></div></div>
+          <div class="signal-row"><div class="signal-num">3</div><div class="signal-text"><strong>Email age</strong><span>How many days old? OTP codes and tracking links decay fast</span></div></div>
+          <div class="signal-row"><div class="signal-num">4</div><div class="signal-text"><strong>Has attachment</strong><span>Official document indicator — tax docs, contracts, statements</span></div></div>
+          <div class="signal-row"><div class="signal-num">5</div><div class="signal-text"><strong>Sender tone</strong><span>Personal vs. automated vs. bulk — detected from preview + subject</span></div></div>
+          <div class="signal-row"><div class="signal-num">6</div><div class="signal-text"><strong>Prior stop requests</strong><span>"Replied 'unsubscribe' previously" = automatic ZOMBIE_NOISE</span></div></div>
+          <div class="signal-row"><div class="signal-num">7</div><div class="signal-text"><strong>Content type</strong><span>OTP code vs. shipping update vs. bank statement — specific patterns</span></div></div>
+          <div class="signal-row"><div class="signal-num">8</div><div class="signal-text"><strong>Urgency framing</strong><span>"Ends tonight" vs. "monthly digest" — commercial pressure vs. genuine urgency</span></div></div>
+        </div>
+
+        <div class="callout">
+          <strong>Model used:</strong> Llama-3.3-70B-Instruct via Nebius AI (OpenAI-compatible endpoint). Temperature 0, structured output schema, <code>@traceable</code> on every call so every classification is visible in LangSmith.
+        </div>
+      </section>
+
+      <!-- ═══ 5: The Eval Story ═══ -->
+      <section class="guide-section" id="section-eval">
+        <h2>The Eval Story</h2>
+        <div class="section-meta">Five prompt versions. Not a straight line up.</div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1.25rem;">
+          This is the part no one usually shows. Prompt iteration doesn't always go up. I ran 5 versions. One of them dropped from 84% to <strong style="color:#dc2626;">76%</strong> — worse than where I started. The eval loop is what let me catch it and recover.
+        </p>
+
+        <!-- Version bars -->
+        <div style="margin:1.25rem 0;">
+          <div class="version-row">
+            <div class="version-label">v1</div>
+            <div class="version-bar-bg">
+              <div class="version-bar-fill" style="width:84%;background:linear-gradient(90deg,#1e40af,#3b82f6);">Baseline</div>
+            </div>
+            <div class="version-acc" style="color:#3b82f6;">84%</div>
+          </div>
+          <div class="version-note">8-signal behavioral prompt. First run. GHOSTED/VIP confusion, OTP → VITAL misfires, ZOMBIE → DECOY errors.</div>
+
+          <div class="version-row">
+            <div class="version-label">v2</div>
+            <div class="version-bar-bg">
+              <div class="version-bar-fill" style="width:85%;background:linear-gradient(90deg,#1d4ed8,#3b82f6);">+1%</div>
+            </div>
+            <div class="version-acc" style="color:#3b82f6;">85%</div>
+          </div>
+          <div class="version-note">Added GHOSTED priority rule. Small gain but created a new problem: ALL "Re:" threads were getting GHOSTED regardless of who started them.</div>
+
+          <div class="version-row">
+            <div class="version-label">v3</div>
+            <div class="version-bar-bg">
+              <div class="version-bar-fill" style="width:80%;background:linear-gradient(90deg,#b45309,#f59e0b);">⬇ worse</div>
+            </div>
+            <div class="version-acc" style="color:#f59e0b;">80%</div>
+          </div>
+          <div class="version-note">Added emotional framing rule for DECOY/ZOMBIE. Caused re-engagement emails ("We miss you") to flip to DECOY instead of ZOMBIE. Regression of 5 points.</div>
+
+          <div class="version-row">
+            <div class="version-label" style="color:var(--ac2);font-size:0.85rem;">v4 ★</div>
+            <div class="version-bar-bg" style="border-color:var(--ac2);">
+              <div class="version-bar-fill" style="width:86%;background:linear-gradient(90deg,#15803d,#22c55e);">Best</div>
+            </div>
+            <div class="version-acc" style="color:#22c55e;font-size:0.9rem;">86%</div>
+          </div>
+          <div class="version-note">Three targeted fixes: (1) "Thread by sender → never GHOSTED"; (2) B2B cold sales = DECOY; (3) ALL one-time codes → EXPIRED regardless of age.</div>
+
+          <div class="version-row">
+            <div class="version-label">v5</div>
+            <div class="version-bar-bg">
+              <div class="version-bar-fill" style="width:76%;background:linear-gradient(90deg,#991b1b,#ef4444);">⬇ overfit</div>
+            </div>
+            <div class="version-acc" style="color:#ef4444;">76%</div>
+          </div>
+          <div class="version-note">Added "prior relationship" as a DECOY signal. Caused SaaS lifecycle emails to flip to DECOY (overfit). Worse than v1. Reverted to v4 as best.</div>
+        </div>
+
+        <div class="callout callout-blue">
+          <strong>The lesson:</strong> The eval loop was the only thing that kept v3 and v5 from shipping. Without tracking every version in <code>eval_summary.csv</code>, I would not have known that adding rules sometimes makes things worse. Iteration is not a ratchet. It requires measurement at every step.
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-box"><div class="stat-num green">86%</div><div class="stat-lbl">peak accuracy (v4)</div></div>
+          <div class="stat-box"><div class="stat-num">14</div><div class="stat-lbl">failures remaining in v4</div></div>
+          <div class="stat-box"><div class="stat-num" style="color:#f59e0b;">3</div><div class="stat-lbl">failure categories discovered</div></div>
+          <div class="stat-box"><div class="stat-num" style="color:#ef4444;">76%</div><div class="stat-lbl">worst version (v5 — overfit)</div></div>
+        </div>
+      </section>
+
+      <!-- ═══ 6: Failure Analysis ═══ -->
+      <section class="guide-section" id="section-failures">
+        <h2>Failure Analysis</h2>
+        <div class="section-meta">Read all failures first. Name the categories after. This is the rule.</div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1.25rem;">
+          The GenAcademy submission required annotating every failure and discovering the failure categories from the data — not assumptions made in advance. Here are the three patterns that emerged from reading all 14 v4 failures.
+        </p>
+
+        <!-- Failure 1 -->
+        <div class="fail-card">
+          <button class="fail-trigger open" onclick="toggleFail(this)">
+            <div class="fail-trigger-left">
+              <span class="fail-count">6 failures</span>
+              <span class="fail-name">ghosted_vip_boundary_blur</span>
+            </div>
+            <span class="fail-arrow">▶</span>
+          </button>
+          <div class="fail-body" style="max-height:500px;">
+            <div class="fail-body-inner">
+              <p style="font-size:0.85rem;line-height:1.7;color:var(--rw-text-muted);margin:0 0 0.85rem;">
+                The model confuses <strong style="color:var(--rw-text);">VIP_ENGAGED</strong> and <strong style="color:var(--rw-text);">GHOSTED_THREAD</strong> — the two hardest buckets to separate. The core issue: GHOSTED requires that (a) I started the conversation AND (b) the sender's reply is waiting for me. The model kept firing the GHOSTED rule when the thread was started by the sender, or treating a soft courtesy phrase ("let me know if this works") as a blocking reply.
+              </p>
+              <div style="margin-bottom:0.5rem;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--rw-text-muted);">Examples (truth → predicted)</div>
+              <div class="example-row"><div class="example-truth">VIP_ENGAGED</div><div class="example-arrow">→</div><div class="example-pred">GHOSTED_THREAD</div></div>
+              <div style="font-size:0.75rem;color:var(--rw-text-muted);margin-bottom:0.6rem;">e001: "Re: Project proposal review" — thread was initiated by sender, not by me.</div>
+              <div class="example-row"><div class="example-truth">VIP_ENGAGED</div><div class="example-arrow">→</div><div class="example-pred">GHOSTED_THREAD</div></div>
+              <div style="font-size:0.75rem;color:var(--rw-text-muted);margin-bottom:0.6rem;">e003: "Re: Contract draft v2" — delivered contract with "let me know if this works" treated as blocking request.</div>
+              <div class="example-row"><div class="example-truth">GHOSTED_THREAD</div><div class="example-arrow">→</div><div class="example-pred">VIP_ENGAGED</div></div>
+              <div style="font-size:0.75rem;color:var(--rw-text-muted);">e028: Catch-up call confirmation — "I'll send a calendar invite" still requires me to confirm the meeting.</div>
+              <div style="margin-top:0.85rem;padding:0.6rem 0.85rem;background:var(--rw-bg);border-radius:7px;font-size:0.78rem;color:var(--rw-text-muted);border:1px solid var(--rw-border);">
+                <strong style="color:var(--rw-text);">Fix in v4:</strong> Explicit rule added — "Thread initiated: By sender → NEVER classify as GHOSTED_THREAD." Reduced this category from 7 to 6 failures. Remaining gap requires understanding reply <em>intent</em>, not just presence.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Failure 2 -->
+        <div class="fail-card">
+          <button class="fail-trigger" onclick="toggleFail(this)">
+            <div class="fail-trigger-left">
+              <span class="fail-count" style="background:#dc2626;">7 failures</span>
+              <span class="fail-name">decoy_human_test_too_narrow</span>
+            </div>
+            <span class="fail-arrow">▶</span>
+          </button>
+          <div class="fail-body">
+            <div class="fail-body-inner">
+              <p style="font-size:0.85rem;line-height:1.7;color:var(--rw-text-muted);margin:0 0 0.85rem;">
+                The biggest failure category in v4. The DECOY definition in v4 was too narrow: it targeted emails that impersonate a human ("Hey, quick question from Jake"). It correctly caught cold B2B sales but missed brand commercial emails that use <em>personal emotional hooks</em> — "as a valued customer," "we miss you," "your cart is expiring." Those are also DECOY (they're targeting you personally) but don't use "I" language from a human.
+              </p>
+              <div style="margin-bottom:0.5rem;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--rw-text-muted);">What got misclassified</div>
+              <div class="example-row"><div class="example-truth">DECOY_MARKETING</div><div class="example-arrow">→</div><div class="example-pred">ZOMBIE_NOISE</div></div>
+              <div style="font-size:0.75rem;color:var(--rw-text-muted);margin-bottom:0.5rem;">"Special offer just for you — as a valued customer, 40% off." (e071)</div>
+              <div class="example-row"><div class="example-truth">DECOY_MARKETING</div><div class="example-arrow">→</div><div class="example-pred">ZOMBIE_NOISE</div></div>
+              <div style="font-size:0.75rem;color:var(--rw-text-muted);margin-bottom:0.5rem;">"We miss you — come back! Use code COMEBACK20." (e073)</div>
+              <div class="example-row"><div class="example-truth">DECOY_MARKETING</div><div class="example-arrow">→</div><div class="example-pred">ZOMBIE_NOISE</div></div>
+              <div style="font-size:0.75rem;color:var(--rw-text-muted);margin-bottom:0.85rem;">"Last chance — your cart is expiring." (e077)</div>
+              <div style="padding:0.6rem 0.85rem;background:var(--rw-bg);border-radius:7px;font-size:0.78rem;color:var(--rw-text-muted);border:1px solid var(--rw-border);">
+                <strong style="color:var(--rw-text);">Remaining gap:</strong> Fixing DECOY/ZOMBIE without introducing regressions is the hardest part of this dataset. v3 and v5 both introduced regressions trying to solve this. The boundary requires understanding marketing <em>intent level</em>, which may need fine-tuning rather than prompt engineering.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Failure 3 -->
+        <div class="fail-card">
+          <button class="fail-trigger" onclick="toggleFail(this)">
+            <div class="fail-trigger-left">
+              <span class="fail-count" style="background:#0891b2;">1 failure</span>
+              <span class="fail-name">otp_age_zero</span>
+            </div>
+            <span class="fail-arrow">▶</span>
+          </button>
+          <div class="fail-body">
+            <div class="fail-body-inner">
+              <p style="font-size:0.85rem;line-height:1.7;color:var(--rw-text-muted);margin:0 0 0.85rem;">
+                A one-item pattern but an important one. A PayPal OTP code with "Days old: 0" was classified as VITAL_LOGISTICS because the v1 prompt had a rule: "Days old = 0 → still active → VITAL." The mistake: OTP and MFA codes expire in <em>minutes</em>, not days. By the time any classifier runs on them, they're expired. The correct rule: ALL one-time codes → EXPIRED_LOGISTICS, regardless of age.
+              </p>
+              <div class="example-row"><div class="example-truth">EXPIRED_LOGISTICS</div><div class="example-arrow">→</div><div class="example-pred">VITAL_LOGISTICS</div></div>
+              <div style="font-size:0.75rem;color:var(--rw-text-muted);margin-bottom:0.85rem;">e051: "Your PayPal one-time passcode is 204817. Valid for 10 minutes only." Days old: 0.</div>
+              <div style="padding:0.6rem 0.85rem;background:var(--rw-bg);border-radius:7px;font-size:0.78rem;color:var(--rw-text-muted);border:1px solid var(--rw-border);">
+                <strong style="color:var(--rw-text);">Fix in v4:</strong> "ALL one-time codes and MFA/OTP messages → EXPIRED_LOGISTICS regardless of Days old." Fixed all 3 OTP failures across the test set (e047, e049, e051, e053, e055 — most caught in v1, one remained to v4).
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 7: What's Next ═══ -->
+      <section class="guide-section" id="section-next">
+        <h2>What's Next</h2>
+        <div class="section-meta">The remaining 14% and what would actually fix it</div>
+
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--rw-text-muted);margin:0 0 1rem;">
+          The v4 prompt hit 86%. The remaining 14% is concentrated in two places: GHOSTED/VIP boundary judgment and DECOY/ZOMBIE brand commercial distinction. Here's what would actually move the needle.
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1rem 0;">
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.9rem 1rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac);margin-bottom:0.4rem;">Phase 2 — PPO</div>
+            <div style="font-size:0.83rem;color:var(--rw-text-muted);line-height:1.6;">Proximal Prompt Optimization already scaffolded in <code>langsmith_eval.py</code> (commented out). The next step: run automated prompt rewrites against the eval set, epsilon-clipped to prevent wild changes. This is the approach Nubank described using for 60%+ of their prompt edits.</div>
+          </div>
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.9rem 1rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac2);margin-bottom:0.4rem;">DECOY/ZOMBIE boundary</div>
+            <div style="font-size:0.83rem;color:var(--rw-text-muted);line-height:1.6;">Brand commercial emails ("valued customer," cart abandonment) need a finer distinction than prompt engineering can provide. Candidate for a few-shot examples targeting intent level — personal targeting vs. bulk broadcast — or fine-tuning on a larger annotated dataset.</div>
+          </div>
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.9rem 1rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac);margin-bottom:0.4rem;">Real inbox integration</div>
+            <div style="font-size:0.83rem;color:var(--rw-text-muted);line-height:1.6;">Currently classifies synthetic metadata. The next step is a Gmail API connector that extracts the 8 signals from real emails in real time — reply history from Sent folder, email age from headers, attachment from metadata. The classifier doesn't change; only the input extraction pipeline does.</div>
+          </div>
+          <div style="background:var(--rw-bg-alt);border:1px solid var(--rw-border);border-radius:9px;padding:0.9rem 1rem;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac2);margin-bottom:0.4rem;">Cheat sheet eval set</div>
+            <div style="font-size:0.83rem;color:var(--rw-text-muted);line-height:1.6;">As the SentTriage project spec describes: save every confirmed failure as a permanent test case. Before any new prompt ships, run it against the full cheat sheet. Any regression = the prompt doesn't ship. This is the discipline that makes the loop reliable.</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>The most important thing I learned:</strong> Data and evals are always the hard part. The optimization tools — LangSmith, PPO, automated runners — are getting better fast. But someone still has to read every failure, resist the urge to name patterns before they've read them all, and be honest when a fix made things worse. That part doesn't automate.
+        </div>
+
+        <!-- GitHub CTA -->
+        <a href="https://github.com/researchsite/SentTriage" target="_blank" rel="noopener"
+           style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:var(--ac-lt);border:1px solid var(--ac-mid);border-radius:12px;padding:1.1rem 1.35rem;text-decoration:none;margin-top:2rem;transition:border-color 0.15s;">
+          <div style="display:flex;align-items:center;gap:0.9rem;">
+            <svg height="28" width="28" viewBox="0 0 16 16" fill="currentColor" style="color:var(--ac);flex-shrink:0;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <div>
+              <div style="font-size:0.9rem;font-weight:700;color:var(--rw-text);">View on GitHub</div>
+              <div style="font-size:0.78rem;color:var(--rw-text-muted);">github.com/researchsite/SentTriage — prompts, eval data, LangSmith integration</div>
+            </div>
+          </div>
+          <span style="font-size:1rem;color:var(--ac);">↗</span>
+        </a>
+
+        <!-- Related reading -->
+        <div style="margin-top:1.75rem;">
+          <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--rw-text-muted);margin-bottom:0.75rem;">Built on the foundation of</div>
+          <a href="/tools/eval-proving-ground.html" class="related-cta">
+            <div><h4>AI Evaluations: Practitioner Guide</h4><p>RAGAS, G-Eval, calibration, the eval maturity ladder — everything that makes an eval set trustworthy.</p></div>
+            <span class="related-arrow">→</span>
+          </a>
+          <a href="/usecase/iteration-machine.html" class="related-cta">
+            <div><h4>The Iteration Machine</h4><p>Nubank's production eval loop at 135M users. The conference that made me want to actually run this experiment.</p></div>
+            <span class="related-arrow">→</span>
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[
+       {"label":"AI Evals Guide","url":"/tools/eval-proving-ground.html"},
+       {"label":"The Iteration Machine","url":"/usecase/iteration-machine.html"},
+       {"label":"Production Readiness Checklist","url":"/usecase/production-readiness-checklist.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+  function toggleFail(trigger) {
+    const body = trigger.nextElementSibling;
+    const isOpen = trigger.classList.contains('open');
+    if (isOpen) {
+      trigger.classList.remove('open');
+      body.style.maxHeight = '0';
+    } else {
+      trigger.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  // Open first failure card on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const first = document.querySelector('.fail-trigger.open');
+    if (first) {
+      first.nextElementSibling.style.maxHeight = first.nextElementSibling.scrollHeight + 'px';
+    }
+  });
+</script>
+
+</body>
+</html>
