@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Fine-Tuning LLMs: The Specialist Protocol",
+        excerpt: "When should you fine-tune an LLM — and when is it overkill? A visual guide covering knowledge gaps, behavioral gaps, RAG vs fine-tuning, RAFT, SFT, and preference optimization.",
+        date: "June 27, 2026",
+        image: "./images/spectrum.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/fine-tuning-llm-guide.html",
+        linkedin: null
+      },
+      {
         title: "SentTriage — Behavioral Email Classifier",
         excerpt: "Most email filters ask what an email is about. SentTriage asks what it requires from you. A builder's log: 6 buckets, 8 behavioral signals, 5 prompt iterations, and what the eval loop actually taught me.",
         date: "June 25, 2026",
         image: "./images/senttriage.png",
         type: "Guide",
         link: "https://rawweights.com/usecase/sent-triage.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_svaihub-aicamp-buildinpublic-activity-7476162673206906880-dxIu"
       },
       {
         title: "The Iteration Machine ",

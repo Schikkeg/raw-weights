@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fine-Tuning LLMs: The Specialist Protocol | RawWeights</title>
+  <meta name="description" content="When should you fine-tune an LLM — and when is it overkill? A visual guide covering knowledge gaps, behavioral gaps, RAG vs fine-tuning, RAFT, SFT, and preference optimization.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/guide/fine-tuning-llm-guide.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/spectrum.png">
+  <meta property="og:url" content="https://rawweights.com/guide/fine-tuning-llm-guide.html">
+  <meta property="og:title" content="Fine-Tuning LLMs: The Specialist Protocol | RawWeights">
+  <meta property="og:description" content="When should you fine-tune an LLM — and when is it overkill? A visual guide covering knowledge gaps, behavioral gaps, RAG vs fine-tuning, and more.">
+  <meta property="og:image" content="https://rawweights.com/images/fine-tuning-guide.jpg">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════ */
+    .guide-hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #160e28 50%, #0a1530 100%);
+      padding: 5rem 1.5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-hero::before {
+      content:''; position:absolute; top:-20%; right:-5%;
+      width:500px; height:500px;
+      background:radial-gradient(circle, rgba(249,115,22,0.22) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .guide-hero::after {
+      content:''; position:absolute; bottom:-10%; left:-5%;
+      width:350px; height:350px;
+      background:radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .hero-inner { max-width:860px; margin:0 auto; position:relative; }
+    .hero-label {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.3);
+      border-radius:9999px; padding:0.3rem 0.9rem;
+      font-size:0.72rem; font-weight:700; color:#fb923c;
+      text-transform:uppercase; letter-spacing:0.07em;
+      font-family:var(--rw-font-display); margin-bottom:1.25rem;
+    }
+    .guide-hero h1 {
+      font-family:var(--rw-font-display); font-size:clamp(2rem,5vw,3.4rem);
+      font-weight:800; color:#f0f4ff; line-height:1.1;
+      letter-spacing:-0.025em; margin-bottom:1rem;
+    }
+    .guide-hero h1 span { color:#fb923c; }
+    .guide-hero > .hero-inner > p {
+      font-size:1.05rem; color:rgba(240,244,255,0.7);
+      max-width:600px; margin:0 auto 2rem; line-height:1.7;
+    }
+
+    /* Hero outcome strip */
+    .hero-outcomes {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      gap:0; margin:0 auto 2rem;
+      max-width:760px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:var(--rw-r-md);
+      overflow:hidden;
+    }
+    .hero-outcome {
+      padding:1rem 0.75rem; text-align:center;
+      border-right:1px solid rgba(255,255,255,0.1);
+    }
+    .hero-outcome:last-child { border-right:none; }
+    .hero-outcome-icon { font-size:1.35rem; margin-bottom:0.3rem; }
+    .hero-outcome-txt { font-size:0.72rem; color:rgba(240,244,255,0.6); line-height:1.4; font-family:var(--rw-font-display); font-weight:600; }
+
+    /* ═══════════════════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════════════════ */
+    .guide-layout {
+      display:grid; grid-template-columns:232px 1fr; gap:2.5rem;
+      max-width:1200px; margin:0 auto; padding:3rem 1.5rem; align-items:start;
+    }
+    .guide-sidebar { position:sticky; top:calc(var(--rw-nav-height) + 1.5rem); }
+    .toc-label {
+      font-family:var(--rw-font-display); font-size:0.68rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.09em;
+      color:var(--rw-text-subtle); margin-bottom:0.75rem;
+    }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:0.1rem; }
+    .guide-toc a {
+      font-size:0.82rem; color:var(--rw-text-muted); text-decoration:none;
+      padding:0.28rem 0.6rem; border-left:2px solid transparent;
+      display:flex; align-items:center; gap:0.4rem;
+      border-radius:0 4px 4px 0;
+      transition:color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .guide-toc a:hover, .guide-toc a.toc-active {
+      color:var(--rw-orange); border-left-color:var(--rw-orange); background:var(--rw-orange-light);
+    }
+    .toc-num {
+      font-size:0.65rem; font-weight:800; font-family:var(--rw-font-display);
+      color:var(--rw-text-subtle); min-width:16px;
+    }
+    .guide-toc a.toc-active .toc-num { color:var(--rw-orange); }
+
+    /* Sidebar explorer links */
+    .sidebar-explore { margin-top:2rem; }
+    .explore-link {
+      display:flex; align-items:center; gap:0.5rem;
+      font-size:0.79rem; font-weight:600; font-family:var(--rw-font-display);
+      color:var(--rw-text-muted); text-decoration:none;
+      padding:0.45rem 0.6rem; border-radius:var(--rw-r-sm);
+      transition:all 0.15s; margin-bottom:0.15rem;
+    }
+    .explore-link:hover { background:var(--rw-orange-light); color:var(--rw-orange); }
+    .explore-link-icon { font-size:0.95rem; }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION BASE
+    ═══════════════════════════════════════════════════ */
+    .guide-section { margin-bottom:4rem; }
+
+    /* Section heading with number */
+    .section-header { display:flex; align-items:baseline; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.6rem; border-bottom:2px solid var(--rw-orange-light); }
+    .section-num {
+      font-family:var(--rw-font-display); font-size:0.75rem; font-weight:800;
+      color:var(--rw-orange); background:var(--rw-orange-light);
+      padding:0.1rem 0.45rem; border-radius:4px; letter-spacing:0.04em; flex-shrink:0;
+    }
+    .section-header h2 {
+      font-family:var(--rw-font-display); font-size:1.55rem; font-weight:800;
+      color:var(--rw-text); margin:0; line-height:1.2;
+      scroll-margin-top:calc(var(--rw-nav-height) + 1rem);
+    }
+
+    .guide-section h3 {
+      font-family:var(--rw-font-display); font-size:1.05rem; font-weight:700;
+      color:var(--rw-text); margin:1.5rem 0 0.5rem;
+    }
+    .guide-section p {
+      font-size:0.97rem; color:var(--rw-text-muted); line-height:1.78; margin-bottom:0.9rem;
+    }
+    .guide-section p:last-child { margin-bottom:0; }
+
+    /* ═══════════════════════════════════════════════════
+       KEY INSIGHT  (big visual pull-quote)
+    ═══════════════════════════════════════════════════ */
+    .key-insight {
+      margin:1.75rem 0;
+      padding:1.5rem 1.75rem;
+      background:linear-gradient(135deg, rgba(249,115,22,0.06), rgba(249,115,22,0.02));
+      border:1px solid rgba(249,115,22,0.25);
+      border-left:4px solid #f97316;
+      border-radius:0 var(--rw-r-md) var(--rw-r-md) 0;
+    }
+    .key-insight-label {
+      font-family:var(--rw-font-display); font-size:0.65rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.1em; color:#f97316; margin-bottom:0.5rem;
+    }
+    .key-insight-text {
+      font-family:var(--rw-font-display); font-size:1.15rem; font-weight:700;
+      color:var(--rw-text); line-height:1.5; margin:0;
+    }
+    .key-insight-sub {
+      font-size:0.87rem; color:var(--rw-text-muted); margin-top:0.5rem; line-height:1.6;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CALLOUTS
+    ═══════════════════════════════════════════════════ */
+    .callout {
+      display:flex; gap:0.85rem; align-items:flex-start;
+      border-radius:var(--rw-r-md); padding:1.1rem 1.25rem;
+      font-size:0.91rem; color:var(--rw-text-muted); margin:1.25rem 0; line-height:1.65;
+    }
+    .callout-icon { font-size:1.25rem; flex-shrink:0; margin-top:0.05rem; }
+    .callout-body strong { display:block; margin-bottom:0.2rem; font-family:var(--rw-font-display); font-size:0.9rem; }
+    .callout-orange { background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.2); }
+    .callout-orange .callout-body strong { color:#ea580c; }
+    .callout-indigo { background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.2); }
+    .callout-indigo .callout-body strong { color:#6366f1; }
+    .callout-green { background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); }
+    .callout-green .callout-body strong { color:#059669; }
+    .callout-green a { color:#059669; font-weight:600; }
+
+    /* ═══════════════════════════════════════════════════
+       WEIGHT VIZ
+    ═══════════════════════════════════════════════════ */
+    .weight-viz-wrap {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); padding:1.25rem 1.5rem; margin:1.5rem 0;
+    }
+    .wviz-title {
+      font-family:var(--rw-font-display); font-size:0.72rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.08em;
+      color:var(--rw-text-subtle); margin-bottom:1.1rem;
+    }
+    .weight-row { display:flex; align-items:center; gap:0.85rem; margin-bottom:0.75rem; }
+    .weight-row:last-child { margin-bottom:0; }
+    .wlbl {
+      font-size:0.78rem; font-family:var(--rw-font-display); font-weight:700;
+      color:var(--rw-text); min-width:125px; text-align:right;
+    }
+    .wtrack { flex:1; height:22px; background:var(--rw-bg-alt); border-radius:5px; overflow:hidden; border:1px solid var(--rw-border); position:relative; }
+    .wfill { height:100%; border-radius:5px; transition:width 1.2s cubic-bezier(.22,1,.36,1); width:0; display:flex; align-items:center; padding-left:8px; }
+    .wfill-label { font-size:0.67rem; font-weight:700; color:rgba(255,255,255,0.9); font-family:var(--rw-font-display); white-space:nowrap; }
+    .fill-orange { background:linear-gradient(90deg, #ea580c, #f97316); }
+    .fill-cyan   { background:linear-gradient(90deg, #0891b2, #06b6d4); }
+    .fill-indigo { background:linear-gradient(90deg, #4f46e5, #6366f1); }
+    .wfill-empty { background:rgba(100,116,139,0.25); }
+    .wpct { font-size:0.75rem; font-family:var(--rw-font-mono); color:var(--rw-text-subtle); min-width:90px; }
+    .wviz-legend { display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.75rem; }
+    .wleg-item { display:flex; align-items:center; gap:0.35rem; font-size:0.72rem; color:var(--rw-text-subtle); }
+    .wleg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    /* ═══════════════════════════════════════════════════
+       TIMELINE STEPS
+    ═══════════════════════════════════════════════════ */
+    .timeline { position:relative; margin:1.5rem 0; padding-left:0; list-style:none; }
+    .timeline::before {
+      content:''; position:absolute; left:18px; top:30px;
+      bottom:30px; width:2px;
+      background:linear-gradient(to bottom, #f97316, #6366f1);
+      opacity:0.3; border-radius:2px;
+    }
+    .tl-item { display:flex; gap:1.25rem; align-items:flex-start; margin-bottom:1.5rem; position:relative; }
+    .tl-item:last-child { margin-bottom:0; }
+    .tl-dot {
+      width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--rw-font-display); font-weight:800; font-size:0.82rem; color:#fff;
+      position:relative; z-index:1;
+      box-shadow:0 0 0 4px var(--rw-bg);
+    }
+    .tl-dot-1 { background:#10b981; }
+    .tl-dot-2 { background:#6366f1; }
+    .tl-dot-3 { background:#06b6d4; }
+    .tl-dot-4 { background:#f97316; }
+    .tl-body { padding-top:0.3rem; flex:1; }
+    .tl-body h4 {
+      font-family:var(--rw-font-display); font-weight:700; font-size:0.97rem;
+      color:var(--rw-text); margin:0 0 0.3rem;
+    }
+    .tl-body p { font-size:0.875rem; color:var(--rw-text-muted); margin:0; line-height:1.6; }
+
+    /* ═══════════════════════════════════════════════════
+       ECONOMICS BLOCK
+    ═══════════════════════════════════════════════════ */
+    .economics-block {
+      display:flex; align-items:center; justify-content:center;
+      gap:0; margin:1.5rem 0; flex-wrap:wrap;
+    }
+    .econ-node {
+      text-align:center; padding:1.1rem 1.25rem;
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); min-width:110px;
+    }
+    .econ-pct {
+      font-family:var(--rw-font-display); font-size:1.6rem; font-weight:800;
+      line-height:1;
+    }
+    .econ-label { font-size:0.7rem; color:var(--rw-text-subtle); font-family:var(--rw-font-display); font-weight:600; margin-top:0.2rem; }
+    .econ-arrow { font-size:1.25rem; color:var(--rw-text-subtle); padding:0 0.5rem; }
+    .econ-tag { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.1rem 0.4rem; border-radius:3px; margin-top:0.35rem; display:inline-block; }
+    .etag-cheap { background:rgba(16,185,129,0.12); color:#059669; }
+    .etag-costly { background:rgba(249,115,22,0.12); color:#ea580c; }
+
+    /* ═══════════════════════════════════════════════════
+       GAP TOGGLE
+    ═══════════════════════════════════════════════════ */
+    .gap-toggle {
+      display:flex; border-radius:var(--rw-r-md) var(--rw-r-md) 0 0;
+      overflow:hidden; border:1px solid var(--rw-border); border-bottom:none;
+      margin-top:1.5rem;
+    }
+    .gap-btn {
+      flex:1; padding:0.9rem 1rem; border:none; background:var(--rw-bg-alt);
+      font-family:var(--rw-font-display); font-size:0.9rem; font-weight:700;
+      color:var(--rw-text-muted); cursor:pointer; transition:all 0.15s;
+      display:flex; align-items:center; justify-content:center; gap:0.5rem;
+    }
+    .gap-btn.active { background:#f97316; color:#fff; }
+    .gap-panel-wrap {
+      border:1px solid var(--rw-border); border-radius:0 0 var(--rw-r-md) var(--rw-r-md);
+      padding:1.5rem; background:var(--rw-card); display:none;
+    }
+    .gap-panel-wrap.active { display:block; }
+    .gap-cards { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+    .gap-icard {
+      background:var(--rw-bg); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); padding:1.25rem; text-align:center;
+    }
+    .gap-icard-icon { font-size:2rem; margin-bottom:0.6rem; }
+    .gap-icard h5 {
+      font-family:var(--rw-font-display); font-size:0.88rem; font-weight:700;
+      color:var(--rw-text); margin:0 0 0.4rem;
+    }
+    .gap-icard p { font-size:0.83rem; color:var(--rw-text-muted); margin:0; line-height:1.55; text-align:left; }
+
+    .gap-wide { grid-column:1 / -1; background:rgba(249,115,22,0.05); border-color:rgba(249,115,22,0.2); }
+    .gap-wide-inner { display:flex; gap:0.85rem; align-items:flex-start; text-align:left; }
+    .gap-wide-icon { font-size:1.5rem; flex-shrink:0; }
+    .gap-wide h5 {
+      font-family:var(--rw-font-display); font-size:0.88rem; font-weight:700;
+      color:#ea580c; margin:0 0 0.35rem;
+    }
+    .gap-wide p { font-size:0.83rem; color:var(--rw-text-muted); margin:0; line-height:1.55; }
+
+    /* ═══════════════════════════════════════════════════
+       SPECTRUM + TABS (merged — bar IS the navigation)
+    ═══════════════════════════════════════════════════ */
+    .method-spectrum-tabs { margin:1.5rem 0; }
+    .spectrum-nav {
+      display:flex; border-radius:var(--rw-r-md) var(--rw-r-md) 0 0;
+      overflow:hidden; border:1px solid var(--rw-border); border-bottom:none;
+    }
+    .spec-btn {
+      flex:1; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:0.25rem; padding:0.85rem 0.5rem;
+      cursor:pointer; border:none; position:relative;
+      border-right:1px solid rgba(255,255,255,0.15);
+      opacity:0.62; transition:flex 0.25s ease, opacity 0.15s;
+    }
+    .spec-btn:last-child { border-right:none; }
+    .spec-btn.active { flex:1.4; opacity:1; }
+    .spec-btn.active::after {
+      content:''; position:absolute; bottom:-1px; left:50%;
+      transform:translateX(-50%);
+      border-left:9px solid transparent; border-right:9px solid transparent;
+      border-top:8px solid rgba(0,0,0,0.18);
+    }
+    .seg-p  { background:#10b981; }
+    .seg-r  { background:#6366f1; }
+    .seg-ra { background:#06b6d4; }
+    .seg-f  { background:#f97316; }
+    .spec-ico { font-size:1.25rem; line-height:1; }
+    .spec-lbl {
+      font-family:var(--rw-font-display); font-size:0.7rem; font-weight:700;
+      color:#fff; text-align:center; white-space:nowrap; letter-spacing:0.01em;
+    }
+    .spectrum-legend {
+      display:flex; justify-content:space-between;
+      font-size:0.7rem; color:var(--rw-text-subtle); font-family:var(--rw-font-display);
+      margin:0.35rem 0 0;
+    }
+    .spec-panel {
+      display:none; padding:1.5rem; background:var(--rw-card);
+      border:1px solid var(--rw-border); border-top:3px solid #10b981;
+      border-radius:0 0 var(--rw-r-sm) var(--rw-r-sm);
+    }
+    .spec-panel.active { display:block; }
+    #tp.spec-panel  { border-top-color:#10b981; }
+    #tr.spec-panel  { border-top-color:#6366f1; }
+    #tra.spec-panel { border-top-color:#06b6d4; }
+    #tf.spec-panel  { border-top-color:#f97316; }
+    .tab-method-head { display:flex; align-items:flex-start; gap:1rem; margin-bottom:1rem; }
+    .tab-method-icon {
+      width:44px; height:44px; border-radius:var(--rw-r-sm);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; flex-shrink:0;
+    }
+    .tip-p  { background:rgba(16,185,129,0.12); }
+    .tip-r  { background:rgba(99,102,241,0.12); }
+    .tip-ra { background:rgba(6,182,212,0.12); }
+    .tip-f  { background:rgba(249,115,22,0.12); }
+    .tab-method-meta h4 {
+      font-family:var(--rw-font-display); font-size:1rem; font-weight:700;
+      color:var(--rw-text); margin:0 0 0.2rem;
+    }
+    .tab-method-meta .tab-tagline { font-size:0.82rem; color:var(--rw-text-muted); }
+    .tab-chips { display:flex; gap:0.5rem; flex-wrap:wrap; margin:1rem 0 0.75rem; }
+    .chip {
+      display:inline-flex; align-items:center; gap:0.3rem;
+      font-size:0.74rem; font-weight:700; font-family:var(--rw-font-display);
+      padding:0.2rem 0.6rem; border-radius:9999px;
+    }
+    .chip-green  { background:rgba(16,185,129,0.12); color:#059669; }
+    .chip-red    { background:rgba(239,68,68,0.1);   color:#dc2626; }
+    .chip-indigo { background:rgba(99,102,241,0.1);  color:#6366f1; }
+    .tab-panel p { font-size:0.9rem; color:var(--rw-text-muted); line-height:1.7; margin-bottom:0.75rem; }
+    .tab-panel p:last-child { margin-bottom:0; }
+
+    /* ═══════════════════════════════════════════════════
+       DECISION TREE
+    ═══════════════════════════════════════════════════ */
+    .dtree { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.5rem; margin:1.5rem 0; }
+    .dt-question {
+      background:var(--rw-bg-alt); border:2px solid var(--rw-border);
+      border-radius:var(--rw-r-sm); padding:0.9rem 1.25rem;
+      font-size:0.92rem; color:var(--rw-text);
+      font-family:var(--rw-font-display); font-weight:600; text-align:center;
+      margin-bottom:0.6rem;
+    }
+    .dt-connector { text-align:center; font-size:0.78rem; color:var(--rw-text-subtle); margin:0.2rem 0; }
+    .dt-branches { display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; margin-bottom:1rem; }
+    .dt-branch {
+      border-radius:var(--rw-r-sm); padding:1rem; border:1px solid var(--rw-border);
+    }
+    .dt-branch-yes  { border-color:rgba(16,185,129,0.4);  background:rgba(16,185,129,0.05); }
+    .dt-branch-no   { border-color:rgba(249,115,22,0.35); background:rgba(249,115,22,0.05); }
+    .dt-branch-stop { border-color:rgba(99,102,241,0.4);  background:rgba(99,102,241,0.05); }
+    .dt-lbl { font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; display:flex; align-items:center; gap:0.3rem; margin-bottom:0.4rem; }
+    .lbl-yes  { color:#10b981; }
+    .lbl-no   { color:#f97316; }
+    .lbl-stop { color:#6366f1; }
+    .dt-result-title { font-family:var(--rw-font-display); font-size:0.9rem; font-weight:700; color:var(--rw-text); margin-bottom:0.2rem; }
+    .dt-result-desc  { font-size:0.82rem; color:var(--rw-text-muted); margin:0; line-height:1.5; }
+
+    /* ═══════════════════════════════════════════════════
+       COMPARISON TABLE
+    ═══════════════════════════════════════════════════ */
+    .comp-wrap { margin:1.5rem 0; overflow-x:auto; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); }
+    .comp-table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    .comp-table th {
+      background:var(--rw-bg-subtle); font-family:var(--rw-font-display);
+      font-weight:700; font-size:0.78rem; text-align:left;
+      padding:0.75rem 1rem; border-bottom:2px solid var(--rw-border); color:var(--rw-text);
+      white-space:nowrap;
+    }
+    .comp-table th:not(:first-child) { text-align:center; }
+    .comp-table td { padding:0.65rem 1rem; border-bottom:1px solid var(--rw-border); color:var(--rw-text-muted); vertical-align:middle; }
+    .comp-table td:not(:first-child) { text-align:center; }
+    .comp-table tr:last-child td { border-bottom:none; }
+    .comp-table tr:hover td { background:var(--rw-bg-alt); }
+    .cell-yes  { color:#10b981; font-weight:700; font-size:0.95rem; }
+    .cell-no   { color:#ef4444; font-size:0.95rem; }
+    .cell-part { color:#f59e0b; font-size:0.82rem; }
+    .comp-table td:first-child { font-weight:600; color:var(--rw-text); white-space:nowrap; }
+
+    /* ═══════════════════════════════════════════════════
+       VS ANALOGY
+    ═══════════════════════════════════════════════════ */
+    .vs-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:0; margin:1.5rem 0; align-items:stretch; }
+    .vs-card {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:0; padding:1.5rem;
+    }
+    .vs-card-rag   { border-radius:var(--rw-r-md) 0 0 var(--rw-r-md); border-right:none; }
+    .vs-card-ft    { border-radius:0 var(--rw-r-md) var(--rw-r-md) 0; border-left:none; border-color:#f97316; background:linear-gradient(135deg, rgba(249,115,22,0.04), transparent); }
+    .vs-divider {
+      display:flex; align-items:center; justify-content:center;
+      background:var(--rw-bg-alt); border-top:1px solid var(--rw-border); border-bottom:1px solid var(--rw-border); width:46px;
+    }
+    .vs-badge {
+      background:#0f172a; color:#f0f4ff;
+      font-family:var(--rw-font-display); font-size:0.72rem; font-weight:800;
+      padding:0.3rem 0.45rem; border-radius:6px; letter-spacing:0.03em;
+    }
+    [data-theme="light"] .vs-badge { background:#1e293b; }
+    .vs-card-icon { font-size:2.25rem; margin-bottom:0.6rem; }
+    .vs-card-tag {
+      display:inline-block; font-size:0.65rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.07em; padding:0.15rem 0.5rem; border-radius:4px; margin-bottom:0.6rem;
+    }
+    .vtag-rag { background:rgba(99,102,241,0.12); color:#6366f1; }
+    .vtag-ft  { background:rgba(249,115,22,0.12); color:#ea580c; }
+    .vs-card h4 { font-family:var(--rw-font-display); font-size:0.97rem; font-weight:700; color:var(--rw-text); margin:0 0 0.5rem; }
+    .vs-card p  { font-size:0.85rem; color:var(--rw-text-muted); margin:0; line-height:1.6; }
+
+    /* ═══════════════════════════════════════════════════
+       QUIZ
+    ═══════════════════════════════════════════════════ */
+    .quiz-card {
+      background:linear-gradient(135deg, rgba(99,102,241,0.04), rgba(249,115,22,0.03));
+      border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.75rem; margin:1.5rem 0;
+    }
+    .quiz-label { font-family:var(--rw-font-display); font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#6366f1; margin-bottom:0.6rem; }
+    .quiz-q { font-family:var(--rw-font-display); font-size:1.02rem; font-weight:700; color:var(--rw-text); margin-bottom:1.25rem; line-height:1.45; }
+    .quiz-opts { display:flex; flex-direction:column; gap:0.6rem; }
+    .quiz-opt {
+      display:flex; align-items:center; gap:0.85rem;
+      padding:0.8rem 1.1rem; border:1.5px solid var(--rw-border);
+      border-radius:var(--rw-r-sm); cursor:pointer; font-size:0.9rem;
+      color:var(--rw-text-muted); transition:all 0.15s; background:var(--rw-bg);
+    }
+    .quiz-opt:hover { border-color:#f97316; color:var(--rw-text); background:var(--rw-bg-alt); }
+    .quiz-opt-icon { width:28px; height:28px; border-radius:50%; background:var(--rw-bg-alt); display:flex; align-items:center; justify-content:center; font-size:0.95rem; flex-shrink:0; transition:background 0.15s; }
+    .opt-correct { border-color:#10b981 !important; background:rgba(16,185,129,0.07) !important; color:var(--rw-text) !important; }
+    .opt-correct .quiz-opt-icon { background:rgba(16,185,129,0.2) !important; }
+    .opt-wrong   { border-color:#ef4444 !important; background:rgba(239,68,68,0.06) !important; color:var(--rw-text) !important; }
+    .opt-reveal  { border-color:rgba(16,185,129,0.5) !important; background:rgba(16,185,129,0.04) !important; }
+    .quiz-fb { margin-top:1rem; padding:0.9rem 1.1rem; border-radius:var(--rw-r-sm); font-size:0.9rem; display:none; line-height:1.65; }
+    .quiz-fb.show { display:flex; gap:0.6rem; align-items:flex-start; }
+    .fb-icon { font-size:1.1rem; flex-shrink:0; }
+    .fb-correct { background:rgba(16,185,129,0.1); color:#065f46; border:1px solid rgba(16,185,129,0.3); }
+    .fb-wrong   { background:rgba(239,68,68,0.07); color:#7f1d1d; border:1px solid rgba(239,68,68,0.2); }
+    [data-theme="dark"] .fb-correct { color:#6ee7b7; }
+    [data-theme="dark"] .fb-wrong   { color:#fca5a5; }
+    .quiz-reset {
+      display:none; align-items:center; gap:0.4rem; margin-top:0.9rem;
+      padding:0.45rem 1rem; border-radius:var(--rw-r-sm);
+      border:1px solid var(--rw-border); background:var(--rw-bg-alt);
+      color:var(--rw-text-muted); font-family:var(--rw-font-display);
+      font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.15s;
+    }
+    .quiz-reset:hover { border-color:#f97316; color:#f97316; background:var(--rw-orange-light); }
+
+    /* ═══════════════════════════════════════════════════
+       SFT / PREF METHOD CARDS
+    ═══════════════════════════════════════════════════ */
+    .method-flow { display:flex; flex-direction:column; gap:0; margin:1.5rem 0; }
+    .mf-item {
+      display:grid; grid-template-columns:auto 1fr; gap:0; position:relative;
+    }
+    .mf-left {
+      display:flex; flex-direction:column; align-items:center; padding-right:1.25rem;
+    }
+    .mf-circle {
+      width:40px; height:40px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; z-index:1;
+      box-shadow:0 0 0 4px var(--rw-bg);
+    }
+    .mfc-1 { background:rgba(249,115,22,0.15); border:2px solid #f97316; }
+    .mfc-2 { background:rgba(99,102,241,0.15); border:2px solid #6366f1; }
+    .mf-line { flex:1; width:2px; background:linear-gradient(to bottom, rgba(249,115,22,0.3), rgba(99,102,241,0.3)); margin:4px 0; min-height:24px; }
+    .mf-item:last-child .mf-line { display:none; }
+    .mf-body {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); padding:1.25rem; margin-bottom:1rem;
+    }
+    .mf-body h4 { font-family:var(--rw-font-display); font-size:0.97rem; font-weight:700; color:var(--rw-text); margin:0 0 0.4rem; }
+    .mf-body p { font-size:0.88rem; color:var(--rw-text-muted); margin:0 0 0.6rem; line-height:1.65; }
+    .mf-body p:last-child { margin-bottom:0; }
+
+    /* ═══════════════════════════════════════════════════
+       COST CARDS (3-up visual)
+    ═══════════════════════════════════════════════════ */
+    .cost-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.5rem 0; }
+    .cost-card {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); padding:1.25rem;
+      display:flex; flex-direction:column; gap:0.5rem;
+    }
+    .cost-card-head { display:flex; align-items:center; gap:0.65rem; }
+    .cost-card-icon { font-size:1.5rem; }
+    .cost-card-title { font-family:var(--rw-font-display); font-size:0.92rem; font-weight:700; color:var(--rw-text); }
+    .cost-card p { font-size:0.84rem; color:var(--rw-text-muted); margin:0; line-height:1.6; }
+    .cost-card-badge {
+      display:inline-block; font-size:0.67rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.06em; padding:0.15rem 0.5rem; border-radius:4px; align-self:flex-start;
+    }
+    .cbadge-high { background:rgba(239,68,68,0.1); color:#dc2626; }
+    .cbadge-mid  { background:rgba(249,115,22,0.1); color:#ea580c; }
+    .cbadge-win  { background:rgba(16,185,129,0.1); color:#059669; }
+
+    /* ═══════════════════════════════════════════════════
+       SUMMARY DO / DON'T
+    ═══════════════════════════════════════════════════ */
+    .summary-duo { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.5rem 0; }
+    .sd-card { border-radius:var(--rw-r-md); padding:1.5rem; border:1px solid; }
+    .sd-do   { background:rgba(16,185,129,0.05); border-color:rgba(16,185,129,0.25); }
+    .sd-dont { background:rgba(239,68,68,0.04);  border-color:rgba(239,68,68,0.2); }
+    .sd-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem; }
+    .sd-header-icon { font-size:1.25rem; }
+    .sd-header-title { font-family:var(--rw-font-display); font-size:0.95rem; font-weight:800; color:var(--rw-text); }
+    .sd-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.55rem; }
+    .sd-list li { display:flex; align-items:flex-start; gap:0.5rem; font-size:0.86rem; color:var(--rw-text-muted); line-height:1.5; }
+    .sd-list li::before { flex-shrink:0; font-size:0.8rem; margin-top:0.1rem; }
+    .sd-do   .sd-list li::before { content:'✓'; color:#10b981; font-weight:700; }
+    .sd-dont .sd-list li::before { content:'✗'; color:#ef4444; font-weight:700; }
+
+    /* ═══════════════════════════════════════════════════
+       EXPLORE PILL LINKS
+    ═══════════════════════════════════════════════════ */
+    .pill-row { display:flex; gap:0.5rem; flex-wrap:wrap; margin:1rem 0; }
+    .pill-link {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      font-size:0.8rem; font-weight:600; font-family:var(--rw-font-display);
+      color:#6366f1; border:1px solid rgba(99,102,241,0.3); border-radius:9999px;
+      padding:0.28rem 0.8rem; text-decoration:none;
+      background:rgba(99,102,241,0.06); transition:all 0.15s;
+    }
+    .pill-link:hover { background:rgba(99,102,241,0.12); border-color:#6366f1; }
+
+    /* ═══════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════ */
+    @media (max-width:1024px) {
+      .guide-layout { grid-template-columns:1fr; }
+      .guide-sidebar { position:static; }
+      .vs-grid { grid-template-columns:1fr; }
+      .vs-divider { display:none; }
+      .vs-card-rag, .vs-card-ft { border-radius:var(--rw-r-md); border:1px solid var(--rw-border); }
+      .vs-card-rag { border-bottom:none; border-radius:var(--rw-r-md) var(--rw-r-md) 0 0; }
+      .vs-card-ft  { border-radius:0 0 var(--rw-r-md) var(--rw-r-md); }
+      .gap-cards, .summary-duo, .cost-grid, .dt-branches { grid-template-columns:1fr; }
+      .gap-wide { grid-column:auto; }
+      .hero-outcomes { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:600px) {
+      .spectrum-bar { height:44px; }
+      .spectrum-seg { font-size:0.65rem; }
+      .hero-outcomes { grid-template-columns:repeat(2,1fr); }
+      .economics-block { gap:0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<div class="guide-hero">
+  <div class="hero-inner">
+    <div class="hero-label">🔬 Guide</div>
+    <h1>Fine-Tuning LLMs:<br><span>The Specialist Protocol</span></h1>
+    <p>Most teams reach for fine-tuning far too early — and pay a steep price. Learn when to prompt, when to RAG, and when fine-tuning is the right call. Understand the difference between a model that reads a textbook and one that went to medical school.</p>
+
+    <div class="hero-outcomes">
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">⚡</div>
+        <div class="hero-outcome-txt">When fine-tuning is (and isn't) the answer</div>
+      </div>
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">🧠</div>
+        <div class="hero-outcome-txt">Knowledge gap vs behavioral gap</div>
+      </div>
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">🔗</div>
+        <div class="hero-outcome-txt">How RAG, RAFT &amp; FT interact</div>
+      </div>
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">🎯</div>
+        <div class="hero-outcome-txt">SFT, preference optimization &amp; LoRA</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#guide-content" class="rw-btn rw-btn-primary">Start Reading ↓</a>
+      <a href="#section-decision" class="rw-btn rw-btn-ghost" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.22);">Jump to Decision Tree →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LAYOUT ═══════════════ -->
+<div class="guide-layout" id="guide-content">
+
+  <!-- Sidebar -->
+  <aside class="guide-sidebar">
+    <div class="toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-weights"><span class="toc-num">01</span>What FT Actually Changes</a></li>
+      <li><a href="#section-notfirst"><span class="toc-num">02</span>Not Your First Move</a></li>
+      <li><a href="#section-gaps"><span class="toc-num">03</span>Knowledge vs Behavior</a></li>
+      <li><a href="#section-spectrum"><span class="toc-num">04</span>The Method Spectrum</a></li>
+      <li><a href="#section-decision"><span class="toc-num">05</span>Decision Framework</a></li>
+      <li><a href="#section-compare"><span class="toc-num">06</span>Method Comparison</a></li>
+      <li><a href="#section-misconception"><span class="toc-num">07</span>The Big Misconception</a></li>
+      <li><a href="#section-raft"><span class="toc-num">08</span>RAFT: Best of Both</a></li>
+      <li><a href="#section-methods"><span class="toc-num">09</span>SFT &amp; Preference Opt.</a></li>
+      <li><a href="#section-cost"><span class="toc-num">10</span>Cost &amp; Trade-offs</a></li>
+      <li><a href="#section-summary"><span class="toc-num">11</span>Summary</a></li>
+    </ul>
+
+    <div class="sidebar-explore">
+      <div class="toc-label">Explore Further</div>
+      <a href="https://rawweights.com/guide/llm-post-training-guide.html" class="explore-link"><span class="explore-link-icon">📖</span>Post-Training Guide</a>
+      <a href="https://rawweights.com/tools/master_ml_hub.html" class="explore-link"><span class="explore-link-icon">⚡</span>ML Concepts Hub</a>
+      <a href="https://rawweights.com/tools/limitations-and-frontiers.html" class="explore-link"><span class="explore-link-icon">🔭</span>LLM Frontiers</a>
+      <a href="https://rawweights.com/tools/master_sequence_hub.html" class="explore-link"><span class="explore-link-icon">🧬</span>Sequence &amp; Attention</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ══════════════════════════════════════
+         01 · WHAT FINE-TUNING CHANGES
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-weights">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2>What Fine-Tuning Actually Changes</h2>
+      </div>
+
+      <div class="key-insight">
+        <div class="key-insight-label">Core concept</div>
+        <div class="key-insight-text">"Parameters are not a database. They are a continuous, lossy compression of everything the model was trained on."</div>
+        <div class="key-insight-sub">When you fine-tune, you're adjusting these numbers — not inserting text into a lookup table.</div>
+      </div>
+
+      <p>Every large language model is a neural network — a web of connected nodes. The connections are governed by <strong>weights</strong>, also called parameters. When someone says "a 70 billion parameter model," they mean a network with 70 billion floating-point numbers, each determining how strongly one node influences another.</p>
+
+      <p>A model's knowledge, personality, and behavior aren't stored anywhere explicitly — they <em>emerge</em> from the combination of these weights. Training is the process of adjusting weights so the network produces useful outputs. Fine-tuning continues that process, nudging weights in a specific direction without starting from scratch.</p>
+
+      <div class="weight-viz-wrap">
+        <div class="wviz-title">Share of model weights modified — by approach</div>
+        <div class="weight-row">
+          <div class="wlbl">Full Fine-Tuning</div>
+          <div class="wtrack"><div class="wfill fill-orange" id="wbar-full"><span class="wfill-label">All parameters retrained</span></div></div>
+          <div class="wpct">100%</div>
+        </div>
+        <div class="weight-row">
+          <div class="wlbl">LoRA / PEFT</div>
+          <div class="wtrack"><div class="wfill fill-cyan" id="wbar-lora"><span class="wfill-label">Adapters only</span></div></div>
+          <div class="wpct">~1–5%</div>
+        </div>
+        <div class="weight-row">
+          <div class="wlbl">Transfer Learning</div>
+          <div class="wtrack"><div class="wfill fill-indigo" id="wbar-tl"><span class="wfill-label">Final layer</span></div></div>
+          <div class="wpct">Final layer</div>
+        </div>
+        <div class="weight-row">
+          <div class="wlbl">Prompt Engineering</div>
+          <div class="wtrack"><div class="wfill wfill-empty" id="wbar-pe" style="width:2%;"><span class="wfill-label"></span></div></div>
+          <div class="wpct" style="color:#94a3b8;">0% — none</div>
+        </div>
+        <div class="wviz-legend">
+          <div class="wleg-item"><div class="wleg-dot" style="background:#f97316;"></div>Full retrain</div>
+          <div class="wleg-item"><div class="wleg-dot" style="background:#06b6d4;"></div>Adapter layers (LoRA)</div>
+          <div class="wleg-item"><div class="wleg-dot" style="background:#6366f1;"></div>Frozen pre-trained</div>
+          <div class="wleg-item"><div class="wleg-dot" style="background:#475569;opacity:0.4;"></div>Zero changes</div>
+        </div>
+      </div>
+
+      <p>Fine-tuning predates LLMs. Pre-LLM practitioners fine-tuned <strong>Word2Vec</strong> and <strong>BERT</strong> for text tasks, <strong>AlexNet</strong> for images. Transfer learning — freezing early layers and replacing the final head — was the dominant pattern. LoRA applies the same intuition to billion-parameter models: freeze almost everything, inject small trainable adapter layers, achieve most of the performance at a fraction of the cost.</p>
+
+      <div class="callout callout-green">
+        <div class="callout-icon">🌱</div>
+        <div class="callout-body"><strong>New to neural networks?</strong> The <a href="https://rawweights.com/tools/master_ml_hub.html">ML Concepts Hub</a> covers weights, nodes, and training loops interactively. The <a href="https://rawweights.com/guide/llm-post-training-guide.html">LLM Post-Training Guide</a> explains how base models are aligned before deployment — a natural prerequisite here.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         02 · NOT YOUR FIRST MOVE
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-notfirst">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2>Fine-Tuning Is Not Your First Move</h2>
+      </div>
+
+      <div class="key-insight">
+        <div class="key-insight-label">The rule</div>
+        <div class="key-insight-text">Always make the smallest change that closes the gap in your evaluation metric.</div>
+        <div class="key-insight-sub">At companies like Anthropic and OpenAI, there are entire teams of post-training engineers whose sole job is this. It's a research-tier specialization — not something you wing as a first attempt.</div>
+      </div>
+
+      <p>The principle is <strong>incremental improvement</strong>. Every step you take should be observable and attributable. When you skip steps, you lose the ability to know what's actually working — and you pay training costs for gains that prompting might have delivered for free.</p>
+
+      <ul class="timeline">
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-1">1</div><div class="tl-line"></div></div>
+          <div class="tl-body">
+            <h4>Prompt engineering &amp; instruction tuning</h4>
+            <p>Write a detailed system prompt. Add few-shot examples. Define explicit tone, format, and constraint rules. Measure on a golden dataset before touching anything else. This is free and instantly reversible.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-2">2</div><div class="tl-line"></div></div>
+          <div class="tl-body">
+            <h4>Context engineering &amp; memory layers</h4>
+            <p>Introduce dynamic context injection, conversation memory, and better-structured tool descriptions. Many behavioral gaps disappear when the model has richer, more structured context — without touching the model at all.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-3">3</div><div class="tl-line"></div></div>
+          <div class="tl-body">
+            <h4>RAG: attach external knowledge</h4>
+            <p>When the model lacks domain knowledge, give it access rather than burning it into weights. Start with simple vector search, then iterate toward hybrid retrieval and re-ranking. Measure again.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-4">4</div></div>
+          <div class="tl-body">
+            <h4>Consider fine-tuning only if a gap persists</h4>
+            <p>After steps 1–3, if there's still a measurable gap that cheaper methods can't close and the ROI justifies training cost — fine-tuning enters the picture. This is step four, not step one.</p>
+          </div>
+        </li>
+      </ul>
+
+      <h3>The Economics of Incremental Progress</h3>
+      <p>Here's why the order matters financially:</p>
+
+      <div class="economics-block">
+        <div class="econ-node">
+          <div class="econ-pct" style="color:#ef4444;">18%</div>
+          <div class="econ-label">Bare prompt</div>
+          <div class="econ-tag etag-costly">baseline</div>
+        </div>
+        <div class="econ-arrow">→</div>
+        <div class="econ-node">
+          <div class="econ-pct" style="color:#f59e0b;">57%</div>
+          <div class="econ-label">Prompting + RAG</div>
+          <div class="econ-tag etag-cheap">cheap gains</div>
+        </div>
+        <div class="econ-arrow">→</div>
+        <div class="econ-node">
+          <div class="econ-pct" style="color:#10b981;">70%</div>
+          <div class="econ-label">+ Fine-Tuning</div>
+          <div class="econ-tag etag-win">targeted lift</div>
+        </div>
+      </div>
+
+      <div class="callout callout-orange">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>The expensive mistake:</strong> Using fine-tuning to go from 18% → 70% directly skips all the cheap methods and massively inflates training cost. Fine-tune the last mile, not the whole journey.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         03 · GAPS
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-gaps">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2>Two Reasons to Fine-Tune: Knowledge vs. Behavior</h2>
+      </div>
+
+      <p>When fine-tuning is genuinely warranted, it's almost always because of one of two gaps. Diagnosing which gap you have changes the solution — and knowing that knowledge gaps are often better addressed by RAG first is one of the most common things practitioners get wrong.</p>
+
+      <div class="gap-toggle">
+        <button class="gap-btn active" onclick="switchGap('knowledge', this)">🧠 Knowledge Gap</button>
+        <button class="gap-btn" onclick="switchGap('behavior', this)">🎭 Behavioral Gap</button>
+      </div>
+
+      <div class="gap-panel-wrap active" id="gap-knowledge">
+        <div class="gap-cards">
+          <div class="gap-icard">
+            <div class="gap-icard-icon">🗂️</div>
+            <h5>What it is</h5>
+            <p>The model doesn't know what it needs to know. Enterprise data, proprietary terminology, internal processes — none of this was in the pre-training corpus. Fine-tuning teaches the model to reason over domain-specific patterns naturally.</p>
+          </div>
+          <div class="gap-icard">
+            <div class="gap-icard-icon">🛠️</div>
+            <h5>Engineering platform example</h5>
+            <p>A B2B SaaS company's AI assistant knows Python and cloud APIs broadly, but not the team's internal service architecture, naming conventions, or proprietary SDK patterns. Fine-tuning on internal docs and code teaches it to reason over those correctly — not just look things up.</p>
+          </div>
+          <div class="gap-icard gap-wide">
+            <div class="gap-wide-inner">
+              <div class="gap-wide-icon">⚠️</div>
+              <div>
+                <h5>Critical nuance: fine-tuning ≠ memorization</h5>
+                <p>Fine-tuning a model on your 500-page document does not make it reliably recall every fact in that document. It changes weights — a lossy compression. For hard factual lookup, <strong>RAG is always the right answer</strong>. Fine-tuning teaches the model to <em>think like</em> a domain expert. RAG gives it a reference library to look things up in. Both are often needed for high-stakes domains.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gap-panel-wrap" id="gap-behavior">
+        <div class="gap-cards">
+          <div class="gap-icard">
+            <div class="gap-icard-icon">🎭</div>
+            <h5>What it is</h5>
+            <p>The model has enough knowledge but doesn't respond the way you need it to. Wrong tone, inconsistent formatting, missing persona, or behavior that drifts after long conversations — fine-tuning reshapes <em>how</em> it communicates, not just what it knows.</p>
+          </div>
+          <div class="gap-icard">
+            <div class="gap-icard-icon">📋</div>
+            <h5>E-commerce support example</h5>
+            <p>An online retailer's support AI must always respond in a fixed structure: Issue → Root Cause → Resolution Steps → Escalation trigger. A system prompt works for short sessions, but after many turns the format drifts. Fine-tuning bakes the structure into the weights so it holds at any conversation length.</p>
+          </div>
+          <div class="gap-icard">
+            <div class="gap-icard-icon">🔍</div>
+            <h5>Behavioral signals</h5>
+            <p>• Model ignores format rules after long conversations<br>• Inconsistent tone across sessions despite identical prompts<br>• Brand voice can't be maintained at production scale<br>• Wrong register — too casual, too hedging, wrong persona</p>
+          </div>
+          <div class="gap-icard">
+            <div class="gap-icard-icon">✍️</div>
+            <h5>Try prompting first</h5>
+            <p>Aggressive few-shot examples, structured output schemas, and layered system prompts resolve most behavioral issues. Fine-tune only when prompting proves too fragile or inconsistent at scale — not as a shortcut to avoid writing a good system prompt.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         04 · SPECTRUM
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-spectrum">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2>The Method Spectrum</h2>
+      </div>
+
+      <p>These four approaches aren't competitors — they're a progression. Each one builds on what came before and is more powerful (and more expensive) than the last. Move to the next only when the current one is exhausted.</p>
+
+      <div class="method-spectrum-tabs">
+        <div class="spectrum-nav">
+          <div class="spec-btn active seg-p" onclick="switchMethod('tp', this)">
+            <span class="spec-ico">📝</span>
+            <span class="spec-lbl">Prompt Eng.</span>
+          </div>
+          <div class="spec-btn seg-r" onclick="switchMethod('tr', this)">
+            <span class="spec-ico">📚</span>
+            <span class="spec-lbl">RAG</span>
+          </div>
+          <div class="spec-btn seg-ra" onclick="switchMethod('tra', this)">
+            <span class="spec-ico">🔗</span>
+            <span class="spec-lbl">RAFT</span>
+          </div>
+          <div class="spec-btn seg-f" onclick="switchMethod('tf', this)">
+            <span class="spec-ico">🧠</span>
+            <span class="spec-lbl">Fine-Tuning</span>
+          </div>
+        </div>
+        <div class="spectrum-legend">
+          <span>← Cheaper · Faster · Reversible</span>
+          <span>More powerful · More expensive →</span>
+        </div>
+
+        <div class="spec-panel active" id="tp">
+          <div class="tab-method-head">
+            <div class="tab-method-icon tip-p">📝</div>
+            <div class="tab-method-meta">
+              <h4>Prompt Engineering</h4>
+              <div class="tab-tagline">External instructions — zero weight changes</div>
+            </div>
+          </div>
+          <div class="tab-chips">
+            <span class="chip chip-green">✓ Free</span>
+            <span class="chip chip-green">✓ Instant</span>
+            <span class="chip chip-green">✓ Reversible</span>
+            <span class="chip chip-red">✗ Context-window bound</span>
+          </div>
+          <p>System prompts, few-shot examples, chain-of-thought instructions, output format constraints. The model is unchanged — you're just getting better at communicating with it.</p>
+          <p><strong>Best for:</strong> Behavioral shaping, tone and format control, general-purpose cases where the model already has enough domain knowledge. Always the starting point.</p>
+          <p><strong>Hard limit:</strong> Instructions live in the context window. Long conversations push early instructions out, behavior drifts, and deep domain expertise cannot be prompted in — the model either knows something or it doesn't.</p>
+        </div>
+
+        <div class="spec-panel" id="tr">
+          <div class="tab-method-head">
+            <div class="tab-method-icon tip-r">📚</div>
+            <div class="tab-method-meta">
+              <h4>RAG (Retrieval-Augmented Generation)</h4>
+              <div class="tab-tagline">External knowledge — zero weight changes</div>
+            </div>
+          </div>
+          <div class="tab-chips">
+            <span class="chip chip-green">✓ Factual accuracy</span>
+            <span class="chip chip-green">✓ Data stays intact</span>
+            <span class="chip chip-green">✓ Updatable</span>
+            <span class="chip chip-red">✗ Adds retrieval latency</span>
+          </div>
+          <p>Connect the model to an external database. At query time, retrieve relevant chunks and inject them into context. The model reasons over retrieved content — like an open-book exam. The document stays intact, word for word. Nothing is "burned" into weights.</p>
+          <p><strong>Best for:</strong> Knowledge gaps, factual accuracy, up-to-date information, large document corpora. RAG preserves your data faithfully and lets you update it without retraining.</p>
+          <p><strong>Hard limit:</strong> The model is still a generalist. It can look things up, but it doesn't <em>think</em> like a domain expert. Behavior and tone remain unchanged by the underlying training.</p>
+          <div class="pill-row"><a href="https://rawweights.com/tools/master_sequence_hub.html" class="pill-link">🧬 Sequence &amp; Attention Hub</a></div>
+        </div>
+
+        <div class="spec-panel" id="tra">
+          <div class="tab-method-head">
+            <div class="tab-method-icon tip-ra">🔗</div>
+            <div class="tab-method-meta">
+              <h4>RAFT (Retrieval-Augmented Fine-Tuning)</h4>
+              <div class="tab-tagline">RAG + Fine-Tuning combined · Microsoft Research</div>
+            </div>
+          </div>
+          <div class="tab-chips">
+            <span class="chip chip-green">✓ Factual + behavioral</span>
+            <span class="chip chip-indigo">~ Advanced</span>
+            <span class="chip chip-red">✗ Complex setup</span>
+          </div>
+          <p>Fine-tunes the model to reason over retrieved context — not to memorize data, but to distinguish relevant chunks from noise and synthesize answers the way a domain expert would. A curated subset trains the model <em>how</em> to reason with retrieved content; the rest stays in the external database.</p>
+          <p><strong>Best for:</strong> Domains where factual accuracy and expert-level reasoning style are simultaneously required — think financial analysis, logistics, enterprise search, or any field where both the data and the reasoning pattern matter.</p>
+          <p><strong>Hard limit:</strong> Complex to implement. Requires both a mature retrieval pipeline and a carefully curated fine-tuning dataset. Usually built on top of existing RAG infrastructure, not a starting point.</p>
+        </div>
+
+        <div class="spec-panel" id="tf">
+          <div class="tab-method-head">
+            <div class="tab-method-icon tip-f">🧠</div>
+            <div class="tab-method-meta">
+              <h4>Fine-Tuning</h4>
+              <div class="tab-tagline">Internalized knowledge and behavior — weights change permanently</div>
+            </div>
+          </div>
+          <div class="tab-chips">
+            <span class="chip chip-green">✓ Durable behavior</span>
+            <span class="chip chip-green">✓ No retrieval latency</span>
+            <span class="chip chip-red">✗ Expensive</span>
+            <span class="chip chip-red">✗ Maintenance overhead</span>
+          </div>
+          <p>You're changing the model itself. Weights shift so baseline behavior, domain fluency, and response style are permanently different. Think of a generalist consultant who goes back to specialize in one industry — the broad reasoning ability stays, but every instinct, vocabulary choice, and framing is now shaped by deep domain immersion.</p>
+          <p><strong>Best for:</strong> Consistent behavioral change at scale, domain-specific tone that can't be maintained through prompting, custom tool-use patterns, latency-sensitive applications where RAG round-trips are too slow.</p>
+          <p><strong>Hard limit:</strong> Expensive GPU training, requires high-quality curated datasets, risks catastrophic forgetting, cannot reliably memorize hard facts, and needs ongoing evaluation infrastructure. Not a one-time project.</p>
+          <div class="pill-row"><a href="https://rawweights.com/guide/llm-post-training-guide.html" class="pill-link">📖 LLM Post-Training Guide</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         05 · DECISION FRAMEWORK
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-decision">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2>The Decision Framework</h2>
+      </div>
+
+      <p>Work through this diagnostic before reaching for fine-tuning. Move to the next question only when the current approach is genuinely exhausted and measured.</p>
+
+      <div class="dtree">
+        <div class="dt-question">🚀 You have a model and a production use case</div>
+        <div class="dt-connector">↓</div>
+        <div class="dt-question">Does the model perform acceptably with a detailed system prompt + few-shot examples?</div>
+        <div class="dt-branches">
+          <div class="dt-branch dt-branch-stop">
+            <div class="dt-lbl lbl-stop"><span>✓</span> Yes</div>
+            <div class="dt-result-title">Stay with prompt engineering</div>
+            <p class="dt-result-desc">Iterate on your system prompt. Add structured output constraints, explicit rules, and format examples. This is the cheapest, most reversible option — never skip it.</p>
+          </div>
+          <div class="dt-branch dt-branch-no">
+            <div class="dt-lbl lbl-no"><span>✗</span> No — diagnose first</div>
+            <div class="dt-result-title">Identify the gap type</div>
+            <p class="dt-result-desc">Is it a <em>knowledge gap</em> (model doesn't know your domain) or a <em>behavioral gap</em> (it has the info but behaves wrong)?</p>
+          </div>
+        </div>
+
+        <div class="dt-connector" style="margin-top:0.75rem;">↓ If knowledge gap</div>
+        <div class="dt-question">Does attaching a RAG knowledge base close the gap?</div>
+        <div class="dt-branches">
+          <div class="dt-branch dt-branch-stop">
+            <div class="dt-lbl lbl-stop"><span>✓</span> Yes</div>
+            <div class="dt-result-title">Use RAG</div>
+            <p class="dt-result-desc">Invest in retrieval quality: chunking strategy, metadata filters, hybrid search, re-ranking. Most knowledge gaps are RAG problems — not fine-tuning problems.</p>
+          </div>
+          <div class="dt-branch dt-branch-no">
+            <div class="dt-lbl lbl-no"><span>✗</span> No — gap persists</div>
+            <div class="dt-result-title">Something deeper is needed</div>
+            <p class="dt-result-desc">The model can access information but can't reason over it like an expert, latency is too high, or behavior remains inconsistent at production scale.</p>
+          </div>
+        </div>
+
+        <div class="dt-connector" style="margin-top:0.75rem;">↓ If gap persists</div>
+        <div class="dt-question">Does the ROI justify GPU training cost + dataset curation + ongoing evaluation overhead?</div>
+        <div class="dt-branches">
+          <div class="dt-branch dt-branch-yes">
+            <div class="dt-lbl lbl-yes"><span>✓</span> Clear business case</div>
+            <div class="dt-result-title">Consider fine-tuning</div>
+            <p class="dt-result-desc">You've exhausted cheaper options and the math works. Start with parameter-efficient LoRA before committing to full fine-tuning. Always evaluate against a golden dataset.</p>
+          </div>
+          <div class="dt-branch dt-branch-no">
+            <div class="dt-lbl lbl-no"><span>✗</span> ROI not justified</div>
+            <div class="dt-result-title">Accept current performance or upgrade base model</div>
+            <p class="dt-result-desc">Going from 70% to 80% doesn't always change business outcomes enough to justify training costs. The math has to work first.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         06 · COMPARISON TABLE
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-compare">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2>Method Comparison at a Glance</h2>
+      </div>
+
+      <div class="comp-wrap">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Prompt Eng.</th>
+              <th>RAG</th>
+              <th>Fine-Tuning</th>
+              <th>RAFT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Changes model weights?</td>
+              <td><span class="cell-no">✗</span></td>
+              <td><span class="cell-no">✗</span></td>
+              <td><span class="cell-yes">✓</span></td>
+              <td><span class="cell-yes">✓</span></td>
+            </tr>
+            <tr>
+              <td>Adds domain knowledge?</td>
+              <td><span class="cell-part">~ Limited</span></td>
+              <td><span class="cell-yes">✓ Yes</span></td>
+              <td><span class="cell-part">~ Indirect</span></td>
+              <td><span class="cell-yes">✓ Yes</span></td>
+            </tr>
+            <tr>
+              <td>Changes behavior / tone?</td>
+              <td><span class="cell-part">~ Fragile</span></td>
+              <td><span class="cell-no">✗</span></td>
+              <td><span class="cell-yes">✓ Durable</span></td>
+              <td><span class="cell-yes">✓ Durable</span></td>
+            </tr>
+            <tr>
+              <td>Reliable factual recall?</td>
+              <td><span class="cell-no">✗</span></td>
+              <td><span class="cell-yes">✓ Yes</span></td>
+              <td><span class="cell-no">✗</span></td>
+              <td><span class="cell-yes">✓ Yes</span></td>
+            </tr>
+            <tr>
+              <td>Training cost</td>
+              <td><span class="cell-yes">✓ None</span></td>
+              <td><span class="cell-yes">✓ Minimal</span></td>
+              <td><span class="cell-no">✗ High</span></td>
+              <td><span class="cell-no">✗ High</span></td>
+            </tr>
+            <tr>
+              <td>Implementation complexity</td>
+              <td><span class="cell-yes">✓ Low</span></td>
+              <td><span class="cell-part">~ Medium</span></td>
+              <td><span class="cell-no">✗ High</span></td>
+              <td><span class="cell-no">✗ Very High</span></td>
+            </tr>
+            <tr>
+              <td>Reversible?</td>
+              <td><span class="cell-yes">✓ Instantly</span></td>
+              <td><span class="cell-yes">✓ Yes</span></td>
+              <td><span class="cell-no">✗ New checkpoint</span></td>
+              <td><span class="cell-no">✗ New checkpoint</span></td>
+            </tr>
+            <tr>
+              <td>Latency impact at inference</td>
+              <td><span class="cell-yes">✓ None</span></td>
+              <td><span class="cell-part">~ Retrieval overhead</span></td>
+              <td><span class="cell-yes">✓ None</span></td>
+              <td><span class="cell-part">~ Retrieval overhead</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         07 · THE BIG MISCONCEPTION
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-misconception">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2>The Big Misconception</h2>
+      </div>
+
+      <div class="key-insight">
+        <div class="key-insight-label">Stated plainly</div>
+        <div class="key-insight-text">Fine-tuning your model on a 500-page document does not make it reliably remember that document.</div>
+        <div class="key-insight-sub">It changes weights — a lossy compression. The model has learned patterns, not stored text. If you ask it a specific fact from page 247, it may or may not reconstruct it correctly.</div>
+      </div>
+
+      <div class="vs-grid">
+        <div class="vs-card vs-card-rag">
+          <div class="vs-card-icon">📚</div>
+          <div class="vs-card-tag vtag-rag">RAG</div>
+          <h4>The Open-Book Exam</h4>
+          <p>You have no medical background but you're given a healthcare textbook during the exam. You can flip through it, find the relevant section, and write an answer based on what you read. You're referencing the information — not internalizing it. The book stays intact, word for word. Nothing is compressed or approximated.</p>
+        </div>
+        <div class="vs-divider">
+          <div class="vs-badge">VS</div>
+        </div>
+        <div class="vs-card vs-card-ft">
+          <div class="vs-card-icon">🎓</div>
+          <div class="vs-card-tag vtag-ft">Fine-Tuning</div>
+          <h4>Going to Medical School</h4>
+          <p>Now you've actually studied medicine. You understand why a combination of symptoms points to one condition over another. You've internalized the reasoning, terminology, clinical mindset. But you still won't recall every dosage from memory — you look those up. The weights changed; the documents weren't photocopied in. That's the key difference.</p>
+        </div>
+      </div>
+
+      <p>This is exactly why the combination matters. RAG preserves your data faithfully and retrieves it on demand. Fine-tuning changes how the model <em>reasons</em> and <em>communicates</em>. Together, you get a model that thinks like a specialist and has access to authoritative references. That's RAFT.</p>
+
+      <div class="callout callout-orange">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>Practical rule:</strong> For accurate recall of specific facts, policy clauses, prices, or structured data — use RAG. Fine-tuning for factual recall is unreliable by design. It changes statistical weights, not a lookup table.</div>
+      </div>
+
+      <div class="quiz-card" id="quiz-q1">
+        <div class="quiz-label">Knowledge Check</div>
+        <div class="quiz-q">A DTC skincare brand wants their AI assistant to recommend products with <strong>exact current prices and live stock availability</strong> from a daily-updated catalog AND reply in the brand's <strong>warm, conversational tone</strong>. What's the right architecture?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="answerQuiz(this,false,'q1')">
+            <div class="quiz-opt-icon">🗂️</div>
+            Fine-tune the model on the full product catalog so it learns every SKU, price, and stock level
+          </div>
+          <div class="quiz-opt" onclick="answerQuiz(this,true,'q1')" data-correct="true">
+            <div class="quiz-opt-icon">🔗</div>
+            RAG for live product data + prompting or fine-tuning for brand voice
+          </div>
+          <div class="quiz-opt" onclick="answerQuiz(this,false,'q1')">
+            <div class="quiz-opt-icon">✍️</div>
+            Write a detailed system prompt listing all products, prices, and stock levels
+          </div>
+          <div class="quiz-opt" onclick="answerQuiz(this,false,'q1')">
+            <div class="quiz-opt-icon">📦</div>
+            Stuff the entire catalog into a long context window on every request
+          </div>
+        </div>
+        <div class="quiz-fb" id="q1-feedback"></div>
+        <button class="quiz-reset" id="q1-reset" onclick="resetQuiz('q1')" style="display:none;">↺ Try Again</button>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         08 · RAFT
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-raft">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2>RAFT: When You Need Both</h2>
+      </div>
+
+      <p>RAFT (Retrieval-Augmented Fine-Tuning, from Microsoft Research) is the answer when neither RAG nor fine-tuning alone is sufficient. The insight: fine-tune the model to reason over retrieved context better — not to memorize data, but to think like a specialist who also has a reference library.</p>
+
+      <div class="gap-cards" style="margin:1.5rem 0;">
+        <div class="gap-icard">
+          <div class="gap-icard-icon">🚚</div>
+          <h5>Supply chain AI</h5>
+          <p>Fine-tuning teaches supply chain reasoning — lead-time tradeoffs, supplier scoring logic, demand seasonality patterns. RAG delivers live inventory levels, current pricing, and logistics feeds from the ERP. A supply planner who knows the domain cold but still checks live data before committing — that's the RAFT pattern.</p>
+        </div>
+        <div class="gap-icard">
+          <div class="gap-icard-icon">📊</div>
+          <h5>Financial analysis AI</h5>
+          <p>Fine-tuning gives the model analyst-grade reasoning: how to read earnings structure, interpret margin trends, and frame risk. RAG delivers live 10-K filings, current price data, and market feeds. Even an experienced analyst pulls up the actual filing before writing a note — the model should too.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-indigo">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body"><strong>Key distinction:</strong> You don't dump your entire knowledge base into fine-tuning. A curated subset teaches the model <em>how</em> to reason with retrieved content. The rest stays in the external database for live retrieval. Training on the whole corpus would be expensive and defeat the purpose of having a retrieval layer.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         09 · SFT & PREFERENCE OPT
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-methods">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2>Inside Fine-Tuning: SFT &amp; Preference Optimization</h2>
+      </div>
+
+      <p>When you do fine-tune, there's a progression of methods — each incrementally refining model behavior. They work best in this order, and you don't have to use all of them.</p>
+
+      <div class="method-flow">
+        <div class="mf-item">
+          <div class="mf-left">
+            <div class="mf-circle mfc-1">📝</div>
+            <div class="mf-line"></div>
+          </div>
+          <div class="mf-body">
+            <h4>Step 1 — Supervised Fine-Tuning (SFT)</h4>
+            <p>The most common starting point. You create a dataset of (input → desired output) pairs and tell the model: "For this input, this is how you should respond." The model adjusts weights to minimize the difference between its output and your target.</p>
+            <p>SFT works well for well-defined tasks with clear right answers — specific response formats, domain terminology, tool-calling patterns. It's interpretable, relatively affordable, and the right first step before reaching for more complex methods.</p>
+          </div>
+        </div>
+        <div class="mf-item">
+          <div class="mf-left">
+            <div class="mf-circle mfc-2">🎯</div>
+          </div>
+          <div class="mf-body">
+            <h4>Step 2 — Preference Optimization (DPO / RLHF)</h4>
+            <p>Some tasks have no single correct answer. Writing a summary, generating content, drafting emails — two excellent responses can look completely different. Preference optimization is for these cases: you give the model multiple response candidates and train on human judgments of which is better.</p>
+            <p>You've seen this in action: tools like ChatGPT sometimes show two responses and ask which you prefer. That preference data flows back into training, shaping the model toward the preferences of <em>your specific user base</em> — which may differ significantly from a general audience.</p>
+            <p><strong>Example:</strong> Building an agent for a Japanese audience. Responses that land well for a Western audience may not align with Japanese communication norms. Preference optimization on data from Japanese users shapes the model toward those expectations without retraining from scratch.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-indigo">
+        <div class="callout-icon">🔁</div>
+        <div class="callout-body"><strong>The order matters:</strong> SFT → Preference Optimization → Reinforcement Learning. Each stage builds on the last. You get the best results moving through them in sequence, not jumping to RL from a base model. And after fine-tuning, RAG and prompt engineering still work on top — it's not either/or.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         10 · COST & TRADE-OFFS
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-cost">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2>Cost, Latency &amp; Trade-offs</h2>
+      </div>
+
+      <p>Fine-tuning has more costs than just compute. Here's a complete picture of what you're actually committing to — before opening a training job.</p>
+
+      <div class="cost-grid">
+        <div class="cost-card">
+          <div class="cost-card-head">
+            <div class="cost-card-icon">💸</div>
+            <div class="cost-card-title">GPU Training Cost</div>
+          </div>
+          <div class="cost-card-badge cbadge-high">High</div>
+          <p>Not a $5–$10 operation. Even parameter-efficient LoRA requires significant cloud spend. Full fine-tuning of a large model can run into thousands of dollars per training run — and you'll iterate more than once before getting it right.</p>
+        </div>
+        <div class="cost-card">
+          <div class="cost-card-head">
+            <div class="cost-card-icon">📊</div>
+            <div class="cost-card-title">Dataset Curation</div>
+          </div>
+          <div class="cost-card-badge cbadge-high">Often the real bottleneck</div>
+          <p>Quality of training data is the bottleneck, not the algorithm. Assembling a clean, representative, properly formatted fine-tuning dataset is frequently more labor-intensive than the training itself. Garbage in, garbage out — but amplified.</p>
+        </div>
+        <div class="cost-card">
+          <div class="cost-card-head">
+            <div class="cost-card-icon">⚡</div>
+            <div class="cost-card-title">Latency Advantage</div>
+          </div>
+          <div class="cost-card-badge cbadge-win">One real win vs. RAG</div>
+          <p>RAG adds retrieval round-trips. In real-time applications where sub-second response matters, a fine-tuned model with domain knowledge baked into its weights can be meaningfully faster than one that has to retrieve context first.</p>
+        </div>
+        <div class="cost-card">
+          <div class="cost-card-head">
+            <div class="cost-card-icon">🔁</div>
+            <div class="cost-card-title">Ongoing Maintenance</div>
+          </div>
+          <div class="cost-card-badge cbadge-mid">Infrastructure, not a project</div>
+          <p>A fine-tuned model is a new artifact with its own lifecycle. It needs regression tests, monitoring, and re-evaluation over time. When your base model provider releases an updated version, your fine-tune may need to be redone.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-green">
+        <div class="callout-icon">✅</div>
+        <div class="callout-body"><strong>The ROI question to ask:</strong> Does going from 70% to 80% accuracy meaningfully change business outcomes — conversion, user satisfaction, risk reduction? If that accuracy delta doesn't move the needle, the training cost can't be justified. The math has to work before you open a job.</div>
+      </div>
+
+      <div class="pill-row">
+        <a href="https://rawweights.com/tools/limitations-and-frontiers.html" class="pill-link">🔭 LLM Limitations &amp; Frontiers</a>
+        <a href="https://rawweights.com/tools/deep_generative_modeling.html" class="pill-link">🧬 Generative Modeling</a>
+        <a href="https://rawweights.com/tools/deep_reinforcement.html" class="pill-link">🎮 Reinforcement Learning</a>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         11 · SUMMARY
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-summary">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2>Summary: The Specialist Protocol</h2>
+      </div>
+
+      <div class="key-insight">
+        <div class="key-insight-label">The bottom line</div>
+        <div class="key-insight-text">Fine-tuning is a scalpel, not a hammer. Use it only after exhausting prompting and retrieval, when you have high-quality data, when the ROI is clear, and when you have infrastructure to evaluate what you've built.</div>
+      </div>
+
+      <div class="summary-duo">
+        <div class="sd-card sd-do">
+          <div class="sd-header">
+            <div class="sd-header-icon">✅</div>
+            <div class="sd-header-title">Fine-tune when…</div>
+          </div>
+          <ul class="sd-list">
+            <li>Prompting can't reliably maintain tone or format at production scale</li>
+            <li>Custom tool-calling patterns need to be internalized by the model</li>
+            <li>RAG latency is a bottleneck in a real-time application</li>
+            <li>You need durable behavioral change — not hints in the context window</li>
+            <li>The performance gap justifies the training cost and maintenance overhead</li>
+            <li>You have a clean, representative, curated training dataset ready</li>
+          </ul>
+        </div>
+        <div class="sd-card sd-dont">
+          <div class="sd-header">
+            <div class="sd-header-icon">🚫</div>
+            <div class="sd-header-title">Don't fine-tune when…</div>
+          </div>
+          <ul class="sd-list">
+            <li>You haven't tried a detailed, well-structured system prompt yet</li>
+            <li>You expect it to memorize factual data reliably — use RAG for that</li>
+            <li>RAG hasn't been evaluated as a solution for the knowledge gap</li>
+            <li>The accuracy delta doesn't translate to measurable business outcomes</li>
+            <li>You don't have a curated, high-quality training dataset ready</li>
+            <li>You have no evaluation infrastructure to measure improvement</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-indigo">
+        <div class="callout-icon">🎯</div>
+        <div class="callout-body"><strong>The T-shaped view:</strong> You don't need to be a fine-tuning practitioner to be an effective AI engineer. Understanding <em>when</em> to reach for it — and when to hand off to someone who specializes in it — is the judgment call that actually matters in practice. Fine-tuning teams exist at frontier labs because it's a specialization, not because every AI engineer needs to master it.</div>
+      </div>
+
+      <div style="margin-top:2rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a href="https://rawweights.com/guide/llm-post-training-guide.html" class="rw-btn rw-btn-primary">LLM Post-Training Deep Dive →</a>
+        <a href="https://rawweights.com/tools/master_ml_hub.html" class="rw-btn rw-btn-ghost">ML Concepts Hub</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-related='[{"label":"LLM Post-Training Guide","url":"/guide/llm-post-training-guide.html"},{"label":"ML Concepts Hub","url":"/tools/master_ml_hub.html"},{"label":"LLM Frontiers","url":"/tools/limitations-and-frontiers.html"},{"label":"RAG Pipeline Toolkit","url":"/guide/rag-pipeline-toolkit.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// Gap toggle
+function switchGap(id, btn) {
+  document.querySelectorAll('.gap-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.gap-panel-wrap').forEach(p => p.classList.remove('active'));
+  document.getElementById('gap-' + id).classList.add('active');
+}
+
+// Spectrum tab switcher
+function switchMethod(id, btn) {
+  var wrap = btn.closest('.method-spectrum-tabs');
+  wrap.querySelectorAll('.spec-btn').forEach(function(b) { b.classList.remove('active'); });
+  wrap.querySelectorAll('.spec-panel').forEach(function(p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// Quiz
+function answerQuiz(el, correct, qid) {
+  var card = document.getElementById('quiz-' + qid);
+  if (card.dataset.answered) return;
+  card.dataset.answered = '1';
+  card.querySelectorAll('.quiz-opt').forEach(function(o) { o.style.pointerEvents = 'none'; });
+  if (correct) {
+    el.classList.add('opt-correct');
+  } else {
+    el.classList.add('opt-wrong');
+    card.querySelectorAll('.quiz-opt[data-correct="true"]').forEach(function(o) { o.classList.add('opt-reveal'); });
+  }
+  var fb = document.getElementById(qid + '-feedback');
+  fb.classList.add('show');
+  if (correct) {
+    fb.classList.add('fb-correct');
+    fb.innerHTML = '<div class="fb-icon">✓</div><div>Correct. Prices and stock change daily — fine-tuning would burn in a stale snapshot that can\'t be reliably recalled anyway (weights aren\'t a lookup table). RAG keeps that data live and accurate. Brand voice is behavioral: a well-crafted prompt or light fine-tune handles it cleanly. Two separate problems, two separate tools.</div>';
+  } else {
+    fb.classList.add('fb-wrong');
+    fb.innerHTML = '<div class="fb-icon">✗</div><div>Not quite. Product prices and inventory change constantly — fine-tuning bakes in a stale snapshot and still can\'t guarantee reliable recall. The right split is RAG for live catalog data (accurate, always current) plus prompting or fine-tuning for consistent brand tone. Each technique does what it\'s actually good at.</div>';
+  }
+  var resetBtn = document.getElementById(qid + '-reset');
+  if (resetBtn) resetBtn.style.display = 'inline-flex';
+}
+
+function resetQuiz(qid) {
+  var card = document.getElementById('quiz-' + qid);
+  delete card.dataset.answered;
+  card.querySelectorAll('.quiz-opt').forEach(function(o) {
+    o.style.pointerEvents = '';
+    o.classList.remove('opt-correct', 'opt-wrong', 'opt-reveal');
+  });
+  var fb = document.getElementById(qid + '-feedback');
+  fb.className = 'quiz-fb';
+  fb.innerHTML = '';
+  var resetBtn = document.getElementById(qid + '-reset');
+  if (resetBtn) resetBtn.style.display = 'none';
+}
+
+// Weight bar animation (IntersectionObserver)
+(function() {
+  var done = false;
+  function run() {
+    if (done) return; done = true;
+    setTimeout(function() { document.getElementById('wbar-full').style.width = '100%'; }, 200);
+    setTimeout(function() { document.getElementById('wbar-lora').style.width = '5%'; }, 380);
+    setTimeout(function() { document.getElementById('wbar-tl').style.width = '13%'; }, 560);
+  }
+  var obs = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) run();
+  }, { threshold: 0.3 });
+  var target = document.querySelector('.weight-viz-wrap');
+  if (target) obs.observe(target); else window.addEventListener('load', run);
+})();
+
+// Scrollspy
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var id = e.target.id;
+        links.forEach(function(l) {
+          l.classList.toggle('toc-active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(function(s) { obs.observe(s); });
+})();
+</script>
+
+</body>
+</html>
