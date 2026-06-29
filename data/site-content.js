@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Fine-Tuning Part 2: The Production Protocol ",
+        excerpt: "What happens after you train? LoRA deployment paths, RL alignment methods, synthetic data, GPU cost tiers, distillation, and Ollama — the full production playbook.",
+        date: "June 28, 2026",
+        image: "./images/proddeploy.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/fine-tuning-production.html",
+        linkedin: null
+      },
+      {
         title: "Fine-Tuning LLMs: The Specialist Protocol",
         excerpt: "When should you fine-tune an LLM — and when is it overkill? A visual guide covering knowledge gaps, behavioral gaps, RAG vs fine-tuning, RAFT, SFT, and preference optimization.",
         date: "June 27, 2026",
         image: "./images/spectrum.png",
         type: "Guide",
         link: "https://rawweights.com/guide/fine-tuning-llm-guide.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_ai-llms-machinelearning-activity-7476879607988670466-Bm_B"
       },
       {
         title: "SentTriage — Behavioral Email Classifier",

@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fine-Tuning Part 2: The Production Protocol | RawWeights</title>
+  <meta name="description" content="What happens after you train? LoRA deployment paths, RL alignment methods, synthetic data, GPU cost tiers, distillation, and Ollama — the full production playbook.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/guide/fine-tuning-production.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/proddeploy.png">
+
+  <meta property="og:url" content="https://rawweights.com/guide/fine-tuning-production.html">
+  <meta property="og:title" content="Fine-Tuning Part 2: The Production Protocol | RawWeights">
+  <meta property="og:description" content="LoRA deployment paths, RL fine-tuning methods, synthetic data, GPU cost tiers, and local inference with Ollama.">
+  <meta property="og:image" content="https://rawweights.com/images/fine-tuning-production-guide.jpg">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       HERO  (teal/indigo variant — differentiates from Part 1)
+    ═══════════════════════════════════════════════════ */
+    .guide-hero {
+      background: linear-gradient(135deg, #050d1a 0%, #0d1a30 50%, #081824 100%);
+      padding: 5rem 1.5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-hero::before {
+      content:''; position:absolute; top:-20%; right:-5%;
+      width:500px; height:500px;
+      background:radial-gradient(circle, rgba(6,182,212,0.2) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .guide-hero::after {
+      content:''; position:absolute; bottom:-10%; left:-5%;
+      width:350px; height:350px;
+      background:radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .hero-inner { max-width:860px; margin:0 auto; position:relative; }
+    .hero-label {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      background:rgba(6,182,212,0.12); border:1px solid rgba(6,182,212,0.28);
+      border-radius:9999px; padding:0.3rem 0.9rem;
+      font-size:0.72rem; font-weight:700; color:#22d3ee;
+      text-transform:uppercase; letter-spacing:0.07em;
+      font-family:var(--rw-font-display); margin-bottom:1.25rem;
+    }
+    .guide-hero h1 {
+      font-family:var(--rw-font-display); font-size:clamp(2rem,5vw,3.4rem);
+      font-weight:800; color:#f0f4ff; line-height:1.1;
+      letter-spacing:-0.025em; margin-bottom:1rem;
+    }
+    .guide-hero h1 span { color:#22d3ee; }
+    .guide-hero > .hero-inner > p {
+      font-size:1.05rem; color:rgba(240,244,255,0.7);
+      max-width:620px; margin:0 auto 2rem; line-height:1.7;
+    }
+    .hero-outcomes {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      gap:0; margin:0 auto 2rem; max-width:760px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:var(--rw-r-md); overflow:hidden;
+    }
+    .hero-outcome {
+      padding:1rem 0.75rem; text-align:center;
+      border-right:1px solid rgba(255,255,255,0.1);
+    }
+    .hero-outcome:last-child { border-right:none; }
+    .hero-outcome-icon { font-size:1.35rem; margin-bottom:0.3rem; }
+    .hero-outcome-txt { font-size:0.72rem; color:rgba(240,244,255,0.6); line-height:1.4; font-family:var(--rw-font-display); font-weight:600; }
+
+    /* ═══════════════════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════════════════ */
+    .guide-layout {
+      display:grid; grid-template-columns:232px 1fr; gap:2.5rem;
+      max-width:1200px; margin:0 auto; padding:3rem 1.5rem; align-items:start;
+    }
+    .guide-sidebar { position:sticky; top:calc(var(--rw-nav-height) + 1.5rem); }
+    .toc-label {
+      font-family:var(--rw-font-display); font-size:0.68rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.09em;
+      color:var(--rw-text-subtle); margin-bottom:0.75rem;
+    }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:0.1rem; }
+    .guide-toc a {
+      font-size:0.82rem; color:var(--rw-text-muted); text-decoration:none;
+      padding:0.28rem 0.6rem; border-left:2px solid transparent;
+      display:flex; align-items:center; gap:0.4rem;
+      border-radius:0 4px 4px 0;
+      transition:color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .guide-toc a:hover, .guide-toc a.toc-active {
+      color:var(--rw-orange); border-left-color:var(--rw-orange); background:var(--rw-orange-light);
+    }
+    .toc-num {
+      font-size:0.65rem; font-weight:800; font-family:var(--rw-font-display);
+      color:var(--rw-text-subtle); min-width:16px;
+    }
+    .guide-toc a.toc-active .toc-num { color:var(--rw-orange); }
+    .sidebar-explore { margin-top:2rem; }
+    .explore-link {
+      display:flex; align-items:center; gap:0.5rem;
+      font-size:0.79rem; font-weight:600; font-family:var(--rw-font-display);
+      color:var(--rw-text-muted); text-decoration:none;
+      padding:0.45rem 0.6rem; border-radius:var(--rw-r-sm);
+      transition:all 0.15s; margin-bottom:0.15rem;
+    }
+    .explore-link:hover { background:var(--rw-orange-light); color:var(--rw-orange); }
+    .explore-link-icon { font-size:0.95rem; }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION BASE
+    ═══════════════════════════════════════════════════ */
+    .guide-section { margin-bottom:4rem; }
+    .section-header { display:flex; align-items:baseline; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.6rem; border-bottom:2px solid var(--rw-orange-light); }
+    .section-num {
+      font-family:var(--rw-font-display); font-size:0.75rem; font-weight:800;
+      color:var(--rw-orange); background:var(--rw-orange-light);
+      padding:0.1rem 0.45rem; border-radius:4px; letter-spacing:0.04em; flex-shrink:0;
+    }
+    .section-header h2 {
+      font-family:var(--rw-font-display); font-size:1.55rem; font-weight:800;
+      color:var(--rw-text); margin:0; line-height:1.2;
+      scroll-margin-top:calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 {
+      font-family:var(--rw-font-display); font-size:1.05rem; font-weight:700;
+      color:var(--rw-text); margin:1.5rem 0 0.5rem;
+    }
+    .guide-section p {
+      font-size:0.97rem; color:var(--rw-text-muted); line-height:1.78; margin-bottom:0.9rem;
+    }
+    .guide-section p:last-child { margin-bottom:0; }
+
+    /* ═══════════════════════════════════════════════════
+       KEY INSIGHT
+    ═══════════════════════════════════════════════════ */
+    .key-insight {
+      margin:1.75rem 0; padding:1.5rem 1.75rem;
+      background:linear-gradient(135deg, rgba(249,115,22,0.06), rgba(249,115,22,0.02));
+      border:1px solid rgba(249,115,22,0.25); border-left:4px solid #f97316;
+      border-radius:0 var(--rw-r-md) var(--rw-r-md) 0;
+    }
+    .key-insight-label {
+      font-family:var(--rw-font-display); font-size:0.65rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.1em; color:#f97316; margin-bottom:0.5rem;
+    }
+    .key-insight-text {
+      font-family:var(--rw-font-display); font-size:1.15rem; font-weight:700;
+      color:var(--rw-text); line-height:1.5; margin:0;
+    }
+    .key-insight-sub {
+      font-size:0.87rem; color:var(--rw-text-muted); margin-top:0.5rem; line-height:1.6;
+    }
+    .key-insight-teal {
+      background:linear-gradient(135deg, rgba(6,182,212,0.07), rgba(6,182,212,0.02));
+      border-color:rgba(6,182,212,0.28); border-left-color:#06b6d4;
+    }
+    .key-insight-teal .key-insight-label { color:#0891b2; }
+
+    /* ═══════════════════════════════════════════════════
+       CALLOUTS
+    ═══════════════════════════════════════════════════ */
+    .callout {
+      display:flex; gap:0.85rem; align-items:flex-start;
+      border-radius:var(--rw-r-md); padding:1.1rem 1.25rem;
+      font-size:0.91rem; color:var(--rw-text-muted); margin:1.25rem 0; line-height:1.65;
+    }
+    .callout-icon { font-size:1.25rem; flex-shrink:0; margin-top:0.05rem; }
+    .callout-body strong { display:block; margin-bottom:0.2rem; font-family:var(--rw-font-display); font-size:0.9rem; }
+    .callout-orange { background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.2); }
+    .callout-orange .callout-body strong { color:#ea580c; }
+    .callout-indigo { background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.2); }
+    .callout-indigo .callout-body strong { color:#6366f1; }
+    .callout-green { background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); }
+    .callout-green .callout-body strong { color:#059669; }
+    .callout-teal { background:rgba(6,182,212,0.07); border:1px solid rgba(6,182,212,0.2); }
+    .callout-teal .callout-body strong { color:#0891b2; }
+
+    /* ═══════════════════════════════════════════════════
+       DEPLOY GRID  (LoRA merge vs separate)
+    ═══════════════════════════════════════════════════ */
+    .deploy-grid {
+      display:grid; grid-template-columns:1fr auto 1fr; gap:0;
+      margin:1.5rem 0; align-items:stretch;
+    }
+    .deploy-option {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md) 0 0 var(--rw-r-md); padding:1.5rem;
+      display:flex; flex-direction:column; gap:0.6rem;
+    }
+    .deploy-option-b {
+      border-radius:0 var(--rw-r-md) var(--rw-r-md) 0;
+      border-left:none; border-color:#06b6d4;
+      background:linear-gradient(135deg, rgba(6,182,212,0.04), transparent);
+    }
+    .deploy-divider {
+      display:flex; align-items:center; justify-content:center;
+      background:var(--rw-bg-alt); border-top:1px solid var(--rw-border);
+      border-bottom:1px solid var(--rw-border); width:46px;
+    }
+    .deploy-badge-text {
+      background:#0f172a; color:#f0f4ff;
+      font-family:var(--rw-font-display); font-size:0.72rem; font-weight:800;
+      padding:0.3rem 0.45rem; border-radius:6px; letter-spacing:0.03em;
+    }
+    [data-theme="light"] .deploy-badge-text { background:#1e293b; }
+    .deploy-tag {
+      display:inline-block; font-size:0.65rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.07em; padding:0.15rem 0.5rem; border-radius:4px; margin-bottom:0.3rem;
+    }
+    .dtag-a { background:rgba(249,115,22,0.12); color:#ea580c; }
+    .dtag-b { background:rgba(6,182,212,0.12); color:#0891b2; }
+    .deploy-icon { font-size:2rem; margin-bottom:0.3rem; }
+    .deploy-option h4 { font-family:var(--rw-font-display); font-size:0.97rem; font-weight:700; color:var(--rw-text); margin:0; }
+    .deploy-option p { font-size:0.86rem; color:var(--rw-text-muted); margin:0; line-height:1.6; }
+    .deploy-pros, .deploy-cons {
+      font-size:0.82rem; display:flex; flex-direction:column; gap:0.3rem; margin-top:0.25rem;
+    }
+    .deploy-pros span::before { content:'✓ '; color:#10b981; font-weight:700; }
+    .deploy-cons span::before { content:'✗ '; color:#ef4444; font-weight:700; }
+    .deploy-pros span, .deploy-cons span { color:var(--rw-text-muted); }
+
+    /* ═══════════════════════════════════════════════════
+       MODEL CARD ITEMS
+    ═══════════════════════════════════════════════════ */
+    .mcard-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:0.85rem; margin:1.5rem 0;
+    }
+    .mcard-item {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); padding:1rem 1.15rem;
+      display:flex; align-items:flex-start; gap:0.75rem;
+    }
+    .mcard-item-icon { font-size:1.35rem; flex-shrink:0; margin-top:0.05rem; }
+    .mcard-item h5 {
+      font-family:var(--rw-font-display); font-size:0.85rem; font-weight:700;
+      color:var(--rw-text); margin:0 0 0.2rem;
+    }
+    .mcard-item p { font-size:0.81rem; color:var(--rw-text-muted); margin:0; line-height:1.5; }
+
+    /* ═══════════════════════════════════════════════════
+       TIMELINE STEPS
+    ═══════════════════════════════════════════════════ */
+    .timeline { position:relative; margin:1.5rem 0; padding-left:0; list-style:none; }
+    .timeline::before {
+      content:''; position:absolute; left:18px; top:30px;
+      bottom:30px; width:2px;
+      background:linear-gradient(to bottom, #f97316, #6366f1);
+      opacity:0.3; border-radius:2px;
+    }
+    .tl-item { display:flex; gap:1.25rem; align-items:flex-start; margin-bottom:1.5rem; position:relative; }
+    .tl-item:last-child { margin-bottom:0; }
+    .tl-dot {
+      width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--rw-font-display); font-weight:800; font-size:0.82rem; color:#fff;
+      position:relative; z-index:1; box-shadow:0 0 0 4px var(--rw-bg);
+    }
+    .tl-dot-1 { background:#10b981; }
+    .tl-dot-2 { background:#f97316; }
+    .tl-dot-3 { background:#6366f1; }
+    .tl-dot-4 { background:#06b6d4; }
+    .tl-dot-5 { background:#8b5cf6; }
+    .tl-body { padding-top:0.3rem; flex:1; }
+    .tl-body h4 { font-family:var(--rw-font-display); font-weight:700; font-size:0.97rem; color:var(--rw-text); margin:0 0 0.3rem; }
+    .tl-body p { font-size:0.875rem; color:var(--rw-text-muted); margin:0; line-height:1.6; }
+    .tl-line { flex:1; width:2px; background:linear-gradient(to bottom,rgba(249,115,22,0.3),rgba(99,102,241,0.3)); margin:4px 0; min-height:24px; }
+    .tl-left { display:flex; flex-direction:column; align-items:center; padding-right:1.25rem; }
+    .tl-item:last-child .tl-line { display:none; }
+
+    /* ═══════════════════════════════════════════════════
+       RL LOOP FLOW
+    ═══════════════════════════════════════════════════ */
+    .rl-loop {
+      display:flex; align-items:center; gap:0;
+      margin:1.75rem 0; flex-wrap:wrap; justify-content:center;
+    }
+    .rll-node {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:0.3rem; padding:0.9rem 0.75rem; text-align:center;
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); min-width:100px;
+    }
+    .rll-node-icon { font-size:1.4rem; line-height:1; }
+    .rll-node-label {
+      font-family:var(--rw-font-display); font-size:0.73rem; font-weight:700;
+      color:var(--rw-text); line-height:1.3;
+    }
+    .rll-node-sub { font-size:0.66rem; color:var(--rw-text-subtle); }
+    .rll-arrow {
+      font-size:1.1rem; color:var(--rw-text-subtle); padding:0 0.4rem; flex-shrink:0;
+    }
+    .rll-model  { border-color:#6366f1; background:rgba(99,102,241,0.06); }
+    .rll-grade  { border-color:#06b6d4; background:rgba(6,182,212,0.06); }
+    .rll-reward { border-color:#10b981; background:rgba(16,185,129,0.06); }
+    .rll-update { border-color:#f97316; background:rgba(249,115,22,0.06); }
+
+    /* ═══════════════════════════════════════════════════
+       REWARD METHOD TABS (RLVR / RLHF)
+    ═══════════════════════════════════════════════════ */
+    .reward-tabs { margin:1.5rem 0; }
+    .reward-nav {
+      display:flex; border-radius:var(--rw-r-md) var(--rw-r-md) 0 0;
+      overflow:hidden; border:1px solid var(--rw-border); border-bottom:none;
+    }
+    .reward-btn {
+      flex:1; padding:0.9rem 1rem; border:none;
+      font-family:var(--rw-font-display); font-size:0.88rem; font-weight:700;
+      color:#fff; cursor:pointer; transition:all 0.15s;
+      display:flex; align-items:center; justify-content:center; gap:0.5rem;
+      border-right:1px solid rgba(255,255,255,0.15); opacity:0.65;
+    }
+    .reward-btn:last-child { border-right:none; }
+    .reward-btn.active { opacity:1; }
+    .rbtn-vr  { background:#06b6d4; }
+    .rbtn-hf  { background:#6366f1; }
+    .reward-panel {
+      display:none; padding:1.5rem; background:var(--rw-card);
+      border:1px solid var(--rw-border); border-top:3px solid #06b6d4;
+      border-radius:0 0 var(--rw-r-sm) var(--rw-r-sm);
+    }
+    .reward-panel.active { display:block; }
+    #rvr.reward-panel { border-top-color:#06b6d4; }
+    #rhf.reward-panel { border-top-color:#6366f1; }
+    .reward-panel h4 { font-family:var(--rw-font-display); font-size:0.97rem; font-weight:700; color:var(--rw-text); margin:0 0 0.5rem; }
+    .reward-panel p { font-size:0.9rem; color:var(--rw-text-muted); margin:0 0 0.7rem; line-height:1.65; }
+    .reward-panel p:last-child { margin-bottom:0; }
+    .tab-chips { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .chip {
+      display:inline-flex; align-items:center; gap:0.3rem;
+      font-size:0.74rem; font-weight:700; font-family:var(--rw-font-display);
+      padding:0.2rem 0.6rem; border-radius:9999px;
+    }
+    .chip-green  { background:rgba(16,185,129,0.12); color:#059669; }
+    .chip-red    { background:rgba(239,68,68,0.1);   color:#dc2626; }
+    .chip-cyan   { background:rgba(6,182,212,0.1);   color:#0891b2; }
+    .chip-indigo { background:rgba(99,102,241,0.1);  color:#6366f1; }
+
+    /* Grader example box */
+    .grader-example {
+      background:var(--rw-bg-alt); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-sm); padding:1.1rem 1.25rem; margin:1rem 0;
+    }
+    .grader-example-label {
+      font-family:var(--rw-font-display); font-size:0.65rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.09em; color:#06b6d4; margin-bottom:0.6rem;
+    }
+    .grader-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.4rem; font-size:0.85rem; }
+    .grader-row:last-child { margin-bottom:0; }
+    .gr-label { color:var(--rw-text-muted); min-width:160px; }
+    .gr-bar { flex:1; height:8px; background:var(--rw-bg); border-radius:9999px; overflow:hidden; }
+    .gr-fill { height:100%; border-radius:9999px; }
+    .gf-full    { background:#10b981; width:100%; }
+    .gf-partial { background:#f59e0b; width:70%; }
+    .gf-wrong   { background:#ef4444; width:0%; }
+    .gr-score { font-family:var(--rw-font-mono); font-size:0.8rem; font-weight:700; color:var(--rw-text); min-width:36px; text-align:right; }
+
+    /* ═══════════════════════════════════════════════════
+       METHOD LADDER (prompt→sft→rl ordering)
+    ═══════════════════════════════════════════════════ */
+    .method-ladder { display:flex; gap:0; margin:1.5rem 0; }
+    .ml-step {
+      flex:1; background:var(--rw-card); border:1px solid var(--rw-border);
+      padding:1.1rem; text-align:center; position:relative;
+    }
+    .ml-step:first-child { border-radius:var(--rw-r-md) 0 0 var(--rw-r-md); }
+    .ml-step:last-child  { border-radius:0 var(--rw-r-md) var(--rw-r-md) 0; border-left:none; }
+    .ml-step:not(:first-child):not(:last-child) { border-left:none; }
+    .ml-step-num {
+      display:inline-block; width:24px; height:24px; border-radius:50%;
+      font-family:var(--rw-font-display); font-size:0.72rem; font-weight:800;
+      color:#fff; line-height:24px; text-align:center; margin-bottom:0.5rem;
+    }
+    .mls-1 { background:#10b981; }
+    .mls-2 { background:#6366f1; }
+    .mls-3 { background:#f97316; }
+    .mls-4 { background:#06b6d4; }
+    .ml-step h5 { font-family:var(--rw-font-display); font-size:0.82rem; font-weight:700; color:var(--rw-text); margin:0 0 0.2rem; }
+    .ml-step p  { font-size:0.76rem; color:var(--rw-text-muted); margin:0; line-height:1.45; }
+    .ml-step-arrow {
+      position:absolute; right:-12px; top:50%; transform:translateY(-50%);
+      width:22px; height:22px; background:var(--rw-bg);
+      border:1px solid var(--rw-border); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.6rem; color:var(--rw-text-subtle); z-index:1; flex-shrink:0;
+    }
+    .ml-step:last-child .ml-step-arrow { display:none; }
+
+    /* ═══════════════════════════════════════════════════
+       SYNTHETIC DATA CARDS
+    ═══════════════════════════════════════════════════ */
+    .synth-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .synth-card {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); padding:1.25rem; text-align:center;
+    }
+    .synth-card-icon { font-size:2rem; margin-bottom:0.6rem; }
+    .synth-card h5 { font-family:var(--rw-font-display); font-size:0.88rem; font-weight:700; color:var(--rw-text); margin:0 0 0.4rem; }
+    .synth-card p  { font-size:0.83rem; color:var(--rw-text-muted); margin:0; line-height:1.55; text-align:left; }
+
+    /* ═══════════════════════════════════════════════════
+       DISTILLATION FLOW
+    ═══════════════════════════════════════════════════ */
+    .distill-flow {
+      display:flex; align-items:center; justify-content:center;
+      gap:0; margin:1.75rem 0; flex-wrap:wrap;
+    }
+    .df-node {
+      display:flex; flex-direction:column; align-items:center; gap:0.4rem;
+      padding:1.25rem 1.1rem; text-align:center;
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); min-width:130px;
+    }
+    .df-teacher { border-color:#6366f1; background:rgba(99,102,241,0.05); }
+    .df-dataset { border-color:#06b6d4; background:rgba(6,182,212,0.05); }
+    .df-student { border-color:#10b981; background:rgba(16,185,129,0.05); }
+    .df-icon { font-size:1.8rem; line-height:1; }
+    .df-label { font-family:var(--rw-font-display); font-size:0.85rem; font-weight:700; color:var(--rw-text); }
+    .df-sub { font-size:0.73rem; color:var(--rw-text-subtle); }
+    .df-connector {
+      display:flex; flex-direction:column; align-items:center; gap:0.25rem;
+      padding:0 0.6rem;
+    }
+    .df-arrow { font-size:1.1rem; color:var(--rw-text-subtle); }
+    .df-connector-label { font-size:0.68rem; color:var(--rw-text-subtle); font-family:var(--rw-font-display); font-weight:600; white-space:nowrap; }
+
+    /* ═══════════════════════════════════════════════════
+       GPU TIER CARDS
+    ═══════════════════════════════════════════════════ */
+    .gpu-tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .gpu-tier {
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); padding:1.25rem;
+      display:flex; flex-direction:column; gap:0.5rem;
+    }
+    .gpu-tier-head { display:flex; align-items:center; gap:0.65rem; margin-bottom:0.25rem; }
+    .gpu-tier-icon { font-size:1.5rem; }
+    .gpu-tier-title { font-family:var(--rw-font-display); font-size:0.92rem; font-weight:700; color:var(--rw-text); }
+    .gpu-tier p { font-size:0.84rem; color:var(--rw-text-muted); margin:0; line-height:1.6; }
+    .gpu-badge {
+      display:inline-block; font-size:0.67rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.06em; padding:0.15rem 0.5rem; border-radius:4px; align-self:flex-start;
+    }
+    .gbadge-green  { background:rgba(16,185,129,0.1); color:#059669; }
+    .gbadge-mid    { background:rgba(249,115,22,0.1);  color:#ea580c; }
+    .gbadge-high   { background:rgba(239,68,68,0.1);   color:#dc2626; }
+    .gpu-tier-pros { font-size:0.8rem; display:flex; flex-direction:column; gap:0.2rem; margin-top:0.25rem; }
+    .gpu-tier-pros span::before { content:'✓ '; color:#10b981; font-weight:700; }
+    .gpu-tier-cons { font-size:0.8rem; display:flex; flex-direction:column; gap:0.2rem; }
+    .gpu-tier-cons span::before { content:'✗ '; color:#ef4444; font-weight:700; }
+    .gpu-tier-pros span, .gpu-tier-cons span { color:var(--rw-text-muted); }
+
+    /* ═══════════════════════════════════════════════════
+       ECONOMICS / BREAK-EVEN
+    ═══════════════════════════════════════════════════ */
+    .economics-block {
+      display:flex; align-items:center; justify-content:center;
+      gap:0; margin:1.5rem 0; flex-wrap:wrap;
+    }
+    .econ-node {
+      text-align:center; padding:1.1rem 1.25rem;
+      background:var(--rw-card); border:1px solid var(--rw-border);
+      border-radius:var(--rw-r-md); min-width:110px;
+    }
+    .econ-icon { font-size:1.5rem; margin-bottom:0.2rem; }
+    .econ-label { font-size:0.7rem; color:var(--rw-text-subtle); font-family:var(--rw-font-display); font-weight:600; margin-top:0.2rem; }
+    .econ-pct  { font-family:var(--rw-font-display); font-size:1.4rem; font-weight:800; line-height:1; }
+    .econ-arrow { font-size:1.25rem; color:var(--rw-text-subtle); padding:0 0.5rem; }
+    .econ-tag { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.1rem 0.4rem; border-radius:3px; margin-top:0.35rem; display:inline-block; }
+    .etag-high   { background:rgba(239,68,68,0.1);   color:#dc2626; }
+    .etag-cross  { background:rgba(249,115,22,0.1);  color:#ea580c; }
+    .etag-win    { background:rgba(16,185,129,0.1);  color:#059669; }
+
+    /* ═══════════════════════════════════════════════════
+       LOCAL SPLIT (Ollama benefits vs trade-offs)
+    ═══════════════════════════════════════════════════ */
+    .local-split { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.5rem 0; }
+    .ls-card { border-radius:var(--rw-r-md); padding:1.5rem; border:1px solid; }
+    .ls-benefits { background:rgba(16,185,129,0.05); border-color:rgba(16,185,129,0.25); }
+    .ls-tradeoffs{ background:rgba(239,68,68,0.04);  border-color:rgba(239,68,68,0.2); }
+    .ls-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem; }
+    .ls-header-icon { font-size:1.25rem; }
+    .ls-header-title { font-family:var(--rw-font-display); font-size:0.95rem; font-weight:800; color:var(--rw-text); }
+    .ls-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.55rem; }
+    .ls-list li { display:flex; align-items:flex-start; gap:0.5rem; font-size:0.86rem; color:var(--rw-text-muted); line-height:1.5; }
+    .ls-benefits  .ls-list li::before { content:'✓'; color:#10b981; font-weight:700; flex-shrink:0; margin-top:0.1rem; }
+    .ls-tradeoffs .ls-list li::before { content:'✗'; color:#ef4444; font-weight:700; flex-shrink:0; margin-top:0.1rem; }
+
+    /* ═══════════════════════════════════════════════════
+       SUMMARY DO / DON'T
+    ═══════════════════════════════════════════════════ */
+    .summary-duo { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.5rem 0; }
+    .sd-card { border-radius:var(--rw-r-md); padding:1.5rem; border:1px solid; }
+    .sd-do   { background:rgba(16,185,129,0.05); border-color:rgba(16,185,129,0.25); }
+    .sd-dont { background:rgba(239,68,68,0.04);  border-color:rgba(239,68,68,0.2); }
+    .sd-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem; }
+    .sd-header-icon { font-size:1.25rem; }
+    .sd-header-title { font-family:var(--rw-font-display); font-size:0.95rem; font-weight:800; color:var(--rw-text); }
+    .sd-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.55rem; }
+    .sd-list li { display:flex; align-items:flex-start; gap:0.5rem; font-size:0.86rem; color:var(--rw-text-muted); line-height:1.5; }
+    .sd-do   .sd-list li::before { content:'✓'; color:#10b981; font-weight:700; flex-shrink:0; margin-top:0.1rem; }
+    .sd-dont .sd-list li::before { content:'✗'; color:#ef4444; font-weight:700; flex-shrink:0; margin-top:0.1rem; }
+
+    /* ═══════════════════════════════════════════════════
+       QUIZ
+    ═══════════════════════════════════════════════════ */
+    .quiz-card {
+      background:linear-gradient(135deg, rgba(6,182,212,0.04), rgba(99,102,241,0.03));
+      border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.75rem; margin:1.5rem 0;
+    }
+    .quiz-label { font-family:var(--rw-font-display); font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#06b6d4; margin-bottom:0.6rem; }
+    .quiz-q { font-family:var(--rw-font-display); font-size:1.02rem; font-weight:700; color:var(--rw-text); margin-bottom:1.25rem; line-height:1.45; }
+    .quiz-opts { display:flex; flex-direction:column; gap:0.6rem; }
+    .quiz-opt {
+      display:flex; align-items:center; gap:0.85rem;
+      padding:0.8rem 1.1rem; border:1.5px solid var(--rw-border);
+      border-radius:var(--rw-r-sm); cursor:pointer; font-size:0.9rem;
+      color:var(--rw-text-muted); transition:all 0.15s; background:var(--rw-bg);
+    }
+    .quiz-opt:hover { border-color:#06b6d4; color:var(--rw-text); background:var(--rw-bg-alt); }
+    .quiz-opt-icon { width:28px; height:28px; border-radius:50%; background:var(--rw-bg-alt); display:flex; align-items:center; justify-content:center; font-size:0.95rem; flex-shrink:0; }
+    .opt-correct { border-color:#10b981 !important; background:rgba(16,185,129,0.07) !important; color:var(--rw-text) !important; }
+    .opt-correct .quiz-opt-icon { background:rgba(16,185,129,0.2) !important; }
+    .opt-wrong   { border-color:#ef4444 !important; background:rgba(239,68,68,0.06) !important; color:var(--rw-text) !important; }
+    .opt-reveal  { border-color:rgba(16,185,129,0.5) !important; background:rgba(16,185,129,0.04) !important; }
+    .quiz-fb { margin-top:1rem; padding:0.9rem 1.1rem; border-radius:var(--rw-r-sm); font-size:0.9rem; display:none; line-height:1.65; }
+    .quiz-fb.show { display:flex; gap:0.6rem; align-items:flex-start; }
+    .fb-icon { font-size:1.1rem; flex-shrink:0; }
+    .fb-correct { background:rgba(16,185,129,0.1); color:#065f46; border:1px solid rgba(16,185,129,0.3); }
+    .fb-wrong   { background:rgba(239,68,68,0.07); color:#7f1d1d; border:1px solid rgba(239,68,68,0.2); }
+    [data-theme="dark"] .fb-correct { color:#6ee7b7; }
+    [data-theme="dark"] .fb-wrong   { color:#fca5a5; }
+    .quiz-reset {
+      display:none; align-items:center; gap:0.4rem; margin-top:0.9rem;
+      padding:0.45rem 1rem; border-radius:var(--rw-r-sm);
+      border:1px solid var(--rw-border); background:var(--rw-bg-alt);
+      color:var(--rw-text-muted); font-family:var(--rw-font-display);
+      font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.15s;
+    }
+    .quiz-reset:hover { border-color:#06b6d4; color:#06b6d4; background:rgba(6,182,212,0.06); }
+
+    /* ═══════════════════════════════════════════════════
+       PILL LINKS
+    ═══════════════════════════════════════════════════ */
+    .pill-row { display:flex; gap:0.5rem; flex-wrap:wrap; margin:1rem 0; }
+    .pill-link {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      font-size:0.8rem; font-weight:600; font-family:var(--rw-font-display);
+      color:#6366f1; border:1px solid rgba(99,102,241,0.3); border-radius:9999px;
+      padding:0.28rem 0.8rem; text-decoration:none;
+      background:rgba(99,102,241,0.06); transition:all 0.15s;
+    }
+    .pill-link:hover { background:rgba(99,102,241,0.12); border-color:#6366f1; }
+
+    /* ═══════════════════════════════════════════════════
+       COMPARISON TABLE
+    ═══════════════════════════════════════════════════ */
+    .comp-wrap { margin:1.5rem 0; overflow-x:auto; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); }
+    .comp-table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    .comp-table th {
+      background:var(--rw-bg-subtle); font-family:var(--rw-font-display);
+      font-weight:700; font-size:0.78rem; text-align:left;
+      padding:0.75rem 1rem; border-bottom:2px solid var(--rw-border); color:var(--rw-text);
+    }
+    .comp-table th:not(:first-child) { text-align:center; }
+    .comp-table td { padding:0.65rem 1rem; border-bottom:1px solid var(--rw-border); color:var(--rw-text-muted); vertical-align:middle; }
+    .comp-table td:not(:first-child) { text-align:center; }
+    .comp-table tr:last-child td { border-bottom:none; }
+    .comp-table tr:hover td { background:var(--rw-bg-alt); }
+    .cell-yes  { color:#10b981; font-weight:700; }
+    .cell-no   { color:#ef4444; }
+    .cell-part { color:#f59e0b; font-size:0.82rem; }
+    .comp-table td:first-child { font-weight:600; color:var(--rw-text); }
+
+    /* ═══════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════ */
+    @media (max-width:1024px) {
+      .guide-layout { grid-template-columns:1fr; }
+      .guide-sidebar { position:static; }
+      .deploy-grid, .distill-flow { grid-template-columns:1fr; }
+      .deploy-option { border-radius:var(--rw-r-md) var(--rw-r-md) 0 0; }
+      .deploy-option-b { border-radius:0 0 var(--rw-r-md) var(--rw-r-md); border-left:1px solid #06b6d4; border-top:none; }
+      .deploy-divider { display:none; }
+      .mcard-grid, .gpu-tiers, .synth-grid { grid-template-columns:1fr 1fr; }
+      .summary-duo, .local-split { grid-template-columns:1fr; }
+      .hero-outcomes { grid-template-columns:repeat(2,1fr); }
+      .method-ladder { flex-direction:column; }
+      .ml-step { border-radius:0; border-left:1px solid var(--rw-border) !important; border-top:none; }
+      .ml-step:first-child { border-radius:var(--rw-r-md) var(--rw-r-md) 0 0; border-top:1px solid var(--rw-border); }
+      .ml-step:last-child  { border-radius:0 0 var(--rw-r-md) var(--rw-r-md); }
+      .ml-step-arrow { display:none; }
+      .rl-loop { flex-wrap:wrap; gap:0.5rem; justify-content:center; }
+      .rll-arrow { display:none; }
+    }
+    @media (max-width:600px) {
+      .mcard-grid, .gpu-tiers, .synth-grid { grid-template-columns:1fr; }
+      .hero-outcomes { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<div class="guide-hero">
+  <div class="hero-inner">
+    <div class="hero-label">🚀 Guide · Part 2</div>
+    <h1>Fine-Tuning Part 2:<br><span>The Production Protocol</span></h1>
+    <p>You trained the model. Now what? LoRA deployment paths, RL alignment methods, synthetic data strategies, GPU cost tiers, distillation, and running your own stack with Ollama — the full playbook for what comes after training.</p>
+
+    <div class="hero-outcomes">
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">🔀</div>
+        <div class="hero-outcome-txt">2 LoRA deployment paths decoded</div>
+      </div>
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">🧠</div>
+        <div class="hero-outcome-txt">RL methods: RLVR, RLHF &amp; GRPO</div>
+      </div>
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">🎓</div>
+        <div class="hero-outcome-txt">Distillation &amp; synthetic data</div>
+      </div>
+      <div class="hero-outcome">
+        <div class="hero-outcome-icon">🏠</div>
+        <div class="hero-outcome-txt">Ollama: AI that runs anywhere</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#guide-content" class="rw-btn rw-btn-primary">Start Reading ↓</a>
+      <a href="fine-tuning-llm-guide.html" class="rw-btn rw-btn-ghost" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.22);">← Part 1: The Specialist Protocol</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LAYOUT ═══════════════ -->
+<div class="guide-layout" id="guide-content">
+
+  <!-- Sidebar -->
+  <aside class="guide-sidebar">
+    <div class="toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-deploy"><span class="toc-num">01</span>LoRA Deployment Paths</a></li>
+      <li><a href="#section-modelcard"><span class="toc-num">02</span>Model Cards</a></li>
+      <li><a href="#section-canary"><span class="toc-num">03</span>Canary &amp; Rollback</a></li>
+      <li><a href="#section-rl"><span class="toc-num">04</span>RL — The Alignment Engine</a></li>
+      <li><a href="#section-rewards"><span class="toc-num">05</span>RLVR vs RLHF</a></li>
+      <li><a href="#section-ladder"><span class="toc-num">06</span>The Method Ladder</a></li>
+      <li><a href="#section-synthetic"><span class="toc-num">07</span>Synthetic Data</a></li>
+      <li><a href="#section-distill"><span class="toc-num">08</span>Distillation</a></li>
+      <li><a href="#section-gpu"><span class="toc-num">09</span>GPU Cost Architecture</a></li>
+      <li><a href="#section-breakeven"><span class="toc-num">10</span>Training vs Inference Cost</a></li>
+      <li><a href="#section-ollama"><span class="toc-num">11</span>Ollama &amp; Local Models</a></li>
+      <li><a href="#section-summary"><span class="toc-num">12</span>Production Checklist</a></li>
+    </ul>
+
+    <div class="sidebar-explore">
+      <div class="toc-label">Series</div>
+      <a href="fine-tuning-llm-guide.html" class="explore-link"><span class="explore-link-icon">🔬</span>Part 1: The Specialist Protocol</a>
+      <a href="https://rawweights.com/guide/llm-post-training-guide.html" class="explore-link"><span class="explore-link-icon">📖</span>Post-Training Guide</a>
+      <a href="https://rawweights.com/tools/deep_reinforcement.html" class="explore-link"><span class="explore-link-icon">🎮</span>RL Deep Dive</a>
+      <a href="https://rawweights.com/tools/master_ml_hub.html" class="explore-link"><span class="explore-link-icon">⚡</span>ML Concepts Hub</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ══════════════════════════════════════
+         01 · LORA DEPLOYMENT PATHS
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-deploy">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2>After Training: Two Ways to Deploy a LoRA Adapter</h2>
+      </div>
+
+      <p>You've trained your LoRA adapter — a compact set of weights that specialize your base model for a task. Before you can call it in production, you face a decision that shapes your entire serving architecture.</p>
+
+      <div class="key-insight">
+        <div class="key-insight-label">The fork in the road</div>
+        <div class="key-insight-text">Do you merge the adapter into the base model, or keep them separate and load both at inference time?</div>
+        <div class="key-insight-sub">The right answer depends on how many adapters you have and what your inference stack supports.</div>
+      </div>
+
+      <div class="deploy-grid">
+        <div class="deploy-option">
+          <div class="deploy-tag dtag-a">Option A — Single Adapter</div>
+          <div class="deploy-icon">🔗</div>
+          <h4>Merge Into Base Model</h4>
+          <p>Compute the combined weights mathematically (base + adapter = new model). Deploy this merged artifact. Every inference call hits the single combined model — no PEFT stack, no extra steps.</p>
+          <div class="deploy-pros">
+            <span>Same API call as any standard model</span>
+            <span>No special serving stack required</span>
+            <span>Zero added inference latency</span>
+          </div>
+          <div class="deploy-cons">
+            <span>One merged copy per adapter (storage cost)</span>
+            <span>Can't hot-swap tasks without re-merging</span>
+            <span>Platform must support merging (not all do)</span>
+          </div>
+        </div>
+        <div class="deploy-divider">
+          <div class="deploy-badge-text">OR</div>
+        </div>
+        <div class="deploy-option deploy-option-b">
+          <div class="deploy-tag dtag-b">Option B — Multiple Adapters</div>
+          <div class="deploy-icon">📦</div>
+          <h4>Keep Adapters Separate</h4>
+          <p>One base model, many task-specific adapters stored independently. At inference time, load the base model and the chosen adapter together. You share one large base model across all your specializations.</p>
+          <div class="deploy-pros">
+            <span>Share one base model across many tasks</span>
+            <span>Hot-swap adapters without copying the base</span>
+            <span>Storage efficient at scale</span>
+          </div>
+          <div class="deploy-cons">
+            <span>Requires a PEFT-aware serving stack</span>
+            <span>Adds latency at each inference call</span>
+            <span>Not all platforms support it yet</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-orange">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>Platform dependency matters:</strong> Before choosing Option A, check that your inference provider supports adapter merging. Some platforms (e.g. Fireworks AI had merging arriving in Q3, Nebius had not enabled it) require the separate-adapter approach by default. Always read the docs before designing your serving architecture around either option.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         02 · MODEL CARDS
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-modelcard">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2>Model Cards — Your Model's Passport</h2>
+      </div>
+
+      <p>Every fine-tuned model is a new artifact with its own identity. A model card documents that identity completely — so anyone (including future you) can understand exactly what was trained, how it was trained, and what it replaced.</p>
+
+      <div class="mcard-grid">
+        <div class="mcard-item">
+          <div class="mcard-item-icon">⚖️</div>
+          <div>
+            <h5>Adapter Weights</h5>
+            <p>The actual trained LoRA adapter weights or full fine-tuned checkpoint. The core artifact of everything you built.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🔤</div>
+          <div>
+            <h5>Tokenizer Config</h5>
+            <p>Critical. Using the wrong tokenizer at inference breaks the model silently. Document the exact tokenizer version used during training.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🏗️</div>
+          <div>
+            <h5>Architecture Details</h5>
+            <p>Which base model, which version, LoRA rank, target modules, and all hyperparameters used. Reproducibility depends on this.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">📊</div>
+          <div>
+            <h5>Eval Results</h5>
+            <p>Base model performance vs fine-tuned performance on your golden dataset. The delta is why you trained.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🗓️</div>
+          <div>
+            <h5>Training Metadata</h5>
+            <p>Dataset used, training date, framework version, GPU type. Needed for debugging and for regulatory audit trails.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🔗</div>
+          <div>
+            <h5>Stack Dependencies</h5>
+            <p>Every piece of infrastructure this model depends on — vector stores, retrieval pipelines, API endpoints, memory layers.</p>
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Where to store it:</strong> Google Cloud has a Model Card Kit that feeds into a Model Registry. HuggingFace model cards are the standard for open-source releases. AWS and GCP both have model registries. The platform matters less than the habit — document before you deploy, not after something breaks.</p>
+
+      <h3>Model Cards in the Wild</h3>
+      <p>Every major lab publishes them. They are the canonical reference point for what a model is and what it was designed to do:</p>
+
+      <div class="mcard-grid" style="margin-top:1rem;">
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🤗</div>
+          <div>
+            <h5>HuggingFace (the standard)</h5>
+            <p>Every model on HuggingFace has a model card. The format — created by Google Brain researchers — is now the de facto industry standard. Meta's Llama 3, Mistral 7B, Qwen all use it. The card lives in the repo, versioned alongside the weights.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🦙</div>
+          <div>
+            <h5>Meta — Llama 3 Model Card</h5>
+            <p>One of the most detailed public examples. Covers intended use, out-of-scope uses, benchmark evals, safety red-teaming results, carbon footprint of training, and hardware specs. Often cited as the template for responsible release.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🔵</div>
+          <div>
+            <h5>Anthropic — Claude Model Card</h5>
+            <p>Published for each Claude version. Details training approach, safety evaluations, alignment properties, known limitations, and intended deployment contexts. Available at anthropic.com alongside the model release.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🟢</div>
+          <div>
+            <h5>OpenAI — System Cards</h5>
+            <p>OpenAI calls theirs "system cards" for major releases (GPT-4, DALL-E 3, Sora). The scope is broader — covers the full deployed system, not just the model weights. Same concept, different name.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🔷</div>
+          <div>
+            <h5>Google — Gemini Model Cards</h5>
+            <p>Google publishes model cards for Gemini models and maintains the open-source Model Card Toolkit on GitHub. They pioneered the formal model card concept in a 2019 paper (Mitchell et al.) that the whole industry now references.</p>
+          </div>
+        </div>
+        <div class="mcard-item">
+          <div class="mcard-item-icon">🏢</div>
+          <div>
+            <h5>Internal registries (enterprise)</h5>
+            <p>At companies like LinkedIn, Pinterest, and Airbnb, internal ML platforms host private model registries — same idea, proprietary tooling. AWS SageMaker Model Registry and Vertex AI Model Registry are the managed equivalents teams use without building from scratch.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-teal">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body"><strong>The rollback rule:</strong> When something goes wrong in production and you need to roll back, you cannot just change an API key back. You roll back the entire stack — the model version, the retrieval pipeline pointing at it, the serving config, the prompt templates. The model card is what tells you what everything was pointing to before the incident.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         03 · CANARY DEPLOYMENTS
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-canary">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2>Canary Deployments &amp; Stack Rollback</h2>
+      </div>
+
+      <p>Never replace a running model with a new version in one shot. The same principle that governs software deploys applies to model updates — and the cost of a bad ML deployment can be harder to diagnose than a bad code deploy.</p>
+
+      <ul class="timeline">
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-1">1%</div><div class="tl-line"></div></div>
+          <div class="tl-body">
+            <h4>Canary phase — 1% of traffic</h4>
+            <p>Route a tiny slice of real production traffic to the new model version. Watch for unexpected outputs, error rates, latency changes. Compare directly against the current version side by side.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-2">5%</div><div class="tl-line"></div></div>
+          <div class="tl-body">
+            <h4>Ramp phase — 5% and growing</h4>
+            <p>If 1% shows no regressions, expand the rollout. Sample across demographics, user types, and edge-case query patterns. No model improvement should degrade another part of the behavior.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-3">→</div><div class="tl-line"></div></div>
+          <div class="tl-body">
+            <h4>Full rollout — confirmed better</h4>
+            <p>Only after the new model demonstrably outperforms the old one on your eval metrics — and shows no regressions — do you complete the cutover.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-left"><div class="tl-dot tl-dot-4">↺</div></div>
+          <div class="tl-body">
+            <h4>Rollback — the whole stack, not just the model</h4>
+            <p>If something goes wrong post-rollout, reverting the model version is not enough. All dependent services — retrieval layers, routing logic, prompt templates, A/B configs — must be rolled back together. This is exactly why the model card exists: it documents what all those dependencies were pointing to.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout callout-indigo">
+        <div class="callout-icon">🔁</div>
+        <div class="callout-body"><strong>Regression testing is non-negotiable:</strong> Run the same evals you ran on your base model on your fine-tuned model, and re-run them after every subsequent update. Looking at fine-tuning loss going down is not sufficient — you can fix one behavior and silently break another. Treat every model version as a separate artifact deserving its own full eval suite.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         04 · RL — THE ALIGNMENT ENGINE
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-rl">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2>Reinforcement Learning — The Alignment Engine</h2>
+      </div>
+
+      <div class="key-insight key-insight-teal">
+        <div class="key-insight-label">Core concept</div>
+        <div class="key-insight-text">SFT teaches the model what good looks like. RL teaches the model to actively optimize for it.</div>
+        <div class="key-insight-sub">With SFT you show examples. With RL you give the model a scoring function and let it figure out how to maximize it — learning from trial, feedback, and iteration.</div>
+      </div>
+
+      <p>Reinforcement Learning was built for games — environments where an agent can take actions, observe outcomes, and receive rewards. The maze is the classic example: go left, right, forward, or back; get a reward for moving toward the goal; take a penalty for wrong turns. Collect all those (action, state, reward) tuples and use them to update the agent's weights.</p>
+
+      <p>The same loop maps directly to LLM fine-tuning. The "maze" becomes a task. The "actions" become response choices. The "rewards" come from a grader.</p>
+
+      <div class="rl-loop">
+        <div class="rll-node">
+          <div class="rll-node-icon">📋</div>
+          <div class="rll-node-label">Prompt Library</div>
+          <div class="rll-node-sub">Input queries</div>
+        </div>
+        <div class="rll-arrow">→</div>
+        <div class="rll-node rll-model">
+          <div class="rll-node-icon">🧠</div>
+          <div class="rll-node-label">LLM</div>
+          <div class="rll-node-sub">5 responses each</div>
+        </div>
+        <div class="rll-arrow">→</div>
+        <div class="rll-node rll-grade">
+          <div class="rll-node-icon">⚖️</div>
+          <div class="rll-node-label">Grader / Judge</div>
+          <div class="rll-node-sub">Reward function</div>
+        </div>
+        <div class="rll-arrow">→</div>
+        <div class="rll-node rll-reward">
+          <div class="rll-node-icon">🎯</div>
+          <div class="rll-node-label">Score</div>
+          <div class="rll-node-sub">+reward / penalty</div>
+        </div>
+        <div class="rll-arrow">→</div>
+        <div class="rll-node rll-update">
+          <div class="rll-node-icon">🔄</div>
+          <div class="rll-node-label">Update Weights</div>
+          <div class="rll-node-sub">GRPO / PPO</div>
+        </div>
+        <div class="rll-arrow">↺</div>
+      </div>
+
+      <p>Because LLMs are non-deterministic, you generate <strong>multiple responses for each prompt</strong>. The grader scores each one. Responses that score high push the model's weights in that direction; low-scoring responses push it away. Repeat across thousands of prompts and iterations. The model learns not just what you showed it, but how to generate the kind of output your grader rewards.</p>
+
+      <p><strong>Why multiple responses?</strong> A single attempt doesn't tell you much. Generating five responses to the same prompt reveals the model's probability distribution — some approaches work better than others, and the reward signal gives the model contrast to learn from.</p>
+
+      <div class="callout callout-teal">
+        <div class="callout-icon">📌</div>
+        <div class="callout-body"><strong>GRPO vs PPO:</strong> PPO (Proximal Policy Optimization) was the dominant algorithm for RL fine-tuning. GRPO (Group Relative Policy Optimization) is the current industry standard — it's what DeepSeek-R1 used, and what most practitioners mean today when they say "RL fine-tuning." Both achieve the weight update step, but GRPO is more efficient for LLMs.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         05 · RLVR VS RLHF
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-rewards">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2>How Rewards Work: RLVR vs RLHF</h2>
+      </div>
+
+      <p>The grader is the heart of RL fine-tuning. Who builds it — and how — defines two distinct approaches. Choose based on whether your task is quantifiable.</p>
+
+      <div class="reward-tabs">
+        <div class="reward-nav">
+          <button class="reward-btn rbtn-vr active" onclick="switchReward('rvr', this)">🎯 RLVR — Verifiable Rewards</button>
+          <button class="reward-btn rbtn-hf" onclick="switchReward('rhf', this)">👤 RLHF — Human Feedback</button>
+        </div>
+
+        <div class="reward-panel active" id="rvr">
+          <h4>Reinforcement Learning with Verifiable Rewards</h4>
+          <div class="tab-chips">
+            <span class="chip chip-green">✓ Fully automated</span>
+            <span class="chip chip-green">✓ Scalable &amp; cheap</span>
+            <span class="chip chip-cyan">Best for quantifiable tasks</span>
+          </div>
+          <p>You write a deterministic Python function that scores every model output. No humans in the loop at all. The function is the judge: it takes the model's response, checks it against verifiable criteria, and returns a number.</p>
+          <p><strong>Works best when the task has a right answer</strong> — math problems, code generation, SQL queries, classification tasks. The score can be binary (correct/wrong = 1/0) or nuanced:</p>
+
+          <div class="grader-example">
+            <div class="grader-example-label">Math grader — nuanced scoring</div>
+            <div class="grader-row">
+              <span class="gr-label">7/10 steps correct, wrong final answer</span>
+              <div class="gr-bar"><div class="gr-fill gf-partial"></div></div>
+              <span class="gr-score">0.7</span>
+            </div>
+            <div class="grader-row">
+              <span class="gr-label">All steps + correct final answer</span>
+              <div class="gr-bar"><div class="gr-fill gf-full"></div></div>
+              <span class="gr-score">1.0</span>
+            </div>
+            <div class="grader-row">
+              <span class="gr-label">Wrong steps, wrong answer</span>
+              <div class="gr-bar"><div class="gr-fill gf-wrong"></div></div>
+              <span class="gr-score">0.0</span>
+            </div>
+          </div>
+          <p>By rewarding correct intermediate reasoning steps — not just the final answer — you train the model to <em>think</em> through problems, not just guess the output. This is how reasoning models are built. The more nuanced the grader, the faster and better the model learns.</p>
+        </div>
+
+        <div class="reward-panel" id="rhf">
+          <h4>Reinforcement Learning from Human Feedback</h4>
+          <div class="tab-chips">
+            <span class="chip chip-indigo">Human annotators</span>
+            <span class="chip chip-red">✗ Expensive to scale</span>
+            <span class="chip chip-green">✓ Qualitative tasks</span>
+          </div>
+          <p>When the task has no deterministic right answer — writing, summarization, creative content, tone matching — you can't write a function that scores it. You need humans.</p>
+          <p><strong>How RLHF works:</strong> Humans rank or rate multiple model responses. That ranking data trains a separate model — called a <strong>reward model</strong> — to approximate human preferences. You then use that reward model as the grader in the RL loop.</p>
+          <p><strong>Key distinction from DPO:</strong> DPO (Direct Preference Optimization) also uses good/bad labels — but there is no separate reward model. You label responses as preferred/rejected and directly fine-tune the main LLM on those labels. It's a supervised approach. RLHF builds an intermediary model first; DPO skips that step.</p>
+          <p>DPO is cheaper and simpler. RLHF is more expensive but gives a reusable reward model that can be continuously updated with new human ratings without retraining from scratch.</p>
+        </div>
+      </div>
+
+      <div class="quiz-card" id="quiz-q1">
+        <div class="quiz-label">Knowledge Check</div>
+        <div class="quiz-q">You're training a model to fix broken SQL queries. A test database exists — you can run any SQL query against it and see if it executes correctly. You also want to reward partial credit for queries that run but return the wrong result. Which reward approach fits?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="answerQuiz(this,false,'q1')">
+            <div class="quiz-opt-icon">👤</div>
+            RLHF — hire SQL experts to rank the model's query rewrites weekly
+          </div>
+          <div class="quiz-opt" onclick="answerQuiz(this,true,'q1')" data-correct="true">
+            <div class="quiz-opt-icon">🎯</div>
+            RLVR — write a grader that runs each query and assigns partial credit based on execution outcome
+          </div>
+          <div class="quiz-opt" onclick="answerQuiz(this,false,'q1')">
+            <div class="quiz-opt-icon">📝</div>
+            DPO — label a dataset of correct vs incorrect SQL examples as preferred/rejected
+          </div>
+          <div class="quiz-opt" onclick="answerQuiz(this,false,'q1')">
+            <div class="quiz-opt-icon">🔤</div>
+            SFT only — just show the model correct SQL rewrites without a reward function
+          </div>
+        </div>
+        <div class="quiz-fb" id="q1-feedback"></div>
+        <button class="quiz-reset" id="q1-reset" onclick="resetQuiz('q1')">↺ Try Again</button>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         06 · THE METHOD LADDER
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-ladder">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2>The Method Ladder — Always SFT Before RL</h2>
+      </div>
+
+      <div class="key-insight">
+        <div class="key-insight-label">The cardinal rule</div>
+        <div class="key-insight-text">You never jump from a base model to RL. The ladder must be climbed in order.</div>
+        <div class="key-insight-sub">Skipping SFT to go straight to RL produces unstable, unpredictable training. Each step is a prerequisite for the next.</div>
+      </div>
+
+      <div class="method-ladder">
+        <div class="ml-step">
+          <div class="ml-step-num mls-1">1</div>
+          <h5>Prompt Engineering</h5>
+          <p>System prompts, few-shot examples, format rules. Free and reversible. Always the first move.</p>
+          <div class="ml-step-arrow">→</div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num mls-2">2</div>
+          <h5>Context Engineering</h5>
+          <p>RAG, memory layers, tool descriptions, structured injection. Still no weight changes.</p>
+          <div class="ml-step-arrow">→</div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num mls-3">3</div>
+          <h5>Supervised Fine-Tuning</h5>
+          <p>Input→output pairs. Improves response quality on your eval metric. More control, visible progress.</p>
+          <div class="ml-step-arrow">→</div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num mls-4">4</div>
+          <h5>RL Fine-Tuning</h5>
+          <p>Alignment and behavior improvements on top of SFT. Cutting-edge, complex, high-expertise.</p>
+        </div>
+      </div>
+
+      <p><strong>What each step delivers:</strong> SFT improves quality metrics — your model gets better at producing the kind of output your dataset shows. RL gives alignment and behavioral improvements — the model learns to reason, follow complex constraints, and generalize the goal rather than just imitate examples.</p>
+
+      <p><strong>Who actually uses RL?</strong> As of today, RL fine-tuning is only running at companies with cutting-edge, niche product needs and specialized ML teams — Cursor for code generation, Notion for structured editing, similar products. It requires deep expertise, significant compute, and a well-maintained SFT base to build on top of. Most teams stop at step 3.</p>
+
+      <div class="callout callout-green">
+        <div class="callout-icon">✅</div>
+        <div class="callout-body"><strong>RAG and prompts still work on top of fine-tuning:</strong> Completing the fine-tuning ladder doesn't mean replacing earlier techniques. A fine-tuned model can still use RAG for live data retrieval, and prompt engineering still shapes its outputs. Fine-tuning is additive — it changes the base behavior, which the rest of your stack layers on top of.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         07 · SYNTHETIC DATA
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-synthetic">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2>Synthetic Data — Teaching Without Enough Real Examples</h2>
+      </div>
+
+      <p>Fine-tuning requires data. But real-world, cleanly labeled data is often scarce. Synthetic data — generated by AI — fills the gap. It's not a perfect substitute, but it's a standard part of the practitioner toolkit.</p>
+
+      <div class="synth-grid">
+        <div class="synth-card">
+          <div class="synth-card-icon">📈</div>
+          <h5>Expand the Dataset</h5>
+          <p>You have 100 real examples but need 10,000. Use AI to generate variations: rephrase the prompt, add synonyms, change domain context, simulate edge cases. This is exactly what image augmentation (flip, rotate, brightness) did for vision models — applied to text.</p>
+        </div>
+        <div class="synth-card">
+          <div class="synth-card-icon">🧹</div>
+          <h5>Clean Messy Data</h5>
+          <p>Real-world data is noisy — inconsistent formatting, typos, missing structure. Use a strong model to clean and standardize it for fine-tuning. The cleaned version is synthetic; the underlying meaning came from real data.</p>
+        </div>
+        <div class="synth-card">
+          <div class="synth-card-icon">🌍</div>
+          <h5>Simulate Missing Groups</h5>
+          <p>Your product runs in North America. You have no data for how 35+ year-olds in other markets use it. Synthesize plausible examples based on assumptions. Imperfect, but better than training with a systematic blind spot.</p>
+        </div>
+      </div>
+
+      <h3>Two Pitfalls That Corrupt Everything</h3>
+
+      <div class="callout callout-orange">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>Low diversity:</strong> Synthetic data generators often over-index on the most common patterns. If your 10,000 "expanded" examples are really just 100 examples rephrased slightly, the model learns nothing new. Explicitly measure diversity in your dataset before training.</div>
+      </div>
+      <div class="callout callout-orange" style="margin-top:0.5rem;">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>Train/test contamination:</strong> Synthetic examples don't have exact duplicates, but they can be close enough to be informationally equivalent. If the same underlying pattern appears in both your training set and your holdout test set, your eval metrics will look great while the model has actually overfit. Keep test data isolated before you generate synthetic training data — not after.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         08 · DISTILLATION
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-distill">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2>Distillation — The Teacher-Student Protocol</h2>
+      </div>
+
+      <p>When DeepSeek was accused of "stealing" from Anthropic's models, the actual methodology being described was <strong>knowledge distillation</strong> — a standard, well-documented technique that every major lab uses internally. Understanding it clarifies both the controversy and the strategy.</p>
+
+      <div class="distill-flow">
+        <div class="df-node df-teacher">
+          <div class="df-icon">🎓</div>
+          <div class="df-label">Teacher Model</div>
+          <div class="df-sub">Large, capable, expensive</div>
+        </div>
+        <div class="df-connector">
+          <div class="df-arrow">→</div>
+          <div class="df-connector-label">Send queries · collect responses</div>
+        </div>
+        <div class="df-node df-dataset">
+          <div class="df-icon">📝</div>
+          <div class="df-label">Synthetic Dataset</div>
+          <div class="df-sub">(input, output) pairs</div>
+        </div>
+        <div class="df-connector">
+          <div class="df-arrow">→</div>
+          <div class="df-connector-label">SFT fine-tune</div>
+        </div>
+        <div class="df-node df-student">
+          <div class="df-icon">👨‍🎓</div>
+          <div class="df-label">Student Model</div>
+          <div class="df-sub">Small, fast, task-specific</div>
+        </div>
+      </div>
+
+      <p>The process: pass a large set of domain-specific queries to a powerful teacher model (GPT-4, Claude, Gemini). Collect its responses. Now you have a synthetic dataset of (input, output) pairs. Fine-tune a much smaller model on those pairs. The student learns to approximate the teacher's behavior on your specific domain — at a fraction of the inference cost.</p>
+
+      <p><strong>Why do this?</strong> A 10B parameter distilled model handling your specific task can be cheaper to run, lower latency, and privately owned — compared to paying per-token to a frontier API forever. You get the intelligence of the large model, distilled into something you control.</p>
+
+      <div class="callout callout-indigo">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body"><strong>Already available:</strong> HuggingFace has dozens of publicly distilled models — distilled Llama, Mistral, and Qwen variants that are significantly smaller but competitive in quality for specific task categories. Before training your own distilled student, check whether a pre-distilled model already fits your use case.</div>
+      </div>
+
+      <div class="pill-row">
+        <a href="https://rawweights.com/tools/master_ml_hub.html" class="pill-link">⚡ ML Concepts Hub</a>
+        <a href="https://rawweights.com/guide/llm-post-training-guide.html" class="pill-link">📖 Post-Training Deep Dive</a>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         09 · GPU COST ARCHITECTURE
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-gpu">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2>GPU Cost Architecture — Three Tiers</h2>
+      </div>
+
+      <p>How you access GPUs for training determines your cost structure, your flexibility, and how much capacity risk you carry. Most individuals start at tier one; most enterprises migrate toward tier three as volume grows.</p>
+
+      <div class="gpu-tiers">
+        <div class="gpu-tier">
+          <div class="gpu-tier-head">
+            <div class="gpu-tier-icon">☁️</div>
+            <div class="gpu-tier-title">Serverless</div>
+          </div>
+          <div class="gpu-badge gbadge-green">Lowest entry cost</div>
+          <p>Sign up, add credits, and run. The platform allocates GPU capacity from a shared pool when available. No upfront commitment. Variable wait times when the pool is busy.</p>
+          <div class="gpu-tier-pros">
+            <span>No setup cost</span>
+            <span>Pay only for what you use</span>
+            <span>Good for experiments</span>
+          </div>
+          <div class="gpu-tier-cons">
+            <span>No guaranteed capacity</span>
+            <span>Unpredictable wait times</span>
+            <span>Failed experiment = sunk GPU cost</span>
+          </div>
+        </div>
+
+        <div class="gpu-tier">
+          <div class="gpu-tier-head">
+            <div class="gpu-tier-icon">⚡</div>
+            <div class="gpu-tier-title">Reserved Capacity</div>
+          </div>
+          <div class="gpu-badge gbadge-mid">Enterprise tier</div>
+          <p>Commit to a certain number of GPU hours with a cloud provider. Your training jobs are prioritized over serverless users. Predictable scheduling, consistent throughput.</p>
+          <div class="gpu-tier-pros">
+            <span>Guaranteed GPU availability</span>
+            <span>Predictable training timelines</span>
+            <span>Better for production pipelines</span>
+          </div>
+          <div class="gpu-tier-cons">
+            <span>Upfront commitment required</span>
+            <span>Paying even when unused</span>
+          </div>
+        </div>
+
+        <div class="gpu-tier">
+          <div class="gpu-tier-head">
+            <div class="gpu-tier-icon">🖥️</div>
+            <div class="gpu-tier-title">On-Premises</div>
+          </div>
+          <div class="gpu-badge gbadge-high">Maximum control</div>
+          <p>Own the physical hardware. Build a private GPU cluster (or negotiate a private cloud partition). Maximum optimization potential — LinkedIn runs this way for complete stack control. Maximum capital outlay.</p>
+          <div class="gpu-tier-pros">
+            <span>Full control over hardware</span>
+            <span>Data never leaves your network</span>
+            <span>Best unit economics at scale</span>
+          </div>
+          <div class="gpu-tier-cons">
+            <span>Huge upfront capital cost</span>
+            <span>Requires MLOps expertise</span>
+            <span>Slow to provision or scale</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-orange">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>Data labeling costs are separate:</strong> Before you even touch a GPU, data preparation costs money — human labelers, services like Scale AI, and the engineering time to write annotation guidelines and QA the results. For many fine-tuning projects, clean labeled data costs more than training compute. Budget for both.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         10 · TRAINING VS INFERENCE COST
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-breakeven">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2>Training vs Inference Cost — The Break-Even</h2>
+      </div>
+
+      <p>A common misunderstanding: "fine-tuning is expensive, so using an API is cheaper." This is only true at low volume. At scale, it inverts — and understanding the break-even is what determines whether your fine-tuning project makes financial sense.</p>
+
+      <div class="economics-block">
+        <div class="econ-node">
+          <div class="econ-icon">📞</div>
+          <div class="econ-pct" style="color:#ef4444;">API Only</div>
+          <div class="econ-label">No setup cost</div>
+          <div class="econ-tag etag-high">High per-call cost</div>
+        </div>
+        <div class="econ-arrow">→</div>
+        <div class="econ-node">
+          <div class="econ-icon">📊</div>
+          <div class="econ-pct" style="color:#f59e0b;">Break-Even</div>
+          <div class="econ-label">Volume crossover point</div>
+          <div class="econ-tag etag-cross">Where costs cross</div>
+        </div>
+        <div class="econ-arrow">→</div>
+        <div class="econ-node">
+          <div class="econ-icon">🎯</div>
+          <div class="econ-pct" style="color:#10b981;">Fine-Tuned</div>
+          <div class="econ-label">High upfront, low per-call</div>
+          <div class="econ-tag etag-win">Cheaper at volume</div>
+        </div>
+      </div>
+
+      <p>The economics: APIs charge per token with no upfront cost. Fine-tuning has significant upfront cost — compute, data, engineering time — but a smaller, task-specific model has lower per-inference cost than a large general API call. At sufficient volume, the cumulative API spend exceeds the fine-tuning investment, and the crossover point becomes your break-even.</p>
+
+      <p><strong>Three cost components to compare:</strong></p>
+
+      <div class="comp-wrap">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Approach</th>
+              <th>Setup Cost</th>
+              <th>Per-Inference Cost</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>API (no fine-tuning)</td>
+              <td><span class="cell-yes">✓ None</span></td>
+              <td><span class="cell-no">High</span></td>
+              <td><span class="cell-part">General</span></td>
+            </tr>
+            <tr>
+              <td>RAG + Prompting</td>
+              <td><span class="cell-yes">✓ Low</span></td>
+              <td><span class="cell-part">Medium</span></td>
+              <td><span class="cell-part">Good for knowledge</span></td>
+            </tr>
+            <tr>
+              <td>Fine-Tuned Model</td>
+              <td><span class="cell-no">High</span></td>
+              <td><span class="cell-part">Medium</span></td>
+              <td><span class="cell-yes">Task-optimized</span></td>
+            </tr>
+            <tr>
+              <td>LoRA Adapter</td>
+              <td><span class="cell-part">Low–Medium</span></td>
+              <td><span class="cell-yes">✓ Low</span></td>
+              <td><span class="cell-yes">High + efficient</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-teal">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body"><strong>Cursor as a real example:</strong> Cursor runs AI inference on third-party providers (Fireworks AI) rather than owning hardware — because they're a startup and the upfront cost of a serving lab is prohibitive. As they scale, the break-even math will shift and self-hosting will eventually become more attractive. The decision is not permanent — it's a function of current volume vs capital.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         11 · OLLAMA & LOCAL MODELS
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-ollama">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2>Ollama &amp; Local Inference — AI That Runs Anywhere</h2>
+      </div>
+
+      <div class="key-insight key-insight-teal">
+        <div class="key-insight-label">The one-liner</div>
+        <div class="key-insight-text">Ollama is Docker for LLMs. You pull a model, it runs locally as an HTTP server, and you call it exactly like a ChatGPT API.</div>
+        <div class="key-insight-sub">No API key. No network dependency. No per-token bill. Your model, your machine, your data boundary.</div>
+      </div>
+
+      <p>Under the hood: Ollama downloads models in <strong>GGUF format</strong> — a single file that bundles the model weights, tokenizer configuration, prompt template, and metadata. It quantizes to 4-bit (trading a small amount of precision for a large reduction in memory and compute). It runs on CPU if no GPU is available — making it usable on a standard laptop.</p>
+
+      <p>Once running, Ollama starts a local HTTP server at <code>localhost:11434</code>. You make REST requests to it — and optionally configure it to behave like the OpenAI API format, which means existing LangChain code, RAG pipelines, and agent frameworks plug in with minimal changes. Build a local RAG app, run lightweight agents, classify intent from a fine-tuned model — all on your machine, all offline-capable.</p>
+
+      <div class="local-split">
+        <div class="ls-card ls-benefits">
+          <div class="ls-header">
+            <div class="ls-header-icon">✅</div>
+            <div class="ls-header-title">When local inference wins</div>
+          </div>
+          <ul class="ls-list">
+            <li>Privacy-sensitive industries where data cannot leave your environment (HIPAA, GDPR, financial compliance)</li>
+            <li>Regulated workflows needing data residency guarantees — even signed contracts with cloud providers aren't always enough</li>
+            <li>Edge deployments — factory cameras, on-device inference, manufacturing defect detection where there's no reliable network</li>
+            <li>Fast prototyping without API keys, billing, or rate limits slowing you down</li>
+            <li>High token volume where the cost math crosses the break-even against a hosted API</li>
+          </ul>
+        </div>
+        <div class="ls-card ls-tradeoffs">
+          <div class="ls-header">
+            <div class="ls-header-icon">⚠️</div>
+            <div class="ls-header-title">The real trade-offs</div>
+          </div>
+          <ul class="ls-list">
+            <li>Hardware-constrained: you're limited to RAM and CPU of your laptop (or however many GPUs you own)</li>
+            <li>Open-source models only — the quality gap between frontier closed-source models and open-source alternatives is real for some tasks</li>
+            <li>Smaller context windows compared to hosted frontier models</li>
+            <li>Not production-grade for concurrency: Ollama is low-concurrency by design — serving thousands of simultaneous users requires different tooling</li>
+            <li>MLOps overhead at scale: redundancy, monitoring, and throughput optimization require engineering investment</li>
+          </ul>
+        </div>
+      </div>
+
+      <p><strong>The practical flow:</strong> Install Ollama → <code>ollama run llama3.2</code> → model downloads in GGUF format → local HTTP server starts → call it from Python, LangChain, or your agent framework exactly as you would a cloud API. Your fine-tuned model can be converted to GGUF and loaded into Ollama the same way — so you can run your own trained model locally with a single command.</p>
+
+      <div class="callout callout-indigo">
+        <div class="callout-icon">🔭</div>
+        <div class="callout-body"><strong>Edge ML is the bigger picture:</strong> Running models locally on a laptop is just the personal-use case. The same principle — inference without network dependency — powers factory cameras detecting textile defects, on-device healthcare monitoring, and offline-capable field tools. Ollama builds your intuition for the pattern; edge ML platforms scale it to industrial deployments.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         12 · SUMMARY
+    ══════════════════════════════════════ -->
+    <section class="guide-section" id="section-summary">
+      <div class="section-header">
+        <span class="section-num">12</span>
+        <h2>The Production Checklist</h2>
+      </div>
+
+      <div class="key-insight">
+        <div class="key-insight-label">The bottom line</div>
+        <div class="key-insight-text">Training the model is the beginning. Model cards, canary rollouts, eval regression testing, and cost architecture are what make it production-worthy.</div>
+      </div>
+
+      <div class="summary-duo">
+        <div class="sd-card sd-do">
+          <div class="sd-header">
+            <div class="sd-header-icon">✅</div>
+            <div class="sd-header-title">Production-ready means…</div>
+          </div>
+          <ul class="sd-list">
+            <li>Model card written before deployment — weights, tokenizer, eval results, dependencies</li>
+            <li>Full eval suite re-run on the fine-tuned model (not just fine-tuning loss)</li>
+            <li>Canary deployment: 1% → 5% → full rollout with comparison at each stage</li>
+            <li>Stack rollback plan documented — not just the model, but every dependent service</li>
+            <li>GPU tier chosen to match your current volume and cost math</li>
+            <li>RL considered only after SFT is working and the use case is quantifiable or human-reviewable</li>
+          </ul>
+        </div>
+        <div class="sd-card sd-dont">
+          <div class="sd-header">
+            <div class="sd-header-icon">🚫</div>
+            <div class="sd-header-title">Common production mistakes</div>
+          </div>
+          <ul class="sd-list">
+            <li>Deploying without a model card — you have no rollback reference when something breaks</li>
+            <li>Using the wrong tokenizer at inference — breaks the model silently, hard to debug</li>
+            <li>Jumping straight to RL from a base model without SFT foundation</li>
+            <li>Generating synthetic data without separating train/test splits first — contaminates evals</li>
+            <li>Assuming low diversity in synthetic data is fine — models overfit to narrow patterns</li>
+            <li>Rolling back only the model version instead of the entire dependent stack</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a href="fine-tuning-llm-guide.html" class="rw-btn rw-btn-primary">← Part 1: The Specialist Protocol</a>
+        <a href="https://rawweights.com/tools/deep_reinforcement.html" class="rw-btn rw-btn-ghost">RL Deep Dive</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-related='[{"label":"Fine-Tuning Part 1","url":"/guide/fine-tuning-llm-guide.html"},{"label":"LLM Post-Training Guide","url":"/guide/llm-post-training-guide.html"},{"label":"RL Deep Dive","url":"/tools/deep_reinforcement.html"},{"label":"ML Concepts Hub","url":"/tools/master_ml_hub.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// Reward method tabs
+function switchReward(id, btn) {
+  document.querySelectorAll('.reward-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.reward-panel').forEach(function(p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// Quiz
+function answerQuiz(el, correct, qid) {
+  var card = document.getElementById('quiz-' + qid);
+  if (card.dataset.answered) return;
+  card.dataset.answered = '1';
+  card.querySelectorAll('.quiz-opt').forEach(function(o) { o.style.pointerEvents = 'none'; });
+  if (correct) {
+    el.classList.add('opt-correct');
+  } else {
+    el.classList.add('opt-wrong');
+    card.querySelectorAll('.quiz-opt[data-correct="true"]').forEach(function(o) { o.classList.add('opt-reveal'); });
+  }
+  var fb = document.getElementById(qid + '-feedback');
+  fb.classList.add('show');
+  if (correct) {
+    fb.classList.add('fb-correct');
+    fb.innerHTML = '<div class="fb-icon">✓</div><div>Correct. The task is fully quantifiable — you have a live database that can verify any SQL query deterministically. That\'s exactly the RLVR use case. A grader function runs the query, checks execution, assigns partial credit for queries that run but return wrong results. No humans needed, fully automated, scales infinitely.</div>';
+  } else {
+    fb.classList.add('fb-wrong');
+    fb.innerHTML = '<div class="fb-icon">✗</div><div>Not quite. Because you can run the SQL query against a real database and verify correctness deterministically, you don\'t need humans — which makes RLVR the right fit. RLHF is for qualitative tasks with no verifiable right answer. DPO and SFT skip the reward loop entirely. The key signal here: you have a grader function, not a human judge.</div>';
+  }
+  var resetBtn = document.getElementById(qid + '-reset');
+  if (resetBtn) resetBtn.style.display = 'inline-flex';
+}
+
+function resetQuiz(qid) {
+  var card = document.getElementById('quiz-' + qid);
+  delete card.dataset.answered;
+  card.querySelectorAll('.quiz-opt').forEach(function(o) {
+    o.style.pointerEvents = '';
+    o.classList.remove('opt-correct', 'opt-wrong', 'opt-reveal');
+  });
+  var fb = document.getElementById(qid + '-feedback');
+  fb.className = 'quiz-fb';
+  fb.innerHTML = '';
+  var resetBtn = document.getElementById(qid + '-reset');
+  if (resetBtn) resetBtn.style.display = 'none';
+}
+
+// Scrollspy
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var id = e.target.id;
+        links.forEach(function(l) {
+          l.classList.toggle('toc-active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(function(s) { obs.observe(s); });
+})();
+</script>
+
+</body>
+</html>
