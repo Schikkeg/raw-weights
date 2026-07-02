@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "VocabForge: What Actually Happens When You Fine-Tune",
+        excerpt: "A build log. 90 training examples, 6 real failures, one working model running locally. What fine-tuning looks like when theory meets practice.",
+        date: "July 02, 2026",
+        image: "./images/vocabforge.png",
+        type: "Guide",
+        link: "https://rawweights.com/usecase/vocabforge-fine-tuning-guide.html",
+        linkedin: null
+      },
+      {
         title: "Fine-Tuning Part 2: The Production Protocol ",
         excerpt: "What happens after you train? LoRA deployment paths, RL alignment methods, synthetic data, GPU cost tiers, distillation, and Ollama — the full production playbook.",
         date: "June 28, 2026",
         image: "./images/proddeploy.png",
         type: "Guide",
         link: "https://rawweights.com/guide/fine-tuning-production.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_machinelearning-ai-llm-activity-7477249460524277760-v21e"
       },
       {
         title: "Fine-Tuning LLMs: The Specialist Protocol",
