@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "The Red Team Brief — AI Threat Playbook for Agentic Systems ",
+        excerpt: "The Stack Autopsy showed you why conventional security approaches miss the agentic threat model. This is the attacker's full playbook — OWASP LLM Top 10, the Triple Threat risk model, and hands-on walkthroughs of PromptFoo, NeMo Guardrails, and Microsoft Presidio.",
+        date: "July 04, 2026",
+        image: "./images/playbook.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/ai-security-redteam-brief.html",
+        linkedin: null
+      },
+      {
         title: "VocabForge: What Actually Happens When You Fine-Tune",
         excerpt: "A build log. 90 training examples, 6 real failures, one working model running locally. What fine-tuning looks like when theory meets practice.",
         date: "July 02, 2026",
         image: "./images/vocabforge.png",
         type: "Guide",
         link: "https://rawweights.com/usecase/vocabforge-fine-tuning-guide.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_fine-tuned-modellocal-inferencehabit-tracking-ugcPost-7478393217281847296-NZD_/"
       },
       {
         title: "Fine-Tuning Part 2: The Production Protocol ",
