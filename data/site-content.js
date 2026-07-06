@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "The Blueprint — Threat Modeling AI Systems Before You Build ",
+        excerpt: "How security engineers think before a single line of code is written. STRIDE, trust boundaries, and a hands-on AI threat model using a healthcare AI assistant — from GenAcademy with Harsh (Cloudflare).",
+        date: "July 05, 2026",
+        image: "./images/stride.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/ai-security-threat-model.html",
+        linkedin: null
+      },
+      {
         title: "The Red Team Brief — AI Threat Playbook for Agentic Systems ",
         excerpt: "The Stack Autopsy showed you why conventional security approaches miss the agentic threat model. This is the attacker's full playbook — OWASP LLM Top 10, the Triple Threat risk model, and hands-on walkthroughs of PromptFoo, NeMo Guardrails, and Microsoft Presidio.",
         date: "July 04, 2026",
         image: "./images/playbook.png",
         type: "Guide",
         link: "https://rawweights.com/guide/ai-security-redteam-brief.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-aisecurity-llmsecurity-share-7479313067663650816-8l9z/"
       },
       {
         title: "VocabForge: What Actually Happens When You Fine-Tune",

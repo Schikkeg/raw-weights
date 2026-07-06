@@ -88,7 +88,8 @@
               { label: 'Build. Measure. Ship',     url: '/tools/eval-proving-ground.html',              desc: 'The Proving Ground' },
               { label: 'Fine-Tuning LLMs',     url: '/guide/fine-tuning-llm-guide.html',              desc: 'The Specialist Protocol' },
               { label: 'Fine-Tuning Part 2: ',     url: '/guide/fine-tuning-production.html',              desc: 'The Production Protocol ' },
-              { label: 'Agent Security Guide ',     url: '/guide/ai-security-redteam-brief.html',              desc: 'See the Attack Taxonomy ' }
+              { label: 'Agent Security Guide ',     url: '/guide/ai-security-redteam-brief.html',              desc: 'See the Attack Taxonomy ' },
+              { label: 'AI Threat Model ',     url: '/guide/ai-security-threat-model.html',              desc: 'Explore the Blueprint ' }
             ]
           },
           {
