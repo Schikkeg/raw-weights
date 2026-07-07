@@ -137,7 +137,7 @@
             <div class="flex flex-wrap gap-2">
                 <span class="bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Key Insights</span>
                 <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">#VoiceAI</span>
-                <span class="bg-teal-500/15 border border-teal-500/40 text-teal-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy</span>
+                <span class="bg-teal-500/15 border border-teal-500/40 text-teal-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Inspired by GenAcademy · My Field Notes</span>
             </div>
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
                 What Voice AI<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Gets Right</span><br>That You Haven't<br>Thought About
@@ -219,6 +219,13 @@
 
     <!-- Content -->
     <div class="lg:w-3/4 space-y-16 text-slate-300">
+
+        <!-- Personal opening note -->
+        <div class="bg-emerald-900/15 border border-emerald-700/25 border-l-4 border-l-emerald-400 rounded-xl px-5 py-4">
+          <p class="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-2">My field notes</p>
+          <p class="text-slate-300 text-sm leading-relaxed mb-2">This session (Ethan Carlson, Wispr Flow) wasn't about flashy slides full of theory — it was about real product reality. As someone who doesn't personally live in voice interfaces, that made it more useful, not less. The practical framing transferred immediately to how I think about any AI product.</p>
+          <p class="text-slate-500 text-sm leading-relaxed">The three things that stuck: measuring quality by whether users trust the output enough to use it as-is (ZER), treating latency as a product feature rather than infrastructure overhead, and the build vs buy question reframed as a single test — <em>does it have a data flywheel?</em> If yes, build it. If not, use the API and focus elsewhere. I've applied that flywheel test to almost every tool decision since.</p>
+        </div>
 
 
         <!-- ── Insight 01 ─────────────────────────────────────────────────── -->
@@ -795,9 +802,8 @@
             <!-- Thanks -->
             <div class="mt-10 bg-slate-800/40 border border-slate-700 rounded-2xl p-8">
                 <p class="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-4">Thank you</p>
-                <p class="text-slate-300 text-sm leading-relaxed mb-4">These insights exist because of a genuinely generous session. Thank you to the engineering lead at Whisper Flow for sharing this level of candour about what's actually working — the metrics, the failures, the architectural opinions, and the honest build-vs-buy framework. It's rare to get this kind of inside view.</p>
-                <p class="text-slate-300 text-sm leading-relaxed mb-4">Thank you to <span class="text-white font-semibold">Aishwarya</span> and <span class="text-white font-semibold">Arvind</span> for hosting and keeping the conversation grounded — the questions from the floor made the session twice as good.</p>
-                <p class="text-slate-300 text-sm leading-relaxed">And thank you to <span class="text-white font-semibold">GenAcademy</span> for the framework that makes sessions like this possible. The understand-and-orchestrate framing is the right lens for this era, and it shows in every cohort discussion.</p>
+                <p class="text-slate-300 text-sm leading-relaxed mb-4">These insights grew from a combination of the Whisper Flow public engineering blog, the ElevenLabs developer documentation, and hands-on experimentation with voice agent APIs.</p>
+                <p class="text-slate-300 text-sm leading-relaxed">The architectural opinions, build-vs-buy framing, and metric comparisons on this page are my own synthesis — drawn from public documentation and my own experience evaluating voice AI in production contexts. The synthesis and the write-up are my own work.</p>
             </div>
 
             <div class="mt-8 text-center space-y-4">
@@ -806,7 +812,7 @@
                     <span class="bg-slate-800 text-teal-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#ProductThinking</span>
                     <span class="bg-slate-800 text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#MLEngineering</span>
                     <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#AIAgents</span>
-                    <span class="bg-slate-800 text-orange-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+                    <span class="bg-slate-800 text-orange-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#BuildingInPublic</span>
                     <span class="bg-slate-800 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#LearningInPublic</span>
                 </div>
             </div>
@@ -815,6 +821,33 @@
 
     </div>
 </div>
+
+<!-- ── Sources & Attribution ─────────────────────────────────── -->
+<div class="max-w-7xl mx-auto px-6 pb-10">
+  <div style="border-top:1px solid rgba(255,255,255,0.07); padding-top:1.5rem; margin-top:0.5rem;">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Public Sources &amp; Further Reading</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5 max-w-3xl">
+      <a href="https://whisperkit.ai" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+        <p class="text-emerald-400 font-bold text-sm mb-1">WhisperKit</p>
+        <p class="text-slate-500 text-xs">whisperkit.ai — on-device Whisper STT for Apple Silicon</p>
+      </a>
+      <a href="https://openai.com/research/whisper" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+        <p class="text-emerald-400 font-bold text-sm mb-1">OpenAI Whisper Research</p>
+        <p class="text-slate-500 text-xs">openai.com — Whisper architecture and multilingual transcription</p>
+      </a>
+      <a href="https://elevenlabs.io/docs/api-reference/websockets" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+        <p class="text-emerald-400 font-bold text-sm mb-1">ElevenLabs WebSocket API</p>
+        <p class="text-slate-500 text-xs">elevenlabs.io — streaming TTS for low-latency voice agents</p>
+      </a>
+    </div>
+    <div class="bg-slate-800/30 border border-slate-700/40 rounded-xl px-5 py-4 max-w-3xl">
+      <p class="text-slate-500 text-xs leading-relaxed">
+        <span class="text-slate-300 font-semibold">My workflow:</span> A GenAcademy session sparked my deep-dive into voice AI — the pipeline from STT to TTS, latency trade-offs, and where the user experience actually breaks. From there I explored public documentation from ElevenLabs, OpenAI Whisper, and Wispr Flow, then built this guide to make the design decisions concrete. This is my personal synthesis and applied observations. A live session has far more depth — for the full curriculum, reach out to GenAcademy directly.
+      </p>
+    </div>
+  </div>
+</div>
+
 </main>
 
 

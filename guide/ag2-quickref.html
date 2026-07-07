@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AG2 Beta — Session Quick Reference | RawWeights</title>
-  <meta name="description" content="10 concepts from the AG2 Beta hands-on workshop with Vasily Radostev. Click the session map to explore each concept, then try them live on the playground.">
+  <title>AG2 Beta — Interactive Framework Reference | RawWeights</title>
+  <meta name="description" content="10 core AG2 Beta concepts mapped interactively — agents, middleware, multi-agent networks, cost control, and LiveAgent voice. Click to explore, try live on the playground.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/guide/ag2-quickref.html">
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://rawweights.com/images/ag2.png">
   <meta property="og:url" content="https://rawweights.com/guide/ag2-quickref.html">
-  <meta property="og:title" content="AG2 Beta Session Reference | RawWeights">
-  <meta property="og:description" content="Click any concept on the session map. 10 topics, instant detail, playground ready.">
+  <meta property="og:title" content="AG2 Beta — Interactive Framework Reference | RawWeights">
+  <meta property="og:description" content="10 AG2 Beta concepts mapped interactively. Click any card, explore the detail, try live on the playground.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
   <link rel="stylesheet" href="../includes/brand.css">
@@ -411,10 +411,11 @@
 <!-- ══ HERO ═══════════════════════════════════════════════════════ -->
 <div class="hero">
   <div class="hero-inner">
-    <span class="hero-eyebrow">⚡ GenAcademy · AG2 Beta Workshop</span>
-    <p class="hero-byline">Session led by <strong>Vasily Radostev</strong> · Head of Engineering, AG2</p>
-    <h1>AG2 Beta Workshop, <em>Mapped</em></h1>
-    <p class="hero-sub">10 session concepts. Click any card to explore. All of them run live on the playground — free, no account needed.</p>
+    <span class="hero-eyebrow">⚡ AG2 · Agentic Framework Reference</span>
+    <p class="hero-byline">Open-source framework by <strong>Vasily Radostev</strong> &amp; team · AG2 (AutoGen 2.0) · <a href="https://github.com/ag2ai/ag2" target="_blank" rel="noopener" style="color:inherit;">ag2ai/ag2 on GitHub</a></p>
+    <h1>AG2 Framework, <em>Mapped</em></h1>
+    <p class="hero-sub">10 core concepts. Click any card to explore. All of them run live on the playground — free, no account needed.</p>
+    <p style="font-size:0.78rem;color:rgba(203,213,225,0.45);margin-top:1rem;">✦ Inspired by GenAcademy · My Field Notes · built from public AG2 documentation and playground</p>
 
     <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="pg-cta">
       <span class="pg-cta-label">✦ Try it live — no install, no key</span>
@@ -442,9 +443,16 @@
 <!-- ══ CONTENT ════════════════════════════════════════════════════ -->
 <div class="wrap">
 
-  <!-- ── Session Map ──────────────────────────────────────── -->
+  <!-- ── Personal opening note ──────────────────────────── -->
+  <div style="background:rgba(234,179,8,0.07);border:1px solid rgba(234,179,8,0.2);border-left:3px solid #eab308;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:2rem;">
+    <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;color:#fbbf24;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
+    <p style="margin:0 0 0.6rem;color:#cbd5e1;font-size:0.9rem;">A GenAcademy session on AG2 introduced me to the framework. I walked in expecting broad strokes — what I got was depth: every concept backed by live playground demos and real production trade-offs. I went into the GitHub repo, official docs, and the playground afterward to build this reference.</p>
+    <p style="margin:0;color:#94a3b8;font-size:0.875rem;">Three things that stuck: multi-turn isn't magic, it's recursion on a response object. Middleware and assembly policies look similar but do fundamentally different things — one mutates history, the other only filters what the model sees. And the $2,000 data destruction incident is a reminder that agents do exactly what they're told — the approval gate has to come from you, not the model.</p>
+  </div>
+
+  <!-- ── Concept Map ─────────────────────────────────────── -->
   <div class="sec-head">
-    <h2>Session Map</h2>
+    <h2>Concept Map</h2>
     <div class="sec-head-line"></div>
   </div>
 
@@ -454,39 +462,39 @@
     <div class="map-left">
       <div class="map-grid">
         <div class="map-node" onclick="showDetail(0)">
-          <div class="node-num">Part 01</div>
+          <div class="node-num">Build Layer</div>
           <div class="node-title">Agents &amp; Tools</div>
         </div>
         <div class="map-node" onclick="showDetail(1)">
-          <div class="node-num">Part 02</div>
+          <div class="node-num">Build Layer</div>
           <div class="node-title">Sub-agent Delegation</div>
         </div>
         <div class="map-node" onclick="showDetail(2)">
-          <div class="node-num">Part 03</div>
+          <div class="node-num">Control Layer</div>
           <div class="node-title">Middleware</div>
         </div>
         <div class="map-node" onclick="showDetail(3)">
-          <div class="node-num">Part 04</div>
+          <div class="node-num">Control Layer</div>
           <div class="node-title">Input Control</div>
         </div>
         <div class="map-node" onclick="showDetail(4)">
-          <div class="node-num">Part 05</div>
+          <div class="node-num">Control Layer</div>
           <div class="node-title">Structured Output</div>
         </div>
         <div class="map-node" onclick="showDetail(5)">
-          <div class="node-num">Part 06</div>
+          <div class="node-num">Network Layer</div>
           <div class="node-title">Networks of Agents</div>
         </div>
         <div class="map-node beyond" onclick="showDetail(6)">
-          <div class="node-num">Beyond · Quality</div>
+          <div class="node-num">Ship · Quality</div>
           <div class="node-title">Evaluation</div>
         </div>
         <div class="map-node beyond" onclick="showDetail(7)">
-          <div class="node-num">Beyond · Scale</div>
+          <div class="node-num">Ship · Scale</div>
           <div class="node-title">Cost &amp; Distribution</div>
         </div>
         <div class="map-node beyond" onclick="showDetail(8)">
-          <div class="node-num">Beyond · Safety</div>
+          <div class="node-num">Ship · Safety</div>
           <div class="node-title">Human in the Loop</div>
         </div>
       </div>
@@ -495,14 +503,14 @@
       <div class="la-card" onclick="showDetail(9)">
         <div class="la-icon">🎙️</div>
         <div class="la-body">
-          <div class="la-tag">Bonus · Voice Mode</div>
+          <div class="la-tag">Extension · Voice</div>
           <div class="la-name">LiveAgent</div>
           <div class="la-meta">Full-duplex · &lt;500ms · Barge-in · Audio-to-audio</div>
         </div>
         <div class="la-arrow">→</div>
       </div>
 
-      <div class="map-hint">solid border = coding part · dashed = production topic · click to explore</div>
+      <div class="map-hint">solid border = build &amp; control layer · dashed = production readiness · click to explore</div>
     </div>
 
     <!-- Right: detail panel (sticky on desktop) -->
@@ -657,7 +665,7 @@
           What's the right permission model for production agents?
           <span class="faq-chev">▾</span>
         </div>
-        <div class="faq-a">Read-only: let it run, control spend. Anything that writes, deletes, sends, or charges: require human approval. Vasily's own agent destroyed $2,000 of data before this session — no gate, full permissions. The lesson is not hypothetical.</div>
+        <div class="faq-a">Read-only: let it run, control spend. Anything that writes, deletes, sends, or charges: require human approval. Vasily Radostev documented a real incident where his own agent destroyed $2,000 of data — no approval gate, full permissions. It did exactly what it was told. The lesson is not hypothetical.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
@@ -678,6 +686,26 @@
 
 </div><!-- /wrap -->
 
+<!-- ──────────────────────────────── ATTRIBUTION -->
+<div class="max-w-7xl mx-auto px-6 py-8 border-t border-slate-800">
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">Sources &amp; Attribution</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-4xl mb-5 text-xs">
+        <a href="https://github.com/ag2ai/ag2" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-lg p-3 hover:border-yellow-700/50 transition-all">
+            <p class="text-yellow-300 font-semibold">AG2 GitHub Repository</p>
+            <p class="text-slate-500 mt-0.5">ag2ai/ag2 — official open-source framework</p>
+        </a>
+        <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-lg p-3 hover:border-yellow-700/50 transition-all">
+            <p class="text-yellow-300 font-semibold">AG2 Playground</p>
+            <p class="text-slate-500 mt-0.5">playground.ag2.ai — all 10 concepts run live here</p>
+        </a>
+        <a href="https://docs.ag2.ai" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-lg p-3 hover:border-yellow-700/50 transition-all">
+            <p class="text-yellow-300 font-semibold">AG2 Documentation</p>
+            <p class="text-slate-500 mt-0.5">docs.ag2.ai — public framework documentation</p>
+        </a>
+    </div>
+    <p class="text-slate-600 text-xs leading-relaxed max-w-3xl">A GenAcademy session introduced me to AG2 and sparked this deep-dive. From there I went into the GitHub repo, official docs, and the playground to build this interactive reference. My workflow: session points me at a topic → I explore the public sources → I build to understand. The synthesis and interactive elements are my own work.</p>
+</div>
+
 <div id="rw-footer"
      data-related='[
        {"label":"Agent Autonomy Dial","url":"/guide/agent-autonomy-dial.html"},
@@ -690,7 +718,7 @@
 /* ── Node data ─────────────────────────────────────────────── */
 const NODES = [
   {
-    icon:'🧠', sub:'Part 01 · Foundations', heading:'Agents & Tools',
+    icon:'🧠', sub:'Build · Foundations', heading:'Agents & Tools',
     bullets:[
       'Agent = name + system prompt + model config',
       'ask() returns a reply — the reply is itself re-askable (multi-turn)',
@@ -700,37 +728,37 @@ const NODES = [
     unlock:'Working agent in ~10 lines',
   },
   {
-    icon:'⚡', sub:'Part 02 · Routing', heading:'Sub-agent Delegation',
+    icon:'⚡', sub:'Build · Delegation', heading:'Sub-agent Delegation',
     bullets:[
       'run_subtask() fans out sequentially or in parallel',
       'run_subtasks(parallel=True) — rate limits, not the framework, are your ceiling',
       'Agent.as_tool() wraps a whole specialist as a named callable for the coordinator',
     ],
-    insight:'<strong>No Hub needed.</strong> This is recursion, not a network — useful to decompose complex tasks before you need the full channel machinery of Part 06.',
+    insight:'<strong>No Hub needed.</strong> This is recursion, not a network — useful to decompose complex tasks before you need the full channel machinery in Network · Hub.',
     unlock:'Task decomposition without a Hub',
   },
   {
-    icon:'🔧', sub:'Part 03 · Harness', heading:'Middleware',
+    icon:'🔧', sub:'Control · Hooks', heading:'Middleware',
     bullets:[
       '4 hooks: on_turn · on_llm_call · on_tool_execution · on_human_input',
       'Stack layers in any order — entry top→down, unwind in reverse',
       'Built-ins: LoggingMiddleware · RetryMiddleware(max_retries) · HistoryLimiter(max_events)',
     ],
-    insight:'<strong>HistoryLimiter permanently deletes.</strong> It does NOT hide history — it removes it from the log. If you need filtering without deletion, use assembly policies (Part 04) instead.',
+    insight:'<strong>HistoryLimiter permanently deletes.</strong> It does NOT hide history — it removes it from the log. If you need filtering without deletion, use assembly policies (Control · Context) instead.',
     unlock:'Cross-cutting concerns without touching agent logic',
   },
   {
-    icon:'👁️', sub:'Part 04 · Perception', heading:'Input Control',
+    icon:'👁️', sub:'Control · Context', heading:'Input Control',
     bullets:[
       'Assembly policies filter what the model SEES — the full event log is always preserved',
       'SlidingWindowPolicy(max_events=N) · TokenBudgetPolicy · WorkingMemoryPolicy',
       'WorkingMemoryPolicy = curated view across runs → enables autonomous self-improvement',
     ],
-    insight:'<strong>Live demo:</strong> with a 6-event window and 3-word memory test, the agent forgot the first word — still in the log, just not assembled into context. Middleware mutates; policies filter.',
+    insight:'<strong>In the playground:</strong> with a 6-event window and 3-word memory test, the agent forgot the first word — still in the log, just not assembled into context. Middleware mutates; policies filter.',
     unlock:'Context control without destroying history',
   },
   {
-    icon:'📋', sub:'Part 05 · Schema', heading:'Structured Output',
+    icon:'📋', sub:'Control · Output', heading:'Structured Output',
     bullets:[
       'Define a Pydantic BaseModel → model returns a validated typed object',
       'reply.body = raw text · await reply.content() = typed instance',
@@ -740,7 +768,7 @@ const NODES = [
     unlock:'Typed pipelines with no string parsing',
   },
   {
-    icon:'🕸️', sub:'Part 06 · Network', heading:'Networks of Agents',
+    icon:'🕸️', sub:'Network · Hub & A2A', heading:'Networks of Agents',
     bullets:[
       'Hub = registry + post office + audit log in one',
       'Agents register with a Passport (identity) to receive an AgentClient',
@@ -750,7 +778,7 @@ const NODES = [
     unlock:'Multi-agent systems with identity and audit trails',
   },
   {
-    icon:'📊', sub:'Beyond · Quality', heading:'Evaluation',
+    icon:'📊', sub:'Ship · Quality', heading:'Evaluation',
     bullets:[
       'Telemetry middleware → every trace in a store; see what ran, not what you intended',
       'Agent-as-judge: second agent scores outputs against your defined criteria',
@@ -760,7 +788,7 @@ const NODES = [
     unlock:'Scalable quality beyond pass/fail tests',
   },
   {
-    icon:'💰', sub:'Beyond · Scale', heading:'Cost & Distribution',
+    icon:'💰', sub:'Ship · Scale', heading:'Cost & Distribution',
     bullets:[
       'Cheap models can cost 20× less than flagship — measure before optimizing',
       'TokenBudgetPolicy: at 90% usage, signal the agent to wrap up with remaining budget',
@@ -770,23 +798,23 @@ const NODES = [
     unlock:'Predictable spend and cross-framework scale',
   },
   {
-    icon:'🧑‍✈️', sub:'Beyond · Safety', heading:'Human in the Loop',
+    icon:'🧑‍✈️', sub:'Ship · Safety', heading:'Human in the Loop',
     bullets:[
       'Thinking steps = prompt the agent to narrate reasoning before acting',
       'Approval gates = pause before any write, delete, send, or charge action',
       'Rule: read-only → let it run · destructive → require explicit sign-off',
     ],
-    insight:'<strong>Vasily\'s own agent destroyed $2,000 of data</strong> the evening before this session. No approval gate, full permissions. It did exactly what it was told — thoroughly. The lesson is not hypothetical.',
+    insight:'<strong>Vasily Radostev documented a real incident where his own agent destroyed $2,000 of data.</strong> No approval gate, full permissions. It did exactly what it was told — thoroughly. The lesson is not hypothetical.',
     unlock:'Safe production deployment',
   },
   {
-    icon:'🎙️', sub:'Bonus · Voice Mode', heading:'LiveAgent',
+    icon:'🎙️', sub:'Extension · Voice', heading:'LiveAgent',
     bullets:[
       'Full-duplex voice — agent speaks while you talk; barge-in is supported',
       'Sub-500ms latency via OpenAI real-time API; audio-to-audio, no transcript loop',
       'Separate primitive from Agent — handles interruption logic the standard loop cannot',
     ],
-    insight:'<strong>LiveAgent is NOT a wrapper around ask().</strong> It\'s a distinct primitive purpose-built for real-time voice. Vasily demoed a live pirate voice interaction during the session.',
+    insight:'<strong>LiveAgent is NOT a wrapper around ask().</strong> It\'s a distinct primitive purpose-built for real-time voice — documented in the AG2 playground with a pirate voice demo that illustrates barge-in and real-time latency.',
     unlock:'Real-time voice apps without custom audio scaffolding',
   },
 ];

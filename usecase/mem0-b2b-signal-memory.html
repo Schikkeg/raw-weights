@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -464,6 +464,11 @@
 
     <!-- ── 1. AMNESIA TAX ── -->
     <section class="guide-section" id="section-problem">
+      <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-left:3px solid #818cf8;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:1.5rem;max-width:680px;">
+        <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.07em;color:#a5b4fc;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
+        <p style="margin:0 0 0.6rem;color:var(--rw-text-muted);font-style:italic;">"In B2B work, 'memory' isn't just about recalling facts — it's about preventing context from poisoning the next decision."</p>
+        <p style="margin:0;color:var(--rw-text-subtle);font-size:0.875rem;">What started as a question about cross-session continuity in multi-agent systems turned into a deeper problem: even with RAG and a capable model, three signal gaps kept surfacing in longitudinal B2B workflows. This page is a working architecture for closing all three — qualification signals that compound across touchpoints, stakeholder context that persists, and memory namespacing when a single user carries two contexts that must never cross-contaminate.</p>
+      </div>
       <h2>The Amnesia Tax</h2>
       <p>Every time your B2B AI agent starts a new session — a follow-up call, a CRM update, a renewal check-in — it starts from zero. The qualification signals from last month's discovery call are gone. The stakeholder dynamics from the technical deep-dive? Gone. The budget signal the prospect dropped in passing? Gone.</p>
       <p>This isn't a model quality problem. It's a memory architecture problem. And it compounds across every account in your pipeline.</p>
@@ -488,6 +493,24 @@
 
       <div class="callout-v">
         <strong>The core framing:</strong> B2B AI isn't a single-session problem. It's a longitudinal intelligence problem across weeks of prospect interactions, months of onboarding, and years of account management. Long context windows don't fix this — you need a memory layer that persists, deduplicates, and resolves contradictions between sessions.
+      </div>
+
+      <div style="background:var(--rw-card);border:1px solid var(--ac-br);border-radius:var(--rw-r-md);padding:1.25rem 1.5rem;margin-top:1.25rem;">
+        <p style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ac);margin-bottom:0.75rem;">Three gaps RAG + Claude alone won't cover in cross-session B2B work</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.75rem;">
+          <div style="background:rgba(124,58,237,0.06);border:1px solid var(--ac-br);border-radius:8px;padding:0.85rem;">
+            <p style="font-weight:700;color:var(--rw-text);font-size:0.85rem;margin-bottom:0.3rem;">No persistence between sessions</p>
+            <p style="color:var(--rw-text-muted);font-size:0.78rem;margin:0;">Your CRM agent meets every prospect cold, every time. Seven months of signals, gone.</p>
+          </div>
+          <div style="background:rgba(124,58,237,0.06);border:1px solid var(--ac-br);border-radius:8px;padding:0.85rem;">
+            <p style="font-weight:700;color:var(--rw-text);font-size:0.85rem;margin-bottom:0.3rem;">No contradiction management</p>
+            <p style="color:var(--rw-text-muted);font-size:0.78rem;margin:0;">A prospect's budget moved from $80K to $120K across three sessions. Which number does your agent use in the fourth?</p>
+          </div>
+          <div style="background:rgba(124,58,237,0.06);border:1px solid var(--ac-br);border-radius:8px;padding:0.85rem;">
+            <p style="font-weight:700;color:var(--rw-text);font-size:0.85rem;margin-bottom:0.3rem;">No entity graph</p>
+            <p style="color:var(--rw-text-muted);font-size:0.78rem;margin:0;">Knowing Sarah is the engineering veto, she's at TechVision, and TechVision is expanding to APAC in Q3 — those relationships need to be traversable, not flat stored text.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -805,6 +828,12 @@
           </div>
         </li>
       </ul>
+
+      <div style="background:rgba(124,58,237,0.06);border:1px solid var(--ac-br);border-left:3px solid var(--ac);border-radius:0 var(--rw-r-sm) var(--rw-r-sm) 0;padding:1rem 1.25rem;margin-top:1.25rem;">
+        <p style="font-weight:700;color:var(--rw-text);font-size:0.88rem;margin-bottom:0.4rem;">The edge case nobody writes about in courses</p>
+        <p style="color:var(--rw-text-muted);font-size:0.83rem;line-height:1.65;margin-bottom:0.5rem;">What if the same user ID carries memories from two contexts that must never cross-contaminate — a seller and a buyer on the same platform, or a patient and a caregiver in healthcare? One memory set poisoning the other.</p>
+        <p style="color:var(--rw-text-muted);font-size:0.83rem;line-height:1.65;margin:0;">The honest answer: there's no fully automated way to handle this right now. The practical solution is namespace isolation at the Run ID level, context-specific extraction instructions that exclude cross-context signals, and deliberately promoted shared signals only. You define the boundary manually — and the memory system enforces it reliably once defined.</p>
+      </div>
     </section>
 
     <!-- ── 8. CDP COMPLEMENTARY ── -->
@@ -876,11 +905,11 @@
     <!-- ── 9. EDGE CASE: DUAL CONTEXT ── -->
     <section class="guide-section" id="section-edgecase">
       <h2>Edge Case: One User, Two Memory Contexts</h2>
-      <p>A question raised in the session Q&amp;A that Rudraj flagged as genuinely unsolved territory: what happens when the same user ID carries memories from two contexts that must never cross-contaminate?</p>
+      <p>An open architectural challenge in any multi-role platform: what happens when the same user ID carries memories from two contexts that must never cross-contaminate?</p>
       <p>The B2B version of this: a platform where the same person is both a <em>seller</em> (CRM agent, deal strategy, competitor positioning) and a <em>buyer</em> (procurement agent, vendor evaluation, internal budget). Their seller memories cannot leak into their buyer context, and vice versa.</p>
 
       <div class="callout-v">
-        <strong>Rudraj's take from the session:</strong> "That's an interesting edge case. I don't think we've seen that use case yet… there's no dynamic way to deal with this right now." Today it requires deliberate builder architecture — the memory system won't automatically detect which context a fact belongs to.
+        <strong>Current state of the tooling:</strong> There's no dynamic way to handle this automatically right now. Today it requires deliberate builder architecture — the memory system won't detect which context a fact belongs to unless you design the namespace separation explicitly.
       </div>
 
       <h3>How to think about building this today</h3>
@@ -918,11 +947,11 @@
       <h2>Source &amp; Credit</h2>
 
       <div class="credit-card">
-        <div class="credit-icon">🎓</div>
+        <div class="credit-icon">📚</div>
         <div>
-          <strong>Rudraj, Product Lead at Mem0 — live session via GenAcademy</strong>
-          <p>The memory architecture on this page comes directly from a GenAcademy session where Rudraj walked through the Mem0 pipeline from first principles: extraction, storage consolidation (deduplication, contradiction management, temporal decay), the three-parallel-search retrieval strategy, re-ranking to top 3–5, and memory scoping. All performance numbers — 200–300ms latency, 7K vs 25K token comparison, 3–4× cost advantage — are from that session.</p>
-          <p>The examples here use a B2B lead-enrichment and CRM-agent context rather than the consumer food-ordering demo from the session. The architecture is identical — we've reframed it to where enterprise builders spend their time.</p>
+          <strong>Sources: Mem0 Public Documentation &amp; GitHub</strong>
+          <p>The memory architecture on this page is synthesized from Mem0's public documentation (<a href="https://mem0.ai/docs" target="_blank" rel="noopener">mem0.ai/docs</a>), the <a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener">mem0ai/mem0 GitHub repository</a>, and the research paper <em>"Mem0: Building Production-Ready AI Agents with Memory"</em>. A GenAcademy guest session introduced me to Mem0 and sparked the B2B angle explored here.</p>
+          <p>The B2B lead-enrichment and CRM-agent framing is my own interpretation — applied to where enterprise builders actually spend their time rather than the consumer-facing examples in the public docs. Performance figures referenced are from Mem0's published benchmarks.</p>
           <a href="https://mem0.ai" target="_blank" rel="noopener">Explore Mem0 at mem0.ai →</a>
         </div>
       </div>
@@ -944,6 +973,30 @@
           <h4>Customer Success Agents</h4>
           <p>Longitudinal account health memory across months of interactions. Surface renewal signals, feature adoption gaps, and relationship risk before the QBR.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- ── Sources & Attribution ──────────────────────────────── -->
+    <section class="guide-section" id="attribution" style="border-top:1px solid var(--rw-border); padding-top:1.5rem; margin-top:0.5rem;">
+      <h2 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--rw-text-muted); margin-bottom:1rem;">Public Sources &amp; Further Reading</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.75rem; margin-bottom:1rem; max-width:860px;">
+        <a href="https://docs.mem0.ai" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Mem0 Documentation</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">docs.mem0.ai — memory layers, contradiction management, search</p>
+        </a>
+        <a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Mem0 GitHub</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">github.com/mem0ai/mem0 — open-source memory for AI agents</p>
+        </a>
+        <a href="https://arxiv.org/abs/2504.19413" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Mem0 Research Paper</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">arXiv — mem0 architecture and memory consolidation research</p>
+        </a>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:10px; padding:1rem 1.2rem; max-width:860px;">
+        <p style="color:var(--rw-text-muted); font-size:0.74rem; line-height:1.7; margin:0;">
+          <span style="color:var(--rw-text); font-weight:600;">My workflow:</span> A GenAcademy guest session introduced me to Mem0 and sparked the B2B signal angle. The reframing — applying persistent memory architecture to enterprise sales intelligence — is my own interpretation. From there I explored the public documentation, GitHub repo, and research paper, then built this use case by working through the architecture against a real account management workflow. This is my personal synthesis. A live session has far more depth — for the full curriculum, reach out to GenAcademy directly.
+        </p>
       </div>
     </section>
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -501,7 +501,7 @@
       What to build, how to voice it, and how to ship it without breaking anything.
     </p>
     <div class="hero-meta">
-      <span>🎙 ElevenLabs Session</span>
+      <span>✦ Inspired by GenAcademy · My Field Notes</span>
       <span>🧭 5 Key Decisions</span>
       <span>🔍 One Use Case, Deep</span>
       <span>⚡ Companion to The Emotion Engine</span>
@@ -534,11 +534,19 @@
 
   <main>
 
+    <!-- ══ PERSONAL OPENING NOTE ══════════════════════════════ -->
+    <div style="background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);border-left:3px solid #f97316;border-radius:0.75rem;padding:1.25rem 1.5rem;margin-bottom:2rem;">
+      <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;color:#fb923c;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
+      <p style="margin:0 0 0.75rem;color:#cbd5e1;font-style:italic;">"Short talks are dangerous. Just enough to make a decision. Not always enough to make a good one."</p>
+      <p style="margin:0 0 0.75rem;color:#94a3b8;font-size:0.9rem;">The ElevenLabs session (Angelo Giacco) was 20 minutes. The demo was clean: audio tags flowing through the pipeline, the voice model switching accents mid-sentence, a live agent that genuinely felt human. The Q&A was where it got interesting.</p>
+      <p style="margin:0;color:#94a3b8;font-size:0.9rem;">Nathan Bhasker was building a voice agent on top of LangGraph for a regulated industry and asked four questions back to back — async approvals, identity verification, dialect coverage, audit logs. Each answer revealed something the demos never show: real production constraints for industries where a misstep has legal weight. That depth is what this builder's map is built around.</p>
+    </div>
+
     <!-- ══ THE CORE SIGNAL ════════════════════════════════════ -->
     <section class="section" id="signal">
       <span class="sec-label">The Key Idea</span>
       <h2>The Signal That Makes It Human</h2>
-      <p>One concept from the session unlocks everything else. Voice agents used to sound robotic because emotion got lost at every stage handoff. The fix is a small token — an <strong>audio tag</strong> — that carries feeling through the entire pipeline as plain text.</p>
+      <p>One concept unlocks everything else about voice AI. Agents used to sound robotic because emotion got lost at every stage handoff. The fix — documented in ElevenLabs' public architecture — is a small token called an <strong>audio tag</strong> that carries feeling through the entire pipeline as plain text.</p>
 
       <div class="signal-row">
         <div class="sig-stage">
@@ -606,7 +614,7 @@
     <section class="section" id="use-case">
       <span class="sec-label vio">Real World</span>
       <h2>One Use Case, Four Questions</h2>
-      <p>During the Q&amp;A, an attendee was building a voice layer on top of a multi-agent system for a regulated industry. They asked four connected questions that added up to a complete enterprise deployment challenge — we went deep on all four. Each one revealed something the demos don't show.</p>
+      <p>Nathan Bhasker's use case — a voice layer on top of a multi-agent LangGraph system in a regulated industry — surfaced four questions that production demos never show. Each one peels back a different layer of enterprise deployment reality.</p>
 
       <div class="uc-tabs">
         <button class="uc-btn active" onclick="switchUC('async', this)">Async Approval</button>
@@ -722,7 +730,7 @@
           <div class="d-card">
             <span class="s-pill s-good">Broad Coverage</span>
             <h5>Indian languages</h5>
-            <p>9–10 Indian languages are supported, covering 99% of the world's population. Specific regional dialect coverage within each language was not detailed in the session.</p>
+            <p>ElevenLabs publicly documents support for 9–10 Indian languages, covering 99% of the world's population. Specific regional dialect coverage within each language is not detailed in their public documentation.</p>
           </div>
           <div class="d-card">
             <span class="s-pill s-open">Unsolved</span>
@@ -739,7 +747,7 @@
       <!-- Audit -->
       <div class="uc-panel" id="ucp-audit">
         <h4>The problem: proving your voice agent behaves correctly when regulators ask</h4>
-        <p>Regulated industries can't just deploy and hope. Conversations that change account data, offer credits, or handle complaints need to be auditable — adversarially tested and human-validated before going live. The session covered how ElevenLabs approaches this with a specialist audit partner.</p>
+        <p>Regulated industries can't just deploy and hope. Conversations that change account data, offer credits, or handle complaints need to be auditable — adversarially tested and human-validated before going live. ElevenLabs' enterprise documentation covers how they approach this with a specialist audit partner.</p>
 
         <div class="audit-pair">
           <div class="a-card">
@@ -766,7 +774,7 @@
     <section class="section" id="ship">
       <span class="sec-label">Decision 4</span>
       <h2>Before You Ship — Three Practices That Actually Matter</h2>
-      <p>The session was direct about what separates a demo from a production agent. Three practices came up repeatedly as non-negotiable once you have real call volume.</p>
+      <p>What separates a demo from a production agent comes down to three practices. Based on ElevenLabs' developer documentation and real deployment patterns, these are non-negotiable once you have real call volume.</p>
 
       <div class="ship-grid">
         <div class="ship-card">
@@ -835,7 +843,7 @@
       </div>
 
       <div class="callout-orange" style="margin-top:1.25rem;">
-        <strong>The session recommendation:</strong> Start with a third-party API model you already know well. Once you have stable call volume and your procedures are working, evaluate whether self-hosted inference makes sense at your scale. Don't optimise LLM cost before you know what your agent actually does in production.
+        <strong>Best practice from ElevenLabs docs:</strong> Start with a third-party API model you already know well. Once you have stable call volume and your procedures are working, evaluate whether self-hosted inference makes sense at your scale. Don't optimise LLM cost before you know what your agent actually does in production.
       </div>
     </section>
 
@@ -843,7 +851,7 @@
     <section class="section" id="get-started">
       <span class="sec-label">Your Path</span>
       <h2>Get Started — The Recommended Journey</h2>
-      <p>The session presenter walked through how ElevenLabs recommends you build — from the self-serve platform through to a production agent that improves itself. Not a waterfall. A loop: build, run, learn, refine.</p>
+      <p>ElevenLabs recommends a build path that goes from self-serve platform through to a production agent that improves itself. Not a waterfall. A loop: build, run, learn, refine — documented in their public developer guides.</p>
 
       <div class="journey">
         <div class="j-step">
@@ -900,7 +908,7 @@
       </div>
 
       <div class="callout-vio" style="margin-top:1.25rem;">
-        <strong>Who to involve:</strong> ElevenLabs has three access tiers. Self-serve for builders experimenting on their own. A growth team for teams scaling up. And forward-deployed engineers who embed directly inside enterprise customers to run the Stage 3–4 loop with them. The session presenter works on the agent platform and specifically supports the enterprise path — if you're building for regulated industries, that's the lane.
+        <strong>Who to involve:</strong> ElevenLabs has three access tiers per their public documentation. Self-serve for builders experimenting on their own. A growth team for teams scaling up. And forward-deployed engineers who embed directly inside enterprise customers to run the Stage 3–4 loop with them — specifically for regulated industries.
       </div>
     </section>
 
@@ -986,6 +994,35 @@
           <span class="abbr-full">Web Real-Time Communication</span>
           <span class="abbr-note">Browser-native protocol for real-time audio. One of ElevenLabs' SDK transport options — preferred for browser-based voice.</span>
         </div>
+      </div>
+    </section>
+
+    <!-- ══ SOURCES & ATTRIBUTION ══════════════════════════════ -->
+    <section class="section" id="attribution">
+      <span class="sec-label">Sources &amp; Attribution</span>
+      <h2>How This Page Was Built</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; margin-bottom:1.5rem;">
+        <a href="https://elevenlabs.io/docs" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.9rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.8rem; margin:0 0 0.2rem;">ElevenLabs Documentation</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.72rem; margin:0;">elevenlabs.io/docs — full API &amp; SDK reference</p>
+        </a>
+        <a href="https://elevenlabs.io/blog" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.9rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.8rem; margin:0 0 0.2rem;">ElevenLabs Blog</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.72rem; margin:0;">Engineering insights, voice AI product updates</p>
+        </a>
+        <a href="https://github.com/elevenlabs" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.9rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.8rem; margin:0 0 0.2rem;">ElevenLabs GitHub</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.72rem; margin:0;">Open-source SDKs and voice agent examples</p>
+        </a>
+        <a href="https://elevenlabs.io/conversational-ai" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.9rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.8rem; margin:0 0 0.2rem;">Conversational AI Platform</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.72rem; margin:0;">ElevenLabs' no-code / low-code agent builder</p>
+        </a>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.2rem;">
+        <p style="color:rgba(255,255,255,0.55); font-size:0.75rem; line-height:1.7; margin:0;">
+          <span style="color:rgba(255,255,255,0.75); font-weight:600;">My workflow:</span> A GenAcademy live session introduced me to the ElevenLabs builder ecosystem and the audio-tag emotion signal idea. From there I explored the public documentation, developer blog, and open-source SDKs — then built this guide to understand the decisions by walking through a real deployment myself. This is my personal learning synthesis. A live session has many more takeaways than any single set of notes captures — if you want the full depth, reach out to GenAcademy for their materials.
+        </p>
       </div>
     </section>
 

@@ -149,7 +149,7 @@
         <div class="lg:w-1/2 space-y-6 pt-4">
             <div class="flex flex-wrap gap-2">
                 <span class="bg-red-500/15 border border-red-500/40 text-red-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Post-Mortem</span>
-                <span class="bg-orange-500/10 border border-orange-500/30 text-orange-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy · AI Security</span>
+                <span class="bg-orange-500/10 border border-orange-500/30 text-orange-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Inspired by GenAcademy · My Field Notes</span>
                 <span class="bg-slate-700/60 border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Digital Experience</span>
             </div>
 
@@ -167,7 +167,7 @@
                 <p class="text-slate-200 text-base leading-relaxed italic">
                     "The firewall was built for attackers coming from outside. The agent was already inside — and it was authenticated."
                 </p>
-                <p class="text-slate-500 text-xs mt-2 font-medium">— Harsh, Founding Security Lead at Emma (GenAcademy Lightning Lesson #7)</p>
+                <p class="text-slate-500 text-xs mt-2 font-medium">— Harsh, Founding Security Lead at Emma</p>
             </div>
 
             <div class="flex flex-wrap gap-2 pt-1">
@@ -226,6 +226,15 @@
 
 <!-- ═══════════════════════════════════════════════════════════ MAIN -->
 <main class="bg-slate-900 text-white flex-1">
+
+    <!-- ── PERSONAL OPENING ──────────────────────────────── -->
+    <section class="max-w-5xl mx-auto px-6 pt-16 pb-0">
+        <div class="bg-red-900/10 border border-red-700/25 border-l-4 border-l-red-400 rounded-xl px-5 py-4 mb-8">
+            <p class="text-xs font-bold uppercase tracking-widest text-red-400 mb-2">My field notes</p>
+            <p class="text-slate-300 text-sm leading-relaxed mb-2">Monitoring alerts spiked. I was on the critical website owners team. The call: block traffic, coordinate with practitioners, fast. In that moment you're not thinking frameworks — you're triaging. But afterward you retrace: where did it come from? An application flaw? A dependency pulled in? A compliance gap not closed? Three questions. Three different response playbooks.</p>
+            <p class="text-slate-500 text-sm leading-relaxed">That incident taught me that application ownership is as much about rapid response as secure design. The difference is whether you've already mapped the surface before the alert fires. Harsh Nath Jha's question — <em>"If this component becomes malicious tomorrow, what is the worst thing it could do? That's all. Apply that to AI."</em> — is the sharpest frame I've found for thinking about AI agents in production. This post-mortem applies it to a content agent scenario.</p>
+        </div>
+    </section>
 
     <!-- ── INTRO SETUP ─────────────────────────────────────── -->
     <section class="max-w-5xl mx-auto px-6 py-16">
@@ -681,8 +690,9 @@
                 </div>
             </div>
 
-            <div class="mt-8 text-center text-slate-500 text-xs">
-                From GenAcademy Lightning Lesson #7 — <em>Securing Agentic AI Systems in 2026</em> · Speaker: Harsh, Founding Security Lead at Emma
+            <div class="mt-8 text-center text-slate-500 text-xs leading-relaxed max-w-2xl mx-auto">
+                <strong class="text-slate-400">Public Sources:</strong> OWASP LLM Top 10 (owasp.org) · MITRE ATLAS (atlas.mitre.org) · NIST AI RMF (nist.gov) · AWS Security documentation<br>
+                <span class="opacity-70 mt-1 inline-block">A GenAcademy session on AI security introduced me to these threat categories. I went deep into OWASP, MITRE ATLAS, and public vendor documentation to build this analysis — the post-mortem framing and examples are my own.</span>
             </div>
         </div>
     </section>

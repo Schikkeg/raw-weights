@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -616,7 +616,7 @@
 <!-- ═══════════════ HERO ═══════════════ -->
 <div class="guide-hero">
   <div class="hero-inner">
-    <div class="hero-label">🚀 Guide · Part 2</div>
+    <div class="hero-label">✦ Inspired by GenAcademy · My Field Notes</div>
     <h1>Fine-Tuning Part 2:<br><span>The Production Protocol</span></h1>
     <p>You trained the model. Now what? LoRA deployment paths, RL alignment methods, synthetic data strategies, GPU cost tiers, distillation, and running your own stack with Ollama — the full playbook for what comes after training.</p>
 
@@ -688,6 +688,11 @@
       </div>
 
       <p>You've trained your LoRA adapter — a compact set of weights that specialize your base model for a task. Before you can call it in production, you face a decision that shapes your entire serving architecture.</p>
+
+      <div style="background:rgba(14,165,233,0.07);border:1px solid rgba(14,165,233,0.2);border-left:3px solid #0ea5e9;border-radius:0.75rem;padding:1rem 1.5rem;margin:1rem 0;">
+        <p style="font-size:0.8rem;font-weight:600;letter-spacing:0.07em;color:#38bdf8;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
+        <p style="margin:0;color:#94a3b8;font-size:0.9rem;">Building the VocabForge pipeline end-to-end taught me that the initial training run is the smaller half of the work. Everything after — packaging it so it doesn't become a black box, choosing a deployment path that doesn't overextend you on day one, building feedback loops so the model improves rather than just repeating itself — that's where most of the decisions live. The sections below are the ones I had to figure out in practice.</p>
+      </div>
 
       <div class="key-insight">
         <div class="key-insight-label">The fork in the road</div>
@@ -1182,6 +1187,12 @@
 
       <p><strong>Why do this?</strong> A 10B parameter distilled model handling your specific task can be cheaper to run, lower latency, and privately owned — compared to paying per-token to a frontier API forever. You get the intelligence of the large model, distilled into something you control.</p>
 
+      <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.22);border-left:3px solid #6366f1;border-radius:0.75rem;padding:1.25rem 1.5rem;margin:1.25rem 0;">
+        <p style="font-size:0.8rem;font-weight:600;letter-spacing:0.07em;color:#818cf8;text-transform:uppercase;margin-bottom:0.75rem;">My field notes — the DeepSeek reframe</p>
+        <p style="margin:0 0 0.75rem;color:#cbd5e1;">When the DeepSeek headlines dropped, the framing in most coverage was competitive threat. The reframe I landed on: a large model can effectively train a smaller, faster one to replicate the job — which is exactly the pattern of an expert whose work a junior learns from. That's not a controversy, that's a workflow. Once you see it that way, distillation stops being an advanced technique and starts being the obvious next step after your first successful fine-tuning run.</p>
+        <p style="margin:0;color:#94a3b8;font-size:0.9rem;">I built VocabForge — a fine-tuned Qwen3 model for transforming raw performance descriptions into structured professional narrative — to test this end-to-end. The hard parts weren't the AI. They were the debugging, the environment, the formats, the evaluation logic. The model was almost the easy part. Fireworks.ai's API wasn't OpenAI-compatible for fine-tuning; Colab lost my training run three times. Every section of this guide is something I hit in practice, not just in theory.</p>
+      </div>
+
       <div class="callout callout-indigo">
         <div class="callout-icon">💡</div>
         <div class="callout-body"><strong>Already available:</strong> HuggingFace has dozens of publicly distilled models — distilled Llama, Mistral, and Qwen variants that are significantly smaller but competitive in quality for specific task categories. Before training your own distilled student, check whether a pre-distilled model already fits your use case.</div>
@@ -1455,6 +1466,34 @@
       <div style="margin-top:2rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
         <a href="fine-tuning-llm-guide.html" class="rw-btn rw-btn-primary">← Part 1: The Specialist Protocol</a>
         <a href="https://rawweights.com/tools/deep_reinforcement.html" class="rw-btn rw-btn-ghost">RL Deep Dive</a>
+      </div>
+    </section>
+
+    <!-- ══ SOURCES & ATTRIBUTION ══════════════════════════════ -->
+    <section id="attribution" style="margin-top:2.5rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:2rem;">
+      <p style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:rgba(255,255,255,0.35); margin-bottom:0.9rem;">Public Sources &amp; Further Reading</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; margin-bottom:1.2rem; max-width:860px;">
+        <a href="https://huggingface.co/docs/peft/index" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">HuggingFace PEFT / LoRA</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">huggingface.co/docs/peft — LoRA &amp; QLoRA documentation</p>
+        </a>
+        <a href="https://arxiv.org/abs/2305.11206" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">QLORA Paper — Dettmers et al.</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">arXiv:2305.11206 — 4-bit quantization for fine-tuning</p>
+        </a>
+        <a href="https://ollama.com" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Ollama</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">ollama.com — run LLMs locally, zero infra</p>
+        </a>
+        <a href="https://openai.com/research/learning-to-summarize-with-human-feedback" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">RLHF — OpenAI Research</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">Reinforcement learning from human feedback — original paper</p>
+        </a>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.2rem; max-width:860px;">
+        <p style="color:rgba(255,255,255,0.45); font-size:0.74rem; line-height:1.7; margin:0;">
+          <span style="color:rgba(255,255,255,0.7); font-weight:600;">My workflow:</span> A GenAcademy session introduced me to the post-training landscape — LoRA paths, RLHF alignment, synthetic data, and distillation. From there I explored public research papers, HuggingFace documentation, and the Ollama/Unsloth open-source ecosystems, then built this guide to understand by doing. This is my personal learning synthesis — a live session has far more depth and takeaways than any set of notes captures. For the full curriculum, reach out to GenAcademy directly.
+        </p>
       </div>
     </section>
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -383,7 +383,7 @@
 
   <header class="hero">
     <div class="hero-inner">
-      <div class="hero-label">GenAcademy · Lightning Session · Production AI</div>
+      <div class="hero-label">Inspired by GenAcademy · Production AI · My Applied Synthesis</div>
       <h1>The Production<br><em>Checklist</em></h1>
       <p class="hero-sub">Four pillars, one real project, zero hand-waving. Eikos Health — a WhatsApp AI for Indian doctors — as the annotated reference implementation.</p>
       <div class="hero-meta">
@@ -425,9 +425,22 @@
       <!-- 01 Core Thesis -->
       <section class="content-section" id="thesis">
         <h2 class="section-heading"><span class="num">01</span> Core Thesis</h2>
+
+        <div style="background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
+          <p style="font-size:1rem;color:var(--rw-text);line-height:1.7;margin:0 0 0.75rem;">Building an AI demo is like building a treehouse — fast, exciting, works great when it's just you.</p>
+          <p style="font-size:1rem;color:var(--rw-text);line-height:1.7;margin:0 0 0.75rem;">Taking it to production is building a residential home. Plumbing. Foundation. Safety codes. A roof that holds when it rains.</p>
+          <p style="font-size:0.85rem;color:var(--rw-text-secondary);margin:0;">Most teams learn that the hard way. This checklist is the blueprint for the residential home.</p>
+        </div>
+
         <div class="thesis-quote">
           <p>"Everything around the prompt is plain old distributed systems."</p>
-          <cite>— Arpit, Eikos Health (worked as technical advisor) &amp; distributed systems engineer</cite>
+          <cite>— Arpit Chaudhary, technical advisor for Eikos Health</cite>
+        </div>
+
+        <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-left:3px solid #34d399;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:1.5rem;max-width:680px;">
+          <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.07em;color:#6ee7b7;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
+          <p style="margin:0 0 0.6rem;color:var(--rw-text-muted);font-style:italic;">"Building an AI demo is exciting. Building a production AI system is unglamorous infrastructure work — and that's the part nobody talks about."</p>
+          <p style="margin:0;color:var(--rw-text-subtle);font-size:0.875rem;">The treehouse-to-residential-home analogy stuck with me because I've built both. The demo works every time I demo it. Then I put real users on it and find out that 90% reliability — which feels great on a laptop — means one in ten interactions fails, and that's before you account for edge cases, rate limits, and the downstream systems that assume the AI always responds correctly. This checklist is my attempt to name everything that lives between "it works on my machine" and "it works in production."</p>
         </div>
         <div class="thesis-points">
           <div class="thesis-point">
@@ -949,6 +962,30 @@
             <div class="abbr-full">Model Context Protocol</div>
             <p class="abbr-note">Open standard for exposing tools to AI agents. Trade-off: exposes your tools to any agent (broad reach) but you cede control over invocation context and rate. If you own the agentic layer, you maintain reliability control.</p>
           </div>
+        </div>
+      </section>
+
+      <!-- ── Sources & Attribution ─────────────────────────── -->
+      <section class="guide-section" id="attribution" style="border-top:1px solid var(--rw-border); padding-top:1.5rem; margin-top:1.5rem;">
+        <h2 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--rw-text-muted); margin-bottom:1rem;">Public Sources &amp; Further Reading</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.75rem; margin-bottom:1rem; max-width:860px;">
+          <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+            <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Anthropic — Building Effective Agents</p>
+            <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">anthropic.com — orchestrators, subagents, reliability patterns</p>
+          </a>
+          <a href="https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+            <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Google Cloud MLOps Guide</p>
+            <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">cloud.google.com — MLOps pipelines and production best practices</p>
+          </a>
+          <a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+            <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">OWASP LLM Top 10</p>
+            <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">owasp.org — LLM-specific security risks for production deployments</p>
+          </a>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:10px; padding:1rem 1.2rem; max-width:860px;">
+          <p style="color:var(--rw-text-muted); font-size:0.74rem; line-height:1.7; margin:0;">
+            <span style="color:var(--rw-text); font-weight:600;">My workflow:</span> A GenAcademy live session on production AI systems introduced me to the checklist mindset — treating readiness as a gate, not an afterthought. From there I explored Anthropic's agent reliability patterns, Google Cloud MLOps documentation, and OWASP LLM security frameworks, then built this checklist by walking through a real healthcare AI use case. This is my personal applied synthesis. A live session has far more depth — for the full curriculum, reach out to GenAcademy directly.
+          </p>
         </div>
       </section>
 

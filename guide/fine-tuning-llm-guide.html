@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -611,7 +611,7 @@
 <!-- ═══════════════ HERO ═══════════════ -->
 <div class="guide-hero">
   <div class="hero-inner">
-    <div class="hero-label">🔬 Guide</div>
+    <div class="hero-label">✦ Inspired by GenAcademy · My Field Notes</div>
     <h1>Fine-Tuning LLMs:<br><span>The Specialist Protocol</span></h1>
     <p>Most teams reach for fine-tuning far too early — and pay a steep price. Learn when to prompt, when to RAG, and when fine-tuning is the right call. Understand the difference between a model that reads a textbook and one that went to medical school.</p>
 
@@ -816,6 +816,13 @@
       </div>
 
       <p>When fine-tuning is genuinely warranted, it's almost always because of one of two gaps. Diagnosing which gap you have changes the solution — and knowing that knowledge gaps are often better addressed by RAG first is one of the most common things practitioners get wrong.</p>
+
+      <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-left:3px solid #6366f1;border-radius:0.75rem;padding:1.25rem 1.5rem;margin:1.25rem 0;">
+        <p style="font-size:0.8rem;font-weight:600;letter-spacing:0.07em;color:#818cf8;text-transform:uppercase;margin-bottom:0.75rem;">My field notes</p>
+        <p style="margin:0 0 0.75rem;color:#cbd5e1;">I spent about seven months going through GenAcademy sessions, documentation, and building side tools before this clicked. Looking back, I had two completely different types of gaps at different points — and I didn't know how to label them at the time.</p>
+        <p style="margin:0 0 0.75rem;color:#cbd5e1;">My brother Sridhar Hassan gave me advice early in my career that I've thought about a lot while building in AI: <em>"The technology doesn't matter. VB today, Java tomorrow — it'll all get replaced. But if you truly understand one backend, one frontend, full integration end to end — that understanding survives everything."</em> Fine-tuning vs RAG is the same principle. The <em>distinction</em> between adjusting behavior and loading knowledge — that transfers across every model, every framework, every year.</p>
+        <p style="margin:0;color:#94a3b8;font-size:0.9rem;">When I finally mapped the spectrum — prompt engineering → RAG → RAFT → fine-tuning — it stopped being a list of separate tools and became one progression. Each technique fills a different gap. Getting that mental model right is more durable than memorizing which API to call.</p>
+      </div>
 
       <div class="gap-toggle">
         <button class="gap-btn active" onclick="switchGap('knowledge', this)">🧠 Knowledge Gap</button>
@@ -1205,6 +1212,13 @@
 
       <p>RAFT (Retrieval-Augmented Fine-Tuning, from Microsoft Research) is the answer when neither RAG nor fine-tuning alone is sufficient. The insight: fine-tune the model to reason over retrieved context better — not to memorize data, but to think like a specialist who also has a reference library.</p>
 
+      <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-left:3px solid #10b981;border-radius:0.75rem;padding:1.25rem 1.5rem;margin:1.25rem 0;">
+        <p style="font-size:0.8rem;font-weight:600;letter-spacing:0.07em;color:#6ee7b7;text-transform:uppercase;margin-bottom:0.75rem;">Why the name finally clicked for me</p>
+        <p style="margin:0 0 0.75rem;color:#cbd5e1;">Seven months of GenAcademy sessions, documentation reads, and side builds. Then one session on fine-tuning. I remember thinking — this isn't starting from scratch. I'm not an empty model. Every prior session was retrieval: pulling in concepts, letting them sit, building a vocabulary for all of this.</p>
+        <p style="margin:0 0 0.75rem;color:#cbd5e1;"><em>That's</em> what RAFT describes. Bring what you've already retrieved from all those weeks of accumulation. Let this session fine-tune the behavior — the way you actually apply and connect those concepts. The combination is what produces the picture.</p>
+        <p style="margin:0;color:#94a3b8;font-size:0.9rem;">The difference between RAG and fine-tuning in one line: <strong>one looks things up, the other thinks differently.</strong> RAFT is the pattern where you need both at once.</p>
+      </div>
+
       <div class="gap-cards" style="margin:1.5rem 0;">
         <div class="gap-icard">
           <div class="gap-icard-icon">🚚</div>
@@ -1377,6 +1391,34 @@
       <div style="margin-top:2rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
         <a href="https://rawweights.com/guide/llm-post-training-guide.html" class="rw-btn rw-btn-primary">LLM Post-Training Deep Dive →</a>
         <a href="https://rawweights.com/tools/master_ml_hub.html" class="rw-btn rw-btn-ghost">ML Concepts Hub</a>
+      </div>
+    </section>
+
+    <!-- ══ SOURCES & ATTRIBUTION ══════════════════════════════ -->
+    <section id="attribution" style="margin-top:2.5rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:2rem;">
+      <p style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:rgba(255,255,255,0.35); margin-bottom:0.9rem;">Public Sources &amp; Further Reading</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; margin-bottom:1.2rem; max-width:860px;">
+        <a href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">LoRA Paper — Hu et al. 2021</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">arXiv:2106.09685 — Low-Rank Adaptation of large LMs</p>
+        </a>
+        <a href="https://huggingface.co/docs/trl/index" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">HuggingFace TRL</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">huggingface.co/docs/trl — SFT, DPO, RLHF training library</p>
+        </a>
+        <a href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Unsloth GitHub</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">unslothai/unsloth — fast LoRA fine-tuning, open source</p>
+        </a>
+        <a href="https://huggingface.co/docs/datasets/index" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:#fb923c; font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">HuggingFace Datasets</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.7rem; margin:0;">huggingface.co/docs/datasets — data prep for fine-tuning</p>
+        </a>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.2rem; max-width:860px;">
+        <p style="color:rgba(255,255,255,0.45); font-size:0.74rem; line-height:1.7; margin:0;">
+          <span style="color:rgba(255,255,255,0.7); font-weight:600;">My workflow:</span> A GenAcademy session introduced me to the specialist fine-tuning mindset — when to fine-tune vs. prompt-engineer, LoRA mechanics, and dataset quality as the bottleneck. From there I worked through the original LoRA and QLoRA papers, HuggingFace TRL documentation, and open-source tools like Unsloth, then built this guide by walking through each decision myself. This is my personal learning synthesis. A live session has far more depth and takeaways than any set of notes captures — for the full curriculum, reach out to GenAcademy directly.
+        </p>
       </div>
     </section>
 

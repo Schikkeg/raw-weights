@@ -674,7 +674,7 @@
       <a href="#threat-landscape" class="hero-cta-primary">Begin the Brief ↓</a>
       <a href="ai-security-stack-autopsy.html" class="hero-cta-secondary">← Haven't read the Autopsy? Start there</a>
     </div>
-    <p class="hero-session-note">From GenAcademy Week 6 · Instructors: Aish &amp; Arvind · July 4, 2026</p>
+    <p class="hero-session-note">✦ Inspired by GenAcademy · My Field Notes · built from PromptFoo, NeMo Guardrails, and Microsoft Presidio public documentation</p>
   </div>
 </div>
 
@@ -778,6 +778,13 @@
     <section class="guide-section" id="lethal-triad">
       <div class="section-label">Risk Model</div>
       <h2>The Triple Threat</h2>
+
+      <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-left:3px solid #ef4444;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:1.25rem;">
+        <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;color:#f87171;text-transform:uppercase;margin-bottom:0.6rem;">Where this framing came from</p>
+        <p style="margin:0 0 0.6rem;color:#cbd5e1;font-size:0.9rem;">My first security work was a hackathon on website vulnerabilities. Started with robots.txt. The attack surface had a shape — you could point at it. With AI agents, that shape is gone. The attack can start from a user message, an email the agent reads, a document it retrieves, a webhook it calls. No fixed entry point.</p>
+        <p style="margin:0;color:#94a3b8;font-size:0.875rem;">When I looked at what production agents have in common, three properties kept appearing together: access to private internal data, ability to read untrusted external content, ability to communicate outward. Each one alone is manageable. All three active at once creates a window where one hidden instruction inside a document the agent reads is enough to move internal data out silently — the agent is already authenticated. I've been calling this combination the <strong style="color:#fca5a5;">Triple Threat</strong>. The interactive model below makes it concrete.</p>
+      </div>
+
       <p>Looking at production AI agents, three properties tend to show up together. Each one alone is manageable. Any two together require deliberate controls. When all three are active simultaneously, you have a critical exposure window that doesn't exist in traditional software. Click the cells below to see how the combinations shift the risk — and which tool defends each factor.</p>
 
       <div class="triad-grid">
@@ -1433,9 +1440,8 @@
       </div>
 
       <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--rw-border);font-size:0.78rem;color:var(--rw-text-subtle);font-family:var(--rw-font-display);">
-        From GenAcademy Week 6 — <em>AI Security: Red Teaming, Guardrails &amp; PII Protection</em><br>
-        Instructors: Aish (Aishwarya) &amp; Arvind · July 4, 2026<br>
-        <span style="margin-top:0.4rem;display:inline-block;opacity:0.7;">Personal learning notes. Views my own.</span>
+        <strong style="color:var(--rw-text-muted);">Public Sources:</strong> PromptFoo (open source, promptfoo.dev) · NVIDIA NeMo Guardrails (GitHub: NVIDIA/NeMo-Guardrails) · Microsoft Presidio (GitHub: microsoft/presidio) · OWASP LLM Top 10 (owasp.org) · MITRE ATLAS (atlas.mitre.org)<br>
+        <span style="margin-top:0.5rem;display:inline-block;opacity:0.7;">A GenAcademy AI Security session pointed me toward these tools. I went deep into their public documentation, GitHub repositories, and OWASP/MITRE frameworks, then built this guide from that research. The synthesis, examples, and architecture diagrams are my own work.</span>
       </div>
     </section>
 

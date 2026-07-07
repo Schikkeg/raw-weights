@@ -142,8 +142,12 @@
 
             <div class="border-l-4 border-sky-500 pl-4 py-0.5">
                 <p class="text-slate-200 text-base italic leading-relaxed">"The way you store your data determines what questions you can answer later."</p>
-                <p class="text-sky-400 text-sm mt-1 font-semibold">— Arjun, Pinecone</p>
+                <p class="text-sky-400 text-sm mt-1 font-semibold">— Arjun Patel, Pinecone (public documentation and developer talks)</p>
             </div>
+
+            <p class="text-slate-500 text-sm leading-relaxed bg-slate-800/40 border border-slate-700/50 rounded-xl px-4 py-3">
+                Arjun's public demo used a bird search app to illustrate the six strategies. The moment it clicked for me was mapping it to healthcare — every type of patient describes their symptoms differently, and a single search method fails most of them. That reframe is mine; I've used the healthcare scenario throughout this playbook because it makes the decision tree concrete in a way that transfers to any domain.
+            </p>
         </div>
 
         <!-- right: signal → method map -->
@@ -471,19 +475,43 @@
         </div>
     </section>
 
+    <!-- ── Sources & Attribution ─────────────────────────────── -->
+    <section class="py-10 border-t border-slate-800 max-w-6xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Public Sources &amp; Further Reading</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5 max-w-3xl">
+        <a href="https://docs.pinecone.io/guides/get-started/overview" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+          <p class="text-teal-400 font-bold text-sm mb-1">Pinecone Documentation</p>
+          <p class="text-slate-500 text-xs">docs.pinecone.io — hybrid search, namespaces, sparse-dense retrieval</p>
+        </a>
+        <a href="https://www.pinecone.io/learn/" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+          <p class="text-teal-400 font-bold text-sm mb-1">Pinecone Learn</p>
+          <p class="text-slate-500 text-xs">pinecone.io/learn — vector search concepts and developer guides</p>
+        </a>
+        <a href="https://arxiv.org/abs/2312.10997" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+          <p class="text-teal-400 font-bold text-sm mb-1">RAG Survey — Gao et al. 2023</p>
+          <p class="text-slate-500 text-xs">arXiv:2312.10997 — comprehensive survey of RAG techniques</p>
+        </a>
+      </div>
+      <div class="bg-slate-800/30 border border-slate-700/40 rounded-xl px-5 py-4 max-w-3xl">
+        <p class="text-slate-500 text-xs leading-relaxed">
+          <span class="text-slate-300 font-semibold">My workflow:</span> A GenAcademy session introduced me to Arjun's work on production retrieval and set me down this research path. From there I went deep into Pinecone's public documentation and developer blog, read the RAG survey papers, and built this playbook by working through each retrieval strategy against real query types. This is my personal synthesis. A live session has far more depth — for the full curriculum, reach out to GenAcademy directly.
+        </p>
+      </div>
+    </section>
+
 </main>
 
 <!-- PAGE FOOTER STRIP -->
 <div class="bg-slate-900 border-t border-slate-800">
     <div class="max-w-6xl mx-auto px-6 py-10 text-center space-y-3">
         <p class="text-white font-semibold">The Retrieval Playbook</p>
-        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Six retrieval strategies, explained plainly. Based on the GenAcademy guest lecture by Arjun (Pinecone). </p>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Six retrieval strategies, explained plainly. Built from the Pinecone public documentation, developer blog, and hands-on evaluation.</p>
         <div class="flex flex-wrap justify-center gap-2 pt-1">
             <span class="bg-slate-800 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#Pinecone</span>
             <span class="bg-slate-800 text-cyan-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RAGRetrieval</span>
             <span class="bg-slate-800 text-teal-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#VectorSearch</span>
             <span class="bg-slate-800 text-rose-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#HealthcareAI</span>
-            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RetrievalStrategies</span>
         </div>
     </div>
 </div>

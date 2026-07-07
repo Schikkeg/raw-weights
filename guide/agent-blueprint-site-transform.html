@@ -240,7 +240,7 @@
         <div class="lg:w-1/2 space-y-6 pt-4">
             <div class="flex flex-wrap gap-2">
                 <span class="bg-blue-500/15 border border-blue-500/40 text-blue-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Interactive Guide</span>
-                <span class="bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy · Agentic AI · Week 3</span>
+                <span class="bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Inspired by GenAcademy · My Field Notes</span>
             </div>
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]">
                 The<br>
@@ -252,12 +252,15 @@
             <p class="text-slate-500 text-sm leading-relaxed max-w-lg border-l-2 border-blue-700 pl-4 italic">
                 "Act as a Senior UX/UI Designer, Architect, and Developer... completely redesigning a live static website... from a collection of disparate pages into a unified, high-performing digital experience."
             </p>
+            <p class="text-slate-500 text-xs leading-relaxed max-w-lg bg-slate-800/40 border border-slate-700/50 rounded-lg px-4 py-3">
+                A GenAcademy session on agentic AI set me down this path. From there I went deep into public research and documentation — then built this page to understand the concepts by applying them to the rawweights.com rebuild I was actually running.
+            </p>
             <div class="flex flex-wrap gap-3 pt-2">
                 <a href="#five-positions" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
                     See the Build Pipeline →
                 </a>
-                <a href="#mint-rule" class="inline-flex items-center gap-2 border border-slate-600 hover:border-blue-500 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
-                    The MINT Rule
+                <a href="#lean-build" class="inline-flex items-center gap-2 border border-slate-600 hover:border-blue-500 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
+                    The Lean Build Test
                 </a>
             </div>
         </div>
@@ -333,6 +336,7 @@
             <span class="text-blue-400 text-xs font-bold uppercase tracking-widest">Positions One Through Five</span>
             <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">What Does Each Level of Autonomy Look Like in a Site Rebuild?</h2>
             <p class="text-slate-400 max-w-2xl mx-auto">The same task — transforming rawweights.com from 40 inconsistent pages into a unified system — looks completely different depending on how much you hand over to the agent.</p>
+            <p class="text-slate-500 text-sm mt-4 max-w-xl mx-auto">I mapped the rawweights.com rebuild across five levels of agent autonomy to understand where I was operating at each stage — and where I should have been.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
@@ -984,41 +988,50 @@
     </div>
 </section>
 
-<!-- ──────────────────────────────── SECTION 8: MINT RULE -->
-<section id="mint-rule" class="py-20">
+<!-- ──────────────────────────────── SECTION 8: LEAN BUILD TEST -->
+<section id="lean-build" class="py-20">
     <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
             <span class="text-indigo-400 text-xs font-bold uppercase tracking-widest">The Design Principle</span>
             <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Don't Build a Component Library to Fix One Misaligned Heading</h2>
-            <p class="text-slate-400 max-w-2xl mx-auto">The MINT rule asks you to check your assumptions before building any agent: is every part of this necessary, or are you solving for a future complexity that doesn't exist yet?</p>
+            <p class="text-slate-400 max-w-2xl mx-auto">Before spinning up any agent, four questions decide whether you're solving a real problem or building complexity to feel productive.</p>
         </div>
 
         <div class="max-w-4xl mx-auto">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                <div class="bg-blue-900/20 border border-blue-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-blue-400 to-indigo-400 mb-2">M</p>
-                    <p class="text-white font-bold">Minimal</p>
-                    <p class="text-slate-400 text-xs mt-1">Fewest agents and files that can do the job</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                <div class="bg-blue-900/20 border border-blue-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">🧱</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Fewest agents that can do the job</p>
+                        <p class="text-slate-400 text-sm">One well-scoped agent handling design and implementation for one page at a time beats four parallel agents before you understand any of their failure modes.</p>
+                    </div>
                 </div>
-                <div class="bg-indigo-900/20 border border-indigo-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-indigo-400 to-violet-400 mb-2">I</p>
-                    <p class="text-white font-bold">Intelligence</p>
-                    <p class="text-slate-400 text-xs mt-1">Only as much reasoning as the task requires</p>
+                <div class="bg-indigo-900/20 border border-indigo-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">🧠</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Reasoning matched to the task</p>
+                        <p class="text-slate-400 text-sm">A text-swap job doesn't need a reasoning model. A classification step doesn't need a 100K context window. Right-size to the actual requirement — not what you imagine you might need later.</p>
+                    </div>
                 </div>
-                <div class="bg-violet-900/20 border border-violet-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-violet-400 to-blue-400 mb-2">N</p>
-                    <p class="text-white font-bold">Necessary</p>
-                    <p class="text-slate-400 text-xs mt-1">Each component must earn its place</p>
+                <div class="bg-violet-900/20 border border-violet-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">⚖️</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Every component earns its place</p>
+                        <p class="text-slate-400 text-sm">Add a QA agent only after you've seen what the build agent gets wrong. Add a reflection loop only after you've measured where quality drops. Don't design for failures you haven't seen yet.</p>
+                    </div>
                 </div>
-                <div class="bg-blue-900/20 border border-blue-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-blue-400 to-indigo-400 mb-2">T</p>
-                    <p class="text-white font-bold">Tools</p>
-                    <p class="text-slate-400 text-xs mt-1">Only the access the agent actually needs</p>
+                <div class="bg-blue-900/20 border border-blue-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">🔑</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Tool access scoped to the task</p>
+                        <p class="text-slate-400 text-sm">Blog redesign agent needs the blog directory and shared components — not credentials, analytics config, or the full repository. Every extra permission is an unexpected failure waiting to happen.</p>
+                    </div>
                 </div>
             </div>
 
             <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 mb-8">
-                <p class="text-white font-bold text-center mb-6">Four questions before you spin up a site rebuild agent</p>
+                <p class="text-white font-bold text-center mb-2">Four questions before you spin up a site rebuild agent</p>
+                <p class="text-slate-500 text-xs text-center mb-6">How I apply these principles in practice — from the rawweights.com rebuild</p>
                 <div class="space-y-4">
                     <div class="flex gap-4 items-start row-hover p-3 transition-all duration-200">
                         <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-0.5">1</div>
@@ -1059,7 +1072,7 @@
                     <p class="text-white font-semibold mb-1">The same five levels, explained through travel planning</p>
                     <p class="text-slate-400 text-sm">If the technical framing in this page was useful, the companion page walks through the same five positions, the 2×2 quadrant, the ReAct loop, memory types, and failure modes using everyday travel analogies — no code involved.</p>
                 </div>
-                <a href="/blog/agent-autonomy-dial.html" class="flex-shrink-0 bg-gradient-to-r from-purple-700 to-fuchsia-700 hover:from-purple-600 hover:to-fuchsia-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm whitespace-nowrap">
+                <a href="/guide/agent-autonomy-dial.html" class="flex-shrink-0 bg-gradient-to-r from-purple-700 to-fuchsia-700 hover:from-purple-600 hover:to-fuchsia-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm whitespace-nowrap">
                     Read The Autonomy Dial →
                 </a>
             </div>
@@ -1069,6 +1082,34 @@
                 <p class="text-white font-bold text-xl mb-3">Fix the heading first</p>
                 <p class="text-slate-300 leading-relaxed max-w-2xl mx-auto">You built rawweights.com page by page in late-night sessions. The inconsistency wasn't incompetence — it was momentum. The right first step for an agent isn't to rebuild all 40 pages at once. It's to pick the one page that would most benefit from being the canonical reference, make it perfect, document every decision it embeds, and use that as the foundation for everything else. Start with the one. Prove the pattern. Then scale.</p>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SOURCES -->
+<section class="py-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-5">Public Sources &amp; Further Reading</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mb-8">
+            <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-blue-700/50 transition-all">
+                <p class="text-blue-300 text-sm font-semibold">ReAct: Synergizing Reasoning and Acting in Language Models</p>
+                <p class="text-slate-500 text-xs mt-1">Yao et al., 2022 — Google Research &amp; Princeton · arXiv:2210.03629</p>
+            </a>
+            <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-blue-700/50 transition-all">
+                <p class="text-blue-300 text-sm font-semibold">Building Effective Agents</p>
+                <p class="text-slate-500 text-xs mt-1">Anthropic Research — Autonomy levels, agent patterns, and human oversight</p>
+            </a>
+            <a href="https://huyenchip.com/2025/01/07/agents.html" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-blue-700/50 transition-all">
+                <p class="text-blue-300 text-sm font-semibold">Agents</p>
+                <p class="text-slate-500 text-xs mt-1">Chip Huyen — AI agent architectures, memory types, and multi-agent patterns</p>
+            </a>
+            <a href="https://developer.chrome.com/docs/lighthouse/overview/" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-blue-700/50 transition-all">
+                <p class="text-blue-300 text-sm font-semibold">Google Lighthouse</p>
+                <p class="text-slate-500 text-xs mt-1">Chrome DevTools — The automated QA tool used throughout the site rebuild scenario</p>
+            </a>
+        </div>
+        <div class="max-w-4xl bg-slate-800/30 border border-slate-700/50 rounded-xl px-5 py-4 text-slate-500 text-xs leading-relaxed">
+            <span class="text-slate-400 font-semibold">How this page was built:</span> A GenAcademy live session introduced me to agentic AI and pointed me toward these topics. From there I dug into public research papers, open-source documentation, and the Anthropic blog — then built this interactive page as a personal reference, using my actual rawweights.com rebuild as the scenario throughout. The synthesis, examples, and interactive elements are my own work. I did not reproduce session slides, recordings, or course materials.
         </div>
     </div>
 </section>

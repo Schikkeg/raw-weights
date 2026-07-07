@@ -758,6 +758,12 @@
     <!-- ── Section 1: What's in This Guide ────────────────────── -->
     <section class="guide-section" id="gaps">
       <h2>What's in This Guide</h2>
+
+      <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-left:3px solid #10b981;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:1.25rem;">
+        <p style="margin:0 0 0.5rem;color:#cbd5e1;font-style:italic;">"Driving school teaches you the rules, signs, and controlled practice. The real learning happens when you're on actual roads — traffic, rain, a stall at a roundabout."</p>
+        <p style="margin:0;color:#94a3b8;font-size:0.875rem;">The <a href="mcp.html" style="color:var(--pg-green);">MCP basics page</a> is driving school. This page is the first road. When people start building, the first real question is almost always authentication — how OAuth actually works, why Claude loses access to Gmail, which pattern to use and when. The six sections here are the ones that come up the moment you move from understanding to building.</p>
+      </div>
+
       <p>The <a href="mcp.html">MCP basics page</a> covers the foundational layer — the USB analogy, host/client/server architecture, and the initialize → discover → invoke lifecycle. Start there if you haven't already.</p>
       <p>This page is the practitioner extension. Six topics that go beyond the basics and matter most once you start building:</p>
 
@@ -1304,11 +1310,31 @@
       </div>
     </section>
 
+  <!-- Attribution -->
+  <section class="guide-section" style="border-top:1px solid var(--rw-border); margin-top:2rem; padding-top:1.5rem;">
+    <h2>Sources &amp; Attribution</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; margin-bottom:1rem;">
+      <a href="https://modelcontextprotocol.io/docs" target="_blank" rel="noopener" style="background:var(--rw-card); border:1px solid var(--rw-border); border-radius:8px; padding:0.75rem; text-decoration:none; display:block;">
+        <p style="color:var(--pg-green); font-weight:700; font-size:0.8rem; margin:0 0 0.25rem;">MCP Official Documentation</p>
+        <p style="color:var(--rw-text-subtle); font-size:0.72rem; margin:0;">modelcontextprotocol.io — the spec and reference</p>
+      </a>
+      <a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener" style="background:var(--rw-card); border:1px solid var(--rw-border); border-radius:8px; padding:0.75rem; text-decoration:none; display:block;">
+        <p style="color:var(--pg-green); font-weight:700; font-size:0.8rem; margin:0 0 0.25rem;">MCP Servers Repository</p>
+        <p style="color:var(--rw-text-subtle); font-size:0.72rem; margin:0;">GitHub — official server implementations</p>
+      </a>
+      <a href="https://docs.anthropic.com/en/docs/agents-and-tools/mcp" target="_blank" rel="noopener" style="background:var(--rw-card); border:1px solid var(--rw-border); border-radius:8px; padding:0.75rem; text-decoration:none; display:block;">
+        <p style="color:var(--pg-green); font-weight:700; font-size:0.8rem; margin:0 0 0.25rem;">Anthropic MCP Guide</p>
+        <p style="color:var(--rw-text-subtle); font-size:0.72rem; margin:0;">Anthropic docs — integrating MCP with Claude</p>
+      </a>
+    </div>
+    <p style="font-size:0.75rem; color:var(--rw-text-subtle); line-height:1.6;">A GenAcademy session on agentic AI introduced me to MCP and the practical questions builders run into. From there I went deep into the official spec, Anthropic's documentation, and the open-source server repository. My workflow: session points me at a topic → I explore the public sources → I build to understand. The synthesis, examples, and this interactive guide are my own work.</p>
+  </section>
+
   </main>
 </div>
 
 <div id="rw-footer"
-     data-related='[{"label":"MCP Basics","url":"/blog/mcp.html"},{"label":"Agent Blueprint","url":"/blog/agent-blueprint-site-transform.html"},{"label":"Autonomy Dial","url":"/blog/agent-autonomy-dial.html"}]'
+     data-related='[{"label":"MCP Basics","url":"/blog/mcp.html"},{"label":"Agent Blueprint","url":"/guide/agent-blueprint-site-transform.html"},{"label":"Autonomy Dial","url":"/guide/agent-autonomy-dial.html"}]'
 ></div>
 <script src="../includes/rw-footer.js?v=20260612"></script>
 

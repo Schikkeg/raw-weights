@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -667,7 +667,7 @@
 ══════════════════════════════════════════ -->
 <header class="guide-hero">
   <div class="guide-hero-inner">
-    <div class="guide-hero-label">⚗️ AI Evaluations · Practitioner Guide</div>
+    <div class="guide-hero-label">✦ Inspired by GenAcademy · My Field Notes</div>
     <h1>The <span>Proving Ground</span></h1>
     <p class="guide-hero-sub">
       A manufacturer's spec sheet tells you the car does 200 mph. Your proving ground tells you if it handles your mountain roads in winter. Benchmarks are the spec sheet. Evals are the proving ground.
@@ -723,6 +723,11 @@
          1. BENCHMARK PROBLEM
     ══════════════════════════ -->
     <section class="guide-section" id="section-benchmarks">
+      <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-left:3px solid #f59e0b;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:1.5rem;max-width:680px;">
+        <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.07em;color:#fbbf24;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
+        <p style="margin:0 0 0.6rem;color:var(--rw-text-muted);font-style:italic;">"We buy cars knowing they've been crash tested. AI systems? Most get shipped on vibes."</p>
+        <p style="margin:0;color:var(--rw-text-subtle);font-size:0.875rem;">Two failure patterns I kept coming back to: a chatbot that passed every test and failed in production because nobody put out-of-scope inputs in the test set — and a bias fix that broke a different slice because only the repaired cases were re-tested. The root cause was the same: gaps in what was tested, and testing after building instead of before. That's the shift I now apply to every agentic project — define what success looks like before writing a single line of agent code.</p>
+      </div>
       <h2>The Benchmark Problem</h2>
       <p>
         Every model launch comes with a slide full of benchmark scores. They're not lies — but they're not the full truth either.
@@ -836,6 +841,25 @@
 
       <div class="callout-gold">
         <strong>The better signal:</strong> LMSYS Chatbot Arena. Real humans rating real model outputs on real queries they actually submitted. No fixed question set = much harder to contaminate. Widely considered the most reliable public signal for overall quality.
+      </div>
+
+      <h3>Two real-world failures that changed how I think about this</h3>
+      <div class="card-grid cols-2" style="margin-top:0.75rem;">
+        <div class="card" style="border-left:3px solid var(--ac);">
+          <div class="card-icon">🌯</div>
+          <h4>The Input Gap — Chipotle's Chatbot</h4>
+          <p>Built to answer menu questions. Users asked Python coding questions — and it answered. Not because the model was broken. Because nobody put out-of-scope inputs in the test set. It passed every test. Failed in production.</p>
+          <p style="font-size:0.78rem;color:var(--rw-text-subtle);margin-top:0.5rem;"><strong>The lesson:</strong> What you test defines what you know. Gaps in test coverage are invisible until production finds them.</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--ac2);">
+          <div class="card-icon">🖼️</div>
+          <h4>The Fix Trap — Google's Image Model</h4>
+          <p>Engineers fixed a racial bias problem. The fix made the model start generating people of color in historically wrong contexts. They tested only the repaired slice — never re-ran the full dataset. Fix one metric, break another.</p>
+          <p style="font-size:0.78rem;color:var(--rw-text-subtle);margin-top:0.5rem;"><strong>The lesson:</strong> Every fix needs a full regression run. Patch testing is how you swap one problem for another.</p>
+        </div>
+      </div>
+      <div class="callout-blue" style="margin-top:1rem;">
+        <strong>The root cause is the same in both:</strong> testing after building instead of before, and gaps in what was tested. If you can't describe what a good output looks like <em>before</em> you build, you're just building and hoping.
       </div>
     </section>
 
@@ -1508,6 +1532,34 @@
         <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">Spearman</span><span style="color:var(--rw-text-muted);">Spearman rank correlation — used to calibrate LLM judges against human labels; target &gt;0.80</span></div>
         <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">SWE-Bench</span><span style="color:var(--rw-text-muted);">Software Engineering Benchmark — real GitHub issues; tests agentic coding ability</span></div>
         <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">TDD</span><span style="color:var(--rw-text-muted);">Test-Driven Development — write tests before code; EDD applies the same principle to evals</span></div>
+      </div>
+    </section>
+
+    <!-- ══ SOURCES & ATTRIBUTION ══════════════════════════════ -->
+    <section id="attribution" style="margin-top:2.5rem; border-top:1px solid var(--rw-border); padding-top:2rem;">
+      <p style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--rw-text-muted); margin-bottom:0.9rem;">Public Sources &amp; Further Reading</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; margin-bottom:1.2rem; max-width:860px;">
+        <a href="https://github.com/confident-ai/deepeval" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">DeepEval (Confident AI)</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">Open-source LLM eval framework — LLM judge, RAGAS, red-teaming</p>
+        </a>
+        <a href="https://docs.ragas.io" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">RAGAS Documentation</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">docs.ragas.io — RAG evaluation metrics and methodology</p>
+        </a>
+        <a href="https://www.promptfoo.dev/docs" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">PromptFoo Documentation</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">promptfoo.dev — prompt regression testing and red-teaming</p>
+        </a>
+        <a href="https://swebench.com" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
+          <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">SWE-Bench</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">swebench.com — real GitHub issue benchmark for coding agents</p>
+        </a>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:10px; padding:1rem 1.2rem; max-width:860px;">
+        <p style="color:var(--rw-text-muted); font-size:0.74rem; line-height:1.7; margin:0;">
+          <span style="color:var(--rw-text); font-weight:600;">My workflow:</span> A GenAcademy session introduced me to the eval-driven development mindset — using evals as guardrails from day one, not an afterthought. From there I explored DeepEval, RAGAS, PromptFoo, and public benchmark research, then built this guide to make the decision tree concrete. This is my personal learning synthesis. A live session has far more depth and takeaways than any set of notes captures — for the full curriculum, reach out to GenAcademy directly.
+        </p>
       </div>
     </section>
 

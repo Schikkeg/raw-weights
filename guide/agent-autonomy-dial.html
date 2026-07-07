@@ -238,23 +238,29 @@
         <div class="lg:w-1/2 space-y-6 pt-4">
             <div class="flex flex-wrap gap-2">
                 <span class="bg-purple-500/15 border border-purple-500/40 text-purple-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Interactive Guide</span>
-                <span class="bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">GenAcademy · Agentic AI · Week 3</span>
+                <span class="bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Inspired by GenAcademy · My Field Notes</span>
             </div>
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]">
                 The Autonomy<br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400">Dial</span>
             </h1>
             <p class="text-slate-300 text-lg leading-relaxed max-w-lg">
-                Every AI agent sits somewhere on a spectrum — from "just show me options" to "handle the entire trip." Where you set that dial determines what you get back, and what you're risking.
+                You know exactly how much to turn a steering wheel. You don't think about it — you just do it. A little pressure for a gentle curve. Full lock for a tight turn. That same instinct is what you're building for AI agents.
+            </p>
+            <p class="text-slate-400 text-base leading-relaxed max-w-lg">
+                Every agent sits somewhere on a spectrum — from "just show me options" to "handle everything and check in only if something breaks." Where you set that dial determines what you get back, and what you're risking.
             </p>
             <div class="flex flex-wrap gap-3 pt-2">
                 <a href="#five-positions" class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
                     Turn the Dial →
                 </a>
-                <a href="#mint-rule" class="inline-flex items-center gap-2 border border-slate-600 hover:border-purple-500 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
-                    The MINT Rule
+                <a href="#lean-build" class="inline-flex items-center gap-2 border border-slate-600 hover:border-purple-500 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-lg transition-all text-sm">
+                    The Lean Build Test
                 </a>
             </div>
+            <p class="text-slate-500 text-xs leading-relaxed max-w-lg bg-slate-800/40 border border-slate-700/50 rounded-lg px-4 py-3 mt-3">
+                A GenAcademy session on agent autonomy set me down this path. From there I explored the public research and documentation behind these ideas — then built this interactive page to understand them by working through a scenario I could actually reason about.
+            </p>
         </div>
 
         <!-- RIGHT — Animated Dial -->
@@ -614,6 +620,7 @@
             <span class="text-purple-400 text-xs font-bold uppercase tracking-widest">Positions One Through Five</span>
             <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">What Does Each Click on the Dial Actually Mean?</h2>
             <p class="text-slate-400 max-w-2xl mx-auto">Think of each level as a different travel arrangement — from a website that shows you flights to an agent who manages every trip you'll ever take.</p>
+            <p class="text-slate-500 text-sm max-w-2xl mx-auto mt-3 bg-slate-800/40 border border-slate-700/50 rounded-xl px-4 py-3">What helped me most was sticking to one example the whole way through. One trip, one booking, one agent — from the moment it receives the goal to the moment the flight is confirmed. That same progression maps exactly to real agentic builds. The <a href="/guide/agent-blueprint-site-transform.html" class="text-purple-400 hover:underline">rawweights.com rebuild</a> used every position on this dial: scripted page audits, AI-checked suggestions, multi-agent design, fully autonomous deployment of low-risk pages. The dial isn't theoretical — every notch describes a real decision you make when you ship.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
@@ -1246,41 +1253,50 @@
     </div>
 </section>
 
-<!-- ──────────────────────────────── SECTION 8: MINT -->
-<section id="mint-rule" class="py-20">
+<!-- ──────────────────────────────── SECTION 8: LEAN BUILD TEST -->
+<section id="lean-build" class="py-20">
     <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
             <span class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">The Design Principle</span>
             <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Don't Hire a Travel Agency to Book One Taxi</h2>
-            <p class="text-slate-400 max-w-2xl mx-auto">The MINT rule is a single question you should ask before building any agent: is every piece of this necessary, or am I adding complexity out of habit?</p>
+            <p class="text-slate-400 max-w-2xl mx-auto">Before building any agent, ask whether every piece of it is actually necessary — or whether you're adding complexity out of habit.</p>
         </div>
 
         <div class="max-w-4xl mx-auto">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                <div class="bg-purple-900/20 border border-purple-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-purple-400 to-fuchsia-400 mb-2">M</p>
-                    <p class="text-white font-bold">Minimal</p>
-                    <p class="text-slate-400 text-xs mt-1">Fewest components that can do the job</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                <div class="bg-purple-900/20 border border-purple-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">✈️</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Fewest agents that can make the booking</p>
+                        <p class="text-slate-400 text-sm">One agent handling flight search, hotel, and confirmation beats three specialist agents in parallel before you understand how they fail.</p>
+                    </div>
                 </div>
-                <div class="bg-fuchsia-900/20 border border-fuchsia-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-fuchsia-400 to-pink-400 mb-2">I</p>
-                    <p class="text-white font-bold">Intelligence</p>
-                    <p class="text-slate-400 text-xs mt-1">Only as much reasoning as the trip requires</p>
+                <div class="bg-fuchsia-900/20 border border-fuchsia-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">🧠</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Intelligence matched to the trip's complexity</p>
+                        <p class="text-slate-400 text-sm">Booking a regular weekly flight to the same city doesn't need a reasoning model. A multi-stop trip with policy constraints does. Right-size the model to what's actually being decided.</p>
+                    </div>
                 </div>
-                <div class="bg-pink-900/20 border border-pink-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-pink-400 to-purple-400 mb-2">N</p>
-                    <p class="text-white font-bold">Necessary</p>
-                    <p class="text-slate-400 text-xs mt-1">Each component must earn its place</p>
+                <div class="bg-pink-900/20 border border-pink-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">⚖️</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Every booking tool earns its place</p>
+                        <p class="text-slate-400 text-sm">Don't give the agent an expense management integration until it's actually failing on expense reporting. Each new capability adds a new surface for something to go wrong.</p>
+                    </div>
                 </div>
-                <div class="bg-purple-900/20 border border-purple-700/50 rounded-2xl p-5 text-center">
-                    <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-purple-400 to-fuchsia-400 mb-2">T</p>
-                    <p class="text-white font-bold">Tools</p>
-                    <p class="text-slate-400 text-xs mt-1">Only the tools the agent actually needs</p>
+                <div class="bg-purple-900/20 border border-purple-700/50 rounded-2xl p-5 flex gap-4 items-start">
+                    <span class="text-2xl flex-shrink-0">🔑</span>
+                    <div>
+                        <p class="text-white font-bold mb-1">Access limited to what the trip actually needs</p>
+                        <p class="text-slate-400 text-sm">Flight search and email confirmation — those two tools. Not your full calendar, not your expense system, not your entire contact list. Each extra permission is a surface for a failure you didn't plan for.</p>
+                    </div>
                 </div>
             </div>
 
             <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 mb-8">
-                <p class="text-white font-bold text-center mb-6">Four questions before you build your travel agent</p>
+                <p class="text-white font-bold text-center mb-2">Four questions before you build your travel agent</p>
+                <p class="text-slate-500 text-xs text-center mb-6">The same questions apply to any agentic system — the travel framing just makes them easier to reason about</p>
                 <div class="space-y-4">
                     <div class="flex gap-4 items-start row-hover p-3 transition-all duration-200">
                         <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-0.5">1</div>
@@ -1318,6 +1334,34 @@
                 <p class="text-white font-bold text-xl mb-3">Start with the taxi</p>
                 <p class="text-slate-300 leading-relaxed max-w-2xl mx-auto">If you need to get from the airport to your hotel, you book a taxi — not a full travel operations centre with a fleet manager, a route optimiser, and a customer success team. Agents built to handle tasks that didn't need them add overhead without adding value, and they introduce new ways to fail. Prove the simple version works first. Then scale the one piece that actually needs to grow.</p>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- ──────────────────────────────── SOURCES -->
+<section class="py-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-5">Public Sources &amp; Further Reading</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mb-8">
+            <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-purple-700/50 transition-all">
+                <p class="text-purple-300 text-sm font-semibold">ReAct: Synergizing Reasoning and Acting in Language Models</p>
+                <p class="text-slate-500 text-xs mt-1">Yao et al., 2022 — Google Research &amp; Princeton · arXiv:2210.03629</p>
+            </a>
+            <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-purple-700/50 transition-all">
+                <p class="text-purple-300 text-sm font-semibold">Building Effective Agents</p>
+                <p class="text-slate-500 text-xs mt-1">Anthropic Research — Patterns for autonomy levels, human oversight, and agent design</p>
+            </a>
+            <a href="https://huyenchip.com/2025/01/07/agents.html" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-purple-700/50 transition-all">
+                <p class="text-purple-300 text-sm font-semibold">Agents</p>
+                <p class="text-slate-500 text-xs mt-1">Chip Huyen — AI agent architectures, the ReAct loop, and autonomy spectrum</p>
+            </a>
+            <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/clarify-model-monitor-model-quality.html" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-purple-700/50 transition-all">
+                <p class="text-purple-300 text-sm font-semibold">Human-in-the-Loop &amp; Human-on-the-Loop</p>
+                <p class="text-slate-500 text-xs mt-1">AWS / Azure ML documentation — Standard industry terminology for human oversight modes</p>
+            </a>
+        </div>
+        <div class="max-w-4xl bg-slate-800/30 border border-slate-700/50 rounded-xl px-5 py-4 text-slate-500 text-xs leading-relaxed">
+            <span class="text-slate-400 font-semibold">How this page was built:</span> A GenAcademy live session introduced me to the spectrum of agent autonomy. From there I went deep into public research — the ReAct paper, Anthropic's agent patterns, Chip Huyen's writing. Then I built this interactive page to understand those concepts by working through a scenario I could reason about clearly: planning a trip. The travel framing, the interactive dial, the examples, and the synthesis are my own. I did not reproduce session slides, recordings, or course materials.
         </div>
     </div>
 </section>

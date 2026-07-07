@@ -175,11 +175,17 @@
 
         <!-- Section header -->
         <div class="flex items-center gap-4 mb-4">
-            <span class="bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Part I</span>
+            <span class="bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Parser Stack</span>
             <div class="flex-1 h-px bg-rose-900/40"></div>
         </div>
         <h2 class="text-3xl font-black text-white mb-2">The Parser Selector</h2>
-        <p class="text-slate-400 max-w-2xl mb-10">PDF was designed for portability — same appearance on every screen, every OS. That was the win. The cost: reading order breaks when you extract text, tables fragment into noise, charts become flat images. Recovering structure from a format that was never designed to expose it is the first real problem in document AI. Answer four questions to find the right tool for your corpus.</p>
+        <p class="text-slate-400 max-w-2xl mb-6">PDF was designed for portability — same appearance on every screen, every OS. That was the win. The cost: reading order breaks when you extract text, tables fragment into noise, charts become flat images. Recovering structure from a format that was never designed to expose it is the first real problem in document AI. Answer four questions to find the right tool for your corpus.</p>
+
+        <div class="bg-slate-800/50 border border-slate-700/60 border-l-4 border-l-rose-500/60 rounded-xl px-5 py-4 mb-10 max-w-2xl">
+          <p class="text-xs font-bold uppercase tracking-widest text-rose-400 mb-2">My field notes</p>
+          <p class="text-slate-300 text-sm leading-relaxed mb-2"><em>Stop treating PDFs as just text. They are structured knowledge that AI needs to understand properly.</em></p>
+          <p class="text-slate-500 text-sm leading-relaxed">Logan Markewich (Head of Open Source at LlamaIndex) ran the session this page is built from — no slides, just real tools and practical trade-offs. His approach was to move past simple text extraction and focus on spatial relationships: bounding boxes, visual context, where content lives on the page. This three-part structure (parser → citation → readiness audit) came directly from mapping those trade-offs for my own projects.</p>
+        </div>
 
         <!-- Questions grid -->
         <div class="grid md:grid-cols-2 gap-8 mb-10">
@@ -311,7 +317,7 @@
     <div class="max-w-5xl mx-auto px-6">
 
         <div class="flex items-center gap-4 mb-4">
-            <span class="bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Part II</span>
+            <span class="bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Citation Stack</span>
             <div class="flex-1 h-px bg-indigo-900/40"></div>
         </div>
         <h2 class="text-3xl font-black text-white mb-2">The Citation Layer</h2>
@@ -392,7 +398,7 @@
     <div class="max-w-5xl mx-auto px-6">
 
         <div class="flex items-center gap-4 mb-4">
-            <span class="bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Part III</span>
+            <span class="bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Readiness Audit</span>
             <div class="flex-1 h-px bg-amber-900/40"></div>
         </div>
         <h2 class="text-3xl font-black text-white mb-2">The Document Readiness Audit</h2>
@@ -495,19 +501,45 @@
     </div>
 </section>
 
+<!-- ── Sources & Attribution ─────────────────────────────────── -->
+<section class="py-10 border-t border-slate-800">
+  <div class="max-w-6xl mx-auto px-6">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Public Sources &amp; Further Reading</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5 max-w-3xl">
+      <a href="https://docs.llamaindex.ai" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+        <p class="text-violet-400 font-bold text-sm mb-1">LlamaIndex Documentation</p>
+        <p class="text-slate-500 text-xs">docs.llamaindex.ai — parsers, extractors, query engines</p>
+      </a>
+      <a href="https://github.com/run-llama/llama_index" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+        <p class="text-violet-400 font-bold text-sm mb-1">LlamaIndex GitHub</p>
+        <p class="text-slate-500 text-xs">github.com/run-llama/llama_index — open-source repo and examples</p>
+      </a>
+      <a href="https://llamahub.ai" target="_blank" rel="noopener" class="block bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 no-underline">
+        <p class="text-violet-400 font-bold text-sm mb-1">LlamaHub</p>
+        <p class="text-slate-500 text-xs">llamahub.ai — 100+ loaders and tools for document parsing</p>
+      </a>
+    </div>
+    <div class="bg-slate-800/30 border border-slate-700/40 rounded-xl px-5 py-4 max-w-3xl">
+      <p class="text-slate-500 text-xs leading-relaxed">
+        <span class="text-slate-300 font-semibold">My workflow:</span> A GenAcademy session introduced me to Logan's work and the full depth of the LlamaIndex document intelligence stack. From there I explored the public documentation, GitHub repo, and LlamaHub tool ecosystem, then built this guide by working through the parser-selection and citation-trust decisions myself. This is my personal synthesis. A live session has far more depth — for the full curriculum, reach out to GenAcademy directly.
+      </p>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!-- PAGE FOOTER STRIP -->
 <div class="bg-slate-900 border-t border-slate-800">
     <div class="max-w-6xl mx-auto px-6 py-10 text-center space-y-3">
         <p class="text-white font-semibold">Document Intelligence — The Complete LlamaIndex Stack</p>
-        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Parser selection · Citation trust architecture · Production readiness audit. Based on the GenAcademy guest lecture by Logan (LlamaIndex, Head of Open Source).</p>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Parser selection · Citation trust architecture · Production readiness audit. Built from the LlamaIndex public documentation, GitHub, and Logan Markewich's public writing.</p>
         <div class="flex flex-wrap justify-center gap-2 pt-1">
             <span class="bg-slate-800 text-rose-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#LlamaIndex</span>
             <span class="bg-slate-800 text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#DocumentParsing</span>
             <span class="bg-slate-800 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#RAG</span>
             <span class="bg-slate-800 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#LightParse</span>
-            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#GenAcademy</span>
+            <span class="bg-slate-800 text-purple-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700">#DocumentIntelligence</span>
         </div>
     </div>
 </div>
