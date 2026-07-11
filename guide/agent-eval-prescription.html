@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Eval Prescription — Agentic AI Evaluation | RawWeights</title>
+  <meta name="description" content="No two agents need the same tests. Answer 3 questions and get a personalized agentic evaluation plan covering outcome, trajectory, behavior, and the costs nobody budgets for.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/guide/agent-eval-prescription.html">
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/guide/agent-eval-prescription.html">
+  <meta property="og:title" content="The Eval Prescription — Agentic AI Evaluation | RawWeights">
+  <meta property="og:description" content="No two agents need the same tests. Answer 3 questions and get a personalized agentic evaluation plan.">
+  <meta property="og:image" content="https://rawweights.com/images/agent-eval-prescription.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="article:published_time" content="2026-07-15">
+  <meta property="article:author" content="RawWeights">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Eval Prescription — Agentic AI Evaluation",
+    "description": "No two agents need the same tests. Answer 3 questions and get a personalized agentic evaluation plan covering outcome, trajectory, behavior, and the costs nobody budgets for.",
+    "datePublished": "2026-07-15",
+    "author": { "@type": "Organization", "name": "RawWeights", "url": "https://rawweights.com" },
+    "publisher": { "@type": "Organization", "name": "RawWeights", "url": "https://rawweights.com" },
+    "image": "https://rawweights.com/images/agent-eval-prescription.png"
+  }
+  </script>
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Article body (from article.html template) ───────────── */
+    .article-body {
+      max-width: 740px; margin: 3rem auto; padding: 0 1.5rem;
+    }
+    .article-body p {
+      font-size: 1.05rem; color: var(--rw-text-muted);
+      line-height: 1.8; margin-bottom: 1.25rem;
+    }
+    .article-body strong { color: var(--rw-text); font-weight: 700; }
+    .article-body a { color: var(--ep-copper, #c2410c); font-weight: 600; }
+    .article-body a:hover { text-decoration: underline; }
+    .callout {
+      background: var(--rw-orange-light);
+      border-left: 3px solid var(--rw-orange);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      margin: 1.5rem 0; font-size: 0.95rem; color: var(--rw-text-muted);
+    }
+    .callout strong { color: var(--rw-orange-hover); }
+    .callout a { color: var(--ep-copper, #c2410c); font-weight: 600; }
+
+    /* ── Copper + Forest Green palette ───────────────────────── */
+    :root {
+      --ep-copper: #c2410c;
+      --ep-copper-bg: rgba(194,65,12,0.07);
+      --ep-copper-border: rgba(194,65,12,0.22);
+      --ep-forest: #15803d;
+      --ep-forest-bg: rgba(21,128,61,0.07);
+      --ep-forest-border: rgba(21,128,61,0.22);
+    }
+    [data-theme="dark"] {
+      --ep-copper: #fb923c;
+      --ep-copper-bg: rgba(251,146,60,0.1);
+      --ep-copper-border: rgba(251,146,60,0.25);
+      --ep-forest: #4ade80;
+      --ep-forest-bg: rgba(74,222,128,0.08);
+      --ep-forest-border: rgba(74,222,128,0.2);
+    }
+
+    /* Override article chrome to copper */
+    .article-body h2 { border-bottom-color: var(--ep-copper-bg); }
+    .article-body h4 { color: var(--ep-copper); }
+    .article-body a  { color: var(--ep-copper); }
+
+    /* ── Layout helpers ───────────────────────────────────────── */
+    .wide-section {
+      max-width: 900px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+    .ep-label {
+      display: block;
+      font-family: var(--rw-font-display);
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ep-copper);
+      margin-bottom: 0.4rem;
+    }
+    .ep-heading {
+      font-family: var(--rw-font-display);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--rw-text);
+      letter-spacing: -0.015em;
+      margin-bottom: 0.35rem;
+    }
+    .ep-sub {
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Diagnosis ────────────────────────────────────────────── */
+    .diag-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-xl);
+      padding: 1.75rem 2rem;
+    }
+    .diag-questions { display: flex; flex-direction: column; gap: 1.5rem; }
+    .diag-q-label {
+      font-family: var(--rw-font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .diag-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--ep-copper);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .diag-opts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .diag-opt {
+      padding: 0.45rem 0.95rem;
+      border: 1px solid var(--rw-border);
+      border-radius: 9999px;
+      font-family: var(--rw-font-display);
+      font-size: 0.81rem;
+      font-weight: 600;
+      color: var(--rw-text-muted);
+      background: var(--rw-bg);
+      cursor: pointer;
+      transition: border-color 0.14s, color 0.14s, background 0.14s;
+      user-select: none;
+    }
+    .diag-opt:hover { border-color: var(--ep-copper); color: var(--ep-copper); }
+    .diag-opt.sel  { border-color: var(--ep-copper); background: var(--ep-copper-bg); color: var(--ep-copper); }
+    .diag-cta { margin-top: 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .ep-btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--ep-copper);
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.6rem 1.35rem;
+      font-family: var(--rw-font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .ep-btn-primary:hover { opacity: 0.88; }
+
+    /* Prescription output */
+    .rx-card {
+      display: none;
+      margin-top: 1.5rem;
+      border: 1.5px solid var(--ep-forest-border);
+      border-radius: var(--rw-r-xl);
+      background: var(--ep-forest-bg);
+      padding: 1.5rem 1.75rem;
+      animation: fadeIn 0.25s ease;
+    }
+    .rx-card.show { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+    .rx-top {
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;
+    }
+    .rx-icon { font-size: 1.4rem; line-height: 1; }
+    .rx-ttl { font-family: var(--rw-font-display); font-size: 1rem; font-weight: 800; color: var(--ep-forest); }
+    .rx-sub { font-size: 0.75rem; color: var(--rw-text-subtle); }
+    .rx-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    @media (max-width: 540px) { .rx-grid { grid-template-columns: 1fr; } }
+    .rx-item {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 0.8rem 1rem;
+    }
+    .rx-item-lbl {
+      font-family: var(--rw-font-display);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rw-text-subtle);
+      margin-bottom: 0.2rem;
+    }
+    .rx-item-val {
+      font-family: var(--rw-font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      line-height: 1.4;
+    }
+    .rx-warn {
+      margin-top: 1rem;
+      padding: 0.7rem 1rem;
+      background: var(--ep-copper-bg);
+      border-left: 3px solid var(--ep-copper);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      font-size: 0.85rem;
+      color: var(--rw-text-muted);
+      line-height: 1.5;
+    }
+    .rx-warn strong { color: var(--ep-copper); }
+
+    /* ── Pillar tabs ──────────────────────────────────────────── */
+    .ptabs {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-xl);
+      overflow: hidden;
+    }
+    .ptab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--rw-border);
+      background: var(--rw-bg-alt);
+    }
+    .ptab-btn {
+      flex: 1;
+      padding: 0.85rem 0.75rem;
+      border: none;
+      background: transparent;
+      font-family: var(--rw-font-display);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--rw-text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: color 0.14s, border-color 0.14s;
+    }
+    .ptab-btn:hover { color: var(--rw-text); }
+    .ptab-btn.on { color: var(--ep-copper); border-bottom-color: var(--ep-copper); }
+    .ptab-panel { display: none; padding: 1.75rem; }
+    .ptab-panel.on { display: block; }
+    .ptab-title {
+      font-family: var(--rw-font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--rw-text);
+      margin-bottom: 0.4rem;
+    }
+    .ptab-def { font-size: 0.92rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1.1rem; }
+    .pfact {
+      background: var(--ep-copper-bg);
+      border-left: 3px solid var(--ep-copper);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 0.7rem 1rem;
+      font-size: 0.86rem;
+      color: var(--rw-text-muted);
+      margin-bottom: 0.9rem;
+      line-height: 1.5;
+    }
+    .pfact strong { color: var(--ep-copper); }
+    .pfact-green { background: var(--ep-forest-bg); border-left-color: var(--ep-forest); }
+    .pfact-green strong { color: var(--ep-forest); }
+    .ptags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    .ptag {
+      background: var(--rw-bg-subtle);
+      border: 1px solid var(--rw-border);
+      border-radius: 9999px;
+      font-family: var(--rw-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--rw-text-muted);
+      padding: 0.2rem 0.65rem;
+    }
+
+    /* ── Grader cards ─────────────────────────────────────────── */
+    .grader-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    @media (max-width: 680px) { .grader-grid { grid-template-columns: 1fr; } }
+    .grader-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-lg);
+      padding: 1.2rem;
+      cursor: pointer;
+      transition: border-color 0.14s, box-shadow 0.14s;
+    }
+    .grader-card:hover { border-color: var(--ep-copper); }
+    .grader-card.open { border-color: var(--ep-copper); box-shadow: var(--rw-shadow-sm); }
+    .grdr-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .grdr-name { font-family: var(--rw-font-display); font-size: 0.95rem; font-weight: 800; color: var(--rw-text); margin-bottom: 0.25rem; }
+    .grdr-tag  { font-size: 0.78rem; color: var(--rw-text-muted); margin-bottom: 0.7rem; line-height: 1.4; }
+    .grdr-props { display: flex; flex-direction: column; gap: 0.28rem; }
+    .grdr-prop  { font-size: 0.76rem; color: var(--rw-text-subtle); display: flex; align-items: center; gap: 0.4rem; }
+    .grdr-dot   { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .g-green    { background: var(--ep-forest); }
+    .g-red      { background: #ef4444; }
+    .grdr-detail { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--rw-border); }
+    .grdr-detail.show { display: block; }
+    .grdr-detail p { font-size: 0.83rem; color: var(--rw-text-muted); line-height: 1.6; margin-bottom: 0.5rem; }
+    .grdr-detail strong { color: var(--rw-text); }
+
+    /* ── Consistency calculator ───────────────────────────────── */
+    .calc-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-xl);
+      padding: 1.75rem;
+    }
+    .calc-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 520px) { .calc-controls { grid-template-columns: 1fr; } }
+    .calc-lbl {
+      font-family: var(--rw-font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+    .calc-val-badge {
+      background: var(--ep-copper-bg);
+      color: var(--ep-copper);
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .calc-results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 520px) { .calc-results { grid-template-columns: 1fr; } }
+    .calc-res {
+      border-radius: var(--rw-r-lg);
+      padding: 1.25rem 1.4rem;
+      text-align: center;
+    }
+    .calc-res.green  { background: var(--ep-forest-bg); border: 1px solid var(--ep-forest-border); }
+    .calc-res.copper { background: var(--ep-copper-bg); border: 1px solid var(--ep-copper-border); }
+    .calc-res-lbl {
+      font-family: var(--rw-font-display);
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rw-text-subtle);
+    }
+    .calc-res-def { font-size: 0.72rem; color: var(--rw-text-subtle); margin: 0.2rem 0 0.7rem; line-height: 1.4; }
+    .calc-res-num {
+      font-family: var(--rw-font-display);
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+    .calc-res.green  .calc-res-num { color: var(--ep-forest); }
+    .calc-res.copper .calc-res-num { color: var(--ep-copper); }
+    .calc-res-sub { font-size: 0.75rem; color: var(--rw-text-subtle); }
+    .calc-note {
+      margin-top: 1.1rem;
+      padding: 0.75rem 1rem;
+      background: var(--rw-bg-alt);
+      border-radius: var(--rw-r-md);
+      font-size: 0.84rem;
+      color: var(--rw-text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .calc-note strong { color: var(--rw-text); }
+
+    /* ── Agent type tabs ──────────────────────────────────────── */
+    .atabs {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-xl);
+      overflow: hidden;
+    }
+    .atab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--rw-border);
+      background: var(--rw-bg-alt);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .atab-btn {
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+      font-family: var(--rw-font-display);
+      font-size: 0.81rem;
+      font-weight: 700;
+      color: var(--rw-text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: color 0.14s, border-color 0.14s;
+    }
+    .atab-btn.on { color: var(--ep-forest); border-bottom-color: var(--ep-forest); }
+    .atab-panel { display: none; padding: 1.5rem; }
+    .atab-panel.on { display: block; }
+    .atype-intro { font-size: 0.88rem; color: var(--rw-text-muted); margin-bottom: 1rem; line-height: 1.6; }
+    .atype-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.7rem;
+    }
+    @media (max-width: 580px) { .atype-grid { grid-template-columns: 1fr; } }
+    .atype-item {
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 0.8rem;
+    }
+    .atype-lbl {
+      font-family: var(--rw-font-display);
+      font-size: 0.64rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rw-text-subtle);
+      margin-bottom: 0.25rem;
+    }
+    .atype-val { font-size: 0.85rem; color: var(--rw-text); font-weight: 600; line-height: 1.4; }
+
+    /* ── Cost cards ───────────────────────────────────────────── */
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    @media (max-width: 580px) { .cost-grid { grid-template-columns: 1fr; } }
+    .cost-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-lg);
+      padding: 1.2rem;
+    }
+    .cost-cat  { font-family: var(--rw-font-display); font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ep-copper); margin-bottom: 0.2rem; }
+    .cost-name { font-family: var(--rw-font-display); font-size: 0.97rem; font-weight: 800; color: var(--rw-text); margin-bottom: 0.35rem; }
+    .cost-desc { font-size: 0.83rem; color: var(--rw-text-muted); line-height: 1.6; }
+    .cost-stat { display: block; font-family: var(--rw-font-display); font-weight: 800; font-size: 1.3rem; color: var(--ep-copper); margin-top: 0.5rem; }
+    .cost-stat-sub { font-size: 0.72rem; color: var(--rw-text-subtle); }
+
+    /* ── Lifecycle ────────────────────────────────────────────── */
+    .lifecycle-wrap {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-xl);
+      overflow: hidden;
+    }
+    .lifecycle {
+      display: flex;
+    }
+    @media (max-width: 640px) { .lifecycle { flex-direction: column; } }
+    .lc-step {
+      flex: 1;
+      text-align: center;
+      padding: 1.4rem 0.75rem;
+      border-right: 1px solid var(--rw-border);
+    }
+    .lc-step:last-child { border-right: none; }
+    @media (max-width: 640px) { .lc-step { border-right: none; border-bottom: 1px solid var(--rw-border); } }
+    @media (max-width: 640px) { .lc-step:last-child { border-bottom: none; } }
+    .lc-num {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--ep-copper);
+      color: #fff;
+      font-family: var(--rw-font-display);
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.55rem;
+    }
+    .lc-name { font-family: var(--rw-font-display); font-size: 0.85rem; font-weight: 800; color: var(--rw-text); margin-bottom: 0.3rem; }
+    .lc-desc { font-size: 0.74rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Context strip mobile ────────────────────────────────── */
+    @media (max-width: 640px) {
+      .ctx-failure-grid { grid-template-columns: 1fr !important; }
+    }
+
+    /* ── Sources ──────────────────────────────────────────────── */
+    .src-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    @media (max-width: 560px) { .src-grid { grid-template-columns: 1fr; } }
+    .src-link {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 0.95rem 1.1rem;
+      text-decoration: none;
+      transition: border-color 0.14s, box-shadow 0.14s;
+    }
+    .src-link:hover { border-color: var(--ep-copper); box-shadow: var(--rw-shadow-sm); }
+    .src-cat   { font-family: var(--rw-font-display); font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--rw-text-subtle); }
+    .src-title { font-family: var(--rw-font-display); font-size: 0.86rem; font-weight: 700; color: var(--ep-copper); line-height: 1.3; }
+    .src-domain{ font-size: 0.72rem; color: var(--rw-text-subtle); }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ──────────────────────────────────────────────────── -->
+<div style="background:linear-gradient(135deg,#0f0601 0%,#1c0d03 50%,#06100a 100%);padding:5rem 1.5rem 4rem;text-align:center;position:relative;overflow:hidden;">
+  <!-- Copper glow — top right -->
+  <div style="position:absolute;top:-15%;right:-5%;width:540px;height:540px;background:radial-gradient(circle,rgba(194,65,12,0.22) 0%,transparent 62%);pointer-events:none;"></div>
+  <!-- Forest glow — bottom left -->
+  <div style="position:absolute;bottom:-20%;left:-5%;width:440px;height:440px;background:radial-gradient(circle,rgba(21,128,61,0.16) 0%,transparent 62%);pointer-events:none;"></div>
+  <!-- Subtle centre glow -->
+  <div style="position:absolute;top:30%;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(194,65,12,0.07) 0%,transparent 70%);pointer-events:none;"></div>
+
+  <div style="max-width:820px;margin:0 auto;position:relative;">
+
+    <!-- Badge -->
+    <span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(194,65,12,0.15);border:1px solid rgba(194,65,12,0.35);border-radius:9999px;padding:0.3rem 0.95rem;font-size:0.72rem;font-weight:700;color:#fb923c;text-transform:uppercase;letter-spacing:0.08em;font-family:var(--rw-font-display);margin-bottom:1.35rem;">
+      Agentic Evaluation · July 2026
+    </span>
+
+    <!-- Title -->
+    <h1 style="font-family:var(--rw-font-display);font-size:clamp(2.4rem,5.5vw,4rem);font-weight:800;color:#f5f0eb;line-height:1.08;letter-spacing:-0.03em;margin-bottom:1rem;">
+      The <span style="color:#fb923c;">Eval</span> Prescription
+    </h1>
+
+    <!-- Lede -->
+    <p style="font-size:1.08rem;color:rgba(245,240,235,0.7);max-width:600px;margin:0 auto 0.8rem;line-height:1.75;">
+      Your agent passed the demo. Can it pass production? Answer three questions and get a personalized evaluation plan — built from four industry sources.
+    </p>
+
+    <!-- Pull quote -->
+    <p style="font-size:0.86rem;color:rgba(245,240,235,0.4);max-width:500px;margin:0 auto 2.25rem;line-height:1.7;font-style:italic;">
+      "If your agent cannot get this right, I worry — because you have no idea how many other things it's getting wrong." — Sinan Ozdemir, <em>Building Agentic AI</em>
+    </p>
+
+    <!-- CTAs -->
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;">
+      <a href="#diagnosis" style="display:inline-flex;align-items:center;gap:0.35rem;background:#c2410c;color:#fff;border-radius:9999px;padding:0.65rem 1.4rem;font-family:var(--rw-font-display);font-size:0.88rem;font-weight:700;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        Get My Prescription ↓
+      </a>
+      <a href="/blog.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.07);color:rgba(245,240,235,0.85);border:1.5px solid rgba(255,255,255,0.15);border-radius:9999px;padding:0.65rem 1.4rem;font-family:var(--rw-font-display);font-size:0.88rem;font-weight:700;text-decoration:none;">
+        Back to Blog
+      </a>
+    </div>
+
+    <!-- Stats strip -->
+    <div style="display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;overflow:hidden;">
+      <div style="padding:1.1rem 1.75rem;text-align:center;border-right:1px solid rgba(255,255,255,0.08);">
+        <div style="font-family:var(--rw-font-display);font-size:1.75rem;font-weight:800;color:#fb923c;line-height:1;">3</div>
+        <div style="font-size:0.66rem;color:rgba(245,240,235,0.38);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;">Pillars</div>
+      </div>
+      <div style="padding:1.1rem 1.75rem;text-align:center;border-right:1px solid rgba(255,255,255,0.08);">
+        <div style="font-family:var(--rw-font-display);font-size:1.75rem;font-weight:800;color:#4ade80;line-height:1;">4</div>
+        <div style="font-size:0.66rem;color:rgba(245,240,235,0.38);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;">Sources</div>
+      </div>
+      <div style="padding:1.1rem 1.75rem;text-align:center;border-right:1px solid rgba(255,255,255,0.08);">
+        <div style="font-family:var(--rw-font-display);font-size:1.75rem;font-weight:800;color:#fb923c;line-height:1;">3</div>
+        <div style="font-size:0.66rem;color:rgba(245,240,235,0.38);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;">Grader types</div>
+      </div>
+      <div style="padding:1.1rem 1.75rem;text-align:center;">
+        <div style="font-family:var(--rw-font-display);font-size:1.75rem;font-weight:800;color:#4ade80;line-height:1;">1</div>
+        <div style="font-size:0.66rem;color:rgba(245,240,235,0.38);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;">Calculator</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Context strip ──────────────────────────────────────────── -->
+<div style="background:var(--rw-bg-alt);border-bottom:1px solid var(--rw-border);padding:3rem 1.5rem;">
+  <div style="max-width:900px;margin:0 auto;">
+
+    <!-- Section label -->
+    <p style="font-family:var(--rw-font-display);font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--ep-copper);text-align:center;margin-bottom:0.6rem;">Why agent evals are different</p>
+    <p style="font-size:0.95rem;color:var(--rw-text-muted);text-align:center;max-width:640px;margin:0 auto 1.75rem;line-height:1.7;">When an agent fails, the root cause is always one of three things. Each requires a different fix — and a different eval.</p>
+
+    <!-- Three failure mode cards -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.25rem;">
+      <div style="background:var(--rw-card);border:1px solid var(--rw-border);border-top:3px solid var(--ep-copper);border-radius:var(--rw-r-lg);padding:1.35rem;">
+        <div style="font-size:1.6rem;margin-bottom:0.6rem;">🎯</div>
+        <div style="font-family:var(--rw-font-display);font-size:0.92rem;font-weight:800;color:var(--rw-text);margin-bottom:0.35rem;">Outcome Failure</div>
+        <div style="font-size:0.81rem;color:var(--rw-text-muted);line-height:1.6;">The final answer was wrong. The SQL didn't run. The task wasn't completed. <em>Fix: better outcome eval.</em></div>
+      </div>
+      <div style="background:var(--rw-card);border:1px solid var(--rw-border);border-top:3px solid #d97706;border-radius:var(--rw-r-lg);padding:1.35rem;">
+        <div style="font-size:1.6rem;margin-bottom:0.6rem;">🔀</div>
+        <div style="font-family:var(--rw-font-display);font-size:0.92rem;font-weight:800;color:var(--rw-text);margin-bottom:0.35rem;">Trajectory Failure</div>
+        <div style="font-size:0.81rem;color:var(--rw-text-muted);line-height:1.6;">Right answer, wrong path. 12 tool calls when 2 would have done. 10× the cost. <em>Fix: trajectory eval.</em></div>
+      </div>
+      <div style="background:var(--rw-card);border:1px solid var(--rw-border);border-top:3px solid var(--ep-forest);border-radius:var(--rw-r-lg);padding:1.35rem;">
+        <div style="font-size:1.6rem;margin-bottom:0.6rem;">⚠️</div>
+        <div style="font-family:var(--rw-font-display);font-size:0.92rem;font-weight:800;color:var(--rw-text);margin-bottom:0.35rem;">Behavior Failure</div>
+        <div style="font-size:0.81rem;color:var(--rw-text-muted);line-height:1.6;">It ignored the rule you explicitly gave it. Got the right answer the wrong way. <em>Fix: behavior eval.</em></div>
+      </div>
+    </div>
+
+    <!-- Divider row: sources + prior page link -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:1.5rem;border-top:1px solid var(--rw-border);">
+      <!-- Source badges -->
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+        <span style="font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--rw-text-subtle);">Sources:</span>
+        <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.73rem;font-weight:600;color:var(--rw-text-muted);font-family:var(--rw-font-display);">Anthropic</span>
+        <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.73rem;font-weight:600;color:var(--rw-text-muted);font-family:var(--rw-font-display);">Oracle OCI</span>
+        <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.73rem;font-weight:600;color:var(--rw-text-muted);font-family:var(--rw-font-display);">Sinan Ozdemir</span>
+        <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.73rem;font-weight:600;color:var(--rw-text-muted);font-family:var(--rw-font-display);">ODSC</span>
+      </div>
+      <!-- Prior page link -->
+      <a href="/tools/eval-proving-ground.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--rw-font-display);font-size:0.78rem;font-weight:700;color:var(--ep-copper);text-decoration:none;background:var(--ep-copper-bg);border:1px solid var(--ep-copper-border);border-radius:9999px;padding:0.3rem 0.85rem;">
+        ← Know LLM evals first? Eval Proving Ground
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── 1. The Diagnosis ──────────────────────────────────────── -->
+<div class="wide-section" id="diagnosis">
+  <span class="ep-label">Step 1 — Personalized</span>
+  <h2 class="ep-heading">Your Diagnosis</h2>
+  <p class="ep-sub">Three questions. One personalized prescription. Takes 20 seconds.</p>
+
+  <div class="diag-card">
+    <div class="diag-questions">
+
+      <div>
+        <div class="diag-q-label">
+          <span class="diag-num">1</span>
+          What type of agent are you building?
+        </div>
+        <div class="diag-opts">
+          <span class="diag-opt" data-q="type" data-v="coding"          onclick="pick(this)">Coding / SQL</span>
+          <span class="diag-opt" data-q="type" data-v="conversational"  onclick="pick(this)">Conversational / Support</span>
+          <span class="diag-opt" data-q="type" data-v="research"        onclick="pick(this)">Research / Analysis</span>
+          <span class="diag-opt" data-q="type" data-v="computer"        onclick="pick(this)">Computer Use / Automation</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="diag-q-label">
+          <span class="diag-num">2</span>
+          Who does this agent serve?
+        </div>
+        <div class="diag-opts">
+          <span class="diag-opt" data-q="stakes" data-v="internal" onclick="pick(this)">Internal team only</span>
+          <span class="diag-opt" data-q="stakes" data-v="customer" onclick="pick(this)">Customer-facing</span>
+          <span class="diag-opt" data-q="stakes" data-v="mission"  onclick="pick(this)">Mission-critical (health, finance, legal)</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="diag-q-label">
+          <span class="diag-num">3</span>
+          What worries you most right now?
+        </div>
+        <div class="diag-opts">
+          <span class="diag-opt" data-q="concern" data-v="accuracy"    onclick="pick(this)">Getting the wrong answer</span>
+          <span class="diag-opt" data-q="concern" data-v="cost"        onclick="pick(this)">Taking too long or costing too much</span>
+          <span class="diag-opt" data-q="concern" data-v="compliance"  onclick="pick(this)">Not following the rules I set</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="diag-cta">
+      <button class="ep-btn-primary" onclick="genRx()">Generate My Prescription →</button>
+      <span id="diag-hint" style="font-size:0.8rem;color:var(--rw-text-subtle);display:none;">Select one option per question first</span>
+    </div>
+
+    <div class="rx-card" id="rx-card">
+      <div class="rx-top">
+        <span class="rx-icon">📋</span>
+        <div>
+          <div class="rx-ttl" id="rx-ttl">Your Eval Prescription</div>
+          <div class="rx-sub"  id="rx-sub"></div>
+        </div>
+      </div>
+      <div class="rx-grid">
+        <div class="rx-item"><div class="rx-item-lbl">Start with this pillar</div><div class="rx-item-val" id="rx-pillar">—</div></div>
+        <div class="rx-item"><div class="rx-item-lbl">Primary grader type</div><div class="rx-item-val"  id="rx-grader">—</div></div>
+        <div class="rx-item"><div class="rx-item-lbl">Consistency target</div><div class="rx-item-val"   id="rx-metric">—</div></div>
+        <div class="rx-item"><div class="rx-item-lbl">Benchmark to know</div><div class="rx-item-val"    id="rx-bench">—</div></div>
+      </div>
+      <div class="rx-warn" id="rx-warn"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 2. The Three Pillars ──────────────────────────────────── -->
+<div class="wide-section" id="pillars">
+  <span class="ep-label">Framework · Sinan Ozdemir — Building Agentic AI</span>
+  <h2 class="ep-heading">The Three Pillars</h2>
+  <p class="ep-sub">From Sinan Ozdemir's book and <a href="https://www.youtube.com/watch?v=62RZKUxEmXU" target="_blank" rel="noopener" style="color:var(--ep-copper);font-weight:600;">SDS podcast ep. 959</a>. Anthropic calls these "grader types." Oracle adds state changes and recovery path. All roads converge here.</p>
+
+  <div class="ptabs">
+    <div class="ptab-bar">
+      <button class="ptab-btn on"  onclick="pillar('outcome',this)">Outcome</button>
+      <button class="ptab-btn"     onclick="pillar('trajectory',this)">Trajectory</button>
+      <button class="ptab-btn"     onclick="pillar('behavior',this)">Behavior</button>
+    </div>
+
+    <div class="ptab-panel on" id="pp-outcome">
+      <div class="ptab-title">Did it get the right answer?</div>
+      <p class="ptab-def">Outcome is the final artifact the agent produces — a SQL query, a written response, a completed action. It's the natural place to start because it answers the simplest question: did it work? But outcome alone tells you nothing about why it failed or how close it came to failing every other time.</p>
+      <div class="pfact"><strong>Common trap:</strong> An agent that produces the right answer after 12 unnecessary tool calls still has a serious problem — one that outcome-only evals will never surface.</div>
+      <p style="font-size:0.88rem;color:var(--rw-text-muted);margin-bottom:0.5rem;">How to measure:</p>
+      <div class="ptags">
+        <span class="ptag">LLM-as-judge rubric</span>
+        <span class="ptag">Unit test / verifiable reward</span>
+        <span class="ptag">Pairwise comparison</span>
+        <span class="ptag">Gold set agreement rate</span>
+        <span class="ptag">pass@k / pass^k</span>
+      </div>
+      <div class="pfact pfact-green" style="margin-top:1rem;">
+        <strong>Key insight (Anthropic):</strong> Calibrate your LLM judge against a gold set before trusting it. Have two domain experts independently evaluate the same task — if they disagree, the task spec is ambiguous, not the agent. Fix the task.
+      </div>
+    </div>
+
+    <div class="ptab-panel" id="pp-trajectory">
+      <div class="ptab-title">Was the path reasonable?</div>
+      <p class="ptab-def">Trajectory is the sequence of decisions the agent made on the way to the outcome — which tools it called, in what order, how many times. Two agents can reach the same correct answer with very different trajectories. One may be 10× cheaper and 3× faster.</p>
+      <div class="pfact"><strong>Real example:</strong> An agent writing SQL could look up evidence first (cheap vector search) then run one query — or run SQL blind, get an error, infer the schema from the traceback, and try again. Same number of tool calls. Very different cost profile. Outcome eval sees both as identical.</div>
+      <p style="font-size:0.88rem;color:var(--rw-text-muted);margin-bottom:0.5rem;">How to measure:</p>
+      <div class="ptags">
+        <span class="ptag">Tool call count</span>
+        <span class="ptag">Tool selection accuracy</span>
+        <span class="ptag">Step ordering</span>
+        <span class="ptag">Trajectory rubric (RULER / OpenPipe)</span>
+        <span class="ptag">Latency per tool call</span>
+        <span class="ptag">Token cost per trace</span>
+      </div>
+      <div class="pfact pfact-green" style="margin-top:1rem;">
+        <strong>Key insight (Anthropic):</strong> Grade outputs, not specific paths. Penalizing a valid alternative route is the most common trajectory rubric mistake. Ask whether the path was <em>efficient</em> — not whether it matched your expected sequence.
+      </div>
+    </div>
+
+    <div class="ptab-panel" id="pp-behavior">
+      <div class="ptab-title">Did it follow the rules?</div>
+      <p class="ptab-def">Behavior is distinct from trajectory. Trajectory measures efficiency. Behavior measures compliance: did the agent respect the guardrails and constraints you explicitly gave it? This pillar is optional if you gave the agent no rules — but the moment you set a guardrail, you have something to measure.</p>
+      <div class="pfact"><strong>Real example:</strong> GPT-4.1, even when explicitly told "always look up policy information before answering," still skipped that step 5% of the time. That's a behavioral failure — not a trajectory inefficiency, not an outcome error. Different root cause, different fix.</div>
+      <div class="ptags">
+        <span class="ptag">Rule adherence rate</span>
+        <span class="ptag">Guardrail trigger accuracy</span>
+        <span class="ptag">Out-of-scope refusal rate</span>
+        <span class="ptag">Human compliance review</span>
+      </div>
+      <div class="pfact pfact-green" style="margin-top:1rem;">
+        <strong>Key insight (Oracle):</strong> Recovery path is a behavioral metric. When something goes wrong — wrong database, bad input, tool timeout — does the agent recover gracefully or fail silently? Explicitly inject failures and evaluate the recovery, not just the happy path.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 3. Grader Types ────────────────────────────────────────── -->
+<div class="wide-section" id="graders">
+  <span class="ep-label">Tools</span>
+  <h2 class="ep-heading">Choosing Your Grader</h2>
+  <p class="ep-sub">Every eval needs something to score the agent. Click any card to expand.</p>
+
+  <div class="grader-grid">
+
+    <div class="grader-card" onclick="toggleGrader(this)">
+      <div class="grdr-icon">⚙️</div>
+      <div class="grdr-name">Code-Based</div>
+      <div class="grdr-tag">Deterministic · Fast · Brittle</div>
+      <div class="grdr-props">
+        <div class="grdr-prop"><span class="grdr-dot g-green"></span>Fast and cheap to run</div>
+        <div class="grdr-prop"><span class="grdr-dot g-green"></span>Fully reproducible results</div>
+        <div class="grdr-prop"><span class="grdr-dot g-red"></span>Can't handle valid variations</div>
+        <div class="grdr-prop"><span class="grdr-dot g-red"></span>Requires deterministic output</div>
+      </div>
+      <div class="grdr-detail">
+        <p><strong>Best for:</strong> Coding agents (unit tests), SQL correctness (does it run? right rows?), tool call verification, binary outcome checks, DOM/screenshot verification for computer use agents.</p>
+        <p><strong>Methods:</strong> String matching, unit tests, static analysis, schema checks, file system state verification, database content checks.</p>
+        <p><strong>Watch out for:</strong> Eval bypass — agents can sometimes find unintended loopholes that pass your code grader without solving the actual problem. Design defensively; review passing traces regularly.</p>
+      </div>
+    </div>
+
+    <div class="grader-card" onclick="toggleGrader(this)">
+      <div class="grdr-icon">🤖</div>
+      <div class="grdr-name">LLM-as-Judge</div>
+      <div class="grdr-tag">Flexible · Scalable · Needs calibration</div>
+      <div class="grdr-props">
+        <div class="grdr-prop"><span class="grdr-dot g-green"></span>Handles open-ended outputs</div>
+        <div class="grdr-prop"><span class="grdr-dot g-green"></span>Captures nuance and style</div>
+        <div class="grdr-prop"><span class="grdr-dot g-red"></span>Non-deterministic by nature</div>
+        <div class="grdr-prop"><span class="grdr-dot g-red"></span>Requires calibration against humans</div>
+      </div>
+      <div class="grdr-detail">
+        <p><strong>Best for:</strong> Conversational agents (tone, brand voice), research agents (groundedness, coverage), trajectory evaluation (was this path reasonable?), behavior evaluation (did it follow the rules?).</p>
+        <p><strong>Methods:</strong> Rubric-based scoring, natural language assertions, pairwise comparison, multi-judge consensus. OpenPipe's RULER prompt is a solid starting point for trajectory rubrics.</p>
+        <p><strong>Watch out for:</strong> You're not looking for the <em>smartest</em> judge — you're looking for the one that <em>agrees with you</em>. Test against a gold set. Adding chain-of-thought reasoning and few-shot examples to the judge prompt can move agreement from ~70% to 100%.</p>
+      </div>
+    </div>
+
+    <div class="grader-card" onclick="toggleGrader(this)">
+      <div class="grdr-icon">👤</div>
+      <div class="grdr-name">Human Grader</div>
+      <div class="grdr-tag">Gold standard · Expensive · Hard to scale</div>
+      <div class="grdr-props">
+        <div class="grdr-prop"><span class="grdr-dot g-green"></span>Matches real expert judgment</div>
+        <div class="grdr-prop"><span class="grdr-dot g-green"></span>Calibrates your LLM judges</div>
+        <div class="grdr-prop"><span class="grdr-dot g-red"></span>Slow and costly at scale</div>
+        <div class="grdr-prop"><span class="grdr-dot g-red"></span>Hard to keep consistent</div>
+      </div>
+      <div class="grdr-detail">
+        <p><strong>Best for:</strong> Calibrating LLM judges, mission-critical domains (legal, medical, financial), subjective quality where no rubric suffices, production spot-check sampling.</p>
+        <p><strong>Methods:</strong> SME review, inter-annotator agreement testing, A/B preference testing, crowdsourcing for simpler tasks.</p>
+        <p><strong>Watch out for:</strong> Two domain experts should independently reach the same verdict on any eval task. If they can't agree, fix the task spec — the ambiguity is in the task, not in the agent or grader.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── 4. Consistency Calculator ─────────────────────────────── -->
+<div class="wide-section" id="calculator">
+  <span class="ep-label">Interactive</span>
+  <h2 class="ep-heading">The Consistency Problem</h2>
+  <p class="ep-sub">An 80%-accurate agent is not 80% reliable in production. Here's the math.</p>
+
+  <div class="calc-card">
+    <div class="calc-controls">
+      <div>
+        <div class="calc-lbl">
+          Per-trial success rate
+          <span class="calc-val-badge" id="cv-rate">80%</span>
+        </div>
+        <input type="range" min="1" max="99" value="80" step="1"
+               style="width:100%;accent-color:var(--ep-copper);"
+               oninput="calcUpdate()" id="sl-rate">
+      </div>
+      <div>
+        <div class="calc-lbl">
+          Number of calls (k)
+          <span class="calc-val-badge" id="cv-k">5</span>
+        </div>
+        <input type="range" min="1" max="20" value="5" step="1"
+               style="width:100%;accent-color:var(--ep-copper);"
+               oninput="calcUpdate()" id="sl-k">
+      </div>
+    </div>
+
+    <div class="calc-results">
+      <div class="calc-res green">
+        <div class="calc-res-lbl">pass@k</div>
+        <div class="calc-res-def">Succeeds at least once in k tries — good for "any working solution"</div>
+        <div class="calc-res-num" id="cr-atk">—</div>
+        <div class="calc-res-sub">chance of ≥1 success</div>
+      </div>
+      <div class="calc-res copper">
+        <div class="calc-res-lbl">pass^k</div>
+        <div class="calc-res-def">Succeeds every single time — required for customer-facing reliability</div>
+        <div class="calc-res-num" id="cr-allk">—</div>
+        <div class="calc-res-sub">chance of all k succeeding</div>
+      </div>
+    </div>
+
+    <div class="calc-note" id="calc-note">Adjust the sliders to see your agent's true reliability profile.</div>
+  </div>
+
+  <div style="margin-top:1rem;padding:1rem 1.25rem;background:var(--ep-forest-bg);border:1px solid var(--ep-forest-border);border-radius:var(--rw-r-md);">
+    <p style="font-size:0.86rem;color:var(--rw-text-muted);margin:0;line-height:1.6;"><strong style="color:var(--ep-forest);">Which metric do you need?</strong> Use <strong>pass@k</strong> when any working solution is acceptable (internal tools, batch jobs, research). Use <strong>pass^k</strong> when every single interaction must succeed (customer service, payment flows, regulated processes). The gap between the two numbers is where you'll find your production surprises.</p>
+  </div>
+</div>
+
+<!-- ── 5. Agent Type Decoder ──────────────────────────────────── -->
+<div class="wide-section" id="agent-types">
+  <span class="ep-label">By Agent Type</span>
+  <h2 class="ep-heading">What to Evaluate for Your Agent</h2>
+  <p class="ep-sub">The eval mix changes significantly based on what your agent actually does.</p>
+
+  <div class="atabs">
+    <div class="atab-bar">
+      <button class="atab-btn on" onclick="atype('coding',this)">⚙️ Coding / SQL</button>
+      <button class="atab-btn"    onclick="atype('conv',this)">💬 Conversational</button>
+      <button class="atab-btn"    onclick="atype('research',this)">🔍 Research</button>
+      <button class="atab-btn"    onclick="atype('computer',this)">🖥️ Computer Use</button>
+    </div>
+
+    <div class="atab-panel on" id="at-coding">
+      <p class="atype-intro">Agents that write code, SQL queries, or scripts — then execute them against a live system.</p>
+      <div class="atype-grid">
+        <div class="atype-item"><div class="atype-lbl">Lead Pillar</div><div class="atype-val">Outcome → Trajectory</div></div>
+        <div class="atype-item"><div class="atype-lbl">Best Grader</div><div class="atype-val">Code-based (unit tests, SQL execution)</div></div>
+        <div class="atype-item"><div class="atype-lbl">Key Question</div><div class="atype-val">Does it run? Does it return the right rows?</div></div>
+        <div class="atype-item"><div class="atype-lbl">Trajectory Focus</div><div class="atype-val">How many LLM calls before a correct result?</div></div>
+        <div class="atype-item"><div class="atype-lbl">Reference Dataset</div><div class="atype-val">BIRD benchmark — text-to-SQL with tribal knowledge</div></div>
+        <div class="atype-item"><div class="atype-lbl">Consistency Target</div><div class="atype-val">pass^k if running in production pipelines</div></div>
+      </div>
+      <div class="pfact" style="margin-top:1rem;"><strong>Positional bias:</strong> If your agent selects from a list of tools or database tables, LLMs tend to favor earlier items in their prompt. Test with shuffled orderings to expose this.</div>
+    </div>
+
+    <div class="atab-panel" id="at-conv">
+      <p class="atype-intro">Chat agents, support bots, Q&amp;A systems — anything interacting with users in natural language across multiple turns.</p>
+      <div class="atype-grid">
+        <div class="atype-item"><div class="atype-lbl">Lead Pillar</div><div class="atype-val">Behavior → Outcome</div></div>
+        <div class="atype-item"><div class="atype-lbl">Best Grader</div><div class="atype-val">LLM-as-judge + mandatory human calibration</div></div>
+        <div class="atype-item"><div class="atype-lbl">Multidimensional Success</div><div class="atype-val">Task completion + tone + brand adherence</div></div>
+        <div class="atype-item"><div class="atype-lbl">Simulation Method</div><div class="atype-val">Second LLM playing a user persona</div></div>
+        <div class="atype-item"><div class="atype-lbl">Reference Benchmark</div><div class="atype-val">τ-Bench, τ2-Bench</div></div>
+        <div class="atype-item"><div class="atype-lbl">Implicit Signal</div><div class="atype-val">Drop-off rate before conversation ends</div></div>
+      </div>
+      <div class="pfact" style="margin-top:1rem;"><strong>Sycophancy trap:</strong> Thumbs up/down is an implicit signal — users rate the answer, not the trajectory that produced it. Over-relying on it for RL fine-tuning caused OpenAI's GPT-4o sycophancy incident (April 2025).</div>
+    </div>
+
+    <div class="atab-panel" id="at-research">
+      <p class="atype-intro">Agents that search, retrieve, synthesize documents, and produce analytical outputs with no single "right" answer.</p>
+      <div class="atype-grid">
+        <div class="atype-item"><div class="atype-lbl">Lead Pillar</div><div class="atype-val">Trajectory → Outcome</div></div>
+        <div class="atype-item"><div class="atype-lbl">Best Grader</div><div class="atype-val">LLM rubric + frequent human calibration</div></div>
+        <div class="atype-item"><div class="atype-lbl">Key RAG Metrics</div><div class="atype-val">Groundedness · Answer Relevance · Context Relevance</div></div>
+        <div class="atype-item"><div class="atype-lbl">Trajectory Focus</div><div class="atype-val">Was each search call necessary? Any unproductive detours?</div></div>
+        <div class="atype-item"><div class="atype-lbl">Main Challenge</div><div class="atype-val">No single right answer — rubric calibration is non-negotiable</div></div>
+        <div class="atype-item"><div class="atype-lbl">Consistency Target</div><div class="atype-val">pass@k usually acceptable for internal use</div></div>
+      </div>
+      <div class="pfact" style="margin-top:1rem;"><strong>Groundedness (Oracle):</strong> Does the answer stay within the retrieved content? This is the single most important metric for research agents. Hallucinating beyond retrieved context is the primary failure mode.</div>
+    </div>
+
+    <div class="atab-panel" id="at-computer">
+      <p class="atype-intro">Agents that control browsers, desktop UIs, or OS-level tasks — multi-step, multi-application, with real environment side effects.</p>
+      <div class="atype-grid">
+        <div class="atype-item"><div class="atype-lbl">Lead Pillar</div><div class="atype-val">Outcome + Recovery Path</div></div>
+        <div class="atype-item"><div class="atype-lbl">Best Grader</div><div class="atype-val">Code-based: DOM state, screenshots, file system</div></div>
+        <div class="atype-item"><div class="atype-lbl">State Verification</div><div class="atype-val">Did the environment end up in the right state?</div></div>
+        <div class="atype-item"><div class="atype-lbl">Environment Rule</div><div class="atype-val">Clean isolated sandbox per trial — no shared state</div></div>
+        <div class="atype-item"><div class="atype-lbl">Reference Benchmark</div><div class="atype-val">WebArena (browser tasks) · OSWorld (full OS)</div></div>
+        <div class="atype-item"><div class="atype-lbl">Recovery Eval</div><div class="atype-val">Inject failures — does it recover or fail silently?</div></div>
+      </div>
+      <div class="pfact" style="margin-top:1rem;"><strong>Isolation is critical:</strong> Shared state creates correlated failures — an agent may appear to succeed because it's inheriting side effects from a prior trial. Each run must start clean.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── 6. The Hidden Invoice ──────────────────────────────────── -->
+<div class="wide-section" id="costs">
+  <span class="ep-label">Economics</span>
+  <h2 class="ep-heading">The Hidden Invoice</h2>
+  <p class="ep-sub">Most agent cost projections forget four line items that compound with every user.</p>
+
+  <div class="cost-grid">
+    <div class="cost-card">
+      <div class="cost-cat">Biggest line item</div>
+      <div class="cost-name">Re-Sent Context</div>
+      <div class="cost-desc">System prompts, tool definitions, and conversation state are re-transmitted to the model on every call in a multi-step agent loop. This repeated context — not the actual reasoning tokens — dominates your inference bill.</div>
+      <span class="cost-stat">~62%</span>
+      <div class="cost-stat-sub">of total agent inference cost, on average</div>
+    </div>
+
+    <div class="cost-card">
+      <div class="cost-cat">Hidden operational cost</div>
+      <div class="cost-name">The Trust Tax</div>
+      <div class="cost-desc">The ongoing cost of verifying the agent isn't confidently wrong — human QA labor, eval pipeline maintenance, monitoring dashboards. Often the largest hidden expense, and the one that scales linearly with traffic volume.</div>
+      <span class="cost-stat">Ongoing</span>
+      <div class="cost-stat-sub">scales with every new user interaction</div>
+    </div>
+
+    <div class="cost-card">
+      <div class="cost-cat">ROI timing risk</div>
+      <div class="cost-name">The 90-Day Illusion</div>
+      <div class="cost-desc">A 90-day ROI window is nearly meaningless. The first three months are dominated by integration costs and debugging cycles. Meaningful agent ROI typically requires a 6–12 month measurement window before the curve turns.</div>
+      <span class="cost-stat">6–12 mo</span>
+      <div class="cost-stat-sub">before ROI becomes legible</div>
+    </div>
+
+    <div class="cost-card">
+      <div class="cost-cat">Wasted iteration</div>
+      <div class="cost-name">The Vague Spec Tax</div>
+      <div class="cost-desc">"It should be smart" as your acceptance criteria costs 3× more than specific, measurable ones. A $500 eval pipeline built upfront saves $5,000+ in wasted iteration — teams that skip it spend that budget rediscovering the same failure modes repeatedly.</div>
+      <span class="cost-stat">3×</span>
+      <div class="cost-stat-sub">cost multiplier for vague acceptance criteria</div>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;padding:1rem 1.2rem;background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);">
+    <p style="font-size:0.84rem;color:var(--rw-text-muted);margin:0;line-height:1.6;"><strong style="color:var(--rw-text);">Time saved ≠ financial benefit.</strong> If the hours your agent frees up are absorbed into slack capacity rather than redeployed to revenue-generating work, the financial ROI is zero. Measure what that time is <em>used for</em>, not just what was saved.</p>
+  </div>
+</div>
+
+<!-- ── 7. Eval Lifecycle ──────────────────────────────────────── -->
+<div class="wide-section" id="lifecycle">
+  <span class="ep-label">Process</span>
+  <h2 class="ep-heading">The Eval Lifecycle</h2>
+  <p class="ep-sub">Evaluation isn't a pre-launch checklist. It's a continuous discipline across five stages. (Oracle OCI framework)</p>
+
+  <div class="lifecycle-wrap">
+    <div class="lifecycle">
+      <div class="lc-step">
+        <div class="lc-num">1</div>
+        <div class="lc-name">Qualify</div>
+        <div class="lc-desc">Define capabilities via evals before building. A capability eval is a bet on what the model should be able to do.</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">2</div>
+        <div class="lc-name">Test</div>
+        <div class="lc-desc">Run prompts, RAG, tools, and trajectory evals in isolation. Start with 20–50 real failures — not invented scenarios.</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">3</div>
+        <div class="lc-name">Gate</div>
+        <div class="lc-desc">Promote passing runs to managed release gates. Regression evals stay near 100%. Capability evals start low and grow.</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">4</div>
+        <div class="lc-name">Monitor</div>
+        <div class="lc-desc">Production replay, canary assurance, drop-off rate tracking. Catches what automated evals miss every time.</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">5</div>
+        <div class="lc-name">Recover</div>
+        <div class="lc-desc">Turn every incident into a new eval case. Recertify after significant failures. The suite is a living artifact, not a checklist.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;padding:0.85rem 1.1rem;background:var(--ep-copper-bg);border-left:3px solid var(--ep-copper);border-radius:0 var(--rw-r) var(--rw-r) 0;">
+    <p style="font-size:0.86rem;color:var(--rw-text-muted);margin:0;line-height:1.5;"><strong style="color:var(--ep-copper);">Eval saturation warning:</strong> When a capability eval hits 100% pass rate, it stops giving you signal. Graduate it to regression (where 100% is the goal) and write harder capability evals. If your entire suite is green, you're not measuring the right things yet.</p>
+  </div>
+</div>
+
+<!-- ── Glossary ──────────────────────────────────────────────── -->
+<div class="wide-section" id="glossary">
+  <span class="ep-label">Glossary — Going Deeper</span>
+  <h2 class="ep-heading">Words That Need Unpacking</h2>
+  <p class="ep-sub">These terms appear in the three external sources and are worth knowing.</p>
+
+  <!-- Category tabs -->
+  <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+    <button class="gl-cat-btn on" onclick="glCat('all',this)">All terms</button>
+    <button class="gl-cat-btn" onclick="glCat('metrics',this)">Metrics</button>
+    <button class="gl-cat-btn" onclick="glCat('process',this)">Process</button>
+    <button class="gl-cat-btn" onclick="glCat('cost',this)">Cost</button>
+    <button class="gl-cat-btn" onclick="glCat('rag',this)">RAG / Retrieval</button>
+  </div>
+
+  <div class="gl-grid" id="gl-grid">
+
+    <!-- METRICS -->
+    <div class="gl-card" data-cat="metrics">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">pass@k</div>
+      <div class="gl-def">Probability the agent succeeds in <em>at least one</em> of k attempts. Formula: <code>1 − (1−p)^k</code>. Use when any working answer is acceptable — batch jobs, internal tools, retry-able tasks. An 80%-accurate agent has a 99.7% pass@5.</div>
+      <div class="gl-contrast">contrast with → pass^k</div>
+    </div>
+
+    <div class="gl-card" data-cat="metrics">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">pass^k</div>
+      <div class="gl-def">Probability the agent succeeds in <em>all</em> k attempts. Formula: <code>p^k</code>. Use when every single interaction must succeed — customer-facing, mission-critical. That same 80% agent has only 32.8% pass^5. This gap is where production surprises live.</div>
+      <div class="gl-contrast">contrast with → pass@k</div>
+    </div>
+
+    <div class="gl-card" data-cat="metrics">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">Eval saturation</div>
+      <div class="gl-def">When a capability eval reaches 100% pass rate, it stops giving you signal — the agent has outgrown the test. The fix: graduate it to your regression suite (where 100% is the maintenance goal) and write harder capability evals. A fully-green suite means you're not measuring the right things yet.</div>
+    </div>
+
+    <div class="gl-card" data-cat="metrics">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">Inter-annotator agreement</div>
+      <div class="gl-def">Whether two independent domain experts reach the same verdict on an eval task. If they disagree, the task spec is ambiguous — fix the task, not the grader. Used to validate that your eval set is measuring something real and consistent before you trust its scores.</div>
+    </div>
+
+    <div class="gl-card" data-cat="metrics">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">Capability eval vs Regression eval</div>
+      <div class="gl-def">Capability evals ask "what can this agent do?" — they start at low pass rates and climb as the model improves. Regression evals ask "does it still handle what it used to?" — they stay near 100%. Treating a capability eval as a regression target is a common mistake that masks real progress.</div>
+    </div>
+
+    <div class="gl-card" data-cat="metrics">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">Bypass resistance</div>
+      <div class="gl-def">Designing evals so the agent can't "cheat" — finding unintended loopholes that pass your grader without actually solving the problem. Common with code-based graders: an agent can satisfy a unit test without writing the right code. Design defensively; review passing transcripts regularly.</div>
+    </div>
+
+    <!-- PROCESS -->
+    <div class="gl-card" data-cat="process">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">Evaluation harness</div>
+      <div class="gl-def">The infrastructure that runs evals end-to-end: feeding the agent its instructions and tools, executing trials concurrently, and aggregating results. Distinct from the <em>agent harness</em> (the scaffold that lets the model act). Both are being evaluated together when you run evals.</div>
+    </div>
+
+    <div class="gl-card" data-cat="process">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">Transcript / Trace</div>
+      <div class="gl-def">The complete record of one agent trial: every tool call made, the reasoning steps, any intermediate outputs, and the final answer. Reading many transcripts manually is one of the highest-signal activities in agent development — it builds intuition that no automated metric can replace.</div>
+    </div>
+
+    <div class="gl-card" data-cat="process">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">τ-Bench / τ2-Bench</div>
+      <div class="gl-def">Benchmarks specifically for conversational / tool-using agents across multi-turn interactions (τ = "tau"). Unlike single-shot benchmarks, they test whether an agent can sustain correct behavior over an entire conversation. The "2" version adds harder compositional reasoning tasks. Relevant for support, Q&A, and chat agents.</div>
+    </div>
+
+    <div class="gl-card" data-cat="process">
+      <div class="gl-src">Oracle OCI</div>
+      <div class="gl-term">Recovery path evaluation</div>
+      <div class="gl-def">Explicitly testing what happens when something goes wrong mid-task — wrong database, bad input, tool timeout, partial failure. Does the agent recover gracefully or fail silently? This is a behavioral metric that happy-path evals will never surface. Oracle's framework treats it as a first-class lifecycle stage.</div>
+    </div>
+
+    <div class="gl-card" data-cat="process">
+      <div class="gl-src">Oracle OCI</div>
+      <div class="gl-term">Release gate</div>
+      <div class="gl-def">A formal approval checkpoint before an agent version ships to production. Passing runs in your eval suite are "promoted" to the gate, which must clear before deployment. Borrowed from traditional software release management. Adds discipline to agentic deployments that otherwise ship informally.</div>
+    </div>
+
+    <div class="gl-card" data-cat="process">
+      <div class="gl-src">Oracle OCI</div>
+      <div class="gl-term">Canary assurance</div>
+      <div class="gl-def">Running a new agent version on a small slice of real traffic before full rollout — confirming it behaves within the approved envelope on production data before you commit. The "canary" terminology comes from the mining practice of using canary birds to detect toxic gas before it reached miners.</div>
+    </div>
+
+    <div class="gl-card" data-cat="process">
+      <div class="gl-src">Oracle OCI</div>
+      <div class="gl-term">State change evaluation</div>
+      <div class="gl-def">Verifying not just what the agent <em>said</em> but what it <em>changed</em> — files written, database rows updated, APIs called, UI elements modified. Critical for computer-use agents and any agent with write permissions. The environment state after the trial is often more important than the agent's final message.</div>
+    </div>
+
+    <!-- COST -->
+    <div class="gl-card" data-cat="cost">
+      <div class="gl-src">ODSC</div>
+      <div class="gl-term">Re-sent context</div>
+      <div class="gl-def">In a multi-step agent loop, the system prompt, tool definitions, and conversation history are re-transmitted to the model on every single call — even though most of it hasn't changed. This repeated overhead reportedly accounts for ~62% of total agent inference cost. Prompt caching (available via Anthropic and others) directly attacks this line item.</div>
+    </div>
+
+    <div class="gl-card" data-cat="cost">
+      <div class="gl-src">ODSC</div>
+      <div class="gl-term">Trust tax</div>
+      <div class="gl-def">The ongoing cost of verifying the agent isn't confidently wrong — human QA labor, eval pipeline maintenance, monitoring dashboards, incident response. Unlike compute costs (which appear on a bill), the trust tax is invisible until someone tracks it explicitly. It scales with traffic and never goes to zero.</div>
+    </div>
+
+    <div class="gl-card" data-cat="cost">
+      <div class="gl-src">ODSC</div>
+      <div class="gl-term">ROI timeline realism</div>
+      <div class="gl-def">Most 90-day agent ROI projections are misleading because the first three months are dominated by integration costs and debugging. Meaningful ROI requires a 6–12 month window. Also: time saved only converts to financial benefit if redeployed to revenue-generating work — if it becomes slack capacity, the financial ROI is zero.</div>
+    </div>
+
+    <!-- RAG -->
+    <div class="gl-card" data-cat="rag">
+      <div class="gl-src">Oracle OCI</div>
+      <div class="gl-term">Groundedness</div>
+      <div class="gl-def">Does the agent's answer stay within the content it actually retrieved — or does it hallucinate beyond it? A grounded answer only asserts things that are supported by the retrieved documents. The single most important RAG eval metric for research agents, where hallucination outside retrieved content is the primary failure mode.</div>
+    </div>
+
+    <div class="gl-card" data-cat="rag">
+      <div class="gl-src">Oracle OCI</div>
+      <div class="gl-term">Answer Relevance</div>
+      <div class="gl-def">Does the answer actually address what was asked? An answer can be factually correct and well-grounded but completely miss the user's question. Measures alignment between the question and the response, independent of whether the answer is correct. Complements Groundedness.</div>
+    </div>
+
+    <div class="gl-card" data-cat="rag">
+      <div class="gl-src">Oracle OCI</div>
+      <div class="gl-term">Context Relevance</div>
+      <div class="gl-def">Was the content retrieved actually relevant to the question asked? An agent can generate a grounded, relevant answer and still fail here — because it retrieved the wrong documents in the first place. This is a trajectory metric applied to RAG: did the retrieval step do its job?</div>
+    </div>
+
+    <div class="gl-card" data-cat="rag">
+      <div class="gl-src">Anthropic</div>
+      <div class="gl-term">RULER (OpenPipe)</div>
+      <div class="gl-def">Relative Universal LLM Elicited Rewards — an open-source rubric prompt from OpenPipe used to evaluate agent trajectories via LLM-as-judge. Asks questions like "did it achieve the goal?" and "did it avoid unproductive detours?" across multiple trajectory runs of the same task. A starting point, not a final answer — requires customization for your specific agent.</div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .gl-cat-btn {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--rw-border);
+    border-radius: 9999px;
+    font-family: var(--rw-font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--rw-text-muted);
+    background: var(--rw-card);
+    cursor: pointer;
+    transition: border-color 0.14s, color 0.14s, background 0.14s;
+  }
+  .gl-cat-btn.on { border-color: var(--ep-copper); color: var(--ep-copper); background: var(--ep-copper-bg); }
+  .gl-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+  }
+  @media (max-width: 640px) { .gl-grid { grid-template-columns: 1fr; } }
+  .gl-card {
+    background: var(--rw-card);
+    border: 1px solid var(--rw-border);
+    border-radius: var(--rw-r-lg);
+    padding: 1.1rem 1.2rem;
+    transition: opacity 0.2s;
+  }
+  .gl-card.hidden { display: none; }
+  .gl-src {
+    font-family: var(--rw-font-display);
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ep-copper);
+    margin-bottom: 0.25rem;
+  }
+  .gl-term {
+    font-family: var(--rw-font-display);
+    font-size: 0.97rem;
+    font-weight: 800;
+    color: var(--rw-text);
+    margin-bottom: 0.4rem;
+  }
+  .gl-def {
+    font-size: 0.83rem;
+    color: var(--rw-text-muted);
+    line-height: 1.65;
+  }
+  .gl-def code {
+    font-family: var(--rw-font-mono);
+    font-size: 0.82em;
+    background: var(--rw-bg-subtle);
+    border: 1px solid var(--rw-border);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    color: var(--ep-copper);
+  }
+  .gl-def em { font-style: italic; }
+  .gl-contrast {
+    margin-top: 0.5rem;
+    font-size: 0.72rem;
+    font-family: var(--rw-font-display);
+    font-weight: 700;
+    color: var(--ep-forest);
+  }
+</style>
+
+<!-- ── Sources ───────────────────────────────────────────────── -->
+<div class="wide-section" id="sources" style="margin-bottom:3rem;">
+  <span class="ep-label">Sources</span>
+  <h2 class="ep-heading">Where This Came From</h2>
+  <p class="ep-sub">Every fact on this page is drawn from these public sources.</p>
+
+  <div class="src-grid">
+    <a class="src-link" href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents" target="_blank" rel="noopener">
+      <span class="src-cat">Engineering Guide</span>
+      <span class="src-title">Demystifying Evals for AI Agents</span>
+      <span class="src-domain">anthropic.com</span>
+    </a>
+    <a class="src-link" href="https://blogs.oracle.com/ai-and-datascience/oci-agent-evaluation-framework" target="_blank" rel="noopener">
+      <span class="src-cat">Platform Framework</span>
+      <span class="src-title">OCI Agent Evaluation Framework</span>
+      <span class="src-domain">oracle.com</span>
+    </a>
+    <a class="src-link" href="https://www.youtube.com/watch?v=62RZKUxEmXU" target="_blank" rel="noopener">
+      <span class="src-cat">Video · Sinan Ozdemir</span>
+      <span class="src-title">Building Agents 101: Design Patterns, Evals &amp; Optimization</span>
+      <span class="src-domain">youtube.com · Super Data Science Ep. 959</span>
+    </a>
+    <a class="src-link" href="https://opendatascience.com/from-agents-to-roi-why-your-ai-agent-probably-costs-more-than-its-worth/" target="_blank" rel="noopener">
+      <span class="src-cat">Economics / ROI</span>
+      <span class="src-title">From Agents to ROI: Why Your AI Agent Probably Costs More Than It's Worth</span>
+      <span class="src-domain">opendatascience.com</span>
+    </a>
+  </div>
+
+  <div style="margin-top:0.75rem;padding:0.85rem 1rem;background:var(--rw-bg-alt);border-radius:var(--rw-r-md);border:1px solid var(--rw-border);">
+    <p style="font-size:0.8rem;color:var(--rw-text-subtle);margin:0;line-height:1.7;">
+      Additional reading:
+      <a href="https://books.google.com/books/about/Building_Agentic_AI.html?id=1aGHEQAAQBAJ" target="_blank" rel="noopener" style="color:var(--ep-copper);font-weight:600;">Building Agentic AI</a> by Sinan Ozdemir (Pearson) ·
+      <a href="https://github.com/sinanuozdemir/applied-ai" target="_blank" rel="noopener" style="color:var(--ep-copper);font-weight:600;">GitHub: sinanuozdemir/building-agentic-ai</a> ·
+      <a href="https://learning.oreilly.com/course/building-agentic-ai/9780135919989/" target="_blank" rel="noopener" style="color:var(--ep-copper);font-weight:600;">O'Reilly Course</a>
+    </p>
+  </div>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="https://linkedin.com/..."
+     data-related='[
+       {"label":"Eval Proving Ground","url":"/tools/eval-proving-ground.html"},
+       {"label":"The Iteration Machine","url":"/usecase/iteration-machine.html"},
+       {"label":"Agent Autonomy Dial","url":"/guide/agent-autonomy-dial.html"},
+       {"label":"SentTriage Builder Log","url":"/usecase/sent-triage.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+/* ── Diagnosis ────────────────────────────────────────────────── */
+const sel = { type: null, stakes: null, concern: null };
+
+function pick(el) {
+  const q = el.dataset.q, v = el.dataset.v;
+  document.querySelectorAll(`.diag-opt[data-q="${q}"]`).forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  sel[q] = v;
+}
+
+function genRx() {
+  if (!sel.type || !sel.stakes || !sel.concern) {
+    const h = document.getElementById('diag-hint');
+    h.style.display = 'inline';
+    setTimeout(() => h.style.display = 'none', 2500);
+    return;
+  }
+  const labels = { coding:'Coding / SQL Agent', conversational:'Conversational Agent', research:'Research Agent', computer:'Computer Use Agent' };
+  const pillars = { accuracy:'Outcome — start with "did it get the right answer?"', cost:'Trajectory — start with "was the path efficient?"', compliance:'Behavior — start with "did it follow my rules?"' };
+  const graders = { coding:'Code-based graders (unit tests, SQL execution)', conversational:'LLM-as-judge with human calibration', research:'LLM rubric (groundedness + coverage) + human spot-check', computer:'Code-based: DOM state, screenshots, file system verification' };
+  const metrics = { internal:'pass@k — any working solution is fine', customer:'pass^k — every interaction must succeed', mission:'pass^k + mandatory human review gate before ship' };
+  const benches = { coding:'BIRD benchmark (text-to-SQL with tribal knowledge)', conversational:'τ-Bench / τ2-Bench for multi-turn evaluation', research:'Custom rubric calibrated against domain experts', computer:'WebArena (browser) / OSWorld (full OS control)' };
+  const warns   = { coding:'Watch for positional bias — LLMs favor earlier tools and tables in their prompt. Test with shuffled orderings.', conversational:'Avoid over-relying on thumbs up/down as your RL signal. Users rate the answer, not the trajectory that produced it.', research:'Calibrate your LLM judge frequently. Open-ended output rubrics drift from expert judgment faster than you expect.', computer:'Start every trial from a clean isolated environment. Shared state creates correlated failures that mask the real error rate.' };
+
+  document.getElementById('rx-sub').textContent    = labels[sel.type];
+  document.getElementById('rx-pillar').textContent = pillars[sel.concern];
+  document.getElementById('rx-grader').textContent = graders[sel.type];
+  document.getElementById('rx-metric').textContent = metrics[sel.stakes];
+  document.getElementById('rx-bench').textContent  = benches[sel.type];
+  document.getElementById('rx-warn').innerHTML     = `<strong>Watch out:</strong> ${warns[sel.type]}`;
+
+  const card = document.getElementById('rx-card');
+  card.classList.add('show');
+  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+/* ── Pillar tabs ──────────────────────────────────────────────── */
+function pillar(id, btn) {
+  document.querySelectorAll('.ptab-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.ptab-panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('pp-' + id).classList.add('on');
+}
+
+/* ── Grader cards ─────────────────────────────────────────────── */
+function toggleGrader(card) {
+  const detail = card.querySelector('.grdr-detail');
+  const isOpen = detail.classList.contains('show');
+  document.querySelectorAll('.grdr-detail').forEach(d => d.classList.remove('show'));
+  document.querySelectorAll('.grader-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) { detail.classList.add('show'); card.classList.add('open'); }
+}
+
+/* ── Consistency calculator ───────────────────────────────────── */
+function calcUpdate() {
+  const p = parseInt(document.getElementById('sl-rate').value) / 100;
+  const k = parseInt(document.getElementById('sl-k').value);
+  document.getElementById('cv-rate').textContent  = Math.round(p * 100) + '%';
+  document.getElementById('cv-k').textContent     = k;
+  const atk  = 1 - Math.pow(1 - p, k);
+  const allk = Math.pow(p, k);
+  document.getElementById('cr-atk').textContent  = Math.round(atk  * 100) + '%';
+  document.getElementById('cr-allk').textContent = Math.round(allk * 100) + '%';
+  const note = document.getElementById('calc-note');
+  if (allk < 0.5 && p >= 0.75) {
+    note.innerHTML = `<strong>Surprising:</strong> Even at ${Math.round(p*100)}% per trial, your agent only succeeds <em>every single time</em> ${Math.round(allk*100)}% of the time across ${k} calls. Customer-facing reliability requires pass^k — not just per-trial accuracy.`;
+  } else if (atk > 0.995) {
+    note.innerHTML = `<strong>Good coverage:</strong> At ${Math.round(p*100)}% per trial across ${k} tries, you have a ${Math.round(atk*100)}% chance of at least one success. If any working solution is acceptable, you're well covered.`;
+  } else {
+    note.innerHTML = `At <strong>${Math.round(p*100)}%</strong> per trial over <strong>${k}</strong> calls: <strong>${Math.round(atk*100)}%</strong> chance of ≥1 success, but only <strong>${Math.round(allk*100)}%</strong> chance of all succeeding.`;
+  }
+}
+
+/* ── Agent type tabs ──────────────────────────────────────────── */
+function atype(id, btn) {
+  document.querySelectorAll('.atab-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.atab-panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('at-' + id).classList.add('on');
+}
+
+// Init
+calcUpdate();
+
+function glCat(cat, btn) {
+  document.querySelectorAll('.gl-cat-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.gl-card').forEach(card => {
+    if (cat === 'all' || card.dataset.cat === cat) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+</script>
+
+</body>
+</html>
