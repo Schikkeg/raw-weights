@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "ShadowShield AI — Chrome Extension Experiment  ",
+        excerpt: "A Chrome extension that replaces your real personal data with safe stand-ins before AI chatbots see it, then swaps real values back in the response.",
+        date: "July 12, 2026",
+        image: "./images/shadowshield.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/shadowshield-ai.html",
+        linkedin: null
+      },
+      {
         title: "The Blueprint — Threat Modeling AI Systems Before You Build ",
         excerpt: "How security engineers think before a single line of code is written. STRIDE, trust boundaries, and a hands-on AI threat model using a healthcare AI assistant — from GenAcademy with Harsh (Cloudflare).",
         date: "July 05, 2026",
         image: "./images/stride.png",
         type: "Guide",
         link: "https://rawweights.com/guide/ai-security-threat-model.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_genacademy-aisecurity-threatmodeling-share-7479716178052096001-m1nP/"
       },
       {
         title: "The Red Team Brief — AI Threat Playbook for Agentic Systems ",
