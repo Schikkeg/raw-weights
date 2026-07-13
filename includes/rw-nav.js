@@ -106,7 +106,8 @@
               { label: 'ContextCal',            url: '/guide/ContextCal.html',                        desc: 'Agentic scheduling across language contexts' },
               { label: 'ElevenLabs Builder Map',url: '/guide/elevenlabs-builders-map.html',            desc: 'Five practical decisions for voice AI builders' },
               { label: 'Sent Triage',url: '/usecase/sent-triage.html',            desc: 'Behavioral Email Classifier' },
-              { label: 'Vocab Forge',url: '/usecase/vocabforge-fine-tuning-guide.html',            desc: 'Fine-tuned model. Local inference. Habit tracking. Zero cloud.' }
+              { label: 'Vocab Forge',url: '/usecase/vocabforge-fine-tuning-guide.html',            desc: 'Fine-tuned model. Local inference. Habit tracking. Zero cloud.' },
+              { label: 'ShadowShield AI',url: '/usecase/shadowshield-ai.html',            desc: 'Swap sensitive information before it sends.' }
 
             ]
           }
