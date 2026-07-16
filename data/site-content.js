@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "The Compiler | LLM Wiki ",
+        excerpt: "Karpathy's LLM Wiki explained as a compiler: raw sources go in, compiled wiki pages come out. Understand ingest, query, lint — and when pre-compiled knowledge beats RAG.",
+        date: "July 16, 2026",
+        image: "./images/wiki.png",
+        type: "Guide",
+        link: "https://rawweights.com/guide/llm-wiki-compiler.html",
+        linkedin: null
+      },
+      {
         title: "ShadowShield AI — Chrome Extension Experiment  ",
         excerpt: "A Chrome extension that replaces your real personal data with safe stand-ins before AI chatbots see it, then swaps real values back in the response.",
         date: "July 12, 2026",
         image: "./images/shadowshield.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/shadowshield-ai.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_googlechrome-share-7482282008845680640-B-0z/"
       },
       {
         title: "The Blueprint — Threat Modeling AI Systems Before You Build ",

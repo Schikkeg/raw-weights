@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Compiler | LLM Wiki — RawWeights</title>
+  <meta name="description" content="Karpathy's LLM Wiki explained as a compiler: raw sources go in, compiled wiki pages come out. Understand ingest, query, lint — and when pre-compiled knowledge beats RAG.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/guide/llm-wiki-compiler.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/guide/llm-wiki-compiler.html">
+  <meta property="og:title" content="The Compiler | LLM Wiki — RawWeights">
+  <meta property="og:description" content="Karpathy's LLM Wiki: compile your knowledge once, query it cheaply forever. Ingest, query, lint — explained interactively.">
+  <meta property="og:image" content="https://www.rawweights.com/images/wiki.png">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Page accent: rose-red + lime ── */
+    :root {
+      --ac:    #f43f5e;
+      --ac-h:  #e11d48;
+      --ac-lt: rgba(244,63,94,0.10);
+      --ac-br: rgba(244,63,94,0.25);
+      --ac2:   #84cc16;
+      --ac2-lt: rgba(132,204,22,0.10);
+      --ac2-br: rgba(132,204,22,0.25);
+    }
+
+    /* ── Hero ── */
+    .guide-hero {
+      background: linear-gradient(135deg, #0f0008 0%, #1a0010 55%, #050f00 100%);
+      padding: 5rem 1.5rem 4rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content:''; position:absolute; top:-10%; right:-5%;
+      width:500px; height:500px;
+      background: radial-gradient(circle, rgba(244,63,94,0.22) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .guide-hero::after {
+      content:''; position:absolute; bottom:-10%; left:-5%;
+      width:400px; height:400px;
+      background: radial-gradient(circle, rgba(132,204,22,0.14) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .guide-hero-inner { max-width:860px; margin:0 auto; position:relative; }
+    .guide-hero-label {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      background:rgba(244,63,94,0.14); border:1px solid rgba(244,63,94,0.35);
+      border-radius:9999px; padding:0.3rem 0.9rem;
+      font-size:0.72rem; font-weight:700; color:#fb7185;
+      text-transform:uppercase; letter-spacing:0.07em;
+      font-family:var(--rw-font-display); margin-bottom:1.25rem;
+    }
+    .guide-hero h1 {
+      font-family:var(--rw-font-display);
+      font-size:clamp(2rem,5vw,3.5rem);
+      font-weight:800; color:#fff;
+      line-height:1.1; letter-spacing:-0.025em; margin-bottom:1rem;
+    }
+    .guide-hero h1 .rose  { color:#fb7185; }
+    .guide-hero h1 .lime  { color:#a3e635; }
+    .guide-hero-sub {
+      font-size:1.05rem; color:rgba(255,255,255,0.72);
+      max-width:640px; margin:0 auto 0.75rem; line-height:1.75;
+    }
+    .guide-hero-note {
+      font-size:0.88rem; color:rgba(255,255,255,0.42);
+      max-width:580px; margin:0 auto 2rem;
+      line-height:1.6; font-style:italic;
+    }
+
+    /* Compiler flow in hero */
+    .compiler-flow {
+      display:flex; align-items:center; justify-content:center;
+      gap:0.5rem; flex-wrap:wrap; margin:1.75rem 0 2rem;
+    }
+    .cf-box {
+      padding:0.55rem 1.1rem; border-radius:8px;
+      font-family:var(--rw-font-mono,monospace); font-size:0.82rem; font-weight:600;
+      border:1.5px solid; line-height:1.2;
+    }
+    .cf-box.src  { background:rgba(244,63,94,0.12); border-color:rgba(244,63,94,0.4); color:#fb7185; }
+    .cf-box.cmp  { background:rgba(255,255,255,0.07); border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.85); }
+    .cf-box.out  { background:rgba(132,204,22,0.12); border-color:rgba(132,204,22,0.4); color:#a3e635; }
+    .cf-arrow    { color:rgba(255,255,255,0.35); font-size:1.1rem; }
+    .cf-label    { font-size:0.65rem; text-align:center; margin-top:0.3rem; letter-spacing:0.04em; opacity:0.55; }
+
+    /* ── Layout ── */
+    .guide-layout {
+      display:grid; grid-template-columns:220px 1fr;
+      gap:2.5rem; max-width:1200px;
+      margin:3rem auto; padding:0 1.5rem; align-items:start;
+    }
+    .guide-sidebar { position:sticky; top:calc(var(--rw-nav-height,64px) + 1.5rem); }
+    .guide-toc-label {
+      font-family:var(--rw-font-display); font-size:0.7rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.08em;
+      color:var(--rw-text-subtle,#888); margin-bottom:0.75rem;
+    }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:0.15rem; }
+    .guide-toc a {
+      font-size:0.83rem; color:var(--rw-text-muted,#aaa); text-decoration:none;
+      padding:0.3rem 0.6rem; border-left:2px solid transparent;
+      display:block; border-radius:0 4px 4px 0;
+      transition:color .15s, border-color .15s, background .15s;
+    }
+    .guide-toc a:hover, .guide-toc a.active {
+      color:var(--ac); border-left-color:var(--ac); background:var(--ac-lt);
+    }
+    .guide-toc .toc-sub { padding-left:1rem; font-size:0.78rem; }
+
+    /* ── Sections ── */
+    .guide-section { margin-bottom:3.5rem; }
+    .guide-section h2 {
+      font-family:var(--rw-font-display); font-size:1.6rem; font-weight:800;
+      color:var(--rw-text,#f0f4ff); margin-bottom:1rem; padding-bottom:0.6rem;
+      border-bottom:2px solid var(--ac-lt);
+      scroll-margin-top:calc(var(--rw-nav-height,64px) + 1rem);
+    }
+    .guide-section h3 {
+      font-family:var(--rw-font-display); font-size:1.1rem; font-weight:700;
+      color:var(--rw-text,#f0f4ff); margin:1.75rem 0 0.5rem;
+      scroll-margin-top:calc(var(--rw-nav-height,64px) + 1rem);
+    }
+    .guide-section p { font-size:1rem; color:var(--rw-text-muted,#9aa); line-height:1.75; margin-bottom:1rem; }
+
+    /* ── Callout ── */
+    .callout {
+      border-left:3px solid var(--ac); background:var(--ac-lt);
+      border-radius:0 8px 8px 0; padding:1rem 1.25rem; margin:1.25rem 0;
+    }
+    .callout.lime { border-left-color:var(--ac2); background:var(--ac2-lt); }
+    .callout p { margin:0; font-size:0.9rem; line-height:1.65; }
+    .callout strong { color:var(--rw-text,#f0f4ff); }
+
+    /* ── Layer Explorer ── */
+    .layer-tabs {
+      display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;
+    }
+    .layer-tab {
+      padding:0.45rem 1.1rem; border-radius:9999px;
+      border:1.5px solid var(--rw-border,#333);
+      background:transparent; color:var(--rw-text-muted,#aaa);
+      font-family:var(--rw-font-display); font-size:0.83rem; font-weight:700;
+      cursor:pointer; transition:all .15s; font-size:0.82rem;
+    }
+    .layer-tab:hover { border-color:var(--ac); color:var(--ac); }
+    .layer-tab.active { background:var(--ac); border-color:var(--ac); color:#fff; }
+    .layer-tab.lime-tab.active { background:var(--ac2); border-color:var(--ac2); color:#000; }
+    .layer-tab.lime-tab:hover { border-color:var(--ac2); color:var(--ac2); }
+
+    .layer-panel { display:none; }
+    .layer-panel.active { display:block; }
+
+    .layer-card {
+      background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
+      border-radius:12px; overflow:hidden;
+    }
+    .layer-card-head {
+      padding:1rem 1.25rem;
+      border-bottom:1px solid var(--rw-border,#333);
+      display:flex; align-items:center; gap:0.75rem;
+    }
+    .layer-badge {
+      font-family:var(--rw-font-mono,monospace); font-size:0.78rem; font-weight:700;
+      padding:0.25rem 0.6rem; border-radius:5px;
+    }
+    .layer-badge.red  { background:rgba(244,63,94,0.15); color:#fb7185; }
+    .layer-badge.wht  { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); }
+    .layer-badge.grn  { background:rgba(132,204,22,0.15); color:#a3e635; }
+    .layer-card-head h4 { font-family:var(--rw-font-display); font-weight:700; font-size:0.95rem; color:var(--rw-text,#f0f4ff); margin:0; }
+    .layer-card-head p  { font-size:0.8rem; color:var(--rw-text-muted,#aaa); margin:0.2rem 0 0; }
+    .layer-body { padding:1.25rem; }
+
+    .file-tree {
+      font-family:var(--rw-font-mono,monospace); font-size:0.82rem;
+      line-height:2; color:var(--rw-text-muted,#aaa);
+    }
+    .file-tree .dir  { color:#fb7185; font-weight:700; }
+    .file-tree .file { color:var(--rw-text,#f0f4ff); }
+    .file-tree .note { color:var(--rw-text-muted,#666); font-style:italic; font-size:0.75rem; }
+    .file-tree .lime { color:#a3e635; }
+
+    .rule-list {
+      list-style:none; display:flex; flex-direction:column; gap:0.6rem; margin:0.75rem 0;
+    }
+    .rule-list li {
+      font-size:0.85rem; color:var(--rw-text-muted,#aaa); line-height:1.55;
+      padding:0.55rem 0.85rem;
+      background:var(--rw-bg-subtle,#111); border:1px solid var(--rw-border,#333);
+      border-radius:6px;
+      display:flex; gap:0.6rem; align-items:flex-start;
+    }
+    .rule-list li .ri { flex-shrink:0; font-size:1rem; }
+    .rule-list li strong { color:var(--rw-text,#f0f4ff); }
+
+    /* ── Operation Stepper ── */
+    .op-tabs {
+      display:flex; border-bottom:2px solid var(--rw-border,#333); margin-bottom:0;
+    }
+    .op-tab {
+      padding:0.65rem 1.4rem;
+      font-family:var(--rw-font-display); font-size:0.85rem; font-weight:700;
+      color:var(--rw-text-muted,#aaa); cursor:pointer; border:none; background:transparent;
+      border-bottom:2px solid transparent; margin-bottom:-2px;
+      transition:color .15s, border-color .15s;
+    }
+    .op-tab:hover { color:var(--rw-text,#f0f4ff); }
+    .op-tab.active { color:var(--ac); border-bottom-color:var(--ac); }
+    .op-tab.lime-op.active { color:var(--ac2); border-bottom-color:var(--ac2); }
+    .op-tab.lime-op:hover { color:var(--ac2); }
+
+    .op-panel { display:none; padding:1.5rem; background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333); border-top:none; border-radius:0 0 12px 12px; }
+    .op-panel.active { display:block; }
+
+    .op-steps { list-style:none; display:flex; flex-direction:column; gap:1rem; margin:0; }
+    .op-step { display:flex; gap:1rem; align-items:flex-start; }
+    .op-step-num {
+      width:26px; height:26px; border-radius:50%; flex-shrink:0;
+      font-family:var(--rw-font-display); font-weight:800; font-size:0.78rem;
+      display:flex; align-items:center; justify-content:center;
+      background:var(--ac); color:#fff;
+    }
+    .op-step.lime .op-step-num { background:var(--ac2); color:#000; }
+    .op-step-body h5 { font-family:var(--rw-font-display); font-weight:700; font-size:0.9rem; color:var(--rw-text,#f0f4ff); margin-bottom:0.2rem; }
+    .op-step-body p  { font-size:0.835rem; color:var(--rw-text-muted,#aaa); line-height:1.6; margin:0; }
+
+    .op-note {
+      margin-top:1.25rem; padding:0.85rem 1rem;
+      background:rgba(255,255,255,0.04); border-radius:8px;
+      font-size:0.82rem; color:var(--rw-text-muted,#aaa); line-height:1.6;
+    }
+    .op-note strong { color:var(--rw-text,#f0f4ff); }
+
+    /* ── Lint Simulator ── */
+    .lint-sim {
+      background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
+      border-radius:12px; overflow:hidden;
+    }
+    .lint-sim-head {
+      padding:0.85rem 1.25rem; border-bottom:1px solid var(--rw-border,#333);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .lint-sim-title {
+      font-family:var(--rw-font-mono,monospace); font-size:0.8rem; color:#a3e635;
+      font-weight:700;
+    }
+    .lint-run-btn {
+      padding:0.4rem 1rem; border:none; border-radius:9999px;
+      background:var(--ac2); color:#000;
+      font-family:var(--rw-font-display); font-size:0.78rem; font-weight:800;
+      cursor:pointer; transition:opacity .15s;
+    }
+    .lint-run-btn:hover { opacity:0.85; }
+    .lint-run-btn:disabled { opacity:0.45; cursor:not-allowed; }
+
+    .lint-body { padding:1.25rem; display:flex; flex-direction:column; gap:0.6rem; min-height:200px; }
+
+    .lint-check {
+      display:flex; gap:0.75rem; align-items:flex-start;
+      padding:0.7rem 0.9rem; border-radius:8px;
+      border:1px solid var(--rw-border,#333);
+      background:var(--rw-bg-subtle,#111);
+      opacity:0; transform:translateY(6px);
+      transition:opacity .25s, transform .25s;
+    }
+    .lint-check.visible { opacity:1; transform:translateY(0); }
+
+    .lint-status {
+      flex-shrink:0; width:20px; height:20px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.7rem; font-weight:800; margin-top:0.05rem;
+    }
+    .lint-status.checking { background:rgba(255,200,0,0.2); color:#fbbf24; }
+    .lint-status.found    { background:rgba(244,63,94,0.2);  color:#fb7185; }
+    .lint-status.fixed    { background:rgba(132,204,22,0.2); color:#a3e635; }
+    .lint-status.warn     { background:rgba(251,191,36,0.2); color:#fbbf24; }
+
+    .lint-content { flex:1; }
+    .lint-check-name {
+      font-family:var(--rw-font-display); font-size:0.75rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem;
+    }
+    .lint-check-name.checking { color:#fbbf24; }
+    .lint-check-name.found    { color:#fb7185; }
+    .lint-check-name.fixed    { color:#a3e635; }
+    .lint-check-name.warn     { color:#fbbf24; }
+
+    .lint-detail { font-size:0.8rem; color:var(--rw-text-muted,#aaa); line-height:1.55; }
+    .lint-detail .found-text { color:#fb7185; }
+    .lint-detail .fix-text   { color:#a3e635; }
+    .lint-detail .warn-text  { color:#fbbf24; }
+
+    .lint-summary {
+      margin-top:0.75rem; padding:0.75rem 1rem;
+      background:rgba(132,204,22,0.08); border:1px solid rgba(132,204,22,0.2);
+      border-radius:8px;
+      font-family:var(--rw-font-display); font-size:0.82rem; font-weight:700;
+      color:#a3e635; display:none;
+    }
+    .lint-summary.visible { display:block; }
+    .lint-reset-btn {
+      margin-left:1rem; background:none; border:1px solid rgba(132,204,22,0.35);
+      border-radius:9999px; padding:0.2rem 0.7rem; color:#a3e635;
+      font-size:0.75rem; cursor:pointer; font-family:var(--rw-font-display); font-weight:700;
+    }
+
+    /* ── Comparison table ── */
+    .comparison-table { width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:0.875rem; }
+    .comparison-table th {
+      background:var(--rw-bg-subtle,#111); font-family:var(--rw-font-display);
+      font-weight:700; font-size:0.78rem; text-align:left;
+      padding:0.75rem 1rem; border-bottom:2px solid var(--rw-border,#333); color:var(--rw-text,#f0f4ff);
+    }
+    .comparison-table th.rose-h { background:rgba(244,63,94,0.08); }
+    .comparison-table th.lime-h { background:rgba(132,204,22,0.08); }
+    .comparison-table td {
+      padding:0.65rem 1rem; border-bottom:1px solid var(--rw-border,#333);
+      color:var(--rw-text-muted,#aaa); vertical-align:top; line-height:1.5;
+    }
+    .comparison-table tr:hover td { background:var(--rw-bg-alt,#161622); }
+    .dim-label { font-weight:700; color:var(--rw-text,#f0f4ff); font-size:0.82rem; }
+    .ok  { color:#22c55e; font-weight:700; }
+    .bad { color:#ef4444; font-weight:700; }
+    .mid { color:#f59e0b; font-weight:700; }
+
+    /* ── Decision Wizard ── */
+    .decision-wizard {
+      background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
+      border-radius:12px; padding:1.5rem;
+    }
+    .dw-title {
+      font-family:var(--rw-font-display); font-size:1rem; font-weight:800;
+      color:var(--rw-text,#f0f4ff); margin-bottom:1.25rem;
+    }
+    .dw-question { margin-bottom:1.1rem; }
+    .dw-question label {
+      display:block; font-family:var(--rw-font-display); font-size:0.82rem; font-weight:700;
+      color:var(--rw-text-muted,#aaa); margin-bottom:0.45rem;
+    }
+    .dw-options { display:flex; gap:0.5rem; flex-wrap:wrap; }
+    .dw-opt {
+      padding:0.35rem 0.85rem; border-radius:9999px;
+      border:1.5px solid var(--rw-border,#333);
+      background:transparent; color:var(--rw-text-muted,#aaa);
+      font-family:var(--rw-font-display); font-size:0.78rem; font-weight:600;
+      cursor:pointer; transition:all .15s;
+    }
+    .dw-opt:hover { border-color:var(--ac); color:var(--ac); }
+    .dw-opt.selected { background:var(--ac); border-color:var(--ac); color:#fff; }
+
+    .dw-verdict {
+      margin-top:1.25rem; padding:1rem 1.25rem;
+      border-radius:10px; display:none;
+      border:1.5px solid;
+    }
+    .dw-verdict.wiki { border-color:rgba(132,204,22,0.4); background:rgba(132,204,22,0.07); }
+    .dw-verdict.rag  { border-color:rgba(244,63,94,0.4);  background:rgba(244,63,94,0.07); }
+    .dw-verdict.both { border-color:rgba(251,191,36,0.4);  background:rgba(251,191,36,0.07); }
+    .dw-verdict.visible { display:block; }
+    .dv-label {
+      font-family:var(--rw-font-display); font-size:0.72rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.35rem;
+    }
+    .dw-verdict.wiki .dv-label { color:#a3e635; }
+    .dw-verdict.rag  .dv-label { color:#fb7185; }
+    .dw-verdict.both .dv-label { color:#fbbf24; }
+    .dv-text { font-size:0.875rem; color:var(--rw-text-muted,#aaa); line-height:1.65; }
+
+    /* ── Capacity Gauge ── */
+    .capacity-gauge {
+      background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
+      border-radius:12px; padding:1.5rem;
+    }
+    .gauge-row { display:flex; flex-direction:column; gap:1.25rem; }
+    .gauge-item { }
+    .gauge-meta {
+      display:flex; justify-content:space-between; align-items:baseline;
+      margin-bottom:0.5rem;
+    }
+    .gauge-name { font-family:var(--rw-font-display); font-size:0.85rem; font-weight:700; color:var(--rw-text,#f0f4ff); }
+    .gauge-val  { font-family:var(--rw-font-mono,monospace); font-size:0.78rem; color:var(--rw-text-muted,#aaa); }
+    .gauge-track {
+      height:10px; background:var(--rw-bg-subtle,#111);
+      border-radius:9999px; overflow:hidden; border:1px solid var(--rw-border,#333);
+    }
+    .gauge-fill {
+      height:100%; border-radius:9999px; transition:width 1s ease;
+      position:relative;
+    }
+    .gauge-fill::after {
+      content: attr(data-pct);
+      position:absolute; right:4px; top:50%; transform:translateY(-50%);
+      font-size:0.58rem; font-weight:800; color:rgba(0,0,0,0.7);
+      font-family:var(--rw-font-display);
+    }
+    .gauge-fill.green { background:linear-gradient(90deg,#4ade80,#a3e635); }
+    .gauge-fill.amber { background:linear-gradient(90deg,#fbbf24,#f97316); }
+    .gauge-fill.red   { background:linear-gradient(90deg,#f97316,#f43f5e); }
+    .gauge-note { font-size:0.78rem; color:var(--rw-text-muted,#aaa); margin-top:0.35rem; line-height:1.5; }
+    .gauge-break {
+      margin-top:1.25rem; padding:0.85rem 1rem;
+      background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.2);
+      border-radius:8px; font-size:0.85rem; color:var(--rw-text-muted,#aaa); line-height:1.6;
+    }
+    .gauge-break strong { color:#fb7185; }
+
+    /* ── Feature grid ── */
+    .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .feature-card {
+      background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
+      border-radius:var(--rw-r-md,10px); padding:1.25rem;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    .feature-card:hover { border-color:var(--ac); box-shadow:0 0 0 3px var(--ac-lt); }
+    .feature-card.lime:hover { border-color:var(--ac2); box-shadow:0 0 0 3px var(--ac2-lt); }
+    .feature-card-icon { font-size:1.5rem; margin-bottom:0.5rem; }
+    .feature-card h4 { font-family:var(--rw-font-display); font-size:0.9rem; font-weight:700; color:var(--rw-text,#f0f4ff); margin-bottom:0.35rem; }
+    .feature-card p  { font-size:0.82rem; color:var(--rw-text-muted,#aaa); margin:0; line-height:1.55; }
+
+    /* ── Code block ── */
+    .code-block {
+      background:#0d0d12; border:1px solid var(--rw-border,#333);
+      border-radius:10px; overflow:hidden; margin:1.25rem 0;
+    }
+    .code-block-head {
+      padding:0.5rem 1rem; border-bottom:1px solid var(--rw-border,#333);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .code-block-title { font-family:var(--rw-font-mono,monospace); font-size:0.72rem; color:#a3e635; }
+    .code-block pre {
+      margin:0; padding:1rem 1.25rem; overflow-x:auto;
+      font-size:0.8rem; line-height:1.7;
+      font-family:var(--rw-font-mono,'Courier New',monospace);
+      color:rgba(255,255,255,0.82);
+      white-space:pre;
+    }
+    .code-block .k  { color:#fb7185; } /* keyword */
+    .code-block .s  { color:#a3e635; } /* string / value */
+    .code-block .c  { color:#555; font-style:italic; }    /* comment */
+    .code-block .h  { color:#fbbf24; } /* heading */
+    .code-block .p  { color:#c084fc; } /* property */
+
+    /* ── Related ── */
+    .related-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.5rem 0; }
+    .related-cta {
+      display:flex; align-items:center; justify-content:space-between; gap:1rem;
+      background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
+      border-radius:10px; padding:1rem 1.25rem; text-decoration:none;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    .related-cta:hover { border-color:var(--ac); box-shadow:0 0 0 3px var(--ac-lt); }
+    .related-cta h4 { font-family:var(--rw-font-display); font-size:0.88rem; font-weight:700; color:var(--rw-text,#f0f4ff); margin-bottom:0.25rem; }
+    .related-cta p  { font-size:0.78rem; color:var(--rw-text-muted,#aaa); margin:0; line-height:1.45; }
+    .related-arrow  { color:var(--ac); font-size:1.2rem; flex-shrink:0; }
+
+    /* ── Responsive ── */
+    @media(max-width:1024px){
+      .guide-layout { grid-template-columns:1fr; }
+      .guide-sidebar { position:static; }
+      .feature-grid  { grid-template-columns:repeat(2,1fr); }
+      .related-grid  { grid-template-columns:1fr; }
+    }
+    @media(max-width:640px){
+      .feature-grid { grid-template-columns:1fr; }
+      .compiler-flow { gap:0.3rem; }
+      .cf-box { font-size:0.72rem; padding:0.45rem 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ══ HERO ══ -->
+<div class="guide-hero">
+  <div class="guide-hero-inner">
+    <span class="guide-hero-label">⚙️ Knowledge Architecture</span>
+    <h1>The <span class="rose">Compiler</span></h1>
+    <p class="guide-hero-sub">Karpathy's LLM Wiki is not a fancier RAG. It's a fundamentally different idea: compile your raw knowledge into an artifact once, then query the artifact cheaply forever.</p>
+    <p class="guide-hero-note">This is Andrej Karpathy's April 2026 GitHub Gist — explained through the lens you already know: the compiler metaphor.</p>
+
+    <div class="compiler-flow">
+      <div>
+        <div class="cf-box src">raw/</div>
+        <div class="cf-label">Source files</div>
+      </div>
+      <div class="cf-arrow">→</div>
+      <div>
+        <div class="cf-box cmp">LLM + CLAUDE.md</div>
+        <div class="cf-label">The compiler</div>
+      </div>
+      <div class="cf-arrow">→</div>
+      <div>
+        <div class="cf-box out">wiki/</div>
+        <div class="cf-label">Compiled artifact</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#section-arch"   class="rw-btn rw-btn-primary">Explore the Architecture ↓</a>
+      <a href="#section-lint"   class="rw-btn rw-btn-ghost" style="border-color:rgba(163,230,53,0.4);color:#a3e635;">Run the Lint Simulator →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="guide-layout">
+
+  <!-- Sidebar -->
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-why">Why a Compiler?</a></li>
+      <li><a href="#section-arch">3-Layer Architecture</a></li>
+      <li><a href="#section-schema" class="toc-sub">CLAUDE.md — The Schema</a></li>
+      <li><a href="#section-ops">3 Operations</a></li>
+      <li><a href="#section-ingest" class="toc-sub">Ingest</a></li>
+      <li><a href="#section-query" class="toc-sub">Query</a></li>
+      <li><a href="#section-lint">Lint — The Analyzer</a></li>
+      <li><a href="#section-vs">Wiki vs RAG</a></li>
+      <li><a href="#section-limits">The Limits</a></li>
+      <li><a href="#section-start">How to Start</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main -->
+  <main>
+
+    <!-- ── WHY A COMPILER ── -->
+    <section class="guide-section" id="section-why">
+      <h2>Why the Compiler Metaphor</h2>
+      <p>In 2026, most teams using Claude or GPT-4o for internal knowledge access have the same setup: dump documents into a vector database, write a RAG pipeline, retrieve chunks at query time, inject into context, answer. It works. It also costs tokens every single query, returns different answers to the same question depending on retrieval luck, and is nearly impossible to debug when it gets something wrong.</p>
+      <p>Andrej Karpathy published a GitHub Gist in April 2026 describing a different pattern. Instead of retrieving at runtime, you do the expensive reading and synthesis work <em>once</em>, upfront. The result is a set of structured markdown files — a wiki — that both humans and AI agents can query cheaply.</p>
+
+      <div class="callout">
+        <p>A compiled program runs fast because the hard work happened at compile time, not at runtime. The LLM Wiki does the same: the expensive retrieval and synthesis happens at <strong>ingest time</strong>. Every query after that just reads already-compiled files.</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🔁</div>
+          <h4>RAG — Interpreted</h4>
+          <p>Every query re-retrieves from the source. Like an interpreted language: flexible, but pays the parsing cost every run.</p>
+        </div>
+        <div class="feature-card lime">
+          <div class="feature-card-icon">⚡</div>
+          <h4>Wiki — Compiled</h4>
+          <p>Knowledge compiled once at ingest. Queries just read files. Cheaper, faster, auditable.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔬</div>
+          <h4>Lint — Static Analysis</h4>
+          <p>A scheduled pass that checks the compiled artifact for errors — dead links, contradictions, stale data. This is where the compiler metaphor completes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ARCHITECTURE ── -->
+    <section class="guide-section" id="section-arch">
+      <h2>3-Layer Architecture</h2>
+      <p>Every LLM Wiki is three things. Click each layer to see what lives inside it.</p>
+
+      <div class="layer-tabs">
+        <button class="layer-tab active"     onclick="showLayer('raw')"    id="tab-raw">raw/</button>
+        <button class="layer-tab"            onclick="showLayer('schema')" id="tab-schema">CLAUDE.md</button>
+        <button class="layer-tab lime-tab"   onclick="showLayer('wiki')"   id="tab-wiki">wiki/</button>
+      </div>
+
+      <!-- Layer: raw/ -->
+      <div class="layer-panel active" id="panel-raw">
+        <div class="layer-card">
+          <div class="layer-card-head">
+            <div class="layer-badge red">Layer 1</div>
+            <div>
+              <h4>raw/ — Source files (immutable)</h4>
+              <p>The LLM reads these. It never modifies them.</p>
+            </div>
+          </div>
+          <div class="layer-body">
+            <div class="file-tree">
+              <div><span class="dir">raw/</span></div>
+              <div>&nbsp;&nbsp;<span class="file">meeting-2026-06-01.txt</span> <span class="note">← Zoom transcript</span></div>
+              <div>&nbsp;&nbsp;<span class="file">client-feedback-q2.pdf</span> <span class="note">← Exported from Maven</span></div>
+              <div>&nbsp;&nbsp;<span class="file">competitor-analysis.md</span> <span class="note">← Your research notes</span></div>
+              <div>&nbsp;&nbsp;<span class="file">slack-export-2026-05.json</span> <span class="note">← Team Slack archive</span></div>
+              <div>&nbsp;&nbsp;<span class="file">sales-call-recording.vtt</span> <span class="note">← WebVTT transcript</span></div>
+            </div>
+            <ul class="rule-list" style="margin-top:1rem;">
+              <li><span class="ri">🔒</span><div><strong>Never modified by the LLM.</strong> If a source is wrong, you fix the source and re-ingest.</div></li>
+              <li><span class="ri">📥</span><div><strong>Any format works.</strong> PDF, Markdown, JSON, VTT, plain text — the LLM reads them all at ingest time.</div></li>
+              <li><span class="ri">⏱️</span><div><strong>Timestamped or dated files</strong> help the lint step detect staleness. Name files with ISO dates when possible.</div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer: CLAUDE.md -->
+      <div class="layer-panel" id="panel-schema">
+        <div class="layer-card">
+          <div class="layer-card-head">
+            <div class="layer-badge wht">Layer 2</div>
+            <div>
+              <h4>CLAUDE.md — The Schema (compiler flags)</h4>
+              <p>You write this. The LLM reads it before every operation.</p>
+            </div>
+          </div>
+          <div class="layer-body">
+            <p style="font-size:0.85rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1rem;">CLAUDE.md is the constitution of your wiki. It defines what page types exist, how they're structured, how they're named, and what the three operations (ingest / query / lint) should do. Karpathy called this "the most important file in the repo — it co-evolved constantly."</p>
+            <div class="code-block" id="section-schema">
+              <div class="code-block-head">
+                <span class="code-block-title">CLAUDE.md</span>
+              </div>
+              <pre><span class="h">## Page Types</span>
+
+<span class="k">### clients/{name}.md</span>
+<span class="p">- one_liner:</span>   <span class="s">one sentence summary</span>
+<span class="p">- status:</span>      <span class="s">active | churned | prospect | stale</span>
+<span class="p">- last_contact:</span><span class="s"> ISO date (YYYY-MM-DD)</span>
+<span class="p">- notes:</span>       <span class="s">free-form paragraphs</span>
+<span class="p">- related:</span>     <span class="s">links to other wiki pages</span>
+
+<span class="k">### competitors/{name}.md</span>
+<span class="p">- positioning:</span> <span class="s">paragraph</span>
+<span class="p">- strengths:</span>   <span class="s">bullet list</span>
+<span class="p">- weaknesses:</span>  <span class="s">bullet list</span>
+<span class="p">- sources:</span>     <span class="s">raw/ files used</span>
+
+<span class="k">### concepts/{slug}.md</span>
+<span class="p">- definition:</span>  <span class="s">1–2 sentences</span>
+<span class="p">- how_we_use_it:</span> <span class="s">specific to our context</span>
+
+<span class="h">## Naming Conventions</span>
+<span class="c"># lowercase, hyphens not underscores</span>
+<span class="c"># clients/acme-corp.md  NOT  Clients/AcmeCorp.md</span>
+
+<span class="h">## Ingest Procedure</span>
+<span class="s">1. Read raw source fully</span>
+<span class="s">2. Identify all entities (clients, competitors, concepts)</span>
+<span class="s">3. For each entity: update existing page OR create new page</span>
+<span class="s">4. Append (never overwrite) — tag additions with date</span>
+<span class="s">5. Update index.md and log.md</span>
+
+<span class="h">## Lint Procedure</span>
+<span class="s">1. Verify every index.md entry → real file exists</span>
+<span class="s">2. Verify every wiki file → appears in index.md</span>
+<span class="s">3. Scan for broken [[links]]</span>
+<span class="s">4. Flag: status=active AND last_contact > 90 days</span>
+<span class="s">5. Flag: pages with >85% content overlap (merge candidates)</span>
+<span class="s">6. Fix schema violations (missing required fields)</span>
+<span class="s">7. Log every action to log.md</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer: wiki/ -->
+      <div class="layer-panel" id="panel-wiki">
+        <div class="layer-card">
+          <div class="layer-card-head">
+            <div class="layer-badge grn">Layer 3</div>
+            <div>
+              <h4>wiki/ — Compiled artifact (LLM-maintained)</h4>
+              <p>Plain markdown files. The LLM is the primary author. Humans can edit too.</p>
+            </div>
+          </div>
+          <div class="layer-body">
+            <div class="file-tree">
+              <div><span class="lime">wiki/</span></div>
+              <div>&nbsp;&nbsp;<span class="file">index.md</span>  <span class="note">← catalogue of all pages (must fit in one context window)</span></div>
+              <div>&nbsp;&nbsp;<span class="file">log.md</span>    <span class="note">← append-only operation log</span></div>
+              <div>&nbsp;&nbsp;<span class="dir">clients/</span></div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">acme-corp.md</span>  <span class="note">← compiled from 6 raw sources</span></div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">techvision.md</span></div>
+              <div>&nbsp;&nbsp;<span class="dir">competitors/</span></div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">openai.md</span></div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">anthropic.md</span></div>
+              <div>&nbsp;&nbsp;<span class="dir">concepts/</span></div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">rag.md</span></div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">churn-signal.md</span></div>
+            </div>
+            <ul class="rule-list" style="margin-top:1rem;">
+              <li><span class="ri">👤</span><div><strong>Human-readable by design.</strong> If the client page is wrong, you open it, read it, fix it. No retrieval logs to trace.</div></li>
+              <li><span class="ri">🤖</span><div><strong>Agent-readable by design.</strong> Every query starts with index.md (small), selects relevant pages, reads those. Cheap.</div></li>
+              <li><span class="ri">📋</span><div><strong>index.md is the map.</strong> It must stay small enough to fit in one context window (~200 pages max before this breaks).</div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3 OPERATIONS ── -->
+    <section class="guide-section" id="section-ops">
+      <h2>The 3 Operations</h2>
+      <p>Everything in the LLM Wiki is one of three operations. The LLM reads CLAUDE.md first every time to know the rules, then executes.</p>
+
+      <div class="op-tabs">
+        <button class="op-tab active"   id="op-tab-ingest" onclick="showOp('ingest')">⚡ Ingest</button>
+        <button class="op-tab"          id="op-tab-query"  onclick="showOp('query')">🔍 Query</button>
+        <button class="op-tab lime-op"  id="op-tab-lint"   onclick="showOp('lint')">🔬 Lint</button>
+      </div>
+
+      <!-- Ingest -->
+      <div class="op-panel active" id="op-panel-ingest" id="section-ingest">
+        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">Triggered when you drop a new file into <code>raw/</code>. This is the "compile" step. It's slow and expensive — but you only pay once per source.</p>
+        <ol class="op-steps">
+          <li class="op-step">
+            <div class="op-step-num">1</div>
+            <div class="op-step-body">
+              <h5>Read CLAUDE.md</h5>
+              <p>Load the schema — page types, naming conventions, the ingest procedure rules.</p>
+            </div>
+          </li>
+          <li class="op-step">
+            <div class="op-step-num">2</div>
+            <div class="op-step-body">
+              <h5>Read index.md</h5>
+              <p>Load the catalogue to know which wiki pages already exist and what they cover.</p>
+            </div>
+          </li>
+          <li class="op-step">
+            <div class="op-step-num">3</div>
+            <div class="op-step-body">
+              <h5>Read the raw source</h5>
+              <p>Fully read the new file. PDFs, VTT transcripts, Slack exports — all gets read now.</p>
+            </div>
+          </li>
+          <li class="op-step">
+            <div class="op-step-num">4</div>
+            <div class="op-step-body">
+              <h5>Identify entities &amp; concepts</h5>
+              <p>Extract all clients, competitors, concepts, and people mentioned. Cross-reference against the existing index.</p>
+            </div>
+          </li>
+          <li class="op-step">
+            <div class="op-step-num">5</div>
+            <div class="op-step-body">
+              <h5>Update or create wiki pages</h5>
+              <p>Existing page → append new information (tagged with date, never overwriting). New entity → create a page following the schema. Contradictions between old and new → surface them explicitly.</p>
+            </div>
+          </li>
+          <li class="op-step">
+            <div class="op-step-num">6</div>
+            <div class="op-step-body">
+              <h5>Update index.md &amp; log.md</h5>
+              <p>Add any new pages to the catalogue. Append to log.md exactly what was created or changed and why.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="op-note">
+          <strong>Cost reality:</strong> A thorough ingest of a 90-minute meeting transcript might cost ~50K tokens. But every person who later queries <code>wiki/clients/acme-corp.md</code> spends ~500 tokens. If 10 people query it, you're already ahead — and the compound savings grow over time.
+        </div>
+      </div>
+
+      <!-- Query -->
+      <div class="op-panel" id="op-panel-query" id="section-query">
+        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">How you ask questions. This is the fast path — you never go back to raw sources.</p>
+        <ol class="op-steps">
+          <li class="op-step">
+            <div class="op-step-num">1</div>
+            <div class="op-step-body">
+              <h5>Read index.md</h5>
+              <p>The LLM loads the small catalogue (~a few KB) to understand what pages exist and what they cover.</p>
+            </div>
+          </li>
+          <li class="op-step">
+            <div class="op-step-num">2</div>
+            <div class="op-step-body">
+              <h5>Select relevant pages</h5>
+              <p>Based on the query, pick 2-5 relevant wiki pages. "What did Acme Corp say about pricing?" → load <code>clients/acme-corp.md</code>.</p>
+            </div>
+          </li>
+          <li class="op-step">
+            <div class="op-step-num">3</div>
+            <div class="op-step-body">
+              <h5>Read selected pages &amp; answer</h5>
+              <p>Read the markdown files and answer from them. The total context might be 3-4 pages × 2KB = 6-8KB. Far cheaper than re-retrieving from raw sources.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="op-note">
+          <strong>Debuggability:</strong> If the answer is wrong, you know exactly why — open the page it read, see the incorrect claim, fix it. With RAG you'd need to trace chunk IDs, retrieval scores, and prompt injection order to find the same bug.
+        </div>
+      </div>
+
+      <!-- Lint -->
+      <div class="op-panel" id="op-panel-lint">
+        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">The scheduled health check. Run weekly or monthly. This is what keeps the compiled artifact trustworthy over time — without it, the wiki rots.</p>
+        <ol class="op-steps">
+          <li class="op-step lime">
+            <div class="op-step-num">1</div>
+            <div class="op-step-body">
+              <h5>Read CLAUDE.md + index.md</h5>
+              <p>Load the lint rules and the full catalogue of pages.</p>
+            </div>
+          </li>
+          <li class="op-step lime">
+            <div class="op-step-num">2</div>
+            <div class="op-step-body">
+              <h5>Walk every wiki page</h5>
+              <p>Read all pages in wiki/ systematically. This is the expensive part of lint.</p>
+            </div>
+          </li>
+          <li class="op-step lime">
+            <div class="op-step-num">3</div>
+            <div class="op-step-body">
+              <h5>Run 7 checks (see simulator below)</h5>
+              <p>Dead links, index drift, contradictions, staleness, duplication, orphan pages, schema violations.</p>
+            </div>
+          </li>
+          <li class="op-step lime">
+            <div class="op-step-num">4</div>
+            <div class="op-step-body">
+              <h5>Fix what can be auto-fixed</h5>
+              <p>Broken links, missing index entries, schema violations — fix automatically. Contradictions and staleness → flag for human review.</p>
+            </div>
+          </li>
+          <li class="op-step lime">
+            <div class="op-step-num">5</div>
+            <div class="op-step-body">
+              <h5>Append full run report to log.md</h5>
+              <p>Every check, every fix, every flag — logged permanently so humans can audit and revert if needed.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="op-note" style="border-color:rgba(132,204,22,0.2);background:rgba(132,204,22,0.05);">
+          <strong style="color:#a3e635;">Why lint is the most underrated part:</strong> Without it, a wiki written by an LLM will drift. Pages contradict each other. Links go stale. Clients marked "active" churn. Lint is what makes the wiki a living artifact rather than a snapshot that quietly becomes wrong.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LINT SIMULATOR ── -->
+    <section class="guide-section" id="section-lint">
+      <h2>Lint — The Static Analyzer</h2>
+      <p>In compiler tooling, <strong>lint</strong> is a static analysis pass that checks an artifact for errors without running it. In the LLM Wiki, lint reads every page in <code>wiki/</code> and runs 7 checks. Click "Run Lint" to simulate a real lint pass.</p>
+
+      <div class="lint-sim">
+        <div class="lint-sim-head">
+          <span class="lint-sim-title">$ llm-wiki lint --all</span>
+          <button class="lint-run-btn" id="lintRunBtn" onclick="runLint()">▶ Run Lint</button>
+        </div>
+        <div class="lint-body" id="lintBody">
+          <p style="font-size:0.82rem;color:var(--rw-text-muted,#666);margin:auto;text-align:center;padding:2rem 0;">Click "Run Lint" to start the analyzer…</p>
+        </div>
+        <div class="lint-summary" id="lintSummary">
+          ✅ Lint complete — 5 auto-fixed, 2 flagged for human review
+          <button class="lint-reset-btn" onclick="resetLint()">Reset</button>
+        </div>
+      </div>
+
+      <h3>The 7 Lint Checks Explained</h3>
+      <ul class="rule-list">
+        <li><span class="ri">🔗</span><div><strong>Dead links</strong> — Scans every <code>[[link]]</code> reference and verifies the target file exists. Auto-fixes by removing or updating broken references.</div></li>
+        <li><span class="ri">📋</span><div><strong>Index drift</strong> — Checks that every file in <code>wiki/</code> appears in <code>index.md</code>, and every <code>index.md</code> entry points to a real file. Auto-fixes both directions.</div></li>
+        <li><span class="ri">⚡</span><div><strong>Contradictions</strong> — Detects when two pages make conflicting claims about the same entity or fact. Flags for human review (cannot auto-fix — needs judgment).</div></li>
+        <li><span class="ri">🕰️</span><div><strong>Staleness</strong> — Finds pages with <code>status: active</code> but <code>last_contact</code> older than your threshold (e.g. 90 days). Updates status to "stale" and flags.</div></li>
+        <li><span class="ri">🔁</span><div><strong>Duplication</strong> — Detects pages with high content overlap (&gt;85%). Auto-merges when safe, flags ambiguous cases.</div></li>
+        <li><span class="ri">🔍</span><div><strong>Orphan pages</strong> — Finds pages that nothing links to. Either adds them to a relevant parent page or flags for deletion.</div></li>
+        <li><span class="ri">📐</span><div><strong>Schema violations</strong> — Checks that all pages have the required fields defined in CLAUDE.md. Auto-generates missing fields from page content when possible.</div></li>
+      </ul>
+    </section>
+
+    <!-- ── WIKI vs RAG ── -->
+    <section class="guide-section" id="section-vs">
+      <h2>Wiki vs RAG — When Each Wins</h2>
+      <p>These aren't competing philosophies — they're tools for different situations. If you've read the RAG guides here, you already know the retrieval mechanics. Here's how to choose.</p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th class="rose-h">RAG (Interpreted)</th>
+            <th class="lime-h">LLM Wiki (Compiled)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="dim-label">When knowledge is built</td>
+            <td>At query time, every time</td>
+            <td>Once at ingest; queries just read files</td>
+          </tr>
+          <tr>
+            <td class="dim-label">Cost model</td>
+            <td><span class="bad">Pay per query</span></td>
+            <td><span class="ok">Pay once at ingest; each query cheap</span></td>
+          </tr>
+          <tr>
+            <td class="dim-label">Human readability</td>
+            <td><span class="bad">No</span> — chunks, embeddings, vector scores</td>
+            <td><span class="ok">Yes</span> — plain markdown, open and fix</td>
+          </tr>
+          <tr>
+            <td class="dim-label">Debuggability</td>
+            <td><span class="bad">Hard</span> — trace retrieval logs, chunk IDs</td>
+            <td><span class="ok">Easy</span> — open the wrong page, fix the fact</td>
+          </tr>
+          <tr>
+            <td class="dim-label">Contradiction handling</td>
+            <td><span class="bad">None</span> — retrieves both, LLM picks one</td>
+            <td><span class="ok">Lint step</span> surfaces and resolves explicitly</td>
+          </tr>
+          <tr>
+            <td class="dim-label">Infrastructure required</td>
+            <td>Vector DB, embeddings, retrieval pipeline</td>
+            <td>Files + LLM + CLAUDE.md config</td>
+          </tr>
+          <tr>
+            <td class="dim-label">Best corpus size</td>
+            <td><span class="ok">Unlimited</span> — scales to millions of docs</td>
+            <td><span class="mid">~200 pages</span> — index.md must fit in context</td>
+          </tr>
+          <tr>
+            <td class="dim-label">Best for</td>
+            <td>Large, high-velocity, unique-per-query corpora</td>
+            <td>Stable, bounded, repeatedly-queried knowledge</td>
+          </tr>
+          <tr>
+            <td class="dim-label">Staleness handling</td>
+            <td>Re-embed when source changes</td>
+            <td>Lint + scheduled re-ingest</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Decision Wizard</h3>
+      <p>Answer 3 questions to get a recommendation.</p>
+
+      <div class="decision-wizard">
+        <div class="dw-title">Which pattern fits your situation?</div>
+
+        <div class="dw-question">
+          <label>How many documents will you have?</label>
+          <div class="dw-options" id="dw-q1">
+            <button class="dw-opt" data-q="1" data-v="small"  onclick="dwSelect(this)">Under 200 pages</button>
+            <button class="dw-opt" data-q="1" data-v="large"  onclick="dwSelect(this)">Hundreds to thousands</button>
+            <button class="dw-opt" data-q="1" data-v="huge"   onclick="dwSelect(this)">Millions of docs</button>
+          </div>
+        </div>
+
+        <div class="dw-question">
+          <label>How often does the content change?</label>
+          <div class="dw-options" id="dw-q2">
+            <button class="dw-opt" data-q="2" data-v="stable" onclick="dwSelect(this)">Slowly (weekly/monthly)</button>
+            <button class="dw-opt" data-q="2" data-v="fast"   onclick="dwSelect(this)">Constantly (hourly/daily)</button>
+          </div>
+        </div>
+
+        <div class="dw-question">
+          <label>Who needs to read &amp; fix the knowledge?</label>
+          <div class="dw-options" id="dw-q3">
+            <button class="dw-opt" data-q="3" data-v="human"  onclick="dwSelect(this)">Humans + agents (auditable)</button>
+            <button class="dw-opt" data-q="3" data-v="agent"  onclick="dwSelect(this)">Agents only (opaque is fine)</button>
+          </div>
+        </div>
+
+        <div class="dw-verdict" id="dw-verdict"></div>
+      </div>
+    </section>
+
+    <!-- ── LIMITS ── -->
+    <section class="guide-section" id="section-limits">
+      <h2>The Limits</h2>
+      <p>The LLM Wiki is a personal-to-team scale tool by design. Karpathy's original gist was honest about where it breaks. Understanding the limits tells you when to switch to RAG — or to a hybrid.</p>
+
+      <div class="capacity-gauge">
+        <div class="gauge-row">
+          <div class="gauge-item">
+            <div class="gauge-meta">
+              <span class="gauge-name">Wiki pages (50 pages — healthy)</span>
+              <span class="gauge-val">50 / 200</span>
+            </div>
+            <div class="gauge-track">
+              <div class="gauge-fill green" style="width:25%" data-pct="25%"></div>
+            </div>
+            <div class="gauge-note">index.md is small and coherent. The LLM can navigate the full graph in context. ✅ Ideal range.</div>
+          </div>
+
+          <div class="gauge-item">
+            <div class="gauge-meta">
+              <span class="gauge-name">Wiki pages (150 pages — approaching limit)</span>
+              <span class="gauge-val">150 / 200</span>
+            </div>
+            <div class="gauge-track">
+              <div class="gauge-fill amber" style="width:75%" data-pct="75%"></div>
+            </div>
+            <div class="gauge-note">index.md is getting heavy. Cross-page linking may become inconsistent. Time to audit page granularity — are some pages too narrow?</div>
+          </div>
+
+          <div class="gauge-item">
+            <div class="gauge-meta">
+              <span class="gauge-name">Wiki pages (200+ pages — breaks here)</span>
+              <span class="gauge-val">200+ / 200</span>
+            </div>
+            <div class="gauge-track">
+              <div class="gauge-fill red" style="width:100%" data-pct="100%"></div>
+            </div>
+            <div class="gauge-note">index.md no longer fits in one context window. The agent loses global graph coherence. Links between pages become unreliable.</div>
+          </div>
+
+          <div class="gauge-item">
+            <div class="gauge-meta">
+              <span class="gauge-name">Compiled word count (~400K words — hard ceiling)</span>
+              <span class="gauge-val">400K words</span>
+            </div>
+            <div class="gauge-track">
+              <div class="gauge-fill red" style="width:100%" data-pct="max"></div>
+            </div>
+            <div class="gauge-note">Karpathy reported reaching ~100 articles, ~400K compiled words on a single research topic. Beyond this, the wiki itself won't fit in context for lint passes.</div>
+          </div>
+        </div>
+
+        <div class="gauge-break">
+          <strong>What to do when you hit the limit:</strong> Split into multiple focused wikis (one per domain — clients wiki, competitors wiki, concepts wiki). Each gets its own CLAUDE.md and index.md. Queries load only the relevant wiki, not all of them.
+        </div>
+      </div>
+
+      <div class="feature-grid" style="margin-top:1.5rem;">
+        <div class="feature-card">
+          <div class="feature-card-icon">📊</div>
+          <h4>High-velocity data</h4>
+          <p>If your raw sources change hourly and queries need real-time accuracy, RAG is better. The wiki is a snapshot that re-compiles on a schedule.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔀</div>
+          <h4>Concurrent writers</h4>
+          <p>Multiple LLM agents writing to the same wiki simultaneously risks corruption. The pattern assumes a single writer per wiki at a time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🌐</div>
+          <h4>Millions of documents</h4>
+          <p>The wiki is designed for bounded knowledge bases — your clients, your competitors, your concepts. Not for indexing the public internet.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW TO START ── -->
+    <section class="guide-section" id="section-start">
+      <h2>How to Start</h2>
+      <p>The original Karpathy gist is short and copy-pasteable into Claude Code. Here's the minimum viable path:</p>
+
+      <ol class="op-steps">
+        <li class="op-step lime">
+          <div class="op-step-num">1</div>
+          <div class="op-step-body">
+            <h5>Create the folder structure</h5>
+            <p>Make <code>raw/</code>, <code>wiki/</code>, and an empty <code>CLAUDE.md</code>. Drop 2-3 source files into <code>raw/</code> — meeting transcripts, documents, notes.</p>
+          </div>
+        </li>
+        <li class="op-step lime">
+          <div class="op-step-num">2</div>
+          <div class="op-step-body">
+            <h5>Write your CLAUDE.md</h5>
+            <p>Define 2-3 page types that make sense for your domain. Don't over-engineer — start with <code>clients/</code> and <code>concepts/</code>. The schema evolves as you use it.</p>
+          </div>
+        </li>
+        <li class="op-step lime">
+          <div class="op-step-num">3</div>
+          <div class="op-step-body">
+            <h5>Run your first ingest</h5>
+            <p>Open Claude Code, add the <code>wiki/</code> folder as context, and say: <em>"Read CLAUDE.md, then ingest raw/[your-file]."</em> Watch it create pages and update index.md.</p>
+          </div>
+        </li>
+        <li class="op-step lime">
+          <div class="op-step-num">4</div>
+          <div class="op-step-body">
+            <h5>Query it</h5>
+            <p>Ask a question about the content you just ingested. Notice how it loads index.md first, selects a page, answers from the page — not from re-reading the raw source.</p>
+          </div>
+        </li>
+        <li class="op-step lime">
+          <div class="op-step-num">5</div>
+          <div class="op-step-body">
+            <h5>Schedule lint</h5>
+            <p>After a few weeks of adding raw sources, run <em>"Read CLAUDE.md and run lint on wiki/"</em>. Add this to a weekly cron once the wiki is mature.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout lime">
+        <p><strong>Primary source:</strong> Karpathy's original gist is at <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener" style="color:#a3e635;">gist.github.com/karpathy/442a6bf555914893e9891c11519de94f</a> — it's short, worth reading in full. The CLAUDE.md section is the most copy-pasteable starting point.</p>
+      </div>
+
+      <h3>Related on RawWeights</h3>
+      <div class="related-grid">
+        <a href="rag-architects-studio.html" class="related-cta">
+          <div>
+            <h4>RAG Architect's Studio</h4>
+            <p>Context engineering, Lost in the Middle, agentic RAG — the retrieval foundations the wiki replaces or complements.</p>
+          </div>
+          <span class="related-arrow">→</span>
+        </a>
+        <a href="mem0-b2b-signal-memory.html" class="related-cta">
+          <div>
+            <h4>The Signal Memory Problem</h4>
+            <p>Mem0's approach to cross-session memory — a different architecture for a different memory problem.</p>
+          </div>
+          <span class="related-arrow">→</span>
+        </a>
+        <a href="mcp-practitioner-playbook.html" class="related-cta">
+          <div>
+            <h4>MCP Practitioner's Playbook</h4>
+            <p>How to connect your wiki folder to Claude Code via MCP — the plumbing that makes CLAUDE.md operations work.</p>
+          </div>
+          <span class="related-arrow">→</span>
+        </a>
+        <a href="eval-proving-ground.html" class="related-cta">
+          <div>
+            <h4>Eval Proving Ground</h4>
+            <p>How to know if your wiki pages are actually correct — eval patterns that apply to compiled knowledge.</p>
+          </div>
+          <span class="related-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[
+       {"label":"RAG Architect Studio","url":"/guide/rag-architects-studio.html"},
+       {"label":"Signal Memory Problem","url":"/usecase/mem0-b2b-signal-memory.html"},
+       {"label":"MCP Practitioner Playbook","url":"/guide/mcp-practitioner-playbook.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+  /* ── Layer Explorer ── */
+  function showLayer(id) {
+    ['raw','schema','wiki'].forEach(l => {
+      document.getElementById('panel-' + l).classList.toggle('active', l === id);
+      document.getElementById('tab-'   + l).classList.toggle('active', l === id);
+    });
+  }
+
+  /* ── Operation Tabs ── */
+  function showOp(id) {
+    ['ingest','query','lint'].forEach(o => {
+      document.getElementById('op-panel-' + o).classList.toggle('active', o === id);
+      document.getElementById('op-tab-'   + o).classList.toggle('active', o === id);
+    });
+  }
+
+  /* ── Lint Simulator ── */
+  const LINT_CHECKS = [
+    {
+      name: 'Dead Links',
+      state: 'found',
+      icon: '🔗',
+      detail: '<span class="found-text">Found:</span> clients/acme-corp.md links to [[projects/alpha.md]] — file does not exist. <span class="fix-text">Fixed:</span> Removed broken reference, added to log.md.'
+    },
+    {
+      name: 'Index Drift',
+      state: 'fixed',
+      icon: '📋',
+      detail: '<span class="found-text">Found:</span> wiki/competitors/mistral.md exists but is missing from index.md. <span class="fix-text">Fixed:</span> Added entry to index.md under Competitors section.'
+    },
+    {
+      name: 'Contradictions',
+      state: 'warn',
+      icon: '⚡',
+      detail: '<span class="warn-text">Flagged:</span> competitors/openai.md says GPT-5 launched "Q1 2025"; concepts/market-trends.md says "Q3 2025". Cannot auto-resolve — requires human judgment.'
+    },
+    {
+      name: 'Staleness',
+      state: 'fixed',
+      icon: '🕰️',
+      detail: '<span class="found-text">Found:</span> clients/globalcorp.md — status: active, last_contact: 2025-08-14 (305 days ago). <span class="fix-text">Fixed:</span> Status updated to "stale — follow-up needed".'
+    },
+    {
+      name: 'Duplication',
+      state: 'fixed',
+      icon: '🔁',
+      detail: '<span class="found-text">Found:</span> concepts/rag.md and concepts/retrieval.md — 89% content overlap detected. <span class="fix-text">Fixed:</span> Merged into concepts/rag.md. concepts/retrieval.md archived.'
+    },
+    {
+      name: 'Orphan Pages',
+      state: 'fixed',
+      icon: '🔍',
+      detail: '<span class="found-text">Found:</span> concepts/muon-optimizer.md — no other pages link to it. <span class="fix-text">Fixed:</span> Added reference from concepts/training-methods.md. Page preserved.'
+    },
+    {
+      name: 'Schema Violations',
+      state: 'warn',
+      icon: '📐',
+      detail: '<span class="found-text">Found:</span> clients/newco.md — required field "one_liner" missing. Auto-generation attempted but company context insufficient. <span class="warn-text">Flagged for human input.</span>'
+    }
+  ];
+
+  let lintRunning = false;
+
+  function runLint() {
+    if (lintRunning) return;
+    lintRunning = true;
+
+    const btn  = document.getElementById('lintRunBtn');
+    const body = document.getElementById('lintBody');
+    const sum  = document.getElementById('lintSummary');
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Running…';
+    body.innerHTML = '';
+    sum.classList.remove('visible');
+
+    LINT_CHECKS.forEach((check, i) => {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'lint-check';
+        el.innerHTML = `
+          <div class="lint-status ${check.state}">${check.state === 'found' || check.state === 'fixed' ? (check.state === 'fixed' ? '✓' : '✕') : '⚠'}</div>
+          <div class="lint-content">
+            <div class="lint-check-name ${check.state}">${check.icon} Check: ${check.name}</div>
+            <div class="lint-detail">${check.detail}</div>
+          </div>`;
+        body.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('visible'));
+
+        if (i === LINT_CHECKS.length - 1) {
+          setTimeout(() => {
+            sum.classList.add('visible');
+            btn.textContent = '✓ Complete';
+          }, 400);
+        }
+      }, i * 480);
+    });
+  }
+
+  function resetLint() {
+    lintRunning = false;
+    const btn  = document.getElementById('lintRunBtn');
+    const body = document.getElementById('lintBody');
+    const sum  = document.getElementById('lintSummary');
+    btn.disabled  = false;
+    btn.textContent = '▶ Run Lint';
+    body.innerHTML = '<p style="font-size:0.82rem;color:var(--rw-text-muted,#666);margin:auto;text-align:center;padding:2rem 0;">Click "Run Lint" to start the analyzer…</p>';
+    sum.classList.remove('visible');
+  }
+
+  /* ── Decision Wizard ── */
+  const dwAnswers = {};
+
+  function dwSelect(btn) {
+    const q = btn.dataset.q;
+    const v = btn.dataset.v;
+    document.querySelectorAll(`.dw-opt[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    dwAnswers[q] = v;
+    dwEvaluate();
+  }
+
+  function dwEvaluate() {
+    if (!dwAnswers['1'] || !dwAnswers['2'] || !dwAnswers['3']) return;
+    const v = document.getElementById('dw-verdict');
+    v.className = 'dw-verdict';
+
+    const size   = dwAnswers['1'];
+    const churn  = dwAnswers['2'];
+    const reader = dwAnswers['3'];
+
+    let type, label, text;
+
+    if (size === 'huge') {
+      type = 'rag'; label = '→ Use RAG';
+      text = 'Millions of documents exceeds the LLM Wiki\'s ~200 page ceiling. A vector database scales; index.md does not. Build a proper RAG pipeline.';
+    } else if (churn === 'fast' && size !== 'small') {
+      type = 'rag'; label = '→ Use RAG';
+      text = 'High-velocity, large corpora are what RAG was built for. Re-embedding on change is cheaper than re-running a full wiki ingest at this scale.';
+    } else if (size === 'small' && churn === 'stable' && reader === 'human') {
+      type = 'wiki'; label = '→ LLM Wiki';
+      text = 'Perfect conditions. Bounded, stable knowledge that humans need to audit and fix. Build the wiki — start with CLAUDE.md, ingest your top 5 sources, schedule weekly lint.';
+    } else if (size === 'small' && churn === 'stable') {
+      type = 'wiki'; label = '→ LLM Wiki (or RAG)';
+      text = 'The wiki works well here. If agents never need to explain their sources or be debugged by humans, RAG also works — but the wiki gives you a cheaper query path.';
+    } else if (size === 'large' && churn === 'stable' && reader === 'human') {
+      type = 'both'; label = '→ Hybrid';
+      text = 'Too large for one wiki, too stable for pure RAG. Consider multiple focused wikis (one per domain) with cross-wiki index. Or use RAG for the archive and a wiki for the active working set.';
+    } else {
+      type = 'both'; label = '→ Hybrid';
+      text = 'Mixed signals. Start with a wiki for the most-queried, stable knowledge (your clients, competitors, key concepts). Use RAG for the long tail of historical raw data.';
+    }
+
+    v.classList.add(type, 'visible');
+    v.innerHTML = `<div class="dv-label">${label}</div><div class="dv-text">${text}</div>`;
+  }
+
+  /* ── TOC active state ── */
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links    = document.querySelectorAll('.guide-toc a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

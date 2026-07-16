@@ -57,7 +57,8 @@
               { label: 'LLM Post-Training',    url: '/guide/llm-post-training-guide.html',       desc: 'Fine-tune your own language model' },
               { label: 'MCP Architecture',     url: '/guide/mcp.html',                           desc: 'Model Context Protocol interactive guide' },
               { label: 'LLM Lifecycle',        url: '/guide/full-lifecycle.html',                desc: 'Full LLM architecture & production lifecycle' },
-              { label: 'Mythos Report',        url: '/guide/mythos.html',                        desc: 'AI threats & safety — preview report' }
+              { label: 'Mythos Report',        url: '/guide/mythos.html',                        desc: 'AI threats & safety — preview report' },
+              { label: 'The Compiler | LLM Wiki ',        url: '/guide/llm-wiki-compiler.html',                        desc: 'Understand ingest, query, lint — and when pre-compiled knowledge beats RAG.' },
             ]
           },
           {
