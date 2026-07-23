@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 840" width="1060" height="840">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#555"/>
+    </marker>
+    <marker id="arr-blue" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#1565c0"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1060" height="840" fill="#f5f6fa" rx="14"/>
+
+  <!-- ─── Title ─── -->
+  <text x="530" y="36" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="bold" fill="#1a1a2e">CareerWiki — Component Architecture</text>
+  <text x="530" y="56" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#6c757d">Data flows: raw documents → wiki knowledge base → tailored HTML resume</text>
+
+  <!-- ═══ LAYER 0: Streamlit UI ═══ -->
+  <rect x="30" y="68" width="1000" height="62" rx="10" fill="#1565c0" stroke="#0d47a1" stroke-width="2"/>
+  <text x="530" y="92" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="white">app.py — Streamlit Web UI (http://localhost:8501)</text>
+  <text x="530" y="114" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#bbdefb">[ 📥 Ingest Tab ]    [ 📄 Generate Resume Tab ]    [ 🗂 Wiki Tab ]    [ 🔍 Lint Tab ]</text>
+
+  <!-- UI trigger arrows (dashed blue) -->
+  <line x1="150" y1="130" x2="150" y2="162" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+  <line x1="530" y1="130" x2="530" y2="162" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+  <line x1="840" y1="130" x2="840" y2="162" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+  <line x1="75" y1="130" x2="75" y2="645" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="75" y1="645" x2="50" y2="645" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+
+  <!-- ═══ LEFT COLUMN — Ingest pipeline ═══ -->
+
+  <!-- raw_sources/ -->
+  <rect x="28" y="163" width="216" height="98" rx="8" fill="#2e7d32" stroke="#1b5e20" stroke-width="2"/>
+  <text x="136" y="189" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">raw_sources/</text>
+  <text x="136" y="210" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#c8e6c9">PDF  ·  DOCX  ·  Markdown</text>
+  <text x="136" y="228" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#c8e6c9">Resumes · Perf reviews</text>
+  <text x="136" y="246" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#a5d6a7">Personal AI project docs</text>
+
+  <!-- extractor.py -->
+  <rect x="28" y="315" width="216" height="100" rx="8" fill="#e65100" stroke="#bf360c" stroke-width="2"/>
+  <text x="136" y="342" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">src/extractor.py</text>
+  <text x="136" y="363" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#ffe0b2">PDF → pdfplumber (primary)</text>
+  <text x="136" y="381" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#ffe0b2">    → pypdf / PyPDF2 (fallback)</text>
+  <text x="136" y="399" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#ffe0b2">DOCX → python-docx + tables</text>
+
+  <!-- ingest.py -->
+  <rect x="18" y="468" width="236" height="168" rx="8" fill="#f57f17" stroke="#e65100" stroke-width="2"/>
+  <text x="136" y="494" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">src/ingest.py</text>
+  <text x="136" y="514" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="white">① Detect document type</text>
+  <text x="136" y="531" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#fff9c4">  resume · performance_review</text>
+  <text x="136" y="547" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#fff9c4">  annual_goals · personal_project</text>
+  <text x="136" y="566" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="white">② Multi-pass LLM pipeline</text>
+  <text x="136" y="582" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#fff9c4">  profile · roles · skills</text>
+  <text x="136" y="598" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#fff9c4">  education · achievements</text>
+  <text x="136" y="614" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#fff9c4">  projects · review merges</text>
+  <text x="136" y="628" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#ffe082">  Protection: roles ≥500 bytes → skip</text>
+
+  <!-- lint.py -->
+  <rect x="38" y="694" width="196" height="78" rx="8" fill="#37474f" stroke="#263238" stroke-width="2"/>
+  <text x="136" y="720" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">src/lint.py</text>
+  <text x="136" y="740" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#cfd8dc">Wiki quality audit</text>
+  <text x="136" y="757" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#b0bec5">issues · contradictions · quick wins</text>
+
+  <!-- ═══ CENTER COLUMN — Shared services ═══ -->
+
+  <!-- wiki/ knowledge base (large, central) -->
+  <rect x="372" y="163" width="256" height="210" rx="8" fill="#1b5e20" stroke="#0a3d15" stroke-width="2.5"/>
+  <text x="500" y="190" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">wiki/  (Knowledge Base)</text>
+  <text x="500" y="209" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#81c784">Plain Markdown files — editable in Wiki tab</text>
+  <line x1="392" y1="218" x2="608" y2="218" stroke="#388e3c" stroke-width="1"/>
+  <text x="500" y="237" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#c8e6c9">profile.md</text>
+  <text x="500" y="256" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#c8e6c9">skills.md  ·  education.md</text>
+  <text x="500" y="275" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#c8e6c9">achievements.md</text>
+  <text x="500" y="296" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#a5d6a7">roles/  ← one page per employer</text>
+  <text x="500" y="315" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#a5d6a7">projects/  ← personal AI projects</text>
+  <text x="500" y="334" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#a5d6a7">reviews/  ← performance reviews</text>
+  <text x="500" y="357" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#81c784">read/written via  src/wiki.py</text>
+
+  <!-- wiki.py -->
+  <rect x="390" y="410" width="220" height="64" rx="8" fill="#4527a0" stroke="#311b92" stroke-width="2"/>
+  <text x="500" y="436" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">src/wiki.py</text>
+  <text x="500" y="455" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#d1c4e9">read_page · write_page</text>
+  <text x="500" y="470" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#d1c4e9">list_pages · read_all_wiki · append_log</text>
+
+  <!-- llm.py -->
+  <rect x="372" y="524" width="256" height="88" rx="8" fill="#6a1b9a" stroke="#4a0072" stroke-width="2"/>
+  <text x="500" y="550" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">src/llm.py</text>
+  <text x="500" y="571" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#e1bee7">call_llm()  — blocking, used in ingest</text>
+  <text x="500" y="590" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#e1bee7">call_llm_stream()  — streaming, for generate</text>
+  <text x="500" y="604" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#ce93d8">timeout=(10, None): no read timeout on streams</text>
+
+  <!-- Ollama -->
+  <rect x="390" y="662" width="220" height="92" rx="8" fill="#880e4f" stroke="#4a0027" stroke-width="2"/>
+  <text x="500" y="688" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">Ollama  (Local LLM)</text>
+  <text x="500" y="710" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#fce4ec">qwen2.5:7b  ·  CPU-only</text>
+  <text x="500" y="728" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#f8bbd0">localhost:11434</text>
+  <text x="500" y="745" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#f48fb1">num_ctx=16384  ·  streaming API</text>
+
+  <!-- ═══ RIGHT COLUMN — Generate pipeline ═══ -->
+
+  <!-- generate.py -->
+  <rect x="706" y="163" width="268" height="210" rx="8" fill="#bf360c" stroke="#870000" stroke-width="2"/>
+  <text x="840" y="190" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">src/generate.py</text>
+  <line x1="726" y1="200" x2="954" y2="200" stroke="#e64a19" stroke-width="1"/>
+  <text x="840" y="222" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#ffccbc">Mode A — Enrich Existing</text>
+  <text x="840" y="240" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ffe0b2">Inject JD bullets into existing HTML</text>
+  <text x="840" y="256" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ffe0b2">Embed images as base64  ·  Orange highlights</text>
+  <text x="840" y="278" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#ffccbc">Mode B — JD-Only (new resume)</text>
+  <text x="840" y="296" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ffe0b2">Fresh resume, JD-relevant wiki only</text>
+  <text x="840" y="312" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ffe0b2">Scores + filters pages by JD keyword match</text>
+  <text x="840" y="332" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#ffccbc">Mode C — Full (new resume)</text>
+  <text x="840" y="350" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ffe0b2">All career content  ·  JD items listed first</text>
+  <text x="840" y="366" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ffccbc">Pass 1: LLM→JSON  ·  Pass 2: Python→HTML</text>
+
+  <!-- templates/ -->
+  <rect x="726" y="422" width="228" height="72" rx="8" fill="#4e342e" stroke="#3e2723" stroke-width="2"/>
+  <text x="840" y="448" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">templates/</text>
+  <text x="840" y="467" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#efebe9">resume.xhtml  with {{placeholder}} vars</text>
+  <text x="840" y="483" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#d7ccc8">assets/photo.jpg → base64 embedded</text>
+
+  <!-- output/ -->
+  <rect x="726" y="544" width="228" height="84" rx="8" fill="#1a237e" stroke="#0d1757" stroke-width="2"/>
+  <text x="840" y="570" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">output/</text>
+  <text x="840" y="590" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#c5cae9">resume_*.html  (self-contained)</text>
+  <text x="840" y="608" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9fa8da">Download → Chrome → Ctrl+P → PDF</text>
+  <text x="840" y="622" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#7986cb">No external deps — base64 images inside</text>
+
+  <!-- ═══ ARROWS ═══ -->
+
+  <!-- raw_sources → extractor.py -->
+  <line x1="136" y1="261" x2="136" y2="314" stroke="#555" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="148" y="292" font-family="Arial,sans-serif" font-size="10" fill="#555">extract_text()</text>
+
+  <!-- extractor.py → ingest.py -->
+  <line x1="136" y1="415" x2="136" y2="467" stroke="#555" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="148" y="446" font-family="Arial,sans-serif" font-size="10" fill="#555">raw text</text>
+
+  <!-- ingest.py → wiki/ (writes pages) -->
+  <line x1="254" y1="548" x2="371" y2="380" stroke="#f57f17" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="324" y="456" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#e65100" transform="rotate(-54,324,456)">write_page()</text>
+
+  <!-- wiki/ → wiki.py (I/O adapter) -->
+  <line x1="500" y1="373" x2="500" y2="409" stroke="#4527a0" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- wiki/ → generate.py (reads context) -->
+  <line x1="628" y1="268" x2="705" y2="268" stroke="#bf360c" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="666" y="262" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bf360c">reads wiki</text>
+
+  <!-- ingest.py → llm.py (LLM calls per pass) -->
+  <path d="M 254 600 C 340 600 340 568 371 568" fill="none" stroke="#6a1b9a" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="288" y="596" font-family="Arial,sans-serif" font-size="10" fill="#6a1b9a">call_llm()</text>
+
+  <!-- generate.py → llm.py (streaming call) -->
+  <path d="M 840 373 C 840 460 628 510 629 524" fill="none" stroke="#6a1b9a" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="780" y="470" font-family="Arial,sans-serif" font-size="10" fill="#6a1b9a">call_llm_stream()</text>
+
+  <!-- llm.py → Ollama -->
+  <line x1="500" y1="612" x2="500" y2="661" stroke="#880e4f" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="512" y="641" font-family="Arial,sans-serif" font-size="10" fill="#880e4f">HTTP POST</text>
+
+  <!-- generate.py → templates/ -->
+  <line x1="840" y1="373" x2="840" y2="421" stroke="#4e342e" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="852" y="402" font-family="Arial,sans-serif" font-size="10" fill="#4e342e">fills template</text>
+
+  <!-- generate.py → output/ -->
+  <line x1="880" y1="373" x2="900" y2="543" stroke="#1a237e" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+
+  <!-- lint.py → wiki/ (reads all pages) -->
+  <path d="M 234 733 C 350 733 372 500 372 370" fill="none" stroke="#37474f" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="290" y="720" font-family="Arial,sans-serif" font-size="10" fill="#37474f">read_all_wiki()</text>
+
+  <!-- ═══ LEGEND ═══ -->
+  <rect x="28" y="787" width="1004" height="44" rx="8" fill="#eceff1" stroke="#cfd8dc" stroke-width="1"/>
+  <rect x="50" y="799" width="13" height="13" fill="#1565c0" rx="2"/>
+  <text x="68" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">UI Layer</text>
+  <rect x="140" y="799" width="13" height="13" fill="#2e7d32" rx="2"/>
+  <text x="158" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">File Storage</text>
+  <rect x="260" y="799" width="13" height="13" fill="#e65100" rx="2"/>
+  <text x="278" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">Processing</text>
+  <rect x="370" y="799" width="13" height="13" fill="#6a1b9a" rx="2"/>
+  <text x="388" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">AI / LLM</text>
+  <rect x="460" y="799" width="13" height="13" fill="#4e342e" rx="2"/>
+  <text x="478" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">Config</text>
+  <rect x="540" y="799" width="13" height="13" fill="#1a237e" rx="2"/>
+  <text x="558" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">Output</text>
+  <line x1="660" y1="805" x2="690" y2="805" stroke="#555" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="700" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">Data flow</text>
+  <line x1="790" y1="805" x2="820" y2="805" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="830" y="810" font-family="Arial,sans-serif" font-size="11" fill="#37474f">Trigger / optional</text>
+
+  <!-- Second legend row -->
+  <text x="50" y="826" font-family="Arial,sans-serif" font-size="11" fill="#6c757d">Ingest flow: raw_sources/ → extractor.py → ingest.py → wiki/    |    Generate flow: wiki/ → generate.py → output/    |    LLM layer shared by both flows</text>
+</svg>

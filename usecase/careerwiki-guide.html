@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerWiki: I Built a Local AI That Knows My Entire Career | RawWeights</title>
+  <meta name="description" content="How I built a local-first AI career knowledge base that ingests 25 years of documents and generates tailored resumes in minutes — with zero cloud data.">
+  <meta name="author" content="Sham Sundar HC">
+  <link rel="canonical" href="https://rawweights.com/usecase/careerwiki-guide.html">
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/careerwiki-guide.html">
+  <meta property="og:title" content="CareerWiki: I Built a Local AI That Knows My Entire Career">
+  <meta property="og:description" content="Local LLM + plain Markdown = a resume system that actually knows who you are.">
+  <meta property="og:image" content="https://rawweights.com/images/careerwiki-og.png">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero: two-column split ───────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #160e28 50%, #0a1530 100%);
+      padding: 4.5rem 1.5rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-hero::before {
+      content: '';
+      position: absolute;
+      top: -20%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(249,115,22,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -10%; left: -5%;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      position: relative;
+    }
+    .hero-left {}
+    .guide-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 9999px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fb923c;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-family: var(--rw-font-display);
+      margin-bottom: 1.25rem;
+    }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      font-weight: 800;
+      color: #f0f4ff;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+    .guide-hero h1 span { color: #fb923c; }
+    .guide-hero .hero-desc {
+      font-size: 1.05rem;
+      color: rgba(240,244,255,0.72);
+      line-height: 1.7;
+      margin-bottom: 1.75rem;
+    }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+    }
+    .hero-meta span {
+      font-size: 0.82rem;
+      color: rgba(240,244,255,0.5);
+      font-family: var(--rw-font-display);
+    }
+    .hero-meta span strong { color: rgba(240,244,255,0.8); }
+
+    /* Stat strip inside hero */
+    .hero-stats {
+      display: flex;
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+    }
+    .hero-stat {
+      flex: 1;
+      padding: 0.9rem 0.75rem;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat-num {
+      font-family: var(--rw-font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fb923c;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+    .hero-stat-label {
+      font-size: 0.68rem;
+      color: rgba(240,244,255,0.45);
+      font-family: var(--rw-font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Right side: video placeholder */
+    .hero-right {}
+    .video-placeholder {
+      background: rgba(255,255,255,0.04);
+      border: 2px dashed rgba(249,115,22,0.35);
+      border-radius: 14px;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .video-placeholder:hover {
+      border-color: rgba(249,115,22,0.65);
+      background: rgba(249,115,22,0.06);
+    }
+    /* When a real iframe is dropped in, it replaces this entirely */
+    .video-placeholder-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(249,115,22,0.2);
+      border: 2px solid rgba(249,115,22,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+    .video-placeholder-text {
+      font-family: var(--rw-font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: rgba(240,244,255,0.55);
+      text-align: center;
+    }
+    .video-placeholder-sub {
+      font-size: 0.75rem;
+      color: rgba(240,244,255,0.3);
+      text-align: center;
+    }
+
+    /* To embed the real video, replace .video-placeholder div with:
+       <div class="video-embed">
+         <iframe src="https://www.youtube.com/embed/VIDEO_ID" ...></iframe>
+       </div>
+    */
+    .video-embed {
+      border-radius: 14px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      position: relative;
+    }
+    .video-embed iframe {
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* ── Guide layout ──────────────────────────────────────────── */
+    .guide-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 2.5rem;
+      max-width: 1160px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      align-items: start;
+    }
+    .guide-sidebar {
+      position: sticky;
+      top: calc(var(--rw-nav-height) + 1.5rem);
+    }
+    .guide-toc-label {
+      font-family: var(--rw-font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rw-text-subtle);
+      margin-bottom: 0.75rem;
+    }
+    .guide-toc {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .guide-toc a {
+      font-size: 0.83rem;
+      color: var(--rw-text-muted);
+      text-decoration: none;
+      padding: 0.3rem 0.6rem;
+      border-left: 2px solid transparent;
+      display: block;
+      border-radius: 0 4px 4px 0;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .guide-toc a:hover, .guide-toc a.active {
+      color: var(--rw-orange);
+      border-left-color: var(--rw-orange);
+      background: var(--rw-orange-light);
+    }
+    .guide-toc .toc-sub { padding-left: 1rem; font-size: 0.78rem; }
+
+    /* Guide content */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--rw-text);
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--rw-orange-light);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 {
+      font-family: var(--rw-font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin: 1.5rem 0 0.5rem;
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section p {
+      font-size: 1rem;
+      color: var(--rw-text-muted);
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .feature-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 1.25rem;
+    }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .feature-card h4 {
+      font-family: var(--rw-font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin-bottom: 0.35rem;
+    }
+    .feature-card p { font-size: 0.82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* Step list */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1.25rem; margin: 1.5rem 0; }
+    .step-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--rw-orange);
+      color: #fff;
+      font-family: var(--rw-font-display);
+      font-weight: 800;
+      font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: 0.95rem; color: var(--rw-text); margin-bottom: 0.25rem; }
+    .step-body p { font-size: 0.875rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* Comparison table */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+    .comparison-table th {
+      background: var(--rw-bg-subtle);
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid var(--rw-border);
+      color: var(--rw-text);
+    }
+    .comparison-table td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--rw-border);
+      color: var(--rw-text-muted);
+      vertical-align: top;
+    }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+
+    /* Code block */
+    .code-block {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: var(--rw-r-md);
+      padding: 1.25rem 1.5rem;
+      font-family: var(--rw-font-mono);
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .code-block .cm { color: #64748b; }
+    .code-block .kw { color: #93c5fd; }
+    .code-block .st { color: #86efac; }
+
+    /* Callouts */
+    .callout-orange {
+      background: var(--rw-orange-light);
+      border-left: 3px solid var(--rw-orange);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+    .callout-indigo {
+      background: var(--rw-indigo-light);
+      border-left: 3px solid var(--rw-indigo);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+    .callout-green {
+      background: rgba(16,185,129,0.08);
+      border-left: 3px solid #10b981;
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+
+    /* Architecture diagram container */
+    .arch-diagram {
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      overflow: hidden;
+      margin: 1.5rem 0;
+      background: #f8fafc;
+    }
+    [data-theme="dark"] .arch-diagram { background: #0f172a; }
+    .arch-diagram img, .arch-diagram object {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .arch-diagram-caption {
+      padding: 0.6rem 1rem;
+      font-size: 0.78rem;
+      color: var(--rw-text-subtle);
+      text-align: center;
+      border-top: 1px solid var(--rw-border);
+      font-family: var(--rw-font-display);
+    }
+
+    /* Learning card */
+    .learning-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .learning-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 1.1rem 1.25rem;
+    }
+    .learning-card-label {
+      font-family: var(--rw-font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--rw-orange);
+      margin-bottom: 0.4rem;
+    }
+    .learning-card h4 {
+      font-family: var(--rw-font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin-bottom: 0.35rem;
+    }
+    .learning-card p { font-size: 0.82rem; color: var(--rw-text-muted); margin: 0; line-height: 1.55; }
+
+    @media (max-width: 1024px) {
+      .hero-split { grid-template-columns: 1fr; }
+      .hero-right { order: -1; max-width: 520px; margin: 0 auto; }
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .learning-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ═══ HERO ═══════════════════════════════════════════════════════════ -->
+<div class="guide-hero">
+  <div class="hero-split">
+
+    <!-- Left: text -->
+    <div class="hero-left">
+      <span class="guide-hero-label">🧠 Build Log · Use Case</span>
+      <h1>I Built a <span>Local AI</span> That Knows My Entire Career</h1>
+      <p class="hero-desc">
+        25 years of resumes, performance reviews, and project docs — ingested into a structured knowledge base. Now I generate tailored resumes in minutes from my own facts, not hallucinated ones.
+      </p>
+
+      <div class="hero-meta">
+        <span><strong>Sham Sundar HC</strong></span>
+        <span>·</span>
+        <span>July 2026</span>
+        <span>·</span>
+        <span>12 min read</span>
+        <span>·</span>
+        <span><strong>Fully local · No cloud · Open source</strong></span>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">25+</div>
+          <div class="hero-stat-label">Years ingested</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">40+</div>
+          <div class="hero-stat-label">Source docs</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">8</div>
+          <div class="hero-stat-label">AI projects</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">0</div>
+          <div class="hero-stat-label">Cloud calls</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the build log ↓</a>
+        <a href="https://github.com/researchsite/careerwiki" class="rw-btn rw-btn-ghost" target="_blank">GitHub →</a>
+      </div>
+    </div>
+
+    <!-- Right: video placeholder — replace this div with your YouTube iframe when ready -->
+    <div class="hero-right">
+      <video
+    src="../images/videos/CareerWiki.mp4" type="video/mp4"
+    controls
+    muted
+    loop
+    playsinline
+    poster=""
+    style="width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.1);aspect-ratio:16/9;object-fit:cover;display:block;background:#0d1117;"
+  ></video>
+      <!-- REPLACE THE ABOVE with this when your video is live:
+      <div class="video-embed">
+        <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                title="CareerWiki Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+      </div>
+      -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ GUIDE CONTENT ══════════════════════════════════════════════════ -->
+<div class="guide-layout" id="guide-content">
+
+  <!-- Sidebar TOC -->
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#what-it-is">What CareerWiki Is</a></li>
+      <li><a href="#architecture">How It Works</a></li>
+      <li><a href="#ingest">The Ingest Pipeline</a></li>
+      <li><a href="#generate">3 Resume Modes</a></li>
+      <li><a href="#templates">Swappable Templates</a></li>
+      <li><a href="#beyond-resumes">Beyond Resumes</a></li>
+      <li><a href="#stack">AI Stack</a></li>
+      <li><a href="#obsidian">Obsidian Connection</a></li>
+      <li><a href="#growth-areas">Growth Areas</a></li>
+      <li><a href="#learnings">Key Learnings</a></li>
+      <li><a href="#get-started">Get Started</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+
+    <!-- ── THE PROBLEM ────────────────────────────────────────── -->
+    <section class="guide-section" id="problem">
+      <h2>The problem every senior professional has</h2>
+      <p>
+        You've built real things. Led real teams. Shipped products with real metrics. But the moment you need to articulate all of it quickly — for a new opportunity, a board introduction, a partner pitch — you end up spending a weekend reconstructing your own career.
+      </p>
+
+      <!-- Visual scenario flow -->
+      <div style="margin:1.5rem 0;display:flex;flex-direction:column;gap:0;border:1px solid var(--rw-border);border-radius:var(--rw-r-md);overflow:hidden;">
+        <div style="background:var(--rw-bg-subtle);padding:0.6rem 1rem;font-family:var(--rw-font-display);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--rw-text-subtle);">The old process — every single time</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);">
+          <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">📧</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Hunt</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">Dig through old emails, reviews, LinkedIn to remember what you built</div>
+          </div>
+          <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">📋</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Cut</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">Trim 25 years to 2 pages. Drop whole roles. Lose the numbers.</div>
+          </div>
+          <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🤖</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Polish</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">Paste into ChatGPT. Get generic wording. It doesn't know your actual metrics.</div>
+          </div>
+          <div style="padding:1rem;text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔁</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Repeat</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">Different opportunity next month. Start from zero again.</div>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        The output is always underwhelming — not because the AI is bad, but because the input is thin. A 2-page resume fed into an LLM produces a 2-page resume with better words. The model can only work with what you give it.
+      </p>
+
+      <p>
+        The second problem compounds it: as your career grows, you can't fit everything in one document. You drop the early platform work because the recent roles feel more relevant. Then six months later that earlier experience is exactly what someone needs — and the details are gone.
+      </p>
+
+      <!-- Before / After comparison -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;">
+        <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:var(--rw-r-md);padding:1.1rem 1.25rem;">
+          <div style="font-family:var(--rw-font-display);font-size:0.72rem;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.6rem;">What everyone does</div>
+          <ul style="margin:0;padding-left:1.1rem;color:var(--rw-text-muted);font-size:0.85rem;line-height:1.7;">
+            <li>Maintain 3-4 resume versions manually</li>
+            <li>They go stale within weeks</li>
+            <li>LLM gets a 2-page snapshot</li>
+            <li>Output is generic, metrics are vague</li>
+            <li>Repeat for every new context</li>
+          </ul>
+        </div>
+        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:var(--rw-r-md);padding:1.1rem 1.25rem;">
+          <div style="font-family:var(--rw-font-display);font-size:0.72rem;font-weight:700;color:#10b981;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.6rem;">What CareerWiki does</div>
+          <ul style="margin:0;padding-left:1.1rem;color:var(--rw-text-muted);font-size:0.85rem;line-height:1.7;">
+            <li>One wiki stores your full career history</li>
+            <li>Every ingest adds to it — nothing lost</li>
+            <li>LLM gets structured, complete facts</li>
+            <li>Output is specific, grounded, tailored</li>
+            <li>New context? Just change the JD.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout-orange">
+        <strong>The insight:</strong> Career document quality is proportional to source data quality. Your wiki is that source — it grows with you, stores everything, and never forgets.
+      </div>
+    </section>
+
+    <!-- ── WHAT IT IS ──────────────────────────────────────────── -->
+    <section class="guide-section" id="what-it-is">
+      <h2>What CareerWiki actually is</h2>
+      <p>
+        CareerWiki is a local AI system built on what Andrej Karpathy calls the <strong>llmwiki pattern</strong>: raw sources → wiki → schema → output. You feed it documents. It builds a structured knowledge base. You query the knowledge base to generate outputs.
+      </p>
+      <p>
+        It runs entirely on your machine using Ollama and a 7B parameter model. Nothing leaves your computer. No subscription. No API costs. Your performance reviews, salary history, and career details stay local.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">📥</div>
+          <h4>Ingest</h4>
+          <p>Drop PDFs, DOCX, or Markdown files. The LLM extracts facts across 6 passes and writes structured wiki pages automatically.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🗂</div>
+          <h4>Wiki</h4>
+          <p>Plain Markdown files organized by role, skills, education, projects, and reviews. Editable in the browser or any text editor.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📄</div>
+          <h4>Generate</h4>
+          <p>Paste a JD → get a tailored HTML resume in 3 modes. Photo embedded, ATS keywords included, print-to-PDF ready.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ARCHITECTURE ────────────────────────────────────────── -->
+    <section class="guide-section" id="architecture">
+      <h2>Architecture: how data flows</h2>
+      <p>
+        The system has three layers. The ingest pipeline converts raw documents into structured Markdown. The wiki is the source of truth — plain text files that any LLM can read. The generation layer pulls from the wiki, scores content against the JD, and produces HTML.
+      </p>
+
+      <div class="arch-diagram" id="arch-diagram-wrap">
+        <img src="/images/careerwiki-architecture.svg"
+             alt="CareerWiki component architecture diagram"
+             title="Click to enlarge"
+             style="cursor:zoom-in;"
+             onclick="document.getElementById('arch-lightbox').style.display='flex'">
+        <div class="arch-diagram-caption">
+          Click to enlarge · Left: Ingest flow (raw docs → extractor → multi-pass LLM → wiki) · Right: Generate flow (wiki → scored context → LLM → HTML) · Center: shared llm.py + Ollama
+        </div>
+      </div>
+
+      <!-- Lightbox -->
+      <div id="arch-lightbox" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;cursor:zoom-out;">
+        <img src="/images/careerwiki-architecture.svg" alt="CareerWiki architecture — full view" style="max-width:95vw;max-height:90vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.6);">
+        <div style="position:absolute;top:1rem;right:1.25rem;color:rgba(255,255,255,0.6);font-size:1.5rem;line-height:1;cursor:pointer;" onclick="document.getElementById('arch-lightbox').style.display='none'">✕</div>
+      </div>
+
+      <p>
+        Every module talks to the LLM through a single <code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">llm.py</code> adapter that supports both Ollama (local) and Anthropic (cloud) via a single env variable. The wiki is just a folder of Markdown files — no database, no schema migration, no lock-in.
+      </p>
+    </section>
+
+    <!-- ── INGEST PIPELINE ─────────────────────────────────────── -->
+    <section class="guide-section" id="ingest">
+      <h2>The ingest pipeline</h2>
+      <p>
+        This is the most interesting engineering. A single document goes through six separate LLM calls, each focused on one extraction task. I call this multi-pass ingest and it produces dramatically better results than a single "summarize this" prompt.
+      </p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Document type detection</h4>
+            <p>Keyword match on the first 300 characters. Routes to: resume, performance_review, annual_goals, personal_project, or general. No LLM needed — fast and reliable.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Pass 1 — Profile extraction</h4>
+            <p>Name, headline, summary, contact, core competencies. Existing wiki page is always included in the prompt: "preserve all, add/improve only."</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Pass 2 — Role pages (one per employer)</h4>
+            <p>Detects all employers first, then writes a dedicated wiki page for each. Pages ≥500 bytes are protected — a thinner resume variant can't overwrite a rich role page built from multiple reviews.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Passes 3–5 — Skills, education, achievements</h4>
+            <p>Each gets its own pass with its own focused prompt. Achievement bullets are appended (never overwritten) so every document contributes without losing history.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Pass 6 — Project pages</h4>
+            <p>Named projects get their own wiki page with problem, contribution, outcomes, and scale. Personal AI projects (this post!) get their own document type and write directly to wiki/projects/.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Review merge (performance reviews only)</h4>
+            <p>FY achievements are extracted and merged into the employer's role page. Your FY2025 rating shows up in your PANW wiki page even though it wasn't in your original resume.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout-indigo">
+        <strong>Technical note:</strong> All LLM calls use a brace-counting JSON parser rather than <code style="font-family:var(--rw-font-mono);font-size:0.85em;">json.loads()</code> directly. This handles the common case where the model adds prose before or after the JSON block — which 7B models do frequently.
+      </div>
+    </section>
+
+    <!-- ── 3 RESUME MODES ──────────────────────────────────────── -->
+    <section class="guide-section" id="generate">
+      <h2>3 ways to generate a resume</h2>
+      <p>
+        Not every application is the same. I added three modes after realising that sometimes I want to tailor my existing hand-crafted resume, and sometimes I want a fresh one built entirely from the wiki.
+      </p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>What it does</th>
+            <th>Best for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>A — Enrich Existing</strong></td>
+            <td>Injects JD-matched bullets (highlighted orange) at the top of each job section in your existing HTML resume. Adds a "JD Key Skills" group.</td>
+            <td>You have a polished resume already and just want the JD-specific additions highlighted</td>
+          </tr>
+          <tr>
+            <td><strong>B — New (JD-focused)</strong></td>
+            <td>Generates a fresh resume using only wiki content that has keyword overlap with the JD. Roles with no match are excluded.</td>
+            <td>Applying to a role in a different domain — keep it tight and relevant</td>
+          </tr>
+          <tr>
+            <td><strong>C — New (Full)</strong></td>
+            <td>Generates a complete resume with all career content. JD-relevant items are sorted to the top within each section.</td>
+            <td>Target company values breadth of experience; or you want to see everything</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        All modes use a two-pass pipeline: Pass 1 is the LLM producing structured JSON (~2,000 tokens), Pass 2 is pure Python injecting that JSON into an HTML template. This separation means you can fix layout bugs without touching the LLM prompt, and vice versa.
+      </p>
+
+      <div class="callout-green">
+        <strong>JD match check:</strong> Before generating, the system runs an instant keyword scorer against your wiki. If match is below 20%, it warns you with exactly which requirements are missing — and blocks generation until you confirm. Prevents hallucinated experience.
+      </div>
+    </section>
+
+    <!-- ── SWAPPABLE TEMPLATES ───────────────────────────────────── -->
+    <section class="guide-section" id="templates">
+      <h2>Swappable templates: one wiki, many looks</h2>
+      <p>
+        The HTML output is fully decoupled from the LLM. Every generation mode produces a JSON data structure first, then Python injects that JSON into a template file. The LLM never touches the visual design.
+      </p>
+      <p>
+        This means you can have multiple templates for different contexts — and switch between them without regenerating content:
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🏢</div>
+          <h4>Corporate two-column</h4>
+          <p>The default. Photo top-left, contact sidebar, experience right. Works for most enterprise roles. Print-to-PDF ready at A4.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">✦</div>
+          <h4>Minimal single-column</h4>
+          <p>Clean, ATS-safe, text-only. Drop in a second template file and pass <code style="font-family:var(--rw-font-mono);font-size:0.82em;">template_path</code> to generate_resume. Same wiki data, different look.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🎨</div>
+          <h4>Creative / portfolio</h4>
+          <p>For design, product, and marketing roles. Richer visual hierarchy, project gallery section. Just another HTML file — no new LLM logic.</p>
+        </div>
+      </div>
+
+      <div class="callout-indigo">
+        <strong>The separation matters:</strong> When you fix a layout bug or want to update the font, you touch the template file only. When you want to update your career summary, you update the wiki. The two never interfere with each other.
+      </div>
+      <p>
+        The same approach applies to company-specific branding. Applying to a company you know uses a design-forward culture? Drop in their colour palette. The wiki content stays identical — only the presentation changes.
+      </p>
+    </section>
+
+    <!-- ── BEYOND RESUMES ─────────────────────────────────────── -->
+    <section class="guide-section" id="beyond-resumes">
+      <h2>Beyond resumes: what the wiki unlocks</h2>
+      <p>
+        Once your career is documented in structured Markdown, the resume is just one output. The same wiki feeds a surprising number of other tasks.
+      </p>
+
+      <div class="learning-grid">
+        <div class="learning-card">
+          <div class="learning-card-label">Performance Reviews</div>
+          <h4>Review season becomes a copy-paste job</h4>
+          <p>Your wiki already has every FY achievement, every metric, every project outcome — tagged by employer and year. Writing a self-assessment goes from two days to thirty minutes. The accomplishments are there; you're just selecting and framing them.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">LinkedIn &amp; Bios</div>
+          <h4>Speaker bios, LinkedIn About, exec summaries</h4>
+          <p>Different contexts want different lengths and emphases. Your wiki has everything. Paste the context ("write a 100-word speaker bio for a cybersecurity conference") and the LLM has the facts to work with. No hallucinating seniority you don't have.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Interview Prep</div>
+          <h4>STAR stories on demand</h4>
+          <p>Ask the wiki-backed LLM: "give me three STAR examples of cross-functional leadership from my career." It draws from documented projects, reviews, and outcomes — not vague recollections. Walk into interviews with specific numbers.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Career Clarity</div>
+          <h4>See your career as a graph</h4>
+          <p>After ingesting 25 years, patterns emerge that surprised me: I've led platform migrations four times across different companies. That's a narrative thread, not a coincidence. The wiki makes invisible patterns visible.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AI STACK ────────────────────────────────────────────── -->
+    <section class="guide-section" id="stack">
+      <h2>The AI stack</h2>
+      <p>
+        Everything runs locally. The only external dependency is Ollama, which manages model loading and serves a local HTTP API that mimics the OpenAI interface.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🦙</div>
+          <h4>Ollama + qwen2.5:7b</h4>
+          <p>7B parameter model. Runs on CPU. 4-minute resume generation on a modern laptop. 16K context window for large wikis.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🌊</div>
+          <h4>Streaming with timeout=(10, None)</h4>
+          <p>The killer fix. Setting read timeout to None eliminates all generation timeouts. The HTTP connection streams tokens indefinitely.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔄</div>
+          <h4>Multi-pass LLM architecture</h4>
+          <p>6 focused prompts per document. Each pass has a narrow schema. Far better extraction quality than one big "summarize everything" call.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📸</div>
+          <h4>Base64 image embedding</h4>
+          <p>Profile photos embedded as data URLs. Resume HTML is fully self-contained — works in Streamlit iframes, email attachments, and offline.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">☁️</div>
+          <h4>Anthropic fallback</h4>
+          <p>One env variable switches from Ollama to Claude API. Same code, same prompts, 10x faster generation when you need it.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🐍</div>
+          <h4>Streamlit UI</h4>
+          <p>4-tab app: Ingest, Generate, Wiki browser, Lint audit. The fastest way to build a functional AI tool UI without JavaScript.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── OBSIDIAN CONNECTION ─────────────────────────────────── -->
+    <section class="guide-section" id="obsidian">
+      <h2>The Obsidian connection nobody talks about</h2>
+      <p>
+        Here's something I didn't plan but turned out to be powerful: the <code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">wiki/</code> directory is 100% compatible with <a href="https://obsidian.md" target="_blank" style="color:var(--rw-orange);">Obsidian</a>.
+      </p>
+      <p>
+        Open your CareerWiki wiki folder as an Obsidian vault and you get a full visual graph of your career — roles linking to achievements, projects linking to skills, reviews linking to roles. The <code>[[page-name]]</code> backlinks that ingest.py writes are valid Obsidian wiki links.
+      </p>
+      <div class="callout-orange">
+        <strong>Try it:</strong> Open Obsidian → Open folder as vault → select your <code>wiki/</code> directory. Your career graph appears immediately. Use Obsidian's Canvas feature to arrange your career timeline visually.
+      </div>
+      <p>
+        This also means you can edit wiki pages in Obsidian with full autocomplete and graph view, then run CareerWiki generation. The two tools work on the same files without conflict.
+      </p>
+    </section>
+
+    <!-- ── GROWTH AREAS ──────────────────────────────────────── -->
+    <section class="guide-section" id="growth-areas">
+      <h2>Turning appraisal feedback into career intelligence</h2>
+      <p>
+        Every performance review has an "areas for improvement" section. Usually it gets read once and filed. CareerWiki does something different with it.
+      </p>
+      <p>
+        When a review is ingested, a dedicated Pass E extracts those development areas and writes them to <code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">wiki/growth-areas.md</code> — a dedicated file that accumulates improvement feedback across all your reviews over time.
+      </p>
+
+      <div class="feature-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="feature-card">
+          <div class="feature-card-icon">📋</div>
+          <h4>Captured automatically</h4>
+          <p>During review ingest, the LLM extracts improvement areas as a separate pass. No manual work — just ingest your appraisal doc.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🟡</div>
+          <h4>Three-state JD matching</h4>
+          <p>The JD fit checker now returns: <strong>matched</strong> (proven strength), <strong>in progress</strong> (growth area from reviews), or <strong>not found</strong>. Honest signal, not binary.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">✏️</div>
+          <h4>Edit with awareness</h4>
+          <p>If a JD keyword maps to a growth area, the app flags it: "this is in your development plan — edit the bullet carefully." No hallucinated expertise.</p>
+        </div>
+      </div>
+
+      <div class="callout-indigo">
+        <strong>Example:</strong> Your FY2025 review flagged "executive communication" as a development area. A JD requires it. Instead of the system treating this as a hard miss, it surfaces it as amber: "In progress — from FY2025 review." You can choose to mention it thoughtfully rather than silently omit it or fabricate experience.
+      </div>
+
+      <p>
+        Over time, <code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">growth-areas.md</code> becomes a longitudinal view of your professional development — what was flagged in FY2023 vs FY2025, and whether those gaps have closed (they'd appear as matches in your skills wiki by then).
+      </p>
+    </section>
+
+    <!-- ── KEY LEARNINGS ──────────────────────────────────────── -->
+    <section class="guide-section" id="learnings">
+      <h2>What I learned building this</h2>
+
+      <div class="learning-grid">
+        <div class="learning-card">
+          <div class="learning-card-label">Prompt Engineering</div>
+          <h4>Existing content in every prompt</h4>
+          <p>Always include the current wiki page in the prompt with "preserve, add/improve only." Without this, each ingest run overwrites previous work instead of enriching it.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">LLM Reliability</div>
+          <h4>7B models hallucinate company names badly</h4>
+          <p>qwen2.5:7b created vendor companies (Akamai, NYSE) as employer pages. Fixed with a canonical slug map and a skip-list frozenset. Never trust LLM-generated company names directly.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Architecture</div>
+          <h4>Streaming is not optional at this scale</h4>
+          <p>Blocking HTTP with a 600s timeout was fine for individual ingest passes. For resume generation (2K tokens), the CPU model regularly exceeded it. timeout=(10, None) is the correct pattern for any long-running LLM call.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Python / Web</div>
+          <h4>XHTML will ruin your HTML preview</h4>
+          <p>Saving resumes as .xhtml makes browsers parse them as strict XML. A single unescaped & in a Google Fonts URL breaks the entire render. Always output .html.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Data Design</div>
+          <h4>Protect pages once they're good</h4>
+          <p>After a performance review ingests a rich 5,000-byte PANW page, the next resume ingest shouldn't overwrite it with 800 bytes. Pages ≥500 bytes are now immutable to resume passes.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">UX</div>
+          <h4>Block on low JD match before generation</h4>
+          <p>Without a relevance check, users waste 10 minutes generating a hallucinated resume for a JD that's completely outside their background. A fast keyword scorer catches this in milliseconds.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Windows / PowerShell</div>
+          <h4>Unicode in .ps1 files will break PowerShell 5.1</h4>
+          <p>Box-drawing characters (──) in script comments caused a cryptic "Missing closing '}'" parse error on every run. PowerShell 5.1 misparsed the Unicode as control characters. Replace all decorative Unicode with plain ASCII dashes — problem gone immediately.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Streamlit / Paths</div>
+          <h4>Never use relative paths inside a Streamlit app</h4>
+          <p>Streamlit sets its own CWD when it launches. <code style="font-family:var(--rw-font-mono);font-size:0.82em;">Path("templates/assets/photo.jpg").resolve()</code> resolved to the wrong directory — photo showed as broken in every preview. Fix: <code style="font-family:var(--rw-font-mono);font-size:0.82em;">_PROJECT_DIR = Path(__file__).parent.parent</code> at module level, used everywhere.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">Streamlit</div>
+          <h4>Confirmation dialogs require session_state + st.rerun()</h4>
+          <p>Streamlit processes exactly one button click per render cycle. A "Generate anyway?" confirmation can't be handled in the same render as the original click. Pattern: set <code style="font-family:var(--rw-font-mono);font-size:0.82em;">fire_generate=True</code> in session_state, call <code style="font-family:var(--rw-font-mono);font-size:0.82em;">st.rerun()</code>, then pick it up at the top of the next render.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-card-label">File I/O</div>
+          <h4>glob("*.xhtml") silently misses your new .html files</h4>
+          <p>After switching from .xhtml to .html output, the "Previously Generated Resumes" list went empty. The glob pattern was never updated. Now it runs two globs, merges them, sorts by mtime, and uses <code style="font-family:var(--rw-font-mono);font-size:0.82em;">mime="text/html"</code> for all downloads.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── GET STARTED ─────────────────────────────────────────── -->
+    <section class="guide-section" id="get-started">
+      <h2>Get started in 15 minutes</h2>
+      <p>Prerequisites: Python 3.11+, <a href="https://ollama.com" target="_blank" style="color:var(--rw-orange);">Ollama</a> installed and running.</p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Pull the model (one-time, ~4 GB)</h4>
+            <p><code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">ollama pull qwen2.5:7b</code></p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Clone and install</h4>
+            <p>
+              <code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">git clone https://github.com/researchsite/careerwiki</code><br>
+              <code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">pip install -r requirements.txt</code>
+            </p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Copy .env.example to .env</h4>
+            <p>The default config points to local Ollama. No API keys needed to start.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Drop your documents into raw_sources/ and start the app</h4>
+            <p>
+              <code style="font-family:var(--rw-font-mono);font-size:0.85em;background:var(--rw-bg-subtle);padding:0.1em 0.4em;border-radius:4px;">streamlit run app.py</code>
+              — then open <strong>http://localhost:8501</strong> and click Ingest.
+            </p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout-green">
+        <strong>Privacy:</strong> The .gitignore excludes raw_sources/, wiki/, output/, and your .env. Only the source code commits. Your career data never leaves your machine unless you push it yourself.
+      </div>
+
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.75rem;">
+        <a href="https://github.com/researchsite/careerwiki" class="rw-btn rw-btn-primary" target="_blank">View on GitHub →</a>
+        <a href="#architecture" class="rw-btn rw-btn-ghost">Architecture deep-dive ↑</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[
+       {"label":"SentTriage — AI Email Triage","url":"/usecase/sent-triage.html"},
+       {"label":"ShadowShield AI — Security Research","url":"/usecase/shadowshield-ai.html"},
+       {"label":"VocabForge — Fine-tuning Guide","url":"/usecase/vocabforge-fine-tuning-guide.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// Scrollspy for TOC
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>

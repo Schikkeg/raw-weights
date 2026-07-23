@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "CareerWiki: I Built a Local AI That Knows My Entire Career",
+        excerpt: "How I built a local-first AI career knowledge base that ingests 25 years of documents and generates tailored resumes in minutes — with zero cloud data.",
+        date: "July 23, 2026",
+        image: "./images/careerwiki-og.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/careerwiki-guide.html",
+        linkedin: null
+      },
+      {
         title: "The Compiler | LLM Wiki ",
         excerpt: "Karpathy's LLM Wiki explained as a compiler: raw sources go in, compiled wiki pages come out. Understand ingest, query, lint — and when pre-compiled knowledge beats RAG.",
         date: "July 16, 2026",
         image: "./images/wiki.png",
         type: "Guide",
         link: "https://rawweights.com/guide/llm-wiki-compiler.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_karpathyllmwiki-aiarchitecture-knowledgemanagement-share-7483423035459534848-AciU/"
       },
       {
         title: "ShadowShield AI — Chrome Extension Experiment  ",
