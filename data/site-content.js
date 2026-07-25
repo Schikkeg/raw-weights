@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "AgentIntel: I Built a Multi-Agent Swarm to Diagnose AI Visibility",
+        excerpt: "How I built a 7-agent swarm at a hackathon that scrapes websites, benchmarks competitors, and generates AEO/GEO recommendations — with Band, Guild, and Actian wired in.",
+        date: "July 24, 2026",
+        image: "./images/agentintel-og.jpeg",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/agentintel-guide.html",
+        linkedin: null
+      },
+      {
         title: "CareerWiki: I Built a Local AI That Knows My Entire Career",
         excerpt: "How I built a local-first AI career knowledge base that ingests 25 years of documents and generates tailored resumes in minutes — with zero cloud data.",
         date: "July 23, 2026",
         image: "./images/careerwiki-og.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/careerwiki-guide.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_localai-ollama-buildinpublic-share-7485988520810131456-a8Mh/"
       },
       {
         title: "The Compiler | LLM Wiki ",

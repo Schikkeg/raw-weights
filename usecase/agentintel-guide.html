@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentIntel: I Built a Multi-Agent Swarm to Diagnose AI Visibility | RawWeights</title>
+  <meta name="description" content="How I built a 7-agent swarm at a hackathon that scrapes websites, benchmarks competitors, and generates AEO/GEO recommendations — with Band, Guild, and Actian wired in.">
+  <meta name="author" content="Sham Sundar HC">
+  <link rel="canonical" href="https://rawweights.com/usecase/agentintel-guide.html">
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/agentintel-guide.html">
+  <meta property="og:title" content="AgentIntel: I Built a Multi-Agent Swarm to Diagnose AI Visibility">
+  <meta property="og:description" content="A 7-agent swarm that finds why your website doesn't show up in AI answers — built at a hackathon with real sponsor integrations.">
+  <meta property="og:image" content="https://rawweights.com/images/agentintel-og.jpeg">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero: two-column split ───────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #060612 0%, #0d0a1f 50%, #080f1e 100%);
+      padding: 4.5rem 1.5rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-hero::before {
+      content: '';
+      position: absolute;
+      top: -20%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,212,255,0.14) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -10%; left: -5%;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      position: relative;
+    }
+    .guide-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(0,212,255,0.12);
+      border: 1px solid rgba(0,212,255,0.28);
+      border-radius: 9999px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #22d3ee;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-family: var(--rw-font-display);
+      margin-bottom: 1.25rem;
+    }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      font-weight: 800;
+      color: #f0f4ff;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+    .guide-hero h1 span { color: #22d3ee; }
+    .guide-hero .hero-desc {
+      font-size: 1.05rem;
+      color: rgba(240,244,255,0.72);
+      line-height: 1.7;
+      margin-bottom: 1.75rem;
+    }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+    }
+    .hero-meta span {
+      font-size: 0.82rem;
+      color: rgba(240,244,255,0.5);
+      font-family: var(--rw-font-display);
+    }
+    .hero-meta span strong { color: rgba(240,244,255,0.8); }
+
+    .hero-stats {
+      display: flex;
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+    }
+    .hero-stat {
+      flex: 1;
+      padding: 0.9rem 0.75rem;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat-num {
+      font-family: var(--rw-font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #22d3ee;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+    .hero-stat-label {
+      font-size: 0.68rem;
+      color: rgba(240,244,255,0.45);
+      font-family: var(--rw-font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Self-hosted video */
+    .video-embed {
+      border-radius: 14px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      position: relative;
+      background: #000;
+      box-shadow: 0 0 0 1px rgba(0,212,255,0.15), 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .video-embed video {
+      width: 100%; height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .video-placeholder {
+      background: rgba(255,255,255,0.03);
+      border: 2px dashed rgba(0,212,255,0.3);
+      border-radius: 14px;
+      aspect-ratio: 16/9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .video-placeholder-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(0,212,255,0.12);
+      border: 2px solid rgba(0,212,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+    .video-placeholder-text {
+      font-family: var(--rw-font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: rgba(240,244,255,0.5);
+    }
+    .video-placeholder-sub { font-size: 0.75rem; color: rgba(240,244,255,0.28); }
+
+    /* ── Guide layout ──────────────────────────────────────────── */
+    .guide-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 2.5rem;
+      max-width: 1160px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      align-items: start;
+    }
+    .guide-sidebar {
+      position: sticky;
+      top: calc(var(--rw-nav-height) + 1.5rem);
+    }
+    .guide-toc-label {
+      font-family: var(--rw-font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rw-text-subtle);
+      margin-bottom: 0.75rem;
+    }
+    .guide-toc {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .guide-toc a {
+      font-size: 0.83rem;
+      color: var(--rw-text-muted);
+      text-decoration: none;
+      padding: 0.3rem 0.6rem;
+      border-left: 2px solid transparent;
+      display: block;
+      border-radius: 0 4px 4px 0;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .guide-toc a:hover, .guide-toc a.active {
+      color: #22d3ee;
+      border-left-color: #22d3ee;
+      background: rgba(0,212,255,0.06);
+    }
+    .guide-toc .toc-sub { padding-left: 1rem; font-size: 0.78rem; }
+
+    /* Guide content */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--rw-text);
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid rgba(0,212,255,0.15);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 {
+      font-family: var(--rw-font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin: 1.5rem 0 0.5rem;
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section p {
+      font-size: 1rem;
+      color: var(--rw-text-muted);
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .feature-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 1.25rem;
+    }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .feature-card h4 {
+      font-family: var(--rw-font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin-bottom: 0.35rem;
+    }
+    .feature-card p { font-size: 0.82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* Agent grid */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.6rem;
+      margin: 1.5rem 0;
+    }
+    .agent-node {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: 10px;
+      padding: 0.9rem 0.5rem;
+      text-align: center;
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .agent-node.primary { border-color: rgba(0,212,255,0.3); }
+    .agent-node.output  { border-color: rgba(16,185,129,0.3); }
+    .agent-node-icon { font-size: 1.25rem; }
+    .agent-node-name {
+      font-family: var(--rw-font-display);
+      font-size: 0.65rem; font-weight: 700;
+      color: #22d3ee; letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .agent-node-desc { font-size: 0.62rem; color: var(--rw-text-subtle); line-height: 1.3; }
+
+    /* Step list */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1.25rem; margin: 1.5rem 0; }
+    .step-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #22d3ee;
+      color: #060612;
+      font-family: var(--rw-font-display);
+      font-weight: 800;
+      font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: 0.95rem; color: var(--rw-text); margin-bottom: 0.25rem; }
+    .step-body p { font-size: 0.875rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* Sponsor cards */
+    .sponsor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .sponsor-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 1.25rem 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .sponsor-logo { font-size: 2rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .sponsor-name {
+      font-family: var(--rw-font-display);
+      font-size: 1rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 0.25rem;
+    }
+    .sponsor-role { font-size: 0.78rem; color: var(--rw-text-subtle); margin-bottom: 0.5rem; }
+    .sponsor-detail { font-size: 0.82rem; color: var(--rw-text-muted); line-height: 1.55; }
+    .sponsor-tag {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.68rem; font-weight: 700;
+      border: 1px solid var(--rw-border);
+      color: var(--rw-text-subtle);
+      font-family: var(--rw-font-display);
+    }
+
+    /* Comparison table */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+    .comparison-table th {
+      background: var(--rw-bg-subtle);
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid var(--rw-border);
+      color: var(--rw-text);
+    }
+    .comparison-table td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--rw-border);
+      color: var(--rw-text-muted);
+      vertical-align: top;
+    }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+
+    /* Code block */
+    .code-block {
+      background: #0a0a16;
+      border: 1px solid #1e293b;
+      border-radius: var(--rw-r-md);
+      padding: 1.25rem 1.5rem;
+      font-family: var(--rw-font-mono);
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .code-block .cm { color: #475569; }
+    .code-block .kw { color: #93c5fd; }
+    .code-block .st { color: #86efac; }
+    .code-block .cy { color: #67e8f9; }
+
+    /* Callouts */
+    .callout-cyan {
+      background: rgba(0,212,255,0.06);
+      border-left: 3px solid #22d3ee;
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+    .callout-orange {
+      background: var(--rw-orange-light);
+      border-left: 3px solid var(--rw-orange);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+    .callout-indigo {
+      background: var(--rw-indigo-light);
+      border-left: 3px solid var(--rw-indigo);
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+    .callout-green {
+      background: rgba(16,185,129,0.07);
+      border-left: 3px solid #10b981;
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+    .callout-red {
+      background: rgba(239,68,68,0.06);
+      border-left: 3px solid #ef4444;
+      border-radius: 0 var(--rw-r) var(--rw-r) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--rw-text-muted);
+      margin: 1.25rem 0;
+    }
+
+    /* Learning log */
+    .learning-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .learning-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 1.1rem 1.25rem;
+    }
+    .learning-card.gotcha { border-left: 3px solid #ef4444; }
+    .learning-card.discovery { border-left: 3px solid #f59e0b; }
+    .learning-card.win { border-left: 3px solid #10b981; }
+    .learning-card-label {
+      font-family: var(--rw-font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #22d3ee;
+      margin-bottom: 0.4rem;
+    }
+    .learning-card.gotcha .learning-card-label { color: #ef4444; }
+    .learning-card.discovery .learning-card-label { color: #f59e0b; }
+    .learning-card.win .learning-card-label { color: #10b981; }
+    .learning-card h4 {
+      font-family: var(--rw-font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin-bottom: 0.35rem;
+    }
+    .learning-card p { font-size: 0.82rem; color: var(--rw-text-muted); margin: 0; line-height: 1.55; }
+    .learning-card code {
+      font-family: var(--rw-font-mono);
+      font-size: 0.8em;
+      background: var(--rw-bg-subtle);
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+    }
+
+    /* Score bar */
+    .score-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+    .score-label { font-size: 0.82rem; color: var(--rw-text-muted); width: 130px; flex-shrink: 0; }
+    .score-track { flex: 1; height: 8px; background: var(--rw-border); border-radius: 4px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 4px; }
+    .score-val { font-size: 0.82rem; font-weight: 700; width: 34px; text-align: right; color: var(--rw-text); }
+
+    /* Phase flow */
+    .phase-flow {
+      display: grid;
+      grid-template-columns: 1fr 20px 1fr 20px 1fr;
+      gap: 0;
+      align-items: start;
+      margin: 1.5rem 0;
+    }
+    .phase-col { display: flex; flex-direction: column; gap: 0.6rem; }
+    .phase-label {
+      font-family: var(--rw-font-display);
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--rw-text-subtle);
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--rw-border);
+      margin-bottom: 0.25rem;
+      text-align: center;
+    }
+    .phase-item {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: 8px;
+      padding: 0.7rem 0.85rem;
+      font-size: 0.8rem; color: var(--rw-text-muted);
+    }
+    .phase-item strong { display: block; font-size: 0.82rem; color: var(--rw-text); margin-bottom: 0.15rem; }
+    .phase-arrow { display: flex; align-items: center; justify-content: center; padding-top: 42px; color: var(--rw-text-subtle); font-size: 1rem; }
+
+    /* Inline code */
+    code {
+      font-family: var(--rw-font-mono);
+      font-size: 0.85em;
+      background: var(--rw-bg-subtle);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-split { grid-template-columns: 1fr; }
+      .hero-right { max-width: 520px; margin: 0 auto; }
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .learning-grid { grid-template-columns: 1fr; }
+      .agent-grid { grid-template-columns: repeat(4, 1fr); }
+      .sponsor-grid { grid-template-columns: 1fr; }
+      .phase-flow { grid-template-columns: 1fr; }
+      .phase-arrow { display: none; }
+    }
+    @media (max-width: 600px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .agent-grid { grid-template-columns: repeat(3, 1fr); }
+      .hero-stats { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ═══ HERO ═══════════════════════════════════════════════════════════ -->
+<div class="guide-hero">
+  <div class="hero-split">
+
+    <div class="hero-left">
+      <span class="guide-hero-label">🤖 Build Log · Hackathon · Multi-Agent</span>
+      <h1>I Built a <span>7-Agent Swarm</span> to Find Why Your Site Is Invisible to AI</h1>
+      <p class="hero-desc">
+        AgentIntel is a multi-agent system that scrapes your website and competitors, scores AI discoverability, finds content gaps, and generates ranked recommendations — built at a hackathon in about 6 hours.
+      </p>
+
+      <div class="hero-meta">
+        <span><strong>Sham Sundar HC</strong></span>
+        <span>·</span>
+        <span>July 2026</span>
+        <span>·</span>
+        <span>15 min read</span>
+        <span>·</span>
+        <span><strong>Hackathon project · Open source</strong></span>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">7</div>
+          <div class="hero-stat-label">Agents</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">3</div>
+          <div class="hero-stat-label">Sponsors live</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">&lt;90s</div>
+          <div class="hero-stat-label">End to end</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">13</div>
+          <div class="hero-stat-label">Real bugs hit</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the build log ↓</a>
+        <a href="https://github.com/researchsite/AgentIntel" class="rw-btn rw-btn-primary" target="_blank">GitHub →</a>
+      </div>
+    </div>
+
+    <!-- Right: self-hosted video -->
+    <div class="hero-right">
+      <!--
+        SELF-HOSTED VIDEO: drop your .mp4 next to this file and update the src below.
+        The poster image is optional — a frame from the video works well.
+      -->
+      <div class="video-embed">
+        <video
+          controls
+          preload="metadata"
+          poster="agentintel-poster.jpg"
+          style="width:100%;height:100%;border-radius:14px;"
+        >
+          <source src="../images/videos/AgentIntel.mp4" type="video/mp4">
+          <!-- fallback if file not yet placed -->
+          Your browser does not support HTML5 video.
+        </video>
+      </div>
+      <!-- If the video file is not placed yet, swap the above block with:
+      <div class="video-placeholder">
+        <div class="video-placeholder-icon">▶</div>
+        <div class="video-placeholder-text">Demo video</div>
+        <div class="video-placeholder-sub">Place agentintel-demo.mp4 next to this file</div>
+      </div>
+      -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ GUIDE CONTENT ══════════════════════════════════════════════════ -->
+<div class="guide-layout" id="guide-content">
+
+  <!-- Sidebar TOC -->
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#what-it-is">What AgentIntel Is</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#swarm">How the Swarm Works</a></li>
+      <li><a href="#sponsors">Sponsor Integrations</a></li>
+      <li><a href="#results">Live Results</a></li>
+      <li><a href="#stack">Tech Stack</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li><a href="#learnings">Learning Log</a></li>
+      <li><a href="#get-started">Get Started</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+
+    <!-- ── THE PROBLEM ─────────────────────────────────────────── -->
+    <section class="guide-section" id="problem">
+      <h2>The AI visibility gap nobody's measuring</h2>
+      <p>
+        When someone asks ChatGPT, Claude, or Gemini to recommend an agent framework, a SaaS tool, or a vendor — the model answers from its training data and retrieved context. Companies that show up are cited. Companies that don't, aren't. And there's currently no clear way to know which category you're in, or why.
+      </p>
+      <p>
+        This is sometimes called AEO (AI Engine Optimization) or GEO (Generative Engine Optimization). The names are new but the underlying problem is straightforward: AI models favour content that is structured, factually dense, and directly answers likely questions. Most websites aren't built for that. Most aren't even measured against it.
+      </p>
+
+      <div style="margin:1.5rem 0;border:1px solid var(--rw-border);border-radius:var(--rw-r-md);overflow:hidden;">
+        <div style="background:var(--rw-bg-subtle);padding:0.6rem 1rem;font-family:var(--rw-font-display);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--rw-text-subtle);">What most teams currently do</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);">
+          <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔍</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Guess</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">Assume Google SEO applies to AI. It mostly doesn't.</div>
+          </div>
+          <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">📊</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">No baseline</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">No score, no benchmark, no comparison to competitors.</div>
+          </div>
+          <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🤷</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Blind spots</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">Competitor content gaps are invisible until users switch.</div>
+          </div>
+          <div style="padding:1rem;text-align:center;">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔁</div>
+            <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Reactive</div>
+            <div style="font-size:0.75rem;color:var(--rw-text-muted);">Changes made after AI citations drop, not before.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout-cyan">
+        <strong>The specific gap AgentIntel tries to fill:</strong> an automated way to scrape a target site, benchmark it against competitors, score AI discoverability, identify content gaps, and produce prioritised recommendations — without a human doing all of it manually.
+      </div>
+    </section>
+
+    <!-- ── WHAT IT IS ──────────────────────────────────────────── -->
+    <section class="guide-section" id="what-it-is">
+      <h2>What AgentIntel actually is</h2>
+      <p>
+        AgentIntel is a hackathon project. It's a multi-agent system with a FastAPI backend, a Next.js frontend, and seven specialised agents that run in parallel to analyse a website. The output is a structured JSON report with GEO scores, knowledge gaps, and ranked recommendations.
+      </p>
+      <p>
+        It's not a product and it's not a SaaS. The codebase is on GitHub, the sponsors are integrated and live, and the results are real — but there's plenty that doesn't work cleanly yet and the limitations section is honest about that.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🕷️</div>
+          <h4>Scrape</h4>
+          <p>Fetches target and competitor URLs via httpx with a disk cache. Subsequent runs skip the network entirely.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🤖</div>
+          <h4>Analyse</h4>
+          <p>7 agents run in parallel. Each has a narrow job: knowledge extraction, GEO scoring, gap detection, or recommendation generation.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📋</div>
+          <h4>Report</h4>
+          <p>Structured JSON result: GEO scores per page, knowledge graph, competitor gaps, and up to 5 ranked recommendations with citations.</p>
+        </div>
+      </div>
+
+      <figure style="margin:1.75rem 0 0;">
+        <img
+          src="../images/agentintel-ui.png"
+          alt="AgentIntel query interface showing example queries and sponsor status bar"
+          style="width:100%;border-radius:12px;border:1px solid var(--rw-border);display:block;"
+          loading="lazy"
+        >
+        <figcaption style="font-size:0.75rem;color:var(--rw-text-subtle);margin-top:0.5rem;padding-left:2px;">
+          The query interface. Pre-filled example queries, a Loop checkbox for autonomous self-evolution, and the three sponsor connections shown live in the footer bar.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ── ARCHITECTURE ────────────────────────────────────────── -->
+    <section class="guide-section" id="architecture">
+      <h2>Architecture overview</h2>
+      <p>
+        The system has four layers: the Next.js frontend talks to a FastAPI backend via Server-Sent Events for real-time streaming. The backend runs the swarm in a thread pool and pushes agent step events to the browser as they happen. Results are stored locally and optionally pushed to the three sponsor integrations.
+      </p>
+
+      <!-- Layer diagram -->
+      <div style="margin:1.5rem 0;border:1px solid var(--rw-border);border-radius:var(--rw-r-md);overflow:hidden;">
+        <div style="background:var(--rw-bg-subtle);padding:0.55rem 1rem;font-family:var(--rw-font-display);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--rw-text-subtle);">System layers</div>
+        <div style="display:flex;flex-direction:column;gap:2px;padding:2px;">
+          <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
+            <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">UI</div>
+            <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">Next.js 15 · App Router</span>
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">SSE EventSource</span>
+              <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">Tailwind CSS · TypeScript</span>
+              <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">Port 3000</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">↕</div>
+          <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
+            <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">API</div>
+            <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">FastAPI · Uvicorn</span>
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">/analyze SSE stream</span>
+              <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">ThreadPoolExecutor</span>
+              <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">Port 8000</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">↕</div>
+          <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
+            <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">Agents</div>
+            <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+              <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Planner</span>
+              <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Website</span>
+              <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Competitor</span>
+              <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Knowledge</span>
+              <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">GEO</span>
+              <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Gap</span>
+              <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Recommendation</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">↕</div>
+          <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
+            <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">Sponsors</div>
+            <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">Band.ai · Chat Events</span>
+              <span style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Guild.ai · Sessions</span>
+              <span style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#fbbf24;font-family:var(--rw-font-display);font-weight:600;">Actian VectorAI · REST</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        The SSE pattern was a deliberate choice. The swarm takes 30–90 seconds and a blocking HTTP request would either time out or leave the user with a blank screen. With SSE, the frontend gets a <code>step</code> event for every agent completion and renders progress in real time. When the <code>done</code> event fires, the frontend fetches the full result from <code>GET /result</code>.
+      </p>
+    </section>
+
+    <!-- ── HOW THE SWARM WORKS ─────────────────────────────────── -->
+    <section class="guide-section" id="swarm">
+      <h2>How the swarm works</h2>
+      <p>
+        The swarm runs in three phases. Phase 1 is sequential: the planner decides the task breakdown, then website and competitor agents scrape in parallel threads. Phases 2 and 3 hand off to analysis agents that each receive the scraped content and produce structured JSON output via the LLM.
+      </p>
+
+      <!-- Agent nodes -->
+      <div class="agent-grid">
+        <div class="agent-node primary">
+          <div class="agent-node-icon">🧭</div>
+          <div class="agent-node-name">Planner</div>
+          <div class="agent-node-desc">Task breakdown and routing</div>
+        </div>
+        <div class="agent-node">
+          <div class="agent-node-icon">🌐</div>
+          <div class="agent-node-name">Website</div>
+          <div class="agent-node-desc">Scrapes target URLs</div>
+        </div>
+        <div class="agent-node">
+          <div class="agent-node-icon">🎯</div>
+          <div class="agent-node-name">Competitor</div>
+          <div class="agent-node-desc">Scrapes rival sites in parallel</div>
+        </div>
+        <div class="agent-node">
+          <div class="agent-node-icon">📚</div>
+          <div class="agent-node-name">Knowledge</div>
+          <div class="agent-node-desc">Extracts citable facts</div>
+        </div>
+        <div class="agent-node">
+          <div class="agent-node-icon">📍</div>
+          <div class="agent-node-name">GEO</div>
+          <div class="agent-node-desc">Scores AI discoverability</div>
+        </div>
+        <div class="agent-node">
+          <div class="agent-node-icon">🔬</div>
+          <div class="agent-node-name">Gap</div>
+          <div class="agent-node-desc">Compares vs competitors</div>
+        </div>
+        <div class="agent-node output">
+          <div class="agent-node-icon">💡</div>
+          <div class="agent-node-name">Recommend</div>
+          <div class="agent-node-desc">Ranked improvements</div>
+        </div>
+      </div>
+
+      <!-- Phase flow -->
+      <div class="phase-flow">
+        <div class="phase-col">
+          <div class="phase-label">Phase 1 · Ingest</div>
+          <div class="phase-item"><strong>Planner</strong>Breaks the query into tasks, assigns agents, sets priority order</div>
+          <div class="phase-item"><strong>Website + Competitor</strong>Run in parallel threads. Content cached to disk — subsequent runs skip the network</div>
+        </div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-col">
+          <div class="phase-label">Phase 2 · Analyse</div>
+          <div class="phase-item"><strong>Knowledge Agent</strong>Extracts entities, facts, citation candidates, and concept density</div>
+          <div class="phase-item"><strong>GEO Agent</strong>Scores each page 0–10 on direct answers, FAQs, examples, and citability</div>
+          <div class="phase-item"><strong>Gap Agent</strong>Finds topics competitors cover that the target site doesn't</div>
+        </div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-col">
+          <div class="phase-label">Phase 3 · Deliver</div>
+          <div class="phase-item"><strong>Recommendation Agent</strong>Generates up to 5 ranked, cited improvements with effort and expected GEO impact</div>
+          <div class="phase-item"><strong>Orchestrator</strong>Assembles the full result, streams it to the frontend, logs to sponsors</div>
+        </div>
+      </div>
+
+      <div class="callout-cyan">
+        <strong>On the LLM calls:</strong> every agent sends one structured JSON request via <code>_llm_openai()</code>. The <code>max_tokens</code> was initially 512 — which silently truncated the JSON output of the knowledge, gap, and recommendation agents, returning empty objects. Raised to 2048 and the problem disappeared. The parser also uses <code>json.JSONDecoder().raw_decode()</code> to handle trailing text after valid JSON, which models produce fairly often.
+      </div>
+    </section>
+
+    <!-- ── SPONSOR INTEGRATIONS ────────────────────────────────── -->
+    <section class="guide-section" id="sponsors">
+      <h2>Sponsor integrations</h2>
+      <p>
+        All three sponsor integrations are live. Each took a meaningful amount of debugging to get working — the docs were incomplete in all three cases, and the API behaviour wasn't what I expected.
+      </p>
+
+      <div class="sponsor-grid">
+        <div class="sponsor-card">
+          <div class="sponsor-logo">🎸</div>
+          <div>
+            <div class="sponsor-name">Band.ai</div>
+            <div class="sponsor-role">Agent-to-agent messaging</div>
+            <div class="sponsor-detail">
+              Every agent step is broadcast as a typed <code>thought</code> event to a Band chat room. The swarm registers itself as an external agent, creates a chat room on startup, and posts to it throughout the run.
+            </div>
+            <div class="sponsor-tag">X-API-Key · /me/agents/register · /agent/chats/{id}/events</div>
+          </div>
+        </div>
+        <div class="sponsor-card">
+          <div class="sponsor-logo">🏛️</div>
+          <div>
+            <div class="sponsor-name">Guild.ai</div>
+            <div class="sponsor-role">Session observability</div>
+            <div class="sponsor-detail">
+              Each swarm run creates a Guild workspace session. Agent steps are posted as user messages for a full audit trail. Auth via device-flow token.
+            </div>
+            <div class="sponsor-tag">Bearer token · /workspaces/{ws}/sessions · /sessions/{id}/events</div>
+          </div>
+        </div>
+        <div class="sponsor-card">
+          <div class="sponsor-logo">🗄️</div>
+          <div>
+            <div class="sponsor-name">Actian VectorAI</div>
+            <div class="sponsor-role">Knowledge persistence</div>
+            <div class="sponsor-detail">
+              Scraped page content is chunked and stored as vector embeddings in Actian's Qdrant-compatible REST API. The knowledge and GEO agents do semantic search over this store rather than re-reading raw HTML each time.
+            </div>
+            <div class="sponsor-tag">Qdrant-compatible · PUT /collections · POST /points/search</div>
+          </div>
+        </div>
+        <div class="sponsor-card">
+          <div class="sponsor-logo">🧠</div>
+          <div>
+            <div class="sponsor-name">OpenAI (+ Ollama fallback)</div>
+            <div class="sponsor-role">LLM reasoning</div>
+            <div class="sponsor-detail">
+              All 7 agents use <code>gpt-4.1-nano</code> via the OpenAI API. A single env variable switches to local Ollama — same prompts, same output structure, roughly 3–4x slower.
+            </div>
+            <div class="sponsor-tag">gpt-4.1-nano · Chat Completions · Ollama fallback</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout-indigo">
+        <strong>Auth discovery note:</strong> Band uses <code>X-API-Key</code> not Bearer, and request bodies are nested under a key (<code>{"agent": {...}}</code>, not flat). Guild's base URL is <code>https://app.guild.ai/api</code> — the documented <code>https://api.guild.ai/v1</code> doesn't resolve. Both were found by reading CLI source code, not documentation.
+      </div>
+    </section>
+
+    <!-- ── LIVE RESULTS ─────────────────────────────────────────── -->
+    <section class="guide-section" id="results">
+      <h2>What a real run produces</h2>
+      <p>
+        This is from iteration 14, run against OpenAI's agent docs compared with LangChain and CrewAI. The numbers aren't particularly surprising — OpenAI scores well on its own docs — but the gap analysis is where the value is.
+      </p>
+
+      <h3>GEO scores by page</h3>
+      <div style="background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);padding:1.25rem 1.5rem;margin:1rem 0;">
+        <div class="score-row">
+          <div class="score-label">OpenAI Docs (avg)</div>
+          <div class="score-track"><div class="score-fill" style="width:54%;background:linear-gradient(90deg,#22d3ee,#06b6d4);"></div></div>
+          <div class="score-val" style="color:#22d3ee;">5.4</div>
+        </div>
+        <div class="score-row">
+          <div class="score-label">LangChain</div>
+          <div class="score-track"><div class="score-fill" style="width:61%;background:#f59e0b;"></div></div>
+          <div class="score-val" style="color:#f59e0b;">6.1</div>
+        </div>
+        <div class="score-row">
+          <div class="score-label">CrewAI</div>
+          <div class="score-track"><div class="score-fill" style="width:58%;background:#f59e0b;"></div></div>
+          <div class="score-val" style="color:#f59e0b;">5.8</div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--rw-text-subtle);margin-top:0.75rem;">Score 0–10: direct answer density, FAQ presence, example coverage, citability. Averaged across 5 OpenAI pages.</div>
+      </div>
+
+      <h3>Content gaps found</h3>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Gap type</th>
+            <th>Missing from OpenAI</th>
+            <th>Present in</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Multi-step workflow tutorial</td>
+            <td>No step-by-step workflow composition guide</td>
+            <td>LangChain, CrewAI</td>
+          </tr>
+          <tr>
+            <td>Vector store + RAG integration</td>
+            <td>Retrieval integration not covered in agent docs</td>
+            <td>LangChain, CrewAI</td>
+          </tr>
+          <tr>
+            <td>Agent architecture visualisation</td>
+            <td>No diagrams showing internal structure</td>
+            <td>LangChain</td>
+          </tr>
+          <tr>
+            <td>Troubleshooting / common errors</td>
+            <td>No FAQ or error reference section</td>
+            <td>LangChain, CrewAI</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Top recommendations generated</h3>
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Multi-step workflow tutorial — High impact, Medium effort</h4>
+            <p>A step-by-step guide with runnable code showing how to compose multi-step agent workflows. LangChain and CrewAI both have this; the absence is a measurable gap in AI citation coverage.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Vector store + RAG integration guide — High impact, Medium effort</h4>
+            <p>How to connect retrieval systems to agents. Currently a blind spot in the docs despite being one of the most common agent patterns in practice.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Architecture diagrams — Medium impact, Low effort</h4>
+            <p>Visual diagrams of agent flow and internal structure. LangChain's diagrams appear frequently in AI model answers about agent architecture. OpenAI has none in the current docs.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Troubleshooting FAQ — High impact, Low effort</h4>
+            <p>Common errors, debugging tips, and definitions of key terms. Low effort to write, directly addresses AI citability (models favour structured Q&amp;A content).</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── TECH STACK ──────────────────────────────────────────── -->
+    <section class="guide-section" id="stack">
+      <h2>Tech stack</h2>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">⚡</div>
+          <h4>FastAPI + SSE</h4>
+          <p>Backend API with Server-Sent Events for real-time agent progress streaming. Uvicorn, Python 3.11+.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🖥️</div>
+          <h4>Next.js 15</h4>
+          <p>App Router, TypeScript, Tailwind CSS. Connects to the SSE stream via the browser's native <code>EventSource</code> API.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🧵</div>
+          <h4>ThreadPoolExecutor</h4>
+          <p>Website and competitor agents run in parallel threads. The SSE generator is a Python generator on the main thread — thread-safe step callbacks feed it.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">💾</div>
+          <h4>Disk cache</h4>
+          <p>Scraped HTML is hashed and cached to <code>data/scrape_cache/</code>. Re-running the swarm skips all network calls if the cache is warm.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🦙</div>
+          <h4>Ollama fallback</h4>
+          <p><code>USE_OPENAI=False</code> routes all LLM calls through local Ollama. Same prompt structure, same output format — useful for offline development.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔄</div>
+          <h4>Evolution loop</h4>
+          <p>Optional: <code>POST /loop/start</code> re-runs the swarm every N seconds autonomously, accumulating results across iterations.</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># Health endpoint — shows live sponsor status</span>
+GET /health
+
+{
+  <span class="cy">"status"</span>: <span class="st">"ok"</span>,
+  <span class="cy">"band_connected"</span>: <span class="kw">true</span>,
+  <span class="cy">"guild_connected"</span>: <span class="kw">true</span>,
+  <span class="cy">"actian_connected"</span>: <span class="kw">true</span>,
+  <span class="cy">"loop_running"</span>: <span class="kw">false</span>,
+  <span class="cy">"iteration"</span>: <span class="kw">14</span>
+}
+      </div>
+
+      <figure style="margin:1.5rem 0 0;">
+        <img
+          src="../images/agentintel-api-docs.png"
+          alt="FastAPI Swagger UI showing all AgentIntel API endpoints"
+          style="width:100%;border-radius:12px;border:1px solid var(--rw-border);display:block;"
+          loading="lazy"
+        >
+        <figcaption style="font-size:0.75rem;color:var(--rw-text-subtle);margin-top:0.5rem;padding-left:2px;">
+          All 11 endpoints exposed via the auto-generated Swagger UI at <code>/docs</code>. The <code>/analyze</code> and <code>/stop</code> routes are the primary control surface; <code>/stream</code>, <code>/result</code>, <code>/band/messages</code>, and <code>/guild/runs</code> support debugging and the frontend.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ── LIMITATIONS ─────────────────────────────────────────── -->
+    <section class="guide-section" id="limitations">
+      <h2>What doesn't work well yet</h2>
+      <p>
+        Being honest about the gaps is more useful than glossing over them.
+      </p>
+
+      <div class="callout-red">
+        <strong>GEO scores are heuristic, not ground truth.</strong> The scoring rubric (direct answers, FAQs, examples, citability) reflects reasonable intuitions about what AI models favour, but it's not validated against actual citation rates from real LLMs. Treat scores as directional signals, not measurements.
+      </div>
+
+      <div class="learning-grid">
+        <div class="learning-card discovery">
+          <div class="learning-card-label">Data Quality</div>
+          <h4>Scraper is basic — JavaScript-heavy sites return empty content</h4>
+          <p>httpx fetches raw HTML only. SPAs and sites that render content in the browser return near-empty pages. A Playwright or Puppeteer integration would fix this but adds complexity.</p>
+        </div>
+        <div class="learning-card discovery">
+          <div class="learning-card-label">LLM Variance</div>
+          <h4>Recommendation wording changes across runs</h4>
+          <p>The same site analysed twice can produce different recommendation ordering and wording. The underlying gap detection is fairly stable but the generated text isn't deterministic.</p>
+        </div>
+        <div class="learning-card discovery">
+          <div class="learning-card-label">Windows Specific</div>
+          <h4>Ghost TCP sockets on port 8000 require a reboot to clear</h4>
+          <p>A uvicorn reload race condition leaves a zombie socket that can't be killed by any normal Windows process tool. The only fix found was rebooting. This only affects development restarts, not production.</p>
+        </div>
+        <div class="learning-card discovery">
+          <div class="learning-card-label">Actian Integration</div>
+          <h4>Vector search is not yet used by all agents</h4>
+          <p>The ingest pipeline stores content in Actian and verifies the connection, but the knowledge and GEO agents currently read from the raw cached content rather than querying the vector store. Wiring this up is the next step.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LEARNING LOG ─────────────────────────────────────────── -->
+    <section class="guide-section" id="learnings">
+      <h2>Learning log</h2>
+      <p>
+        These are the specific things that went wrong, and how they were fixed. Organised by type: gotchas (bugs that weren't obvious), discoveries (things that work differently than assumed), and wins (patterns that worked well and are worth reusing).
+      </p>
+
+      <div class="learning-grid">
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · Band.ai</div>
+          <h4>X-API-Key, not Bearer — and nested JSON bodies</h4>
+          <p><code>Authorization: Bearer band_u_*</code> returns 401 every time. The correct header is <code>X-API-Key: band_u_*</code>. Request bodies are nested: <code>{"agent": {"name": "..."}}</code>, not flat. Found by reading the OpenAPI spec at <code>docs.band.ai/openapi.json</code>.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · Guild.ai</div>
+          <h4>api.guild.ai doesn't resolve — use app.guild.ai/api</h4>
+          <p>Every call to <code>https://api.guild.ai/v1</code> fails with a DNS error — the host doesn't exist. Correct base URL is <code>https://app.guild.ai/api</code> with no version prefix. Found by searching the <code>@guildai/cli</code> JavaScript source in the npx cache.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · OpenAI</div>
+          <h4>max_tokens=512 silently truncates JSON output</h4>
+          <p>Knowledge, gap, and recommendation agents returned empty <code>{}</code> with no error. The LLM was cutting off mid-JSON at 512 tokens. Raised to 2048 and added <code>json.JSONDecoder().raw_decode()</code> to handle trailing text after valid JSON.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · Band.ai</div>
+          <h4>Band agent key must be persisted — 409 on every restart</h4>
+          <p>Band issues the <code>band_a_*</code> key once on registration. Re-registering the same name returns 409 with no key in the response. Fixed by writing <code>BAND_AGENT_KEY</code> to <code>.env</code> immediately after first registration and reusing it on restarts.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · PowerShell</div>
+          <h4>$pid is a reserved automatic variable in PowerShell</h4>
+          <p><code>$pid</code> always holds the current PowerShell session's own process ID. Assigning <code>$pid = $conn.OwningProcess</code> silently fails — the variable snaps back. <code>Stop-Process -Id $pid</code> was trying to kill the shell itself. Renamed to <code>$processId</code>.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · Windows</div>
+          <h4>localhost resolves to IPv6 on Windows — use 127.0.0.1</h4>
+          <p>Windows 10/11 resolves <code>localhost</code> to <code>::1</code> (IPv6) first. If uvicorn or Actian listens on <code>0.0.0.0</code> (IPv4 only), the connection fails silently even though the service is running. Hardcoded <code>127.0.0.1</code> everywhere in startup scripts.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · PowerShell 5.1</div>
+          <h4>?? null-coalescing operator doesn't exist in PowerShell 5.1</h4>
+          <p>Windows ships with PowerShell 5.1 by default and never auto-upgrades. <code>??</code> was introduced in 7.0. The startup script silently failed on first run. Replaced with <code>if ($x) { $x } else { $default }</code>.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · Startup</div>
+          <h4>20s backend startup timeout too short when sponsors connect at init</h4>
+          <p>Band, Guild, and Actian each make outbound HTTP calls in <code>__init__</code>. On a cold start this totals 30–45 seconds. The startup script was reporting "backend not ready" and launching the frontend before the backend finished initialising. Extended wait to 60 seconds.</p>
+        </div>
+
+        <div class="learning-card gotcha">
+          <div class="learning-card-label">Gotcha · Python</div>
+          <h4>Don't access private attributes — use return values</h4>
+          <p>The orchestrator called <code>guild.start_run()</code> then later read <code>guild._current_run_id</code> directly. After the guild.py rewrite, that attribute could hold a stale ID from a previous run. Fixed by capturing the return value: <code>guild_run_id = guild.start_run(...)</code>.</p>
+        </div>
+
+        <div class="learning-card discovery">
+          <div class="learning-card-label">Discovery · Git</div>
+          <h4>.gitignore inline comments silently break pattern matching</h4>
+          <p>Writing <code>.env  # API keys</code> makes the whole string including the comment part of the pattern. <code>.env</code> was never ignored and appeared in every <code>git add</code>. Git only supports comments on their own dedicated line.</p>
+        </div>
+
+        <div class="learning-card discovery">
+          <div class="learning-card-label">Discovery · Git</div>
+          <h4>A nested .git directory causes submodule confusion</h4>
+          <p>The Next.js frontend was scaffolded with its own <code>.git/</code>. The root repo treated <code>frontend/</code> as an unregistered submodule and refused to track files inside it. Fixed by deleting <code>frontend/.git</code>, then <code>git rm --cached -f frontend</code>, then re-staging.</p>
+        </div>
+
+        <div class="learning-card win">
+          <div class="learning-card-label">Win · Architecture</div>
+          <h4>SSE streaming is the right pattern for long-running agent jobs</h4>
+          <p>A blocking HTTP request times out or leaves the user with nothing for 90 seconds. SSE lets the backend push each agent completion event as it happens. Pattern: run in thread → stream events → client fetches full result on <code>done</code>. Works cleanly in the browser with no WebSocket complexity.</p>
+        </div>
+
+        <div class="learning-card win">
+          <div class="learning-card-label">Win · API Discovery</div>
+          <h4>When docs are incomplete, read the CLI source code</h4>
+          <p>Both Band and Guild had incomplete or wrong documentation. The definitive source was the CLI JavaScript bundles in the npx cache — they contain the exact endpoint paths, request shapes, and auth headers used in production. <code>grep -r "X-API-Key\|/sessions" ~/.npm/_npx/</code> saved hours.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── GET STARTED ─────────────────────────────────────────── -->
+    <section class="guide-section" id="get-started">
+      <h2>Get started</h2>
+      <p>Prerequisites: Python 3.11+, Node 18+, and an OpenAI API key. The sponsor integrations are optional — the swarm runs without them.</p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Clone and set up the backend</h4>
+            <p>
+              <code>git clone https://github.com/researchsite/AgentIntel.git && cd AgentIntel/backend</code><br>
+              <code>python -m venv .venv && .venv/Scripts/activate</code><br>
+              <code>pip install -r requirements.txt</code>
+            </p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Configure .env</h4>
+            <p>Copy <code>.env.example</code> to <code>.env</code>. The only required key is <code>OPENAI_API_KEY</code>. Everything else — Ollama fallback, Band, Guild, Actian — is optional and the system runs without any of them.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Ingest content</h4>
+            <p><code>python ingest.py</code> — scrapes the configured target and competitor URLs and stores content. Takes ~30 seconds on a cold cache.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Start all services</h4>
+            <p>Windows: <code>.\start_all.ps1</code> — starts Actian if installed, waits for the backend to be ready (up to 60s), then starts the Next.js frontend. Or start each manually: <code>uvicorn main:app --port 8000</code> and <code>cd frontend && npm run dev</code>.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Check health and run</h4>
+            <p><code>curl http://127.0.0.1:8000/health</code> should return <code>{"status":"ok"}</code>. Open <strong>http://localhost:3000</strong>, enter a target URL, and watch the swarm run.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout-green">
+        <strong>Note on localhost vs 127.0.0.1:</strong> on Windows, use <code>127.0.0.1</code> explicitly in curl and the startup script. <code>localhost</code> can resolve to IPv6 and fail to connect to services listening on IPv4.
+      </div>
+
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.75rem;">
+        <a href="https://github.com/researchsite/AgentIntel" class="rw-btn rw-btn-primary" target="_blank">View on GitHub →</a>
+        <a href="#learnings" class="rw-btn rw-btn-ghost">Learning log ↑</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[
+       {"label":"CareerWiki — Local AI Career Knowledge Base","url":"/usecase/careerwiki-guide.html"},
+       {"label":"SentTriage — AI Email Triage","url":"/usecase/sent-triage.html"},
+       {"label":"ShadowShield AI — Security Research","url":"/usecase/shadowshield-ai.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>
