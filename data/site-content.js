@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "PanchangChef: Calendar-Aware Indian Recipe AI on Snowflake",
+        excerpt: "How I built an AI chef that reads the Hindu ritual calendar, enforces Sattvic fasting rules, and matches your pantry to 305 Indian recipes — inside Snowflake Cortex.",
+        date: "July 31, 2026",
+        image: "./images/panchangchef-og.jpg.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/panchangchef-guide.html",
+        linkedin: null
+      },
+      {
         title: "AgentIntel: I Built a Multi-Agent Swarm to Diagnose AI Visibility",
         excerpt: "How I built a 7-agent swarm at a hackathon that scrapes websites, benchmarks competitors, and generates AEO/GEO recommendations — with Band, Guild, and Actian wired in.",
         date: "July 24, 2026",
         image: "./images/agentintel-og.jpeg",
         type: "Usecase",
         link: "https://rawweights.com/usecase/agentintel-guide.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_agentintel-aeo-geo-activity-7486646388059951104-Qn6E"
       },
       {
         title: "CareerWiki: I Built a Local AI That Knows My Entire Career",
