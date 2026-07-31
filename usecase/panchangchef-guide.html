@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PanchangChef: Calendar-Aware Indian Recipe AI on Snowflake | RawWeights</title>
+  <meta name="description" content="How I built an AI chef that reads the Hindu ritual calendar, enforces Sattvic fasting rules, and matches your pantry to 305 Indian recipes — inside Snowflake Cortex.">
+  <meta name="author" content="Sham Sundar HC">
+  <link rel="canonical" href="https://rawweights.com/blog/panchangchef-guide.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="PanchangChef: Calendar-Aware Indian Recipe AI on Snowflake">
+  <meta property="og:description" content="305 Indian recipes. Hindu fasting calendar. Your pantry. One Snowflake Cortex Agent that speaks Hindi and respects Ekadashi.">
+  <meta property="og:image" content="https://rawweights.com/images/panchangchef-og.jpg">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Persona system: pure JS controls all display; CSS only sets initial hide ── */
+    .pb .p-cook,.pb .p-dev,.pb .p-data{display:none}
+    /* Banner items: JS restores display:flex when made visible */
+    .pb-banner-item{align-items:center;gap:1rem}
+
+    /* ── Guide hero ──────────────────────────────────────────────── */
+    .guide-hero{
+      background:linear-gradient(135deg,#0a0e1a 0%,#1a0e00 55%,#0a100a 100%);
+      padding:5rem 1.5rem 3.5rem;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .guide-hero::before{content:'';position:absolute;top:-20%;right:-5%;width:500px;height:500px;background:radial-gradient(circle,rgba(249,115,22,.2) 0%,transparent 65%);pointer-events:none}
+    .guide-hero::after{content:'';position:absolute;bottom:-10%;left:-5%;width:350px;height:350px;background:radial-gradient(circle,rgba(16,185,129,.12) 0%,transparent 65%);pointer-events:none}
+    .guide-hero-inner{max-width:800px;margin:0 auto;position:relative}
+    .guide-hero-label{display:inline-flex;align-items:center;gap:.4rem;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);border-radius:9999px;padding:.3rem .9rem;font-size:.72rem;font-weight:700;color:var(--rw-orange);text-transform:uppercase;letter-spacing:.07em;font-family:var(--rw-font-display);margin-bottom:1.25rem}
+    .guide-hero h1{font-family:var(--rw-font-display);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;color:#f0f4ff;line-height:1.1;letter-spacing:-.025em;margin-bottom:1rem}
+    .guide-hero h1 span{color:var(--rw-orange)}
+    .guide-hero>.guide-hero-inner>p{font-size:1.05rem;color:rgba(240,244,255,.72);max-width:600px;margin:0 auto 1.75rem;line-height:1.7}
+    .hero-meta{display:flex;align-items:center;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;font-size:.85rem;color:rgba(240,244,255,.5);font-family:var(--rw-font-display)}
+    .hero-meta strong{color:rgba(240,244,255,.8)}
+    .hero-stat-bar{display:flex;border:1px solid rgba(249,115,22,.18);border-radius:var(--rw-r-md);overflow:hidden;max-width:520px;margin:0 auto 2rem;background:rgba(0,0,0,.25)}
+    .hs{flex:1;padding:.9rem .5rem;text-align:center;border-right:1px solid rgba(249,115,22,.1)}
+    .hs:last-child{border-right:none}
+    .hs-n{font-family:var(--rw-font-display);font-size:1.5rem;font-weight:800;color:var(--rw-orange);line-height:1;margin-bottom:.2rem}
+    .hs-l{font-size:.62rem;color:rgba(240,244,255,.4);font-family:var(--rw-font-display);text-transform:uppercase;letter-spacing:.05em}
+
+
+    /* Guide layout */
+    .guide-layout{display:grid;grid-template-columns:220px 1fr;gap:2.5rem;max-width:1200px;margin:2.5rem auto;padding:0 1.5rem;align-items:start}
+    .guide-sidebar{position:sticky;top:calc(var(--rw-nav-height) + 1.5rem)}
+    .guide-toc-label{font-family:var(--rw-font-display);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--rw-text-subtle);margin-bottom:.75rem}
+    .guide-toc{list-style:none;display:flex;flex-direction:column;gap:.1rem}
+    .guide-toc a{font-size:.82rem;color:var(--rw-text-muted);text-decoration:none;padding:.28rem .6rem;border-left:2px solid transparent;display:block;border-radius:0 4px 4px 0;transition:color .15s,border-color .15s,background .15s}
+    .guide-toc a:hover,.guide-toc a.active{color:var(--rw-orange);border-left-color:var(--rw-orange);background:var(--rw-orange-light)}
+    .guide-toc .toc-h3{padding-left:1rem;font-size:.76rem}
+
+    /* Sections */
+    .guide-section{margin-bottom:3rem}
+    .guide-section h2{font-family:var(--rw-font-display);font-size:1.5rem;font-weight:800;color:var(--rw-text);margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:2px solid var(--rw-orange-light);scroll-margin-top:calc(var(--rw-nav-height) + 1rem)}
+    .guide-section h3{font-family:var(--rw-font-display);font-size:1.05rem;font-weight:700;color:var(--rw-text);margin:1.25rem 0 .4rem;scroll-margin-top:calc(var(--rw-nav-height) + 1rem)}
+    .guide-section p{font-size:.95rem;color:var(--rw-text-muted);line-height:1.72;margin-bottom:.85rem}
+
+    /* Feature grid */
+    .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.25rem 0}
+    .feature-card{background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);padding:1.1rem;position:relative;overflow:hidden}
+    .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--rw-orange),#f59e0b)}
+    .fc-icon{font-size:1.4rem;margin-bottom:.5rem}
+    .fc-role{font-size:.72rem;color:var(--rw-orange);font-family:var(--rw-font-display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+    .feature-card h4{font-family:var(--rw-font-display);font-size:.9rem;font-weight:700;color:var(--rw-text);margin-bottom:.35rem}
+    .feature-card p{font-size:.82rem;color:var(--rw-text-muted);margin:0 0 .5rem;line-height:1.55}
+    .fc-value{font-size:.78rem;color:var(--rw-text-subtle);line-height:1.5;border-top:1px solid var(--rw-border);padding-top:.45rem;margin-top:.45rem}
+
+    /* How it works — icon chips */
+    .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1.25rem 0}
+    .how-card{background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);padding:1rem;display:flex;gap:.75rem;align-items:flex-start}
+    .how-num{width:26px;height:26px;border-radius:50%;background:var(--rw-orange);color:#fff;font-family:var(--rw-font-display);font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+    .how-card h4{font-family:var(--rw-font-display);font-size:.85rem;font-weight:700;color:var(--rw-text);margin-bottom:.2rem}
+    .how-card p{font-size:.78rem;color:var(--rw-text-muted);margin:0;line-height:1.55}
+
+    /* Data chips */
+    .data-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin:.75rem 0}
+    .chip{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .75rem;border-radius:9999px;font-size:.8rem;font-weight:600;font-family:var(--rw-font-display)}
+    .chip-orange{background:var(--rw-orange-light);color:var(--rw-orange);border:1px solid rgba(249,115,22,.2)}
+    .chip-indigo{background:var(--rw-indigo-light);color:var(--rw-indigo);border:1px solid rgba(99,102,241,.2)}
+    .chip-green{background:rgba(16,185,129,.1);color:#059669;border:1px solid rgba(16,185,129,.2)}
+    .chip-gray{background:var(--rw-bg-subtle);color:var(--rw-text-subtle);border:1px solid var(--rw-border)}
+
+    /* Comparison table */
+    .comparison-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.88rem}
+    .comparison-table th{background:var(--rw-bg-subtle);font-family:var(--rw-font-display);font-weight:700;font-size:.78rem;text-align:left;padding:.65rem .9rem;border-bottom:2px solid var(--rw-border);color:var(--rw-text);text-transform:uppercase;letter-spacing:.04em}
+    .comparison-table td{padding:.6rem .9rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);vertical-align:top}
+    .comparison-table tr:hover td{background:var(--rw-bg-alt)}
+
+    /* Architecture SVG wrapper */
+    .arch-svg-wrap{margin:1.25rem 0;border-radius:var(--rw-r-md);overflow:hidden;border:1px solid var(--rw-border)}
+    .arch-svg-wrap svg{width:100%;height:auto;display:block}
+
+    /* Build steps (compact) */
+    .build-steps{display:flex;flex-direction:column;gap:.75rem;margin:1rem 0}
+    .build-step{display:grid;grid-template-columns:36px 1fr auto;gap:.75rem;align-items:start;background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);padding:.9rem 1rem}
+    .bs-num{width:28px;height:28px;border-radius:50%;background:var(--rw-orange);color:#fff;font-family:var(--rw-font-display);font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+    .bs-title{font-family:var(--rw-font-display);font-size:.92rem;font-weight:700;color:var(--rw-text);margin-bottom:.2rem}
+    .bs-desc{font-size:.82rem;color:var(--rw-text-muted);line-height:1.55;margin:0}
+    .bs-badge{font-size:.68rem;font-weight:700;font-family:var(--rw-font-display);padding:.1rem .45rem;border-radius:4px;background:var(--rw-orange-light);color:var(--rw-orange);border:1px solid rgba(249,115,22,.2);white-space:nowrap;align-self:start;margin-top:.2rem}
+
+    /* Discovery callout */
+    .disc{background:var(--rw-orange-light);border-left:3px solid var(--rw-orange);border-radius:0 var(--rw-r) var(--rw-r) 0;padding:.85rem 1.1rem;margin:.75rem 0}
+    .disc-label{font-family:var(--rw-font-display);font-size:.67rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--rw-orange);margin-bottom:.3rem}
+    .disc p{font-size:.88rem;color:var(--rw-text-muted);line-height:1.6;margin:0}
+
+    /* Log panel */
+    .log-panel{background:#0f172a;padding:1.1rem 1.25rem;font-family:var(--rw-font-mono);font-size:.8rem;line-height:1.7;border-radius:var(--rw-r-md);overflow-x:auto;white-space:pre-wrap;border:1px solid #1e293b;margin:1rem 0}
+    .log-label{display:block;font-size:.62rem;font-weight:700;font-family:var(--rw-font-display);text-transform:uppercase;letter-spacing:.1em;color:#22c55e;margin-bottom:.5rem;opacity:.8}
+    .log-text{color:rgba(240,244,255,.85)}
+
+    /* Recipe results */
+    .recipe-results{background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);overflow:hidden;margin:1rem 0}
+    .rr-header{background:var(--rw-bg-subtle);padding:.5rem 1rem;font-family:var(--rw-font-display);font-size:.68rem;font-weight:700;color:var(--rw-text-subtle);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--rw-border);display:flex;align-items:center;gap:.45rem}
+    .rr-header::before{content:'';width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0}
+    .recipe-row{display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;border-bottom:1px solid var(--rw-border)}
+    .recipe-row:last-child{border-bottom:none}
+    .rr-rank{font-family:var(--rw-font-display);font-size:.85rem;font-weight:800;color:var(--rw-text-subtle);width:22px;flex-shrink:0}
+    .rr-name{flex:1}
+    .rr-en{font-size:.88rem;font-weight:600;color:var(--rw-text)}
+    .rr-hi{font-size:.74rem;color:var(--rw-text-subtle)}
+    .rr-time{font-size:.73rem;color:var(--rw-text-subtle);flex-shrink:0}
+    .rr-pct{font-family:var(--rw-font-display);font-size:.88rem;font-weight:800;color:var(--rw-orange);width:48px;text-align:right;flex-shrink:0}
+
+    /* Screenshot */
+    .ss-wrap{margin:1.25rem 0}
+    .ss-wrap img{width:100%;border-radius:var(--rw-r-md);border:1px solid var(--rw-border);box-shadow:0 4px 24px rgba(0,0,0,.25);display:block;cursor:zoom-in;transition:opacity .15s}
+    .ss-wrap img:hover{opacity:.88}
+    .ss-caption{font-family:var(--rw-font-display);font-size:.72rem;color:var(--rw-text-subtle);margin-top:.45rem;padding-left:.2rem;line-height:1.5}
+    .ss-caption strong{color:var(--rw-text-muted)}
+    .ss-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.25rem 0}
+    .ss-grid .ss-wrap{margin:0}
+
+    /* Lightbox */
+    .lb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(4px)}
+    .lb-overlay.open{display:flex}
+    .lb-inner{position:relative;max-width:92vw;max-height:90vh}
+    .lb-inner img{max-width:100%;max-height:90vh;border-radius:var(--rw-r-md);box-shadow:0 8px 48px rgba(0,0,0,.6);display:block;object-fit:contain}
+    .lb-caption{font-family:var(--rw-font-display);font-size:.75rem;color:rgba(240,244,255,.55);margin-top:.6rem;text-align:center;line-height:1.5}
+    .lb-close{position:absolute;top:-.9rem;right:-.9rem;width:2rem;height:2rem;border-radius:50%;background:#1e293b;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);font-size:1rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+    .lb-close:hover{background:var(--rw-orange);color:#fff}
+
+    /* Learnings grid */
+    .learnings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.85rem;margin:1.25rem 0}
+    .lc{background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);padding:.9rem 1.1rem}
+    .lc-n{font-family:var(--rw-font-display);font-size:.65rem;font-weight:800;color:var(--rw-orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem}
+    .lc h4{font-family:var(--rw-font-display);font-size:.87rem;font-weight:700;color:var(--rw-text);margin-bottom:.28rem}
+    .lc p{font-size:.8rem;color:var(--rw-text-muted);line-height:1.55;margin:0}
+
+    /* Get started: 3-step visual workflow */
+    .gs-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;margin:1.25rem 0;align-items:start}
+    .gs-step{background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);padding:1.1rem;text-align:center}
+    .gs-step-icon{font-size:1.75rem;margin-bottom:.5rem}
+    .gs-step-num{display:inline-block;font-family:var(--rw-font-display);font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;background:var(--rw-orange);color:#fff;border-radius:9999px;padding:.15rem .6rem;margin-bottom:.4rem}
+    .gs-step h4{font-family:var(--rw-font-display);font-size:.9rem;font-weight:700;color:var(--rw-text);margin-bottom:.35rem}
+    .gs-step p{font-size:.78rem;color:var(--rw-text-muted);line-height:1.55;margin:0 0 .6rem}
+    .gs-step code{display:block;background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:.5rem .65rem;font-family:var(--rw-font-mono);font-size:.72rem;color:var(--rw-text);text-align:left;margin-top:.5rem;white-space:pre-wrap;word-break:break-all}
+    .gs-arrow{display:flex;align-items:center;justify-content:center;padding:0 .5rem;font-size:1.2rem;color:var(--rw-orange);margin-top:3.5rem}
+
+    @media(max-width:1024px){
+      .guide-layout{grid-template-columns:1fr}
+      .guide-sidebar{position:static}
+      .feature-grid,.how-grid{grid-template-columns:repeat(2,1fr)}
+      .gs-flow{grid-template-columns:1fr;gap:.75rem}
+      .gs-arrow{display:none}
+      .learnings-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:600px){
+      .feature-grid,.how-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="guide-hero-inner">
+    <span class="guide-hero-label">🍛 Build Log · Snowflake Cortex · Agentic AI</span>
+    <h1>I Built a <span>Calendar-Aware</span><br>Indian Recipe AI</h1>
+    <p>PanchangChef checks the Hindu ritual calendar, enforces Sattvic rules on Ekadashi, understands Hindi ingredient names, and ranks 305 recipes by your pantry — entirely in Snowflake SQL.</p>
+
+    <div class="hero-meta">
+      <strong>Sham Sundar HC</strong>&nbsp;·&nbsp;July 2026&nbsp;·&nbsp;15 min read
+    </div>
+
+    <div class="hero-stat-bar">
+      <div class="hs"><div class="hs-n">305</div><div class="hs-l">Recipes</div></div>
+      <div class="hs"><div class="hs-n">176</div><div class="hs-l">Fasting Dates</div></div>
+      <div class="hs"><div class="hs-n">6</div><div class="hs-l">Build Steps</div></div>
+      <div class="hs"><div class="hs-n">0</div><div class="hs-l">Lines Python</div></div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+      <a href="#guide-content" class="rw-btn rw-btn-primary">Read the Build →</a>
+      <a href="https://github.com/researchsite/PanchangChef" target="_new" class="rw-btn rw-btn-primary">View in Guthub →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Layout ──────────────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <!-- Sidebar -->
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#what">What It Does</a></li>
+      <li><a href="#data">The Data</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#build">The Build</a></li>
+      <li><a href="#s0" class="toc-h3">Step 0 — CoCo Setup</a></li>
+      <li><a href="#s1" class="toc-h3">Step 1 — Load Data</a></li>
+      <li><a href="#s3" class="toc-h3">Step 3 — Core View</a></li>
+      <li><a href="#s4" class="toc-h3">Step 4 — AI_COMPLETE</a></li>
+      <li><a href="#s5" class="toc-h3">Step 5 — Search + Agent</a></li>
+      <li><a href="#s6" class="toc-h3">Step 6 — MCP</a></li>
+      <li><a href="#results">Live Results</a></li>
+      <li><a href="#learnings">7 Things Learned</a></li>
+      <li><a href="#start">Get Started</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main -->
+  <main>
+
+    <!-- WHAT IT DOES ────────────────────────────────────────────── -->
+    <section class="guide-section" id="what">
+      <h2>What It Does</h2>
+
+      <!-- Persona-aware intro — ALL sections now update on persona click -->
+      <div class="pb">
+        <div class="p-all"><p>Six things happen automatically, in the right order, every time you ask a question.</p></div>
+        <div class="p-cook"><p>You ask in plain English or Hindi. PanchangChef handles the calendar, the dietary rules, and the pantry matching before it says a word.</p></div>
+        <div class="p-dev"><p>Six Snowflake objects, each calling the next. The interesting part is how <code class="rw-code">DAYOFWEEK()</code> and a 176-row calendar table do the work of what most apps build into application logic.</p></div>
+        <div class="p-data"><p>This is a live view → materialized table → vector index → agent pipeline, fully SQL-native. No orchestration framework, no containers.</p></div>
+      </div>
+
+      <div class="how-grid">
+        <div class="how-card"><div class="how-num">1</div><div><h4>Calendar check</h4><p>DAYOFWEEK() + CALENDAR table detects today's fast — Ekadashi, Navratri, or weekly (Mon/Tue/Thu/Sat).</p></div></div>
+        <div class="how-card"><div class="how-num">2</div><div><h4>Dietary filter</h4><p>Sattvic removes onion/garlic/non-veg. Veg removes non-veg only. Unrestricted shows all 305.</p></div></div>
+        <div class="how-card"><div class="how-num">3</div><div><h4>Pantry match</h4><p>MY_PANTRY (30 bilingual items) scored against each recipe's LISTAGG'd ingredients. 100% = cook now.</p></div></div>
+        <div class="how-card"><div class="how-num">4</div><div><h4>Semantic search</h4><p>Cortex Search (arctic-embed-m-v1.5) handles "aloo" ≈ "potato" without an explicit synonym map.</p></div></div>
+        <div class="how-card"><div class="how-num">5</div><div><h4>Warm response</h4><p>AI_COMPLETE wraps results in bilingual Hindi-English with the "Namaste, Beta!" format and what to buy.</p></div></div>
+        <div class="how-card"><div class="how-num">6</div><div><h4>MCP endpoint</h4><p>DESI_CHEF_MCP exposes everything to Claude Desktop or Cursor via OAuth. One natural language query.</p></div></div>
+      </div>
+    </section>
+
+    <!-- THE DATA ─────────────────────────────────────────────────── -->
+    <section class="guide-section" id="data">
+      <h2>The Data</h2>
+
+      <div class="pb">
+        <div class="p-all"><p>Four tables. Two are from a public GitHub dataset — no Kaggle login needed.</p></div>
+        <div class="p-cook"><p>Think of CALENDAR as the almanac and MY_PANTRY as your fridge list. You edit the pantry CSV to match your kitchen — everything else runs on its own.</p></div>
+        <div class="p-dev"><p>This is relational data — not flat CSVs. RECIPE_BASE + RECIPE_INGREDIENTS joined via RECIPE_ID forces you to learn GROUP BY + LISTAGG, the core SQL pattern this whole project depends on.</p></div>
+        <div class="p-data"><p>The 3-table recipe schema forces a LISTAGG aggregation. That aggregated string is simultaneously the Sattvic-detection surface (LIKE '%onion%') and the Cortex Search payload — two problems solved by one GROUP BY.</p></div>
+      </div>
+
+      <table class="comparison-table">
+        <thead><tr><th>Table</th><th>Rows</th><th>Source</th><th>Key Columns</th></tr></thead>
+        <tbody>
+          <tr><td><code class="rw-code">RECIPE_BASE</code></td><td>305</td><td>GitHub: War004/food-eaten-in-india</td><td>RECIPE_ID, name (EN + local), IS_NON_VEG, cook time</td></tr>
+          <tr><td><code class="rw-code">RECIPE_INGREDIENTS</code></td><td>2,147</td><td>Same</td><td>RECIPE_ID, NAME, AMOUNT, UNIT</td></tr>
+          <tr><td><code class="rw-code">CALENDAR</code></td><td>176</td><td>Custom CSV</td><td>DATE, festival_name, fast_type, restriction_level</td></tr>
+          <tr><td><code class="rw-code">MY_PANTRY</code></td><td>30</td><td>Edit to match your kitchen</td><td>INGREDIENT_NAME, HINDI_NAME, category</td></tr>
+        </tbody>
+      </table>
+
+      <div class="data-chips">
+        <span class="chip chip-orange">65% Vegetarian</span>
+        <span class="chip chip-indigo">35% Non-Veg</span>
+        <span class="chip chip-green">MIT License</span>
+        <span class="chip chip-gray">Salt appears in 214/305 recipes</span>
+        <span class="chip chip-gray">Turmeric in 70 · Ginger in 53</span>
+      </div>
+
+      <div class="ss-wrap">
+        <img src="../images/ss-calendar.png" alt="Snowsight CALENDAR table showing Ekadashi and Navratri fasting dates with restriction_level column">
+        <div class="ss-caption"><strong>CALENDAR table</strong> — 176 fasting dates (2024–2027). Ekadashi, Navratri, Mahashivratri. restriction_level drives the diet filter in V_CONTEXTUAL_RECIPES.</div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE ────────────────────────────────────────────── -->
+    <section class="guide-section" id="architecture">
+      <h2>Architecture</h2>
+
+      <div class="pb">
+        <div class="p-all"><p>Six layers. Every one stays inside Snowflake.</p></div>
+        <div class="p-cook"><p>Your question flows in from Claude Desktop. The answer comes back with the fast context already applied. You never touch SQL.</p></div>
+        <div class="p-dev"><p>V_CONTEXTUAL_RECIPES is a live view — recalculates on every query. RECIPE_SEARCH_BASE is the only snapshot (needs a daily Task to stay current).</p></div>
+        <div class="p-data"><p>Two read paths: semantic retrieval (RECIPE_SEARCH → RECIPE_SEARCH_BASE snapshot) and real-time context (V_CONTEXTUAL_RECIPES live join). The agent uses both on each query.</p></div>
+      </div>
+
+      <!-- SVG Architecture Diagram -->
+      <div class="arch-svg-wrap">
+        <svg viewBox="0 0 680 530" xmlns="http://www.w3.org/2000/svg" font-family="'Space Grotesk', system-ui, sans-serif">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="#f97316"/>
+            </marker>
+            <filter id="glow-o" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+              <feFlood flood-color="#f97316" flood-opacity=".3" result="color"/>
+              <feComposite in="color" in2="blur" operator="in" result="shadow"/>
+              <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Background -->
+          <rect width="680" height="530" fill="#0d1117"/>
+          <!-- Layer labels on left -->
+          <text x="8" y="46" font-size="8" font-weight="700" fill="#374151" letter-spacing=".06em" text-anchor="start">USER</text>
+          <text x="8" y="124" font-size="8" font-weight="700" fill="#374151" letter-spacing=".06em" text-anchor="start">CLIENT</text>
+          <text x="8" y="204" font-size="8" font-weight="700" fill="#374151" letter-spacing=".06em" text-anchor="start">MCP</text>
+          <text x="8" y="288" font-size="8" font-weight="700" fill="#f97316" letter-spacing=".06em" text-anchor="start">AGENT</text>
+          <text x="8" y="374" font-size="8" font-weight="700" fill="#374151" letter-spacing=".06em" text-anchor="start">TOOLS</text>
+          <text x="8" y="454" font-size="8" font-weight="700" fill="#374151" letter-spacing=".06em" text-anchor="start">VIEW</text>
+          <text x="8" y="514" font-size="8" font-weight="700" fill="#374151" letter-spacing=".06em" text-anchor="start">DATA</text>
+
+          <!-- ── Row 1: User Kitchen ── -->
+          <rect x="200" y="18" width="280" height="46" rx="23" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+          <text x="340" y="37" text-anchor="middle" font-size="9" font-weight="700" fill="#94a3b8" letter-spacing=".05em">YOUR KITCHEN</text>
+          <text x="340" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="#f1f5f9">"mere paas aloo, gobi, jeera hai…"</text>
+
+          <!-- Arrow 1→2 -->
+          <line x1="340" y1="64" x2="340" y2="94" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- ── Row 2: Claude Desktop ── -->
+          <rect x="120" y="98" width="440" height="46" rx="10" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="200" y="119" text-anchor="middle" font-size="9" font-weight="700" fill="#60a5fa" letter-spacing=".05em">MCP CLIENT</text>
+          <text x="375" y="127" text-anchor="middle" font-size="13" font-weight="700" fill="#f1f5f9">Claude Desktop / VS Code</text>
+
+          <!-- Arrow 2→3 with OAuth label -->
+          <line x1="340" y1="144" x2="340" y2="178" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="305" y="152" width="70" height="16" rx="8" fill="#1a0800"/>
+          <text x="340" y="163" text-anchor="middle" font-size="9" font-weight="700" fill="#fb923c">OAuth</text>
+
+          <!-- ── Row 3: DESI_CHEF_MCP ── -->
+          <rect x="160" y="182" width="360" height="46" rx="10" fill="#0f0800" stroke="#f97316" stroke-width="1.5" filter="url(#glow-o)"/>
+          <text x="248" y="200" text-anchor="middle" font-size="9" font-weight="700" fill="#f97316" letter-spacing=".05em">MCP SERVER</text>
+          <text x="380" y="211" text-anchor="middle" font-size="13" font-weight="700" fill="#fb923c">DESI_CHEF_MCP</text>
+
+          <!-- Arrow 3→4 -->
+          <line x1="340" y1="228" x2="340" y2="258" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- ── Row 4: DESI_CHEF_AGENT ── -->
+          <rect x="50" y="262" width="580" height="56" rx="12" fill="#1a0800" stroke="#f97316" stroke-width="2"/>
+          <text x="175" y="282" text-anchor="middle" font-size="9" font-weight="700" fill="#f97316" letter-spacing=".05em">CORTEX AGENT</text>
+          <text x="380" y="297" text-anchor="middle" font-size="15" font-weight="800" fill="#fb923c">DESI_CHEF_AGENT</text>
+          <text x="565" y="282" text-anchor="middle" font-size="9" fill="#92400e">orchestration: auto</text>
+
+          <!-- Fork arrows from agent: left to RECIPE_SEARCH, right to data_to_chart -->
+          <polyline points="340,318 340,342 170,342 170,358" fill="none" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr)"/>
+          <polyline points="340,318 340,342 510,342 510,358" fill="none" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- ── Row 5a: RECIPE_SEARCH ── -->
+          <rect x="40" y="362" width="260" height="46" rx="10" fill="#0a1a1e" stroke="#06b6d4" stroke-width="1.5"/>
+          <text x="120" y="379" text-anchor="middle" font-size="9" font-weight="700" fill="#06b6d4" letter-spacing=".05em">CORTEX SEARCH</text>
+          <text x="170" y="397" text-anchor="middle" font-size="12" font-weight="700" fill="#67e8f9">RECIPE_SEARCH</text>
+
+          <!-- ── Row 5b: data_to_chart ── -->
+          <rect x="380" y="362" width="260" height="46" rx="10" fill="#0a1a0e" stroke="#10b981" stroke-width="1.5"/>
+          <text x="470" y="379" text-anchor="middle" font-size="9" font-weight="700" fill="#10b981" letter-spacing=".05em">BUILT-IN TOOL</text>
+          <text x="510" y="397" text-anchor="middle" font-size="12" font-weight="700" fill="#6ee7b7">data_to_chart</text>
+
+          <!-- Arrow RECIPE_SEARCH → V_CONTEXTUAL_RECIPES (via base note) -->
+          <line x1="170" y1="408" x2="170" y2="434" stroke="#06b6d4" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <rect x="90" y="416" width="160" height="14" rx="7" fill="#0a1a1e"/>
+          <text x="170" y="426" text-anchor="middle" font-size="8" fill="#0e7490">via RECIPE_SEARCH_BASE</text>
+
+          <!-- ── Row 6: V_CONTEXTUAL_RECIPES ── -->
+          <rect x="40" y="438" width="600" height="52" rx="12" fill="#0a1200" stroke="#84cc16" stroke-width="2"/>
+          <text x="175" y="456" text-anchor="middle" font-size="9" font-weight="700" fill="#84cc16" letter-spacing=".05em">LIVE VIEW · ALWAYS CURRENT</text>
+          <text x="380" y="472" text-anchor="middle" font-size="14" font-weight="800" fill="#bef264">V_CONTEXTUAL_RECIPES</text>
+
+          <!-- 3 arrows from view to source chips -->
+          <polyline points="180,490 180,506" fill="none" stroke="#84cc16" stroke-width="1.5" marker-end="url(#arr)"/>
+          <polyline points="340,490 340,506" fill="none" stroke="#84cc16" stroke-width="1.5" marker-end="url(#arr)"/>
+          <polyline points="508,490 508,506" fill="none" stroke="#84cc16" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- ── Row 7: Source chips ── -->
+          <rect x="40" y="506" width="270" height="16" rx="8" fill="#0f2200" stroke="#4d7c0f" stroke-width="1"/>
+          <text x="175" y="518" text-anchor="middle" font-size="9" font-weight="700" fill="#a3e635">CALENDAR (176 fasting dates)</text>
+
+          <rect x="235" y="506" width="210" height="16" rx="8" fill="#0f2200" stroke="#4d7c0f" stroke-width="1"/>
+          <text x="340" y="518" text-anchor="middle" font-size="9" font-weight="700" fill="#a3e635">RECIPE_BASE + INGREDIENTS</text>
+
+          <rect x="370" y="506" width="270" height="16" rx="8" fill="#0f2200" stroke="#4d7c0f" stroke-width="1"/>
+          <text x="505" y="518" text-anchor="middle" font-size="9" font-weight="700" fill="#a3e635">MY_PANTRY (bilingual, 30 items)</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- THE BUILD ─────────────────────────────────────────────────── -->
+    <section class="guide-section" id="build">
+      <h2>The Build</h2>
+
+      <div class="pb">
+        <div class="p-all"><p>CoCo (Cortex Code) writes the SQL from English prompts. Six steps, blank account to live MCP server.</p></div>
+        <div class="p-cook"><p>You won't run these steps yourself — but this is how the agent was built. Skip ahead to <a href="#results" style="color:var(--rw-orange)">Live Results</a> to see what it produces.</p></div>
+        <div class="p-dev"><p>Every CoCo prompt is pre-written in <code class="rw-code">docs/STEP_BY_STEP_GUIDE.md</code>. The gotcha callouts below show exactly where I hit walls and how CoCo recovered.</p></div>
+        <div class="p-data"><p>Steps 5 and 6 are where Cortex's architecture constraints surface. The CTE→materialized table pattern and the Agent DDL quoting issue are the two things you need to know before starting.</p></div>
+      </div>
+
+      <h3 id="s0">Step 0 — AGENTS.md + CoCo CLI</h3>
+      <div class="build-steps">
+        <div class="build-step">
+          <div class="bs-num">0</div>
+          <div>
+            <div class="bs-title">Create AGENTS.md — CoCo reads this every session</div>
+            <p class="bs-desc">Includes account ID, warehouse, bilingual ingredient map (aloo=potato, jeera=cumin…), and dietary constraint rules. Under 200 lines for best compliance. Launch with <code class="rw-code">cortex</code> from project root.</p>
+          </div>
+          <div class="bs-badge">Foundation</div>
+        </div>
+      </div>
+
+      <h3 id="s1">Step 1 — Load Data</h3>
+      <div class="build-steps">
+        <div class="build-step">
+          <div class="bs-num">1</div>
+          <div>
+            <div class="bs-title">Stage → COPY INTO → 4 tables</div>
+            <p class="bs-desc">Upload 4 CSVs via Snowsight → Data → Add Data → Load Into Stage. Then COPY INTO RECIPE_BASE (305), RECIPE_INGREDIENTS (2,147), CALENDAR (176), MY_PANTRY (30).</p>
+          </div>
+          <div class="bs-badge">~5 min</div>
+        </div>
+      </div>
+      <div class="pb">
+        <div class="p-all"></div>
+        <div class="p-cook"></div>
+        <div class="p-dev">
+          <div class="disc"><div class="disc-label">Gotcha — 0 files processed</div><p>CoCo assumed <code class="rw-code">.gz</code> (compressed). Files were plain CSV. Fix: run <code class="rw-code">LIST @STAGE</code> first — see actual filenames — then re-run COPY INTO without the suffix.</p></div>
+        </div>
+        <div class="p-data">
+          <div class="disc"><div class="disc-label">Schema note</div><p>RECIPE_BASE PARTIALLY_LOADED (306 parsed, 305 loaded, 1 skipped = empty trailing newline). Normal — not a data error. The <code class="rw-code">FIELD_OPTIONALLY_ENCLOSED_BY = '"'</code> file format is essential for commas inside ingredient unit strings.</p></div>
+        </div>
+      </div>
+
+      <div class="ss-wrap">
+        <img src="../images/ss-data-loaded.png" alt="Snowsight showing COPY INTO result with 305 rows loaded into RECIPE_BASE and 2147 into RECIPE_INGREDIENTS">
+        <div class="ss-caption"><strong>Data loaded.</strong> RECIPE_BASE = 305 rows. RECIPE_INGREDIENTS = 2,147 rows. PARTIALLY_LOADED on RECIPE_BASE is normal — one trailing empty line in the CSV, not a data error.</div>
+      </div>
+
+      <h3 id="s3">Step 3 — V_CONTEXTUAL_RECIPES</h3>
+      <div class="build-steps">
+        <div class="build-step">
+          <div class="bs-num">3</div>
+          <div>
+            <div class="bs-title">The core view: calendar check + pantry scoring</div>
+            <p class="bs-desc">Three CTEs: (1) join recipes + ingredients via LISTAGG → all_ingredients string, (2) check CALENDAR + DAYOFWEEK() → dietary filter, (3) count pantry matches per recipe. Result: ranked list always reflecting today.</p>
+          </div>
+          <div class="bs-badge">Core Logic</div>
+        </div>
+      </div>
+      <div class="pb">
+        <div class="p-all"></div>
+        <div class="p-cook"></div>
+        <div class="p-dev">
+          <div class="disc"><div class="disc-label">Gotcha — Pantry match over 100%</div><p>First attempt scored 125%. Bug: <code class="rw-code">LIKE '%wheat%'</code> matched two pantry items ("Whole Wheat Flour" + "Buckwheat Flour") against one recipe ingredient. Fix: count distinct recipe ingredients matched (not pantry item hits). CoCo iterated three times to nail the logic.</p></div>
+        </div>
+        <div class="p-data">
+          <div class="disc"><div class="disc-label">Sattvic detection pattern</div><p><code class="rw-code">LOWER(all_ingredients) NOT LIKE '%onion%' AND NOT LIKE '%garlic%' AND NOT LIKE '%shallot%'</code> on the LISTAGG string. Weekly fasts: <code class="rw-code">CASE WHEN DAYOFWEEK(CURRENT_DATE()) IN (2,3,5,7) THEN 'Veg' END</code>. Replaces 208+ stored calendar rows per year.</p></div>
+        </div>
+      </div>
+
+      <h3 id="s4">Step 4 — AI_COMPLETE</h3>
+      <div class="build-steps">
+        <div class="build-step">
+          <div class="bs-num">4</div>
+          <div>
+            <div class="bs-title">LLM call inside SQL — warm bilingual response</div>
+            <p class="bs-desc"><code class="rw-code">AI_COMPLETE('claude-sonnet-4-6', CONCAT(...))</code> sends top-5 recipes inline. Model announces fasting context, gives Hindi + English names, notes what to buy. Stays inside Snowflake.</p>
+          </div>
+          <div class="bs-badge">LLM in SQL</div>
+        </div>
+      </div>
+      <div class="pb">
+        <div class="p-all"></div>
+        <div class="p-cook"></div>
+        <div class="p-dev">
+          <div class="rw-callout"><strong>Use AI_COMPLETE — not CORTEX.COMPLETE.</strong> CORTEX.COMPLETE is deprecated (EOL end of 2026). Different function signatures. 2024-era tutorials show the old form.</div>
+        </div>
+        <div class="p-data">
+          <div class="rw-callout" style="background:var(--rw-indigo-light);border-left-color:var(--rw-indigo)"><strong style="color:var(--rw-indigo)">Model selection:</strong> The prompt passes the full filtered + scored recipe list as a JSON string. The LLM adds warmth and bilingual framing. The ranking logic is entirely in SQL — the LLM only formats and narrates.</div>
+        </div>
+      </div>
+
+      <h3 id="s5">Step 5 — Cortex Search + Agent</h3>
+      <div class="build-steps">
+        <div class="build-step">
+          <div class="bs-num">5</div>
+          <div>
+            <div class="bs-title">Materialize → Search index → Agent</div>
+            <p class="bs-desc">Create RECIPE_SEARCH_BASE (materialized table), enable CHANGE_TRACKING, create RECIPE_SEARCH Cortex Search on it. Then create DESI_CHEF_AGENT with recipe_search + data_to_chart tools.</p>
+          </div>
+          <div class="bs-badge">Cortex AI</div>
+        </div>
+      </div>
+      <div class="pb">
+        <div class="p-all"></div>
+        <div class="p-cook"></div>
+        <div class="p-dev">
+          <div class="disc"><div class="disc-label">Critical Discovery — Cortex Search rejects CTE views</div><p>Pointing Cortex Search at V_CONTEXTUAL_RECIPES directly fails: <em>"Change tracking is not supported on queries with VALUES."</em> Root cause: CTEs block change tracking. Fix: <code class="rw-code">CREATE TABLE RECIPE_SEARCH_BASE AS SELECT * FROM V_CONTEXTUAL_RECIPES</code> → <code class="rw-code">ALTER TABLE ... SET CHANGE_TRACKING = TRUE</code> → point Search at the table. Not in official docs — you find it by hitting the wall.</p></div>
+          <div class="disc"><div class="disc-label">Gotcha — Agent DDL dollar quoting</div><p>Use <code class="rw-code">$$</code> (double dollar) for the YAML spec block. <code class="rw-code">$spec</code> causes a parse error. The error message doesn't tell you this.</p></div>
+        </div>
+        <div class="p-data">
+          <div class="disc"><div class="disc-label">Architecture implication</div><p>RECIPE_SEARCH_BASE is a point-in-time snapshot. Search results reflect the dietary context at the time of the last materialization. Use a Snowflake Task to refresh at midnight. Without it, search is frozen at the last manual refresh — the view stays current but the search index doesn't.</p></div>
+        </div>
+      </div>
+
+      <h3 id="s6">Step 6 — MCP Server</h3>
+      <div class="build-steps">
+        <div class="build-step">
+          <div class="bs-num">6</div>
+          <div>
+            <div class="bs-title">Expose the agent to Claude Code / Claude Desktop</div>
+            <p class="bs-desc">Create DESI_CHEF_MCP (MCP Server object) + DESI_CHEF_MCP_OAUTH (Security Integration). Create a dedicated non-admin user + role for OAuth. Wire up <code class="rw-code">.mcp.json</code> with <code class="rw-code">mcp-remote@latest</code>. PanchangChef appears as a tool in Claude Code.</p>
+          </div>
+          <div class="bs-badge">✓ Live</div>
+        </div>
+      </div>
+      <div class="pb">
+        <div class="p-all">
+          <p>This step had the most gotchas of the entire build. The SQL is two lines. The connection is where it gets interesting.</p>
+        </div>
+        <div class="p-dev">
+          <div class="disc">
+            <div class="disc-label">Gotcha — ACCOUNTADMIN is permanently blocked for OAuth</div>
+            <p>Snowflake blocks ACCOUNTADMIN, ORGADMIN, and SECURITYADMIN for all custom OAuth integrations — hardcoded, cannot be unblocked. Fix: create a dedicated non-admin role and user. Run as ACCOUNTADMIN:</p>
+          </div>
+          <pre class="rw-code" style="display:block;padding:.9rem 1.1rem;overflow-x:auto;font-size:.8rem;line-height:1.65;margin:.75rem 0">CREATE ROLE IF NOT EXISTS DESI_CHEF_ROLE;
+GRANT USAGE ON WAREHOUSE PANCHANG_WH TO ROLE DESI_CHEF_ROLE;
+GRANT USAGE ON DATABASE DESI_CHEF_DB TO ROLE DESI_CHEF_ROLE;
+GRANT USAGE ON SCHEMA DESI_CHEF_DB.PUBLIC TO ROLE DESI_CHEF_ROLE;
+GRANT SELECT ON ALL TABLES IN SCHEMA DESI_CHEF_DB.PUBLIC TO ROLE DESI_CHEF_ROLE;
+GRANT SELECT ON ALL VIEWS IN SCHEMA DESI_CHEF_DB.PUBLIC TO ROLE DESI_CHEF_ROLE;
+GRANT USAGE ON CORTEX SEARCH SERVICE DESI_CHEF_DB.PUBLIC.RECIPE_SEARCH TO ROLE DESI_CHEF_ROLE;
+GRANT DATABASE ROLE SNOWFLAKE.CORTEX_USER TO ROLE DESI_CHEF_ROLE;
+
+CREATE USER DESI_CHEF_USER
+  PASSWORD = 'StrongPassword!' DEFAULT_ROLE = DESI_CHEF_ROLE
+  DEFAULT_WAREHOUSE = PANCHANG_WH MUST_CHANGE_PASSWORD = FALSE;
+GRANT ROLE DESI_CHEF_ROLE TO USER DESI_CHEF_USER;</pre>
+          <div class="disc">
+            <div class="disc-label">Gotcha — The MCP endpoint URL is not what CoCo derives</div>
+            <p>CoCo suggests <code class="rw-code">/api/v2/cortex/mcp/DB.SCHEMA.SERVER</code> — returns 404. The actual working path is <code class="rw-code">/api/v2/databases/{DB}/schemas/{SCHEMA}/mcp-servers/{SERVER}</code>. Unauthenticated requests return 404 (not 401), so it looks like a wrong URL when it's actually an auth issue.</p>
+          </div>
+          <div class="disc">
+            <div class="disc-label">Gotcha — Claude Code uses .mcp.json, not settings.json</div>
+            <p><code class="rw-code">mcpServers</code> in <code class="rw-code">.claude/settings.json</code> is rejected with a schema error. MCP servers go in <code class="rw-code">.mcp.json</code> at the project root. Add <code class="rw-code">"enableAllProjectMcpServers": true</code> to <code class="rw-code">settings.json</code> to auto-approve without prompting.</p>
+          </div>
+          <div class="rw-callout"><strong>Security:</strong> OAuth generates CLIENT_ID and CLIENT_SECRET. The <code class="rw-code">client-info.json</code> and <code class="rw-code">data/output</code> files contain these credentials — both are in <code class="rw-code">.gitignore</code>. Never commit them.</div>
+        </div>
+        <div class="p-data">
+          <div class="rw-callout" style="background:var(--rw-indigo-light);border-left-color:var(--rw-indigo)"><strong style="color:var(--rw-indigo)">mcp-remote@latest is the required bridge.</strong> Snowflake's MCP Server doesn't expose a raw SSE endpoint Claude can call directly. <code class="rw-code">mcp-remote</code> handles the browser OAuth flow locally, caches the token, and proxies MCP protocol to Snowflake. Specify port 15734 and pass OAuth URLs as arguments alongside a <code class="rw-code">--static-oauth-client-info</code> JSON file.</div>
+        </div>
+      </div>
+
+      <div class="ss-wrap">
+        <img src="../images/ss-mcp-live.png" alt="Claude Code with panchangchef MCP tool responding to a pantry question with fasting context and ranked recipes">
+        <div class="ss-caption"><strong>PanchangChef live in Claude Code.</strong> panchangchef appears as an active MCP tool. Natural language in → fasting context + ranked recipes out. Zero SQL typed by hand.</div>
+      </div>
+    </section>
+
+    <!-- LIVE RESULTS ─────────────────────────────────────────────── -->
+    <section class="guide-section" id="results">
+      <h2>Live Results</h2>
+
+      <div class="pb">
+        <div class="p-all"><p>July 29, 2026 — a Tuesday. <code class="rw-code">DAYOFWEEK()</code> returned 3, Vegetarian filter triggered, 107 Non-Veg recipes removed automatically.</p></div>
+        <div class="p-cook"><p>It's Tuesday. The agent already knew. You just asked what to cook — it handled the rest.</p></div>
+        <div class="p-dev"><p>No code change to apply the filter. The view recalculated with <code class="rw-code">CURRENT_DATE()</code> and DAYOFWEEK checked the day. This is the payoff of the date-logic-in-SQL approach.</p></div>
+        <div class="p-data"><p>107 rows filtered at the view layer before any scoring or LLM call. The filter predicate runs on Snowflake's query engine — not in application code, not in the agent's system prompt.</p></div>
+      </div>
+
+      <div class="recipe-results">
+        <div class="rr-header">V_CONTEXTUAL_RECIPES · Mangalvar Vrat (Tuesday) · Veg filter active</div>
+        <div class="recipe-row"><span class="rr-rank">#1</span><div class="rr-name"><div class="rr-en">Buckwheat or Wheat Flour Crepes</div><div class="rr-hi">Aktori / Patande &nbsp;<span class="rw-badge rw-badge-green" style="font-size:.65rem">Sattvic</span></div></div><span class="rr-time">9 min</span><span class="rr-pct">100%</span></div>
+        <div class="recipe-row"><span class="rr-rank">#2</span><div class="rr-name"><div class="rr-en">Gram Flour Dumplings in Yogurt Gravy</div><div class="rr-hi">Gatte ki Sabzi &nbsp;<span class="rw-badge rw-badge-orange" style="font-size:.65rem">Veg</span></div></div><span class="rr-time">52 min</span><span class="rr-pct">87.5%</span></div>
+        <div class="recipe-row"><span class="rr-rank">#3</span><div class="rr-name"><div class="rr-en">Carrot Pudding</div><div class="rr-hi">Gajar ka Halwa &nbsp;<span class="rw-badge rw-badge-green" style="font-size:.65rem">Sattvic</span></div></div><span class="rr-time">56 min</span><span class="rr-pct">83.3%</span></div>
+        <div class="recipe-row"><span class="rr-rank">#4</span><div class="rr-name"><div class="rr-en">Rice Pudding</div><div class="rr-hi">Kheer &nbsp;<span class="rw-badge rw-badge-green" style="font-size:.65rem">Sattvic</span></div></div><span class="rr-time">49 min</span><span class="rr-pct">80%</span></div>
+        <div class="recipe-row"><span class="rr-rank">#5</span><div class="rr-name"><div class="rr-en">Potato and Cauliflower Stir-fry</div><div class="rr-hi">Aloo Gobi &nbsp;<span class="rw-badge rw-badge-orange" style="font-size:.65rem">Veg</span></div></div><span class="rr-time">37 min</span><span class="rr-pct">75%</span></div>
+      </div>
+
+      <div class="log-panel"><span class="log-label">AI_COMPLETE response · claude-sonnet-4-6</span><span class="log-text">🙏 Namaste, Beta! PanchangChef here.
+
+Today is Tuesday — Mangalvar Vrat day. I've kept only vegetarian options for you.
+
+1. Aktori / Patande (Buckwheat Crepes)  [Sattvic]
+   Perfect match — every ingredient already in your kitchen!
+   Cook time: 9 minutes. Make them fresh while chai is brewing.
+
+2. Gajar ka Halwa (Carrot Pudding)  [Sattvic]
+   You have everything. Cook time: 56 min — start it first.
+
+3. Kheer (Rice Pudding)  [Sattvic]
+   Perfect for an offering and a meal together. Nothing to buy.
+
+Kal ke liye socho — if Wednesday is unrestricted, the chicken can wait.</span></div>
+
+      <div class="ss-grid">
+        <div class="ss-wrap">
+          <img src="../images/ss-v-contextual.png" alt="V_CONTEXTUAL_RECIPES query showing todays_context column with Mangalvar Vrat and pantry match percentage">
+          <div class="ss-caption"><strong>V_CONTEXTUAL_RECIPES</strong> — live view. todays_context = today's fast. pantry_match_pct ranks every recipe by what you actually have.</div>
+        </div>
+        <div class="ss-wrap">
+          <img src="../images/ss-ai-complete.png" alt="AI_COMPLETE response showing Namaste Beta greeting with bilingual recipe recommendations">
+          <div class="ss-caption"><strong>AI_COMPLETE output</strong> — "🙏 Namaste, Beta!" Bilingual names, fasting context announced first, 100% pantry match suggested first.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 LEARNINGS ─────────────────────────────────────────────── -->
+    <section class="guide-section" id="learnings">
+      <h2>7 Things I Learned</h2>
+
+      <div class="pb">
+        <div class="p-all"><p>The things that weren't in the docs — discovered by building.</p></div>
+        <div class="p-cook"><p>The big one: the agent figured out it was Tuesday by itself. No one told it. That's DAYOFWEEK() in the SQL doing the work.</p></div>
+        <div class="p-dev"><p>Items 1, 4, 6, and 7 are the ones that would have blocked me without this list. Save them before you start.</p></div>
+        <div class="p-data"><p>Item 1 is the critical architecture constraint. Items 3 and 5 are Cortex-specific patterns that differ from standard SQL/ML tool conventions.</p></div>
+      </div>
+
+      <div class="learnings-grid">
+        <div class="lc"><div class="lc-n">01</div><h4>Cortex Search needs a table, not a view</h4><p>CTE-based views can't have change tracking. Materialize to <code class="rw-code">*_BASE</code> table first, enable tracking, then point Search at the table.</p></div>
+        <div class="lc"><div class="lc-n">02</div><h4>LISTAGG solves two problems at once</h4><p>Aggregates per-recipe ingredient rows into one string. Same string detects non-Sattvic (LIKE) AND serves as the Cortex Search payload.</p></div>
+        <div class="lc"><div class="lc-n">03</div><h4>DAYOFWEEK() beats 208 stored calendar rows</h4><p>Compute weekly fasts live via <code class="rw-code">DAYOFWEEK(CURRENT_DATE())</code>. Only store the 176 irregular festival dates. View stays current with zero annual refresh.</p></div>
+        <div class="lc"><div class="lc-n">04</div><h4>AI_COMPLETE ≠ CORTEX.COMPLETE</h4><p><code class="rw-code">AI_COMPLETE</code> is current. <code class="rw-code">CORTEX.COMPLETE</code> is deprecated (EOL 2026). Different signatures. Don't copy 2024-era tutorials.</p></div>
+        <div class="lc"><div class="lc-n">05</div><h4>AGENTS.md is CoCo's long-term memory</h4><p>Keep under 200 lines. Include account, warehouse, constraints, bilingual maps. CoCo reads it every session and stops asking the same setup questions.</p></div>
+        <div class="lc"><div class="lc-n">06</div><h4>orchestration: auto beats pinning a model</h4><p>Snowflake picks the best model and upgrades automatically when new ones ship. No spec update required.</p></div>
+        <div class="lc"><div class="lc-n">07</div><h4>$$ not $spec in Agent DDL</h4><p>Snowflake Agent DDL uses <code class="rw-code">$$</code> for the YAML spec block. <code class="rw-code">$spec</code> is a parse error. The error message won't tell you why.</p></div>
+      </div>
+
+      <div class="pb">
+        <div class="p-all"></div>
+        <div class="p-cook"></div>
+        <div class="p-dev"></div>
+        <div class="p-data">
+          <h3>Cortex vs. the broader stack</h3>
+          <table class="comparison-table">
+            <thead><tr><th>PanchangChef Layer</th><th>Snowflake Object</th><th>Industry Equivalent</th></tr></thead>
+            <tbody>
+              <tr><td>Relational joins</td><td><code class="rw-code">RECIPE_BASE + INGREDIENTS</code></td><td>OLTP normalized schema</td></tr>
+              <tr><td>Flattened view</td><td><code class="rw-code">V_CONTEXTUAL_RECIPES</code></td><td>Star schema fact view / dbt model</td></tr>
+              <tr><td>Materialized snapshot</td><td><code class="rw-code">RECIPE_SEARCH_BASE</code></td><td>Materialized view / pre-computed table</td></tr>
+              <tr><td>Vector search index</td><td><code class="rw-code">RECIPE_SEARCH</code></td><td>Elasticsearch / Pinecone / pgvector</td></tr>
+              <tr><td>Agent with tools</td><td><code class="rw-code">DESI_CHEF_AGENT</code></td><td>LangChain / LangGraph agent</td></tr>
+              <tr><td>API endpoint</td><td><code class="rw-code">DESI_CHEF_MCP</code></td><td>REST API / OpenAI-compatible endpoint</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ss-wrap">
+        <img src="../images/ss-cortex-search.png" alt="Snowflake Cortex Search preview showing potato cauliflower cumin search returning Aloo Gobi as top result with cosine similarity 0.557">
+        <div class="ss-caption"><strong>Cortex Search — semantic match.</strong> "potato cauliflower cumin" → Aloo Gobi, cosine similarity 0.557. No synonym mapping written. arctic-embed-m-v1.5 handles aloo ≈ potato automatically.</div>
+      </div>
+    </section>
+
+    <!-- GET STARTED ──────────────────────────────────────────────── -->
+    <section class="guide-section" id="start">
+      <h2>Get Started</h2>
+
+      <div class="pb">
+        <div class="p-all"><p>Three steps. Free account, free tier CLI, one clone.</p></div>
+        <div class="p-cook"><p>You'll need a free Snowflake account and to edit one CSV with your pantry items. That's the only configuration.</p></div>
+        <div class="p-dev"><p>After Step 3, follow <code class="rw-code">docs/STEP_BY_STEP_GUIDE.md</code> — every CoCo prompt is pre-written. Paste → run → move to the next step.</p></div>
+        <div class="p-data"><p>The checkpoints in <code class="rw-code">checkpoints/CHECKPOINTS.sql</code> let you skip CoCo entirely and run raw DDL in Snowsight if you prefer to own the SQL directly.</p></div>
+      </div>
+
+      <div class="gs-flow">
+        <!-- Step 1 -->
+        <div class="gs-step">
+          <div class="gs-step-icon">❄️</div>
+          <div class="gs-step-num">Step 1</div>
+          <h4>Free Snowflake Account</h4>
+          <p>AWS · US East Ohio · AI Data Cloud. No credit card. $400 credits, 30 days.</p>
+          <code>signup.snowflake.com
+→ AI Data Cloud for Enterprise
+→ Get your account identifier</code>
+        </div>
+
+        <div class="gs-arrow">→</div>
+
+        <!-- Step 2 -->
+        <div class="gs-step">
+          <div class="gs-step-icon">🤖</div>
+          <div class="gs-step-num">Step 2</div>
+          <h4>Install CoCo CLI</h4>
+          <p>Snowflake's AI coding agent. Writes SQL from English prompts.</p>
+          <code># Windows PowerShell
+irm https://ai.snowflake.com/
+  static/cc-scripts/install.ps1 | iex
+
+# macOS / Linux
+curl -LsS https://ai.snowflake.com/
+  static/cc-scripts/install.sh | sh</code>
+        </div>
+
+        <div class="gs-arrow">→</div>
+
+        <!-- Step 3 -->
+        <div class="gs-step">
+          <div class="gs-step-icon">🍛</div>
+          <div class="gs-step-num">Step 3</div>
+          <h4>Clone + Launch</h4>
+          <p>Edit <code class="rw-code">data/my_pantry_sample.csv</code> to match your kitchen. Then run.</p>
+          <code>git clone github.com/
+  your-username/PanchangChef
+
+cd PanchangChef
+cortex
+# CoCo reads AGENTS.md
+# Follow STEP_BY_STEP_GUIDE.md</code>
+        </div>
+      </div>
+
+      <div class="rw-callout" style="margin-top:1.25rem">
+        <strong>Stuck?</strong> Every step has a fallback in <code class="rw-code">checkpoints/CHECKPOINTS.sql</code> — paste any checkpoint directly into a Snowsight SQL Worksheet and run it manually. CoCo is optional.
+      </div>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem">
+        <a href="https://github.com/researchsite/PanchangChef" class="rw-btn rw-btn-primary">View on GitHub →</a>
+        <a href="https://www.snowflake.com/en/developers/guides/getting-started-with-coco-cli/" class="rw-btn rw-btn-ghost">CoCo CLI Guide</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Footer -->
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[{"label":"Building AI Agents with Snowflake CoCo","url":"https://github.com/sfc-gh-rbachala/building-ai-agents-with-coco-workshop"},{"label":"MCP Architecture","url":"/guide/mcp.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// Pure JS persona switching — bypasses all CSS specificity issues
+// Show all technical content; hide cook-specific (simplified versions of same content)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.pb .p-all,.pb .p-dev,.pb .p-data').forEach(function(el) {
+    el.style.display = 'block';
+  });
+  document.querySelectorAll('.pb .p-cook').forEach(function(el) {
+    el.style.display = 'none';
+  });
+});
+
+// Scrollspy
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+})();
+
+// Lightbox
+(function() {
+  var overlay = document.createElement('div');
+  overlay.className = 'lb-overlay';
+  overlay.innerHTML = '<div class="lb-inner"><button class="lb-close" aria-label="Close">✕</button><img src="" alt=""><div class="lb-caption"></div></div>';
+  document.body.appendChild(overlay);
+
+  var lbImg = overlay.querySelector('img');
+  var lbCap = overlay.querySelector('.lb-caption');
+
+  function open(img) {
+    lbImg.src = img.src;
+    lbImg.alt = img.alt;
+    var wrap = img.closest('.ss-wrap');
+    var cap = wrap && wrap.querySelector('.ss-caption');
+    lbCap.textContent = cap ? cap.textContent : '';
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    lbImg.src = '';
+  }
+
+  document.querySelectorAll('.ss-wrap img').forEach(function(img) {
+    img.addEventListener('click', function() { open(img); });
+  });
+
+  overlay.querySelector('.lb-close').addEventListener('click', close);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') close(); });
+})();
+</script>
+
+</body>
+</html>
