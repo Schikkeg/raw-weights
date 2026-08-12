@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" width="900" height="580">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#888"/>
+    </marker>
+    <marker id="arr-orange" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#f97316"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="580" fill="#f8f9ff" rx="14"/>
+
+  <!-- Title -->
+  <text x="450" y="32" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="bold" fill="#1a1a2e">Rubik Navigator — Component Architecture</text>
+  <text x="450" y="50" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#6c757d">React · TypeScript · Vite · Zustand · Framer Motion · Web Speech API</text>
+
+  <!-- ═══════════════════════════════════════════════════
+       ROW 1: PAGES
+  ═══════════════════════════════════════════════════ -->
+  <text x="24" y="71" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#1565c0" letter-spacing="1">PAGES</text>
+
+  <!-- /coach -->
+  <rect x="24" y="77" width="220" height="68" rx="7" fill="#1565c0" stroke="#0d47a1" stroke-width="1.5"/>
+  <text x="134" y="99" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">/ coach</text>
+  <text x="134" y="117" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">Step-by-step guided solving</text>
+  <text x="134" y="133" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">7 stages · voice · manual feedback</text>
+
+  <!-- /learn -->
+  <rect x="258" y="77" width="180" height="68" rx="7" fill="#1565c0" stroke="#0d47a1" stroke-width="1.5"/>
+  <text x="348" y="99" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">/learn</text>
+  <text x="348" y="117" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">Cube anatomy</text>
+  <text x="348" y="133" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">Centers · Edges · Corners</text>
+
+  <!-- /notation -->
+  <rect x="452" y="77" width="180" height="68" rx="7" fill="#1565c0" stroke="#0d47a1" stroke-width="1.5"/>
+  <text x="542" y="99" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">/notation</text>
+  <text x="542" y="117" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">Move reference</text>
+  <text x="542" y="133" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">R R' U U' F F' B B' ...</text>
+
+  <!-- /mycube -->
+  <rect x="646" y="77" width="230" height="68" rx="7" fill="#1565c0" stroke="#0d47a1" stroke-width="1.5"/>
+  <text x="761" y="99" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">/mycube</text>
+  <text x="761" y="117" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">Input your real cube state</text>
+  <text x="761" y="133" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#bbdefb">loadState → helpMode on</text>
+
+  <!-- Arrow: pages → coach logic -->
+  <line x1="134" y1="145" x2="134" y2="162" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════════════════════════════════════════
+       ROW 2: COACH PAGE LOGIC (left 3/5) + COMPONENTS (right 2/5)
+  ═══════════════════════════════════════════════════ -->
+  <text x="24" y="175" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#e65100" letter-spacing="1">COACH PAGE (coach.tsx)</text>
+
+  <!-- Coach Logic outer box -->
+  <rect x="24" y="181" width="520" height="118" rx="7" fill="#e65100" stroke="#bf360c" stroke-width="1.5"/>
+
+  <!-- Sub-box: Cube3D -->
+  <rect x="34" y="194" width="115" height="94" rx="5" fill="#f57f17" stroke="#e65100" stroke-width="1"/>
+  <text x="91" y="215" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="white">Cube3D</text>
+  <text x="91" y="232" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">CSS 3D transform</text>
+  <text x="91" y="247" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">drag via @use-gesture</text>
+  <text x="91" y="262" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">Framer Motion spring</text>
+  <text x="91" y="277" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">sticker highlighting</text>
+
+  <!-- Sub-box: Pinned Plan (highlighted) -->
+  <rect x="159" y="194" width="165" height="94" rx="5" fill="#c62828" stroke="#b71c1c" stroke-width="2"/>
+  <text x="241" y="215" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="white">★ Pinned Plan</text>
+  <text x="241" y="232" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#ffcdd2">lock sequence mid-step</text>
+  <text x="241" y="247" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#ffcdd2">no re-plan until done</text>
+  <text x="241" y="262" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#ffcdd2">step-boundary evaluate</text>
+  <text x="241" y="277" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#ffcdd2">stash for Undo recovery</text>
+
+  <!-- Sub-box: Stage Tracker -->
+  <rect x="334" y="194" width="130" height="94" rx="5" fill="#f57f17" stroke="#e65100" stroke-width="1"/>
+  <text x="399" y="215" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="white">Stage Tracker</text>
+  <text x="399" y="232" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">detectStage()</text>
+  <text x="399" y="247" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">celebration card</text>
+  <text x="399" y="262" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">correct / wrong alert</text>
+  <text x="399" y="277" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#fff9c4">confetti on solve</text>
+
+  <!-- Sub-box: Voice Narration -->
+  <rect x="474" y="194" width="60" height="94" rx="5" fill="#f57f17" stroke="#e65100" stroke-width="1"/>
+  <text x="504" y="215" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="white">Voice</text>
+  <text x="504" y="232" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="#fff9c4">per-move</text>
+  <text x="504" y="247" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="#fff9c4">narration</text>
+  <text x="504" y="262" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="#fff9c4">stage</text>
+  <text x="504" y="277" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="#fff9c4">announce</text>
+
+  <!-- Components box (right side) -->
+  <text x="558" y="175" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#2e7d32" letter-spacing="1">APP SHELL</text>
+  <rect x="558" y="181" width="318" height="118" rx="7" fill="#2e7d32" stroke="#1b5e20" stroke-width="1.5"/>
+  <text x="717" y="205" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="white">AppLayout (layout.tsx)</text>
+  <text x="717" y="224" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#c8e6c9">Top nav: Coach · Learn · Notation · MyCube</text>
+
+  <rect x="568" y="232" width="140" height="56" rx="5" fill="#388e3c" stroke="#2e7d32" stroke-width="1"/>
+  <text x="638" y="252" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="white">MiniCube + MoveArrow</text>
+  <text x="638" y="268" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#c8e6c9">small cube previews</text>
+  <text x="638" y="282" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#c8e6c9">animated move arrows</text>
+
+  <rect x="718" y="232" width="148" height="56" rx="5" fill="#388e3c" stroke="#2e7d32" stroke-width="1"/>
+  <text x="792" y="252" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="white">ErrorBoundary</text>
+  <text x="792" y="268" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#c8e6c9">per-route reset</text>
+  <text x="792" y="282" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#c8e6c9">Wouter SPA routing</text>
+
+  <!-- Arrow: coach logic → state -->
+  <line x1="134" y1="299" x2="134" y2="318" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="450" y1="299" x2="450" y2="318" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="717" y1="299" x2="717" y2="318" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════════════════════════════════════════
+       ROW 3: STATE
+  ═══════════════════════════════════════════════════ -->
+  <text x="24" y="331" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#6a1b9a" letter-spacing="1">STATE  (Zustand + localStorage persist)</text>
+
+  <!-- CubeStore -->
+  <rect x="24" y="337" width="530" height="72" rx="7" fill="#6a1b9a" stroke="#4a148c" stroke-width="1.5"/>
+  <text x="289" y="358" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="white">CubeStore</text>
+  <text x="289" y="376" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#e1bee7">stateString (54-char) · history[] · helpMode</text>
+  <text x="289" y="395" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ce93d8">doMove · undo · scramble · reset · loadState</text>
+
+  <!-- SettingsStore -->
+  <rect x="568" y="337" width="308" height="72" rx="7" fill="#6a1b9a" stroke="#4a148c" stroke-width="1.5"/>
+  <text x="722" y="358" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="white">SettingsStore</text>
+  <text x="722" y="376" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#e1bee7">muted · speechRate · plainLanguage</text>
+  <text x="722" y="395" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#ce93d8">persisted to localStorage</text>
+
+  <!-- Arrow: state → engine -->
+  <line x1="289" y1="409" x2="289" y2="428" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="722" y1="409" x2="722" y2="428" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════════════════════════════════════════
+       ROW 4: CORE ENGINE
+  ═══════════════════════════════════════════════════ -->
+  <text x="24" y="441" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#37474f" letter-spacing="1">CORE ENGINE</text>
+
+  <!-- cube.ts -->
+  <rect x="24" y="447" width="530" height="75" rx="7" fill="#37474f" stroke="#263238" stroke-width="1.5"/>
+  <text x="289" y="469" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="white">cube.ts — Cube Engine</text>
+  <text x="289" y="488" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#cfd8dc">54-char string · 18 moves (U R F D L B ± ′ 2) · permutation tables</text>
+  <text x="289" y="506" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#b0bec5">findEdge() · findCorner() · edgeColors() · isSolved() · generateScramble()</text>
+
+  <!-- solver.ts -->
+  <rect x="568" y="447" width="308" height="75" rx="7" fill="#37474f" stroke="#263238" stroke-width="1.5"/>
+  <text x="722" y="469" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="white">solver.ts — L-by-L Solver</text>
+  <text x="722" y="488" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#cfd8dc">7 stages · SolveStep[]</text>
+  <text x="722" y="506" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#b0bec5">moves · purposes · reason · highlight</text>
+
+  <!-- Arrow: engine → external -->
+  <line x1="289" y1="522" x2="289" y2="540" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="722" y1="522" x2="722" y2="540" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════════════════════════════════════════
+       ROW 5: EXTERNAL
+  ═══════════════════════════════════════════════════ -->
+  <text x="24" y="553" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#546e7a" letter-spacing="1">EXTERNAL</text>
+
+  <!-- localStorage -->
+  <rect x="24" y="559" width="530" height="14" rx="4" fill="#546e7a" stroke="#37474f" stroke-width="1"/>
+  <text x="289" y="570" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="white">localStorage — cube state + settings persist across sessions</text>
+
+  <!-- Web Speech API -->
+  <rect x="568" y="559" width="308" height="14" rx="4" fill="#546e7a" stroke="#37474f" stroke-width="1"/>
+  <text x="722" y="570" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="white">Web Speech API — voice narration</text>
+
+  <!-- ═══ Legend ═══ -->
+  <rect x="24" y="536" width="10" height="10" rx="2" fill="#c62828"/>
+  <text x="38" y="545" font-family="Arial,sans-serif" font-size="9" fill="#c62828" font-weight="bold">★ Key design: Pinned Plan prevents the mid-formula re-planning loop</text>
+
+</svg>

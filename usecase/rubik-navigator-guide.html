@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rubik Navigator — Build Guide | RawWeights</title>
+  <meta name="description" content="How I built a Rubik's Cube coach on Replit that teaches your way — formula or free exploration. Framework, packages, architecture, and the loop bug that took five iterations to fix.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/rubik-navigator-guide.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/rubik-navigator-guide.html">
+  <meta property="og:title" content="Rubik Navigator — Build Guide | RawWeights">
+  <meta property="og:image" content="https://rawweights.com/images/cube.png">
+  <meta property="og:description" content="A Rubik's Cube coach built on Replit. Framework, packages, and why — plus the tricky loop bug fixed in 5 iterations.">
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ─── Hero ──────────────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #0c1f10 55%, #0a1530 100%);
+      padding: 4.5rem 1.5rem 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-hero::before {
+      content:''; position:absolute; top:-20%; right:-5%;
+      width:500px; height:500px;
+      background:radial-gradient(circle,rgba(74,222,128,.18) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .guide-hero::after {
+      content:''; position:absolute; bottom:-10%; left:-5%;
+      width:350px; height:350px;
+      background:radial-gradient(circle,rgba(249,115,22,.14) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .guide-hero-inner { max-width:820px; margin:0 auto; position:relative; }
+    .guide-hero-label {
+      display:inline-flex; align-items:center; gap:.4rem;
+      background:rgba(74,222,128,.12); border:1px solid rgba(74,222,128,.3);
+      border-radius:9999px; padding:.3rem .9rem;
+      font-size:.72rem; font-weight:700; color:#4ade80;
+      text-transform:uppercase; letter-spacing:.07em;
+      font-family:var(--rw-font-display); margin-bottom:1.25rem;
+    }
+    .guide-hero h1 {
+      font-family:var(--rw-font-display); font-size:clamp(2rem,5vw,3.2rem);
+      font-weight:800; color:#f0f4ff; line-height:1.1;
+      letter-spacing:-.025em; margin-bottom:1rem;
+    }
+    .guide-hero h1 span { color:#4ade80; }
+    .guide-hero p { font-size:1.05rem; color:rgba(240,244,255,.7); max-width:580px; margin:0 auto 1.75rem; line-height:1.7; }
+    .hero-tags { display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .hero-tag { font-size:.74rem; font-family:var(--rw-font-mono); color:rgba(240,244,255,.5); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:.2rem .6rem; }
+
+    /* ─── Layout ─────────────────────────────────────────── */
+    .guide-layout {
+      display:grid; grid-template-columns:230px 1fr;
+      gap:2.5rem; max-width:1200px; margin:3rem auto; padding:0 1.5rem; align-items:start;
+    }
+    .guide-sidebar { position:sticky; top:calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--rw-text-subtle); margin-bottom:.75rem; }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:.15rem; }
+    .guide-toc a { font-size:.83rem; color:var(--rw-text-muted); text-decoration:none; padding:.3rem .6rem; border-left:2px solid transparent; display:block; border-radius:0 4px 4px 0; transition:color .15s,border-color .15s,background .15s; }
+    .guide-toc a:hover,.guide-toc a.active { color:var(--rw-orange); border-left-color:var(--rw-orange); background:var(--rw-orange-light); }
+    .guide-toc .toc-h3 { padding-left:1rem; font-size:.78rem; }
+
+    /* ─── Sections ───────────────────────────────────────── */
+    .guide-section { margin-bottom:3.5rem; }
+    .guide-section h2 {
+      font-family:var(--rw-font-display); font-size:1.5rem; font-weight:800;
+      color:var(--rw-text); margin-bottom:1rem; padding-bottom:.6rem;
+      border-bottom:2px solid var(--rw-orange-light);
+      scroll-margin-top:calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 { font-family:var(--rw-font-display); font-size:1.05rem; font-weight:700; color:var(--rw-text); margin:1.5rem 0 .5rem; scroll-margin-top:calc(var(--rw-nav-height)+1rem); }
+    .guide-section p { font-size:.97rem; color:var(--rw-text-muted); line-height:1.75; margin-bottom:1rem; }
+    code { font-family:var(--rw-font-mono); font-size:.84em; background:var(--rw-bg-subtle); border:1px solid var(--rw-border); border-radius:4px; padding:.1em .35em; color:var(--rw-indigo); }
+
+    /* ─── BUSINESS FUNCTION SLIDE ────────────────────────── */
+    .fn-slide {
+      background:linear-gradient(135deg, #0a0e1a 0%, #0c1f10 100%);
+      border:1px solid rgba(74,222,128,.2);
+      border-radius:16px; padding:2rem 2rem 1.75rem; margin:0 0 3rem;
+      overflow:hidden; position:relative;
+    }
+    .fn-slide::before {
+      content:''; position:absolute; top:0; right:0; width:300px; height:300px;
+      background:radial-gradient(circle,rgba(74,222,128,.1) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .fn-slide-title {
+      font-family:var(--rw-font-display); font-size:.7rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:.1em; color:rgba(74,222,128,.7);
+      margin-bottom:1.25rem;
+    }
+    .fn-flow { display:flex; align-items:stretch; gap:0; position:relative; }
+    .fn-node {
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+      border-radius:10px; padding:.9rem 1rem; text-align:center; flex:1;
+      display:flex; flex-direction:column; justify-content:center; align-items:center; gap:.35rem;
+      position:relative;
+    }
+    .fn-node-icon { font-size:1.4rem; }
+    .fn-node-label { font-family:var(--rw-font-display); font-size:.8rem; font-weight:700; color:#f0f4ff; line-height:1.2; }
+    .fn-node-sub { font-size:.72rem; color:rgba(240,244,255,.5); line-height:1.3; }
+    .fn-node.accent { background:rgba(74,222,128,.1); border-color:rgba(74,222,128,.3); }
+    .fn-node.accent .fn-node-label { color:#4ade80; }
+    .fn-arrow {
+      display:flex; align-items:center; padding:0 .25rem;
+      color:rgba(255,255,255,.25); font-size:1rem; flex-shrink:0;
+    }
+    .fn-modes { display:flex; flex-direction:column; gap:.5rem; flex:1.4; }
+    .fn-mode {
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+      border-radius:8px; padding:.6rem .85rem;
+      display:flex; align-items:center; gap:.6rem;
+    }
+    .fn-mode-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .fn-mode-text { font-family:var(--rw-font-display); font-size:.78rem; color:rgba(240,244,255,.8); font-weight:600; }
+    .fn-mode-desc { font-size:.7rem; color:rgba(240,244,255,.4); margin-left:auto; }
+
+    /* ─── Quick Stats ─────────────────────────────────────── */
+    .stat-row { display:flex; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); overflow:hidden; margin:1.5rem 0; }
+    .stat-cell { flex:1; padding:1.1rem; text-align:center; border-right:1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right:none; }
+    .stat-val { font-family:var(--rw-font-display); font-size:1.65rem; font-weight:800; color:var(--rw-orange); line-height:1; }
+    .stat-label { font-size:.73rem; color:var(--rw-text-subtle); margin-top:.3rem; }
+
+    /* ─── Mode Cards ──────────────────────────────────────── */
+    .mode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
+    .mode-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.2rem; }
+    .mode-card-top { display:flex; align-items:center; gap:.6rem; margin-bottom:.75rem; }
+    .mode-card-emoji { font-size:1.4rem; }
+    .mode-card-title { font-family:var(--rw-font-display); font-size:.9rem; font-weight:700; color:var(--rw-text); }
+    .mode-card-who { font-size:.72rem; color:var(--rw-text-subtle); margin-top:.1rem; }
+    .mode-card ul { list-style:none; display:flex; flex-direction:column; gap:.35rem; }
+    .mode-card li { font-size:.8rem; color:var(--rw-text-muted); padding-left:1rem; position:relative; }
+    .mode-card li::before { content:'→'; position:absolute; left:0; color:var(--rw-orange); font-size:.75rem; }
+
+    /* ─── Page Cards ──────────────────────────────────────── */
+    .page-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.25rem 0; }
+    .page-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.2rem; border-top:3px solid; }
+    .page-card.coach { border-top-color:#1565c0; }
+    .page-card.learn { border-top-color:#2e7d32; }
+    .page-card.notation { border-top-color:#e65100; }
+    .page-card.mycube { border-top-color:#6a1b9a; }
+    .page-card-path { font-family:var(--rw-font-mono); font-size:.75rem; color:var(--rw-text-subtle); margin-bottom:.4rem; }
+    .page-card h4 { font-family:var(--rw-font-display); font-size:.92rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; }
+    .page-card p { font-size:.8rem; color:var(--rw-text-muted); margin:0; line-height:1.55; }
+
+    /* ─── Step List ───────────────────────────────────────── */
+    .step-list { list-style:none; display:flex; flex-direction:column; gap:1rem; margin:1.25rem 0; }
+    .step-item { display:flex; gap:.9rem; align-items:flex-start; }
+    .step-num { width:26px; height:26px; border-radius:50%; background:var(--rw-orange); color:#fff; font-family:var(--rw-font-display); font-weight:800; font-size:.78rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-body h4 { font-family:var(--rw-font-display); font-weight:700; font-size:.9rem; color:var(--rw-text); margin-bottom:.2rem; }
+    .step-body p { font-size:.84rem; color:var(--rw-text-muted); margin:0; }
+
+    /* ─── TECH STACK ──────────────────────────────────────── */
+    .stack-tabs { display:flex; gap:0; border-bottom:1px solid var(--rw-border); margin-bottom:1.25rem; }
+    .stack-tab { padding:.55rem 1rem; font-family:var(--rw-font-display); font-size:.83rem; font-weight:600; color:var(--rw-text-muted); cursor:pointer; border:none; background:transparent; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .15s,border-color .15s; }
+    .stack-tab.active { color:var(--rw-orange); border-bottom-color:var(--rw-orange); }
+    .stack-panel { display:none; }
+    .stack-panel.active { display:block; }
+
+    .stack-table { width:100%; border-collapse:collapse; font-size:.87rem; }
+    .stack-table th { background:var(--rw-bg-subtle); font-family:var(--rw-font-display); font-weight:700; font-size:.76rem; text-align:left; padding:.65rem .9rem; border-bottom:2px solid var(--rw-border); color:var(--rw-text); }
+    .stack-table td { padding:.65rem .9rem; border-bottom:1px solid var(--rw-border); vertical-align:top; }
+    .stack-table tr:hover td { background:var(--rw-bg-alt); }
+    .stack-table td:first-child { white-space:nowrap; }
+    .pkg-name { font-family:var(--rw-font-mono); font-size:.82rem; color:var(--rw-indigo); font-weight:600; }
+    .pkg-ver { font-size:.72rem; color:var(--rw-text-subtle); font-family:var(--rw-font-mono); display:block; margin-top:.1rem; }
+    .pkg-why { font-size:.83rem; color:var(--rw-text-muted); line-height:1.5; }
+    .pkg-why strong { color:var(--rw-text); font-weight:600; }
+
+    /* ─── Architecture diagram ───────────────────────────── */
+    .arch-diagram { border:1px solid var(--rw-border); border-radius:var(--rw-r-md); overflow:hidden; margin:1.25rem 0; background:#f8f9ff; }
+    .arch-diagram img { width:100%; height:auto; display:block; }
+
+    /* ─── Loop Bug ────────────────────────────────────────── */
+    .bug-timeline { display:flex; flex-direction:column; gap:1rem; margin:1.25rem 0; }
+    .bug-entry { display:grid; grid-template-columns:80px 1fr 1fr; gap:1rem; align-items:start; }
+    .bug-iter { font-family:var(--rw-font-display); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--rw-text-subtle); padding-top:.5rem; }
+    .bug-col { border-radius:var(--rw-r-md); padding:.85rem 1rem; font-size:.83rem; line-height:1.55; }
+    .bug-col.problem { background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.2); color:var(--rw-text-muted); }
+    .bug-col.problem strong { color:#ef4444; }
+    .bug-col.fix { background:rgba(16,185,129,.06); border:1px solid rgba(16,185,129,.2); color:var(--rw-text-muted); }
+    .bug-col.fix strong { color:#059669; }
+    .bug-col-header { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.4rem; }
+    .bug-col.problem .bug-col-header { color:#ef4444; }
+    .bug-col.fix .bug-col-header { color:#059669; }
+
+    /* ─── Build Log ───────────────────────────────────────── */
+    .log-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.25rem 0; }
+    .log-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.1rem; }
+    .log-card-num { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; color:var(--rw-orange); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.35rem; }
+    .log-card h4 { font-family:var(--rw-font-display); font-size:.88rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; line-height:1.3; }
+    .log-card p { font-size:.8rem; color:var(--rw-text-muted); margin:0; line-height:1.55; }
+
+    /* ─── Callout ─────────────────────────────────────────── */
+    .rw-callout-green { background:rgba(16,185,129,.06); border-left:3px solid #10b981; border-radius:0 var(--rw-r) var(--rw-r) 0; padding:.9rem 1.1rem; font-size:.88rem; color:var(--rw-text-muted); margin:1.25rem 0; line-height:1.6; }
+    .rw-callout-green strong { color:#059669; }
+    .rw-callout-indigo { background:var(--rw-indigo-light); border-left:3px solid var(--rw-indigo); border-radius:0 var(--rw-r) var(--rw-r) 0; padding:.9rem 1.1rem; font-size:.88rem; color:var(--rw-text-muted); margin:1.25rem 0; line-height:1.6; }
+    .rw-callout-indigo strong { color:var(--rw-indigo); }
+
+    /* ─── Try-it CTA ──────────────────────────────────────── */
+    .try-cta { background:linear-gradient(135deg,#0c1f10 0%,#0a1530 100%); border:1px solid rgba(74,222,128,.2); border-radius:16px; padding:2.25rem; text-align:center; margin:1.5rem 0; }
+    .try-cta h3 { font-family:var(--rw-font-display); font-size:1.35rem; font-weight:800; color:#f0f4ff; margin-bottom:.45rem; }
+    .try-cta p { color:rgba(240,244,255,.6); font-size:.92rem; margin-bottom:1.5rem; }
+
+    /* ─── Responsive ──────────────────────────────────────── */
+    @media(max-width:1024px) { .guide-layout{grid-template-columns:1fr} .guide-sidebar{position:static} .mode-grid{grid-template-columns:repeat(2,1fr)} }
+    @media(max-width:700px)  { .guide-layout{padding:0 1rem} .fn-flow{flex-direction:column} .fn-arrow{transform:rotate(90deg);padding:.2rem 0} .mode-grid{grid-template-columns:1fr} .page-cards{grid-template-columns:1fr} .bug-entry{grid-template-columns:1fr;gap:.5rem} .bug-iter{padding-top:0} .log-grid{grid-template-columns:1fr} .stat-row{flex-wrap:wrap} .stat-cell{min-width:45%} }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="guide-hero-inner">
+    <span class="guide-hero-label">Build Log · Replit</span>
+    <h1>A Rubik's Cube coach that<br>teaches <span>your way</span></h1>
+    <p>Formula follower or curious explorer — pick how you want to learn. Every move comes with a reason, not just a direction.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">React 18</span>
+      <span class="hero-tag">TypeScript 5</span>
+      <span class="hero-tag">Vite</span>
+      <span class="hero-tag">Zustand</span>
+      <span class="hero-tag">Framer Motion</span>
+      <span class="hero-tag">Web Speech API</span>
+      <span class="hero-tag">Tailwind CSS</span>
+    </div>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="https://rubik-navigator.replit.app/" target="_blank" rel="noopener" class="rw-btn rw-btn-primary" style="background:#4ade80;color:#0f172a;">Open the App ↗</a>
+      <a href="#guide-content" class="rw-btn rw-btn-ghost" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.25);">Read the Build ↓</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── BUSINESS FUNCTION SLIDE ───────────────────────────────── -->
+<div style="max-width:1200px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div class="fn-slide">
+    <div class="fn-slide-title">How the app functions</div>
+    <div class="fn-flow">
+
+      <!-- Node 1: Input -->
+      <div class="fn-node">
+        <div class="fn-node-icon">🧩</div>
+        <div class="fn-node-label">Scrambled Cube</div>
+        <div class="fn-node-sub">Scramble button<br>or enter your own</div>
+      </div>
+
+      <div class="fn-arrow">›</div>
+
+      <!-- Node 2: Mode pick -->
+      <div class="fn-modes">
+        <div class="fn-mode">
+          <div class="fn-mode-dot" style="background:#4ade80;"></div>
+          <div>
+            <div class="fn-mode-text">Formula Learner</div>
+            <div style="font-size:.7rem;color:rgba(240,244,255,.4);">Coach shows sequence + why each move</div>
+          </div>
+        </div>
+        <div class="fn-mode">
+          <div class="fn-mode-dot" style="background:#fb923c;"></div>
+          <div>
+            <div class="fn-mode-text">Free Explorer</div>
+            <div style="font-size:.7rem;color:rgba(240,244,255,.4);">Try any move — coach confirms or corrects</div>
+          </div>
+        </div>
+        <div class="fn-mode">
+          <div class="fn-mode-dot" style="background:#a78bfa;"></div>
+          <div>
+            <div class="fn-mode-text">Mix (hint on demand)</div>
+            <div style="font-size:.7rem;color:rgba(240,244,255,.4);">Turn coach off, ask for hint when stuck</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fn-arrow">›</div>
+
+      <!-- Node 3: Coach engine -->
+      <div class="fn-node">
+        <div class="fn-node-icon">🗣️</div>
+        <div class="fn-node-label">Voice + Visual Coach</div>
+        <div class="fn-node-sub">Per-move explanation<br>Piece highlighted on cube<br>Undo-safe</div>
+      </div>
+
+      <div class="fn-arrow">›</div>
+
+      <!-- Node 4: 7 stages -->
+      <div class="fn-node">
+        <div class="fn-node-icon">📊</div>
+        <div class="fn-node-label">7 Stages</div>
+        <div class="fn-node-sub">White cross → corners<br>→ middle → yellow cross<br>→ face → permute</div>
+      </div>
+
+      <div class="fn-arrow">›</div>
+
+      <!-- Node 5: Output -->
+      <div class="fn-node accent">
+        <div class="fn-node-icon">✅</div>
+        <div class="fn-node-label">Cube Solved</div>
+        <div class="fn-node-sub">+ you understand<br>why it worked</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Content ───────────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <!-- Sidebar TOC -->
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#what-it-does">What It Does</a></li>
+      <li><a href="#the-story" class="toc-h3">The Story</a></li>
+      <li><a href="#learning-modes">Learning Modes</a></li>
+      <li><a href="#pages-tour" class="toc-h3">The 4 Pages</a></li>
+      <li><a href="#how-to-use">How to Use</a></li>
+      <li><a href="#tech-stack">Tech Stack</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#the-loop-bug">The Loop Bug</a></li>
+      <li><a href="#build-log">Build Log</a></li>
+      <li><a href="#try-it">Try It</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ═══ WHAT IT DOES ═══ -->
+    <section class="guide-section" id="what-it-does">
+      <h2>What It Does</h2>
+      <p>A step-by-step Rubik's Cube coach that runs entirely in the browser. Scramble a cube, turn on the coach, and it walks you through solving it — one move at a time, with a spoken explanation of <em>why</em> each move exists.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val">7</div><div class="stat-label">Solving Stages</div></div>
+        <div class="stat-cell"><div class="stat-val">18</div><div class="stat-label">Move Types</div></div>
+        <div class="stat-cell"><div class="stat-val">54</div><div class="stat-label">Stickers Tracked</div></div>
+        <div class="stat-cell"><div class="stat-val">3</div><div class="stat-label">Learning Modes</div></div>
+        <div class="stat-cell"><div class="stat-val">0</div><div class="stat-label">Server Needed</div></div>
+      </div>
+
+      <div class="rw-callout-green"><strong>What makes it different:</strong> Most tutorials give you a sequence to memorize. This one explains what each move is accomplishing right now — so if you forget the sequence, you understand enough to figure it out.</div>
+    </section>
+
+    <!-- ═══ THE STORY ═══ -->
+    <section class="guide-section" id="the-story">
+      <h2>The Story</h2>
+      <p>The cube sat on a shelf for thirty years as a "I'll figure it out someday" item. Then my son started learning — coached to memorize R U R' U' until his fingers knew the pattern, with no idea why those four moves worked. My mom picks it up and just tries things — no formula, no patience for memorization.</p>
+      <p>I couldn't find an app that worked for both of them. So I built one on Replit in a weekend. GenAcademy got me thinking about the difference between knowing <em>how</em> to do something and understanding <em>why</em> it works. Both are valid. The point is knowing which one you're doing.</p>
+    </section>
+
+    <!-- ═══ LEARNING MODES ═══ -->
+    <section class="guide-section" id="learning-modes">
+      <h2>Learning Modes</h2>
+
+      <div class="mode-grid">
+        <div class="mode-card" style="border-top:3px solid #4ade80;">
+          <div class="mode-card-top">
+            <div class="mode-card-emoji">📋</div>
+            <div><div class="mode-card-title">Formula Learner</div><div class="mode-card-who">For my son</div></div>
+          </div>
+          <ul>
+            <li>Coach shows exact move sequence</li>
+            <li>Each move labeled with its purpose</li>
+            <li>Auto-play executes the full step</li>
+            <li>Progress checkmarks per move</li>
+          </ul>
+        </div>
+        <div class="mode-card" style="border-top:3px solid #fb923c;">
+          <div class="mode-card-top">
+            <div class="mode-card-emoji">🔍</div>
+            <div><div class="mode-card-title">Free Explorer</div><div class="mode-card-who">For my mom</div></div>
+          </div>
+          <ul>
+            <li>Scramble and try anything</li>
+            <li>Right move? Coach confirms it</li>
+            <li>Wrong move? Alert + undo option</li>
+            <li>Hint available anytime</li>
+          </ul>
+        </div>
+        <div class="mode-card" style="border-top:3px solid #a78bfa;">
+          <div class="mode-card-top">
+            <div class="mode-card-emoji">🎛️</div>
+            <div><div class="mode-card-title">Mix Mode</div><div class="mode-card-who">For everyone else</div></div>
+          </div>
+          <ul>
+            <li>Coach off by default</li>
+            <li>Turn it on when stuck</li>
+            <li>Undo always recovers the plan</li>
+            <li>Voice coaching optional</li>
+          </ul>
+        </div>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:.86rem;margin-top:1.25rem;">
+        <thead>
+          <tr>
+            <th style="background:var(--rw-bg-subtle);font-family:var(--rw-font-display);font-weight:700;font-size:.76rem;text-align:left;padding:.65rem .9rem;border-bottom:2px solid var(--rw-border);color:var(--rw-text);">Approach</th>
+            <th style="background:var(--rw-bg-subtle);font-family:var(--rw-font-display);font-weight:700;font-size:.76rem;text-align:left;padding:.65rem .9rem;border-bottom:2px solid var(--rw-border);color:var(--rw-text);">You get</th>
+            <th style="background:var(--rw-bg-subtle);font-family:var(--rw-font-display);font-weight:700;font-size:.76rem;text-align:left;padding:.65rem .9rem;border-bottom:2px solid var(--rw-border);color:var(--rw-text);">Trade-off</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:.65rem .9rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);"><strong>Memorize formulas</strong></td><td style="padding:.65rem .9rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);">Fast, repeatable execution</td><td style="padding:.65rem .9rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);">No intuition — a small variation breaks the routine</td></tr>
+          <tr><td style="padding:.65rem .9rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);"><strong>Free exploration</strong></td><td style="padding:.65rem .9rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);">Real intuition and understanding</td><td style="padding:.65rem .9rem;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted);">Slow to reach a full solve without structure</td></tr>
+          <tr><td style="padding:.65rem .9rem;color:var(--rw-text-muted);"><strong>Coached with reasons</strong></td><td style="padding:.65rem .9rem;color:var(--rw-text-muted);">Structure + understanding together</td><td style="padding:.65rem .9rem;color:var(--rw-text-muted);">Slower than pure memorization</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══ 4 PAGES ═══ -->
+    <section class="guide-section" id="pages-tour">
+      <h2>The Four Pages</h2>
+      <p>Single-page React app with four routes. Entirely client-side — no server.</p>
+      <div class="page-cards">
+        <div class="page-card coach">
+          <div class="page-card-path">/ — Coach</div>
+          <h4>Guided Solving</h4>
+          <p>3D drag-rotatable cube · stage progress bar · move sequence with per-move labels · voice controls · manual move buttons · scramble / reset / undo.</p>
+        </div>
+        <div class="page-card learn">
+          <div class="page-card-path">/learn</div>
+          <h4>How the Cube Works</h4>
+          <p>Visual explainer of cube anatomy — 6 centers (never move), 12 edges, 8 corners. Color scheme used throughout the app.</p>
+        </div>
+        <div class="page-card notation">
+          <div class="page-card-path">/notation</div>
+          <h4>Move Reference</h4>
+          <p>What R, R', U, U', F, F'… actually mean, with interactive diagrams so you see the move before executing it.</p>
+        </div>
+        <div class="page-card mycube">
+          <div class="page-card-path">/mycube</div>
+          <h4>Enter Your Cube</h4>
+          <p>Input your physical cube's colors face by face. The app loads that state and starts coaching from there.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ HOW TO USE ═══ -->
+    <section class="guide-section" id="how-to-use">
+      <h2>How to Use It</h2>
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Scramble or enter your cube</h4><p>Hit Scramble for 22 random moves, or use /mycube to enter your real cube's colors.</p></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Turn coach mode on (optional)</h4><p>Off by default — explore freely. When you want guidance, toggle Coach Mode to see the next step.</p></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body"><h4>Play or turn manually</h4><p>Auto-play executes the step, or use the move buttons yourself. Right move = confirmed. Wrong move = corrected with an undo option.</p></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body"><h4>Read the "why" — or hear it</h4><p>Each step shows a plain-language explanation of what the sequence accomplishes. Voice reads it aloud if enabled.</p></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body"><h4>Repeat through 7 stages</h4><p>Each stage completes with a celebration card naming what you just finished and what comes next.</p></div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ═══ TECH STACK ═══ -->
+    <section class="guide-section" id="tech-stack">
+      <h2>Tech Stack — Framework, Packages &amp; Why</h2>
+      <p>Replit scaffolded a React + Vite + TypeScript workspace. Here's what it chose and the reason each package earned its place.</p>
+
+      <div class="stack-tabs">
+        <button class="stack-tab active" onclick="switchStack('core',this)">Core Framework</button>
+        <button class="stack-tab" onclick="switchStack('state',this)">State &amp; Routing</button>
+        <button class="stack-tab" onclick="switchStack('ui',this)">UI &amp; Animation</button>
+        <button class="stack-tab" onclick="switchStack('replit',this)">Replit Tooling</button>
+      </div>
+
+      <!-- Core Framework -->
+      <div class="stack-panel active" id="stack-core">
+        <table class="stack-table">
+          <thead><tr><th>Package</th><th>Why it was chosen</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="pkg-name">react</span><span class="pkg-ver">catalog (18)</span></td>
+              <td class="pkg-why"><strong>Component model maps directly to the app's structure</strong> — cube faces, stage panels, coaching steps, and the 3D canvas are all naturally independent components that re-render only when their slice of state changes.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">typescript</span><span class="pkg-ver">5</span></td>
+              <td class="pkg-why"><strong>The cube state is a 54-character string with strict index semantics.</strong> TypeScript catches off-by-one errors in permutation tables at compile time rather than at runtime when the cube silently returns wrong colors.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">vite</span><span class="pkg-ver">catalog (5)</span></td>
+              <td class="pkg-why"><strong>Fast hot-module reload inside Replit.</strong> The cube engine is pure browser code — no SSR needed. Vite bundles everything into a static site that runs directly on Replit's hosting with zero server config.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">tailwindcss</span><span class="pkg-ver">catalog (3)</span></td>
+              <td class="pkg-why"><strong>Replit's default template ships with Tailwind.</strong> Utility classes keep layout and spacing changes local to the component — no stylesheet hunting. The <code>@tailwindcss/vite</code> plugin integrates with zero config.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- State & Routing -->
+      <div class="stack-panel" id="stack-state">
+        <table class="stack-table">
+          <thead><tr><th>Package</th><th>Why it was chosen</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="pkg-name">zustand</span><span class="pkg-ver">v5.0</span></td>
+              <td class="pkg-why"><strong>4 KB vs Redux's ~50 KB.</strong> The cube only has two stores (<code>CubeStore</code> and <code>SettingsStore</code>). Zustand's <code>persist</code> middleware writes both to <code>localStorage</code> automatically — that's 3 lines of code vs a custom serializer in Redux. No Provider wrapping needed.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">wouter</span><span class="pkg-ver">v3.3</span></td>
+              <td class="pkg-why"><strong>~2 KB vs React Router's ~50 KB for 4 static routes.</strong> The app has four pages (/, /learn, /notation, /mycube) that never need dynamic segments, loaders, or nested layouts. Wouter handles this with a single <code>&lt;Switch&gt;</code> and no configuration.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">@tanstack/react-query</span><span class="pkg-ver">catalog (5)</span></td>
+              <td class="pkg-why"><strong>Part of Replit's workspace template.</strong> The app wraps everything in a <code>QueryClientProvider</code> — future API calls (e.g. saving solve history) would use React Query's caching automatically. Currently no server calls are made.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- UI & Animation -->
+      <div class="stack-panel" id="stack-ui">
+        <table class="stack-table">
+          <thead><tr><th>Package</th><th>Why it was chosen</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="pkg-name">framer-motion</span><span class="pkg-ver">catalog (11)</span></td>
+              <td class="pkg-why"><strong>Spring physics for the 3D cube drag.</strong> A CSS transition would snap between angles. Framer Motion's <code>useSpring</code> gives the cube real inertia — release mid-drag and it settles naturally. Also used for the solving celebration animation.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">@use-gesture/react</span><span class="pkg-ver">v10.3</span></td>
+              <td class="pkg-why"><strong>Unified mouse + touch drag events.</strong> This package normalises pointer events across desktop (mouse), tablet (pen), and mobile (touch) into a single <code>useDrag</code> hook. It pairs with Framer Motion springs — delta XY from gestures feeds directly into <code>rotateX</code>/<code>rotateY</code> springs.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">@radix-ui/*</span><span class="pkg-ver">v1–v2</span></td>
+              <td class="pkg-why"><strong>Accessible headless components via shadcn/ui pattern.</strong> Dialog, Tooltip, Tabs, AlertDialog, etc. ship with correct ARIA roles and keyboard navigation. Replit's Shadcn template generated all the <code>src/components/ui/</code> files from these primitives — the team owns the styles, Radix owns the behaviour.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">lucide-react</span><span class="pkg-ver">catalog</span></td>
+              <td class="pkg-why"><strong>Tree-shaken React icon components.</strong> <code>Play</code>, <code>SkipForward</code>, <code>Award</code>, <code>Lightbulb</code>, <code>Undo2</code> are imported individually — only the used icons go into the bundle. Consistent 24px stroke style across all UI controls.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">canvas-confetti</span><span class="pkg-ver">v1.9</span></td>
+              <td class="pkg-why"><strong>One function call for the stage-complete celebration.</strong> Writing a confetti canvas animation from scratch is ~200 lines. <code>confetti({ particleCount: 120 })</code> produces the celebration burst. The library is 24 KB and tree-shaken, so no performance impact when not firing.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">Web Speech API</span><span class="pkg-ver">native</span></td>
+              <td class="pkg-why"><strong>No npm package — built into every modern browser.</strong> <code>window.speechSynthesis.speak()</code> reads move labels and stage announcements aloud. Choosing a browser native API means zero bundle size increase and works offline.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">clsx + tailwind-merge</span><span class="pkg-ver">catalog</span></td>
+              <td class="pkg-why"><strong>Safe conditional class merging.</strong> <code>clsx</code> joins class strings conditionally. <code>tailwind-merge</code> de-duplicates conflicting Tailwind utilities (e.g. <code>bg-red-500</code> overriding <code>bg-blue-500</code>). Together they power the <code>cn()</code> utility used throughout all shadcn components.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Replit Tooling -->
+      <div class="stack-panel" id="stack-replit">
+        <table class="stack-table">
+          <thead><tr><th>Package</th><th>What it does in Replit</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="pkg-name">@replit/vite-plugin-cartographer</span></td>
+              <td class="pkg-why"><strong>Maps compiled output back to source files</strong> so Replit's AI agent can pinpoint exactly which line of source code a runtime error came from — even after Vite bundles everything.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">@replit/vite-plugin-runtime-error-modal</span></td>
+              <td class="pkg-why"><strong>Shows a browser overlay when a runtime error crashes the app.</strong> Instead of a blank screen, you see the stack trace inline — the agent reads this to diagnose errors without needing browser devtools access.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">@replit/vite-plugin-dev-banner</span></td>
+              <td class="pkg-why"><strong>Injects the Replit dev banner</strong> (the preview bar at the top of the editor view) so you can share the live preview URL with a single click during development.</td>
+            </tr>
+            <tr>
+              <td><span class="pkg-name">.agents/memory/</span><span class="pkg-ver">Replit agent memory</span></td>
+              <td class="pkg-why"><strong>Persists key learnings between agent sessions.</strong> After fixing the loop bug, the agent wrote <code>coach-step-pinning.md</code> — "never re-plan mid-step." Later sessions read this file so they don't re-introduce the same bug when adding new features.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="rw-callout-indigo" style="margin-top:1rem;"><strong>Key Replit workflow:</strong> The agent reads the error overlay → finds the source line via cartographer → writes a fix → checks its own memory for prior constraints → verifies with a screenshot. Each prompt was one iteration of that loop.</div>
+      </div>
+    </section>
+
+    <!-- ═══ ARCHITECTURE ═══ -->
+    <section class="guide-section" id="architecture">
+      <h2>Architecture</h2>
+      <p>Five layers. User interaction flows down from pages through components into state, which feeds the cube engine and solver. Everything persists to the browser.</p>
+      <div class="arch-diagram">
+        <img src="../images/rubik-navigator-architecture.svg" alt="Rubik Navigator component architecture — Pages, Coach Logic, State, Core Engine, External" loading="lazy">
+      </div>
+
+      <h3>The cube state is a 54-character string</h3>
+      <p>The entire cube lives in one variable. A solved cube is <code>"YYYYYYYYY OOOOOOOOO GGGGGGGGG WWWWWWWWW RRRRRRRRR BBBBBBBBB"</code> (faces U R F D L B, 9 stickers each). Every move is a permutation table over indices 0–53 — precomputed at startup, applied as an array lookup.</p>
+
+      <h3>The solver uses beginner layer-by-layer</h3>
+      <p>Seven stages, each a function that calls helpers (<code>findEdge()</code>, <code>findCorner()</code>, <code>uTurnsFromTo()</code>) to locate pieces and compute the path. Output is a <code>SolveStep</code> with <code>moves[]</code>, <code>purposes[]</code> (one explanation per move), <code>reason</code> (why this works), and <code>highlight[]</code> (facelet indices to dim on the 3D cube).</p>
+
+      <h3>State in two Zustand stores</h3>
+      <p><code>CubeStore</code> — cube string, history stack for undo, helpMode flag. <code>SettingsStore</code> — voice mute, rate, plainLanguage. Both persist to <code>localStorage</code> via Zustand's persist middleware — refresh the page and you're exactly where you left off.</p>
+    </section>
+
+    <!-- ═══ THE LOOP BUG ═══ -->
+    <section class="guide-section" id="the-loop-bug">
+      <h2>The Loop Bug — 5 Iterations</h2>
+      <p>The hardest part wasn't the solver. It was making the coach coherent — feeling like it was following a plan, not reacting to every individual move.</p>
+
+      <div class="rw-callout-indigo" style="margin-bottom:1.25rem;"><strong>Core principle discovered:</strong> The coach must only judge the cube at step boundaries — never mid-formula. That one rule fixed all three bugs below.</div>
+
+      <div class="bug-timeline">
+
+        <div class="bug-entry">
+          <div class="bug-iter">Iteration 1</div>
+          <div class="bug-col problem">
+            <div class="bug-col-header">Problem</div>
+            <strong>Re-plan after every move.</strong> Solver computes a fresh plan on every state change. Halfway through R U R' U', the "optimal next move from here" is R' — undoing what you just did. Looks like an infinite loop.
+          </div>
+          <div class="bug-col fix">
+            <div class="bug-col-header">Fix</div>
+            <strong>Pinned Plan (<code>planRef</code>).</strong> Once a step starts, that exact sequence is locked into a <code>useRef</code>. The solver isn't called again until the step finishes or the user makes an unexpected change.
+          </div>
+        </div>
+
+        <div class="bug-entry">
+          <div class="bug-iter">Iteration 2</div>
+          <div class="bug-col problem">
+            <div class="bug-col-header">Problem</div>
+            <strong>Timing race on fast clicks.</strong> Click handlers read cube state from React render props (stale by one render). Rapid clicking desync'd the expected vs actual state — pin dropped, sequence re-planned mid-step.
+          </div>
+          <div class="bug-col fix">
+            <div class="bug-col-header">Fix</div>
+            <strong>Synchronous <code>useRef</code> mirror.</strong> All click handlers read from <code>planRef.current</code> — always the live value, never one render behind. Auto-play timer also reads from the ref and cancels immediately on unexpected state change.
+          </div>
+        </div>
+
+        <div class="bug-entry">
+          <div class="bug-iter">Iteration 3</div>
+          <div class="bug-col problem">
+            <div class="bug-col-header">Problem</div>
+            <strong>Manual moves treated as off-script.</strong> Any move not from the Play button abandoned the plan, even if it was exactly the suggested move.
+          </div>
+          <div class="bug-col fix">
+            <div class="bug-col-header">Fix</div>
+            <strong>Compare via <code>applyMove(fromState, expected) === stateString</code>.</strong> Correct manual move advances the sequence. Wrong move shows alert + sets aside plan so Undo can resume it. <code>stashRef</code> holds the plan across the wrong move.
+          </div>
+        </div>
+
+        <div class="bug-entry">
+          <div class="bug-iter">Iteration 4</div>
+          <div class="bug-col problem">
+            <div class="bug-col-header">Problem</div>
+            <strong>Layout and cube size.</strong> Shrinking the CSS container didn't shrink the 3D cube — it overflowed. Desktop needed scrolling. Mobile layout unstacked.
+          </div>
+          <div class="bug-col fix">
+            <div class="bug-col-header">Fix</div>
+            <strong>Cube scales with <code>font-size</code> em units.</strong> Pass a smaller <code>size</code> prop on desktop. Stage goal added to top bar. Celebration card names what finished + what's next.
+          </div>
+        </div>
+
+        <div class="bug-entry">
+          <div class="bug-iter">Iteration 5</div>
+          <div class="bug-col problem">
+            <div class="bug-col-header">Problem</div>
+            <strong>Stage-complete fires repeatedly.</strong> Mid-formula, the cube passes through states where a stage temporarily looks done, then undone, then done again. Celebration card fired multiple times.
+          </div>
+          <div class="bug-col fix">
+            <div class="bug-col-header">Fix</div>
+            <strong>One guard: <code>if (planRef.current !== null) return</code>.</strong> Stage detection skips entirely while a step is in progress. Fires exactly once per stage, at the step boundary.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ BUILD LOG ═══ -->
+    <section class="guide-section" id="build-log">
+      <h2>Build Log — What I Learned</h2>
+      <div class="log-grid">
+        <div class="log-card">
+          <div class="log-card-num">Learning 1</div>
+          <h4>A coach needs a memory, not just a plan</h4>
+          <p>A solver that re-plans from raw state on every render is technically correct but practically unusable. The coaching sequence must be owned by the session, not recomputed from scratch.</p>
+        </div>
+        <div class="log-card">
+          <div class="log-card-num">Learning 2</div>
+          <h4>UI state and app state are different clocks</h4>
+          <p>React renders asynchronously. For anything time-sensitive, read from a <code>useRef</code> that's updated synchronously — never from render props inside an event handler.</p>
+        </div>
+        <div class="log-card">
+          <div class="log-card-num">Learning 3</div>
+          <h4>Manual moves are a feature, not an edge case</h4>
+          <p>Detecting whether a manual move matched the expected move turned "going off-script" into a teaching moment. Undo recovering the plan (via <code>stashRef</code>) made it safe to try things.</p>
+        </div>
+        <div class="log-card">
+          <div class="log-card-num">Learning 4</div>
+          <h4>Visual layout needs screenshot verification</h4>
+          <p>The cube size bug (container shrunk, cube didn't) was only visible by looking at the rendered page. CSS and component props don't always express the same thing — check with screenshots.</p>
+        </div>
+        <div class="log-card" style="grid-column:1/-1;">
+          <div class="log-card-num">Learning 5</div>
+          <h4>Replit's agent memory prevents re-breaking fixed bugs</h4>
+          <p>After fixing the loop bug, the agent saved the principle ("only judge at step boundaries") to <code>.agents/memory/coach-step-pinning.md</code>. Later sessions read this file before making changes. The stage-complete fix in iteration 5 directly referenced that note — the agent didn't re-derive the rule, it already knew it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ TRY IT ═══ -->
+    <section class="guide-section" id="try-it">
+      <h2>Try It</h2>
+      <div class="try-cta">
+        <h3>Rubik Navigator</h3>
+        <p>No install, no account. Works on mobile and desktop. Cube state saves across sessions.</p>
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+          <a href="https://rubik-navigator.replit.app/" target="_blank" rel="noopener" class="rw-btn rw-btn-primary" style="background:#4ade80;color:#0f172a;">Open the App ↗</a>
+          
+        </div>
+      </div>
+      <p style="margin-top:1.5rem;">Replit provided the credits and AI-assisted environment that made this a weekend build. GenAcademy got me thinking about the difference between executing a formula and understanding why it works. The cube has been on a shelf long enough.</p>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[{"label":"PanchangChef Build","url":"/usecase/panchangchef-guide.html"},{"label":"SentTriage Build","url":"/usecase/sent-triage.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+function switchStack(id, btn) {
+  document.querySelectorAll('.stack-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.stack-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('stack-' + id).classList.add('active');
+}
+
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>

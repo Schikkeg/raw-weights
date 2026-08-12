@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Rubik Navigator — Build Guide",
+        excerpt: "How I built a Rubik's Cube coach on Replit that teaches your way — formula or free exploration. Framework, packages, architecture, and the loop bug that took five iterations to fix.",
+        date: "Aug 12, 2026",
+        image: "./images/cube.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/rubik-navigator-guide.html",
+        linkedin: null
+      },
+      {
         title: "PanchangChef: Calendar-Aware Indian Recipe AI on Snowflake",
         excerpt: "How I built an AI chef that reads the Hindu ritual calendar, enforces Sattvic fasting rules, and matches your pantry to 305 Indian recipes — inside Snowflake Cortex.",
         date: "July 31, 2026",
         image: "./images/panchangchef-og.jpg.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/panchangchef-guide.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_buildinpublic-snowflake-cortexai-share-7488974821155078144-0DN_/"
       },
       {
         title: "AgentIntel: I Built a Multi-Agent Swarm to Diagnose AI Visibility",
