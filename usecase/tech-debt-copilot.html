@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Debt Copilot — MongoDB BuildFest SF 2026 | RawWeights</title>
+  <meta name="description" content="An AI agent that audits your software stack for End-of-Life packages, CVE exposures, and upcoming deprecations — with full conversation persistence via MongoDB Atlas.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/tech-debt-copilot.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/techdebt/home.png">
+  <meta property="og:url" content="https://rawweights.com/usecase/tech-debt-copilot.html">
+  <meta property="og:title" content="Tech Debt Copilot — MongoDB BuildFest SF 2026">
+  <meta property="og:description" content="An AI agent that tells you when your software expires — and remembers every conversation across restarts. Built in one day.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero split layout ───────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #160e1a 50%, #0a1530 100%);
+      padding: 4rem 2rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -20%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(240,114,53,.2) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(79,217,223,.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(240,114,53,.12); border: 1px solid rgba(240,114,53,.3);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #fb923c;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .pulse-dot { width: 6px; height: 6px; background: #f07235; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.08; letter-spacing: -.03em; margin-bottom: 1rem;
+      text-align: left;
+    }
+    .guide-hero h1 span { color: #fb923c; }
+    .guide-hero p { font-size: 1rem; color: rgba(240,244,255,.7); margin: 0 0 1.5rem; line-height: 1.7; text-align: left; }
+    .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; }
+
+    /* Video panel */
+    .hero-video-wrap {
+      position: relative; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(240,114,53,.25);
+      box-shadow: 0 0 60px rgba(240,114,53,.12), 0 24px 48px rgba(0,0,0,.4);
+    }
+    .hero-video-wrap video {
+      width: 100%; height: auto; display: block;
+      background: #07111d;
+    }
+    .hero-video-label {
+      position: absolute; top: .75rem; left: .75rem;
+      background: rgba(7,17,29,.85); backdrop-filter: blur(8px);
+      border: 1px solid rgba(240,114,53,.3);
+      border-radius: 6px; padding: .25rem .65rem;
+      font-family: var(--rw-font-mono); font-size: .68rem; color: #fb923c;
+    }
+
+    /* ── Guide layout ───────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 230px 1fr;
+      gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
+      padding: 0 1.5rem; align-items: start;
+    }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
+    .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
+    .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
+
+    /* ── Sections ───────────────────────────────── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem;
+      border-bottom: 2px solid var(--rw-orange-light);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.5rem 0 .5rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
+
+    /* ── Stat row ───────────────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: var(--rw-orange); line-height: 1; }
+    .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Data source callout ─────────────────────── */
+    .data-callout {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-left: 3px solid var(--rw-indigo);
+      border-radius: 0 var(--rw-r-md) var(--rw-r-md) 0;
+      padding: 1.1rem 1.25rem; margin: 1.5rem 0;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;
+    }
+    .data-col { font-size: .83rem; }
+    .data-col strong { display: block; font-family: var(--rw-font-display); font-size: .78rem; color: var(--rw-text-subtle); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+    .data-col span { color: var(--rw-text); font-family: var(--rw-font-mono); font-size: .82rem; }
+
+    /* ── Use-case grid ──────────────────────────── */
+    .usecase-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .usecase-card {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.2rem;
+      border-left: 3px solid var(--rw-orange);
+    }
+    .usecase-card-top { display: flex; align-items: center; gap: .6rem; margin-bottom: .6rem; }
+    .usecase-emoji { font-size: 1.3rem; }
+    .usecase-role { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); }
+    .usecase-pain { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; margin-bottom: .6rem; }
+    .usecase-win { font-size: .78rem; color: var(--rw-orange); font-family: var(--rw-font-mono); padding: .3rem .55rem; background: var(--rw-orange-light); border-radius: 4px; display: inline-block; }
+
+    /* ── Demo tabs ──────────────────────────────── */
+    .demo-tabs-wrap { margin: 1.5rem 0; }
+    .demo-tab-bar {
+      display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .5rem;
+      scrollbar-width: thin; scrollbar-color: var(--rw-border) transparent;
+      position: sticky; top: calc(var(--rw-nav-height)); z-index: 10;
+      background: var(--rw-bg); padding-top: .5rem;
+    }
+    .demo-tab-bar::-webkit-scrollbar { height: 4px; }
+    .demo-tab-bar::-webkit-scrollbar-thumb { background: var(--rw-border); border-radius: 2px; }
+    .demo-tab {
+      white-space: nowrap; padding: .45rem 1rem;
+      border-radius: 9999px; border: 1.5px solid var(--rw-border);
+      background: transparent; color: var(--rw-text-muted);
+      font-family: var(--rw-font-display); font-size: .82rem; font-weight: 600;
+      cursor: pointer; transition: all .15s; flex-shrink: 0;
+    }
+    .demo-tab:hover { border-color: var(--rw-orange); color: var(--rw-orange); }
+    .demo-tab.active { background: var(--rw-orange); border-color: var(--rw-orange); color: #fff; }
+    .demo-panel { display: none; }
+    .demo-panel.active { display: block; }
+    .demo-img-frame {
+      border: 1px solid var(--rw-border); border-radius: var(--rw-r-md);
+      overflow: hidden; margin: 1rem 0 .75rem; background: var(--rw-bg-subtle);
+    }
+    .demo-img-frame img { width: 100%; height: auto; display: block; }
+    .demo-img-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0 .75rem; }
+    .demo-img-row .demo-img-frame { margin: 0; }
+    .demo-caption { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.55; }
+    .demo-caption strong { color: var(--rw-text); }
+    .tag { display: inline-block; font-family: var(--rw-font-mono); font-size: .72rem; padding: .1rem .45rem; border-radius: 4px; margin-right: .3rem; }
+    .tag-red { background: rgba(240,82,82,.15); color: #f05252; border: 1px solid rgba(240,82,82,.25); }
+    .tag-green { background: rgba(78,203,135,.12); color: #4ecb87; border: 1px solid rgba(78,203,135,.2); }
+    .tag-orange { background: rgba(240,114,53,.12); color: var(--rw-orange); border: 1px solid rgba(240,114,53,.2); }
+    .tag-blue { background: rgba(79,217,223,.12); color: #4fd9df; border: 1px solid rgba(79,217,223,.2); }
+
+    /* ── Feature grid ───────────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
+    .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Step list ──────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Comparison table ───────────────────────── */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: .9rem; }
+    .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .8rem; text-align: left; padding: .75rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
+    .comparison-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+
+    /* ── SVG diagrams ───────────────────────────── */
+    .diagram-wrap {
+      border: 1px solid var(--rw-border); border-radius: var(--rw-r-md);
+      overflow: hidden; margin: 1.25rem 0; background: var(--rw-bg-subtle);
+    }
+    .diagram-wrap img { width: 100%; height: auto; display: block; }
+    .diagram-label {
+      padding: .6rem 1rem; font-family: var(--rw-font-mono); font-size: .72rem;
+      color: var(--rw-text-subtle); background: var(--rw-bg-subtle);
+      border-top: 1px solid var(--rw-border); text-align: center;
+      letter-spacing: .04em;
+    }
+
+    /* ── Learnings ──────────────────────────────── */
+    .learning-item {
+      border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange);
+      border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0;
+      padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--rw-card);
+    }
+    .learning-num { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--rw-orange); letter-spacing: .06em; margin-bottom: .3rem; }
+    .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .45rem; }
+    .learning-body { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .6rem; }
+    .learning-quote { padding: .45rem .85rem; background: var(--rw-orange-light); border-left: 2px solid var(--rw-orange); font-size: .8rem; color: var(--rw-orange); font-style: italic; border-radius: 0 4px 4px 0; }
+
+    /* ── Team ───────────────────────────────────── */
+    .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .team-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; }
+    .team-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; font-family: var(--rw-font-display); flex-shrink: 0; }
+    .av-1 { background: linear-gradient(135deg, #f07235, #c04400); color: #fff; }
+    .av-2 { background: linear-gradient(135deg, #4fd9df, #0d8f98); color: #07111d; }
+    .av-3 { background: linear-gradient(135deg, #4ecb87, #0a7f4e); color: #07111d; }
+    .av-4 { background: linear-gradient(135deg, #818cf8, #4338ca); color: #fff; }
+    .team-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); }
+    .team-role { font-size: .75rem; color: var(--rw-text-subtle); font-family: var(--rw-font-mono); margin-bottom: .4rem; }
+    .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Code block ─────────────────────────────── */
+    .code-block { background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; font-family: var(--rw-font-mono); font-size: .82rem; color: var(--rw-indigo); overflow-x: auto; margin: 1rem 0; line-height: 1.75; }
+    .code-block .cm { color: var(--rw-text-subtle); }
+    .code-block .kw { color: var(--rw-orange); }
+    .code-block .st { color: #4ecb87; }
+
+    @media (max-width: 1024px) {
+      .hero-split { grid-template-columns: 1fr; }
+      .hero-video-wrap { max-width: 560px; }
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .feature-grid { grid-template-columns: repeat(2,1fr); }
+      .usecase-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .data-callout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .stat-row { flex-direction: column; }
+      .stat-cell { border-right: none; border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:last-child { border-bottom: none; }
+      .demo-img-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> MongoDB BuildFest SF 2026 &nbsp;&middot;&nbsp; Persistent Context Sprint</span>
+      <h1>Tech Debt Copilot<br><span>Know Before Your Software Expires</span></h1>
+      <p>An AI agent that audits your stack for End-of-Life packages, live CVE exposures, and upcoming deprecations &mdash; with full conversation memory that survives server restarts.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">MongoDB Atlas Vector Search</span>
+        <span class="hero-tag">LangGraph + MongoDBSaver</span>
+        <span class="hero-tag">Voyage AI voyage-3.5</span>
+        <span class="hero-tag">Fireworks AI deepseek-v4-flash</span>
+        <span class="hero-tag">8,322 EOL Records</span>
+        <span class="hero-tag">6 Agent Tools</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the Build Story &darr;</a>
+        <a href="https://github.com/researchsite/tech-debt-copilot" target="_blank" class="rw-btn rw-btn-primary">GitHub &rarr;</a>
+      </div>
+    </div>
+
+    <!-- ── VIDEO — update src path when video is ready ── -->
+    <div class="hero-video-wrap">
+      <span class="hero-video-label">&#9654; Live Demo</span>
+      <video controls muted playsinline poster="">
+        <!-- UPDATE PATH: place your video at images/video/demo.mp4 -->
+        <source src="../images/videos/TechDebt.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Content ─────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-what">What It Does</a></li>
+      <li><a href="#section-usecases">Who It Helps</a></li>
+      <li><a href="#section-demo">See It In Action</a></li>
+      <li><a href="#section-features">All Features</a></li>
+      <li><a href="#section-how">How It Works</a></li>
+      <li><a href="#section-arch" class="toc-h3">Architecture</a></li>
+      <li><a href="#section-components" class="toc-h3">Component Map</a></li>
+      <li><a href="#section-data">Data Source</a></li>
+      <li><a href="#section-stack">Tech Stack</a></li>
+      <li><a href="#section-learnings">Real Learnings</a></li>
+      <li><a href="#section-team">The Team</a></li>
+      <li><a href="#section-start">Get Started</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── WHAT IT DOES ───────────────────────────── -->
+    <section class="guide-section" id="section-what">
+      <h2>What It Does</h2>
+      <p>Tech Debt Copilot is an AI agent you talk to. You give it a GitHub URL, paste your <code>pip list</code> output, or just ask a question. It tells you which software in your stack is past end-of-life, which is expiring soon, and whether there are active CVEs with no fix available &mdash; because EOL packages stop receiving security patches.</p>
+      <p>The agent remembers every conversation. Restart the server. Close the browser. Come back an hour later. It picks up exactly where you left off &mdash; because all state is stored in MongoDB Atlas via LangGraph&rsquo;s MongoDBSaver checkpointer.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val">8,322</div><div class="stat-label">EOL records indexed</div></div>
+        <div class="stat-cell"><div class="stat-val">464</div><div class="stat-label">Products covered</div></div>
+        <div class="stat-cell"><div class="stat-val">6</div><div class="stat-label">Agent tools</div></div>
+        <div class="stat-cell"><div class="stat-val">&lt;2s</div><div class="stat-label">Dashboard render</div></div>
+        <div class="stat-cell"><div class="stat-val">0</div><div class="stat-label">Extra infra needed</div></div>
+      </div>
+    </section>
+
+    <!-- ── USE CASES ──────────────────────────────── -->
+    <section class="guide-section" id="section-usecases">
+      <h2>Who It Helps</h2>
+      <p>Tech debt doesn&rsquo;t care about your org chart. The same EOL problem hits every role differently &mdash; the agent speaks to all of them.</p>
+
+      <div class="usecase-grid">
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">🔧</span><span class="usecase-role">DevOps / Platform Engineer</span></div>
+          <div class="usecase-pain">Discovers EOL runtimes the night before a prod deploy. No consolidated view of what&rsquo;s expiring across the stack.</div>
+          <span class="usecase-win">90-day triage &rarr; prioritized upgrade sprint with exact dates</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">🔐</span><span class="usecase-role">Security Engineer</span></div>
+          <div class="usecase-pain">CVE scanners flag issues but don&rsquo;t tell you if a fix even exists. EOL packages won&rsquo;t get one.</div>
+          <span class="usecase-win">Live CVE lookup + EOL status in one query</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">📋</span><span class="usecase-role">IT Asset Manager</span></div>
+          <div class="usecase-pain">Spreadsheets of software versions updated manually. Compliance audits require a software bill of materials.</div>
+          <span class="usecase-win">Paste pip list &rarr; instant EOL breakdown for audits</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">💻</span><span class="usecase-role">Frontend / Mobile Developer</span></div>
+          <div class="usecase-pain">Node, React, and npm packages all on different EOL calendars. No single source of truth.</div>
+          <span class="usecase-win">Scan any GitHub URL &rarr; dependency report, no git clone</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">🗄</span><span class="usecase-role">Database / Infra Owner</span></div>
+          <div class="usecase-pain">PostgreSQL, MongoDB, Redis, and OS releases have separate lifecycle cadences. Easy to miss a kernel EOL.</div>
+          <span class="usecase-win">Semantic search across 464 products &mdash; ask in plain English</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">⚖️</span><span class="usecase-role">Compliance / Legal</span></div>
+          <div class="usecase-pain">SOC 2 and ISO 27001 auditors require software inventory with support status. Producing this before each audit is expensive.</div>
+          <span class="usecase-win">On-demand SBOM with EOL dates &mdash; shareable and fast</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">📊</span><span class="usecase-role">Engineering Manager</span></div>
+          <div class="usecase-pain">Tech debt is invisible until it&rsquo;s urgent. Sprint backlog has no objective urgency signal for &ldquo;upgrade X&rdquo; tickets.</div>
+          <span class="usecase-win">EOL dates as priority signal: &ldquo;expires in 23 days&rdquo;</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">🤝</span><span class="usecase-role">M&amp;A / Due Diligence</span></div>
+          <div class="usecase-pain">Evaluating an acquisition target&rsquo;s tech health requires fast triage of dependency hygiene across repos.</div>
+          <span class="usecase-win">Scan target&rsquo;s GitHub &rarr; instant tech debt risk report</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DEMO ───────────────────────────────────── -->
+    <section class="guide-section" id="section-demo">
+      <h2>See It In Action</h2>
+      <p>Screenshots from the live app. Each tab shows a different part of the workflow &mdash; from the initial chat interface to a full GitHub repo scan with critical EOL findings.</p>
+
+      <div class="demo-tabs-wrap">
+        <div class="demo-tab-bar">
+          <button class="demo-tab active" onclick="showDemo('home',this)">Home &amp; Chat</button>
+          <button class="demo-tab" onclick="showDemo('metrics',this)">Dashboard &mdash; Metrics</button>
+          <button class="demo-tab" onclick="showDemo('stack',this)">Stack Details</button>
+          <button class="demo-tab" onclick="showDemo('repo',this)">GitHub Scan &mdash; Overview</button>
+          <button class="demo-tab" onclick="showDemo('repocrit',this)">GitHub Scan &mdash; Critical</button>
+        </div>
+
+        <div class="demo-panel active" id="demo-home">
+          <div class="demo-img-frame">
+            <img src="../images/techdebt/01_home.png" alt="Tech Debt Copilot home screen" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-blue">UI</span>
+            <strong>Home &amp; Chat interface.</strong> The sidebar walks users through three demo modes: scan local machine, scan a GitHub repo, or ask a lifecycle question. The main area is a persistent chat thread stored in MongoDB Atlas via MongoDBSaver. The thread ID in the sidebar identifies the session &mdash; restart the server and the agent picks up here.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-metrics">
+          <div class="demo-img-frame">
+            <img src="../images/techdebt/03_metrics_cards.png" alt="Dashboard metrics cards" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-red">EOL</span>
+            <strong>Dashboard &mdash; 5 metric cards.</strong> After a local stack scan, the dashboard renders in under 2 seconds from a direct MongoDB <code>find_one()</code> call &mdash; bypassing the LLM entirely. Cards show: Technologies Scanned &middot; Unsupported (past EOL) &middot; Expiring Soon (&le; 90 days) &middot; Unknown &middot; Healthy.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-stack">
+          <div class="demo-img-frame">
+            <img src="../images/techdebt/04_stack_rows.jpeg" alt="Stack detail rows with expandable EOL info" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-orange">Details</span>
+            <strong>Stack detail rows.</strong> Each detected package gets an expandable row: name, version, provider, exact EOL date, status badge, and support window. Color-coded: 🔴 past EOL, 🟠 &lt;30 days, 🟡 &lt;90 days, 🔵 &lt;1 year, 🟢 healthy. Data pulled directly from the Atlas <code>eol_lifecycle</code> collection.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-repo">
+          <div class="demo-img-frame">
+            <img src="../images/techdebt/07_repo_metrics.jpeg" alt="GitHub repo scan overview metrics" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-orange">GitHub Scan</span>
+            <strong>GitHub repo scan &mdash; metrics overview.</strong> Paste a GitHub URL into the chat. The agent fetches <code>requirements.txt</code>, <code>package.json</code>, <code>pyproject.toml</code>, <code>go.mod</code>, and <code>.nvmrc</code> directly over HTTP &mdash; no git clone. The dashboard updates with the repo&rsquo;s risk metrics immediately after the agent responds.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-repocrit">
+          <!-- UPDATE: replace with your second GitHub scan screenshot -->
+          <!-- Expected path: ../../TechDebtCopilot/docs/screenshots/07b_repo_critical.png -->
+          <div class="demo-img-frame">
+            <img src="../images/techdebt/07_repo_metrics_stack.jpeg" alt="GitHub repo scan critical packages" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-red">Critical</span>
+            <strong>GitHub scan &mdash; critical findings.</strong> The agent returns a risk-grouped report: 🔴 Expired packages past EOL with no security patches available, 🟠 Critical (&lt;30 days), down to 🟢 Healthy. Each finding shows the exact EOL date and a recommended upgrade path. <em>Update the image path above to your second GitHub scan screenshot.</em>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ALL FEATURES ───────────────────────────── -->
+    <section class="guide-section" id="section-features">
+      <h2>All Features</h2>
+      <p>Six agent tools, three scan modes, persistent memory, voice output, and a real-time dashboard &mdash; each feature solves a specific gap in how teams currently manage software lifecycle.</p>
+
+      <h3>Scan Modes</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🖥</div>
+          <h4>Local Stack Scan</h4>
+          <p>Detects installed Python runtime, pip packages, Node.js, and npm packages on the host machine. Returns each package with its version, EOL product mapping, and risk level.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📁</div>
+          <h4>GitHub Repo Scan</h4>
+          <p>Accepts any GitHub URL or local folder path. Fetches <code>requirements.txt</code>, <code>package.json</code>, <code>pyproject.toml</code>, <code>go.mod</code>, <code>.nvmrc</code> over HTTP. No git clone, no authentication needed for public repos.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📋</div>
+          <h4>Paste Mode (Deployed)</h4>
+          <p>When running on a remote server, <code>scan_local_stack()</code> scans the server&rsquo;s packages &mdash; not yours. Paste your local <code>pip list</code> or <code>npm ls</code> output into the chat and the agent parses and analyses it with the same full EOL check.</p>
+        </div>
+      </div>
+
+      <h3>Lifecycle Intelligence</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🗄</div>
+          <h4>EOL Knowledge Base Search</h4>
+          <p>Semantic search over 8,322 endoflife.date records using Voyage AI 1024-dim asymmetric embeddings. Optional <code>$eq</code> pre-filter scopes results to a single product. Ask in plain English: &ldquo;Is Python 3.9 still supported?&rdquo;</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📅</div>
+          <h4>90-Day Triage</h4>
+          <p>MongoDB aggregation pipeline: <code>$match</code> on date range, <code>$group</code> by category. Filter by: <code>os</code> &middot; <code>lang</code> &middot; <code>database</code> &middot; <code>framework</code> &middot; <code>service</code>. Surfaces the exact packages your team needs to act on this sprint.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📈</div>
+          <h4>Industry Trends</h4>
+          <p>Aggregates EOL exposure across all tech categories globally. Answers &ldquo;which ecosystem is most at risk right now?&rdquo; &mdash; useful for vendor assessments and tech landscape reviews.</p>
+        </div>
+      </div>
+
+      <h3>Security</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🛡</div>
+          <h4>Live CVE Cross-Reference</h4>
+          <p>Live POST to OSV.dev for any product + version. Returns CVE IDs, CVSS severity scores, and whether a fix is available &mdash; or whether EOL status means no patch is coming. No API key required.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔴</div>
+          <h4>Risk-Grouped Reports</h4>
+          <p>All scan results are formatted as: 🔴 Expired &rarr; 🟠 Critical (&lt;30 days) &rarr; 🟡 High (&lt;90 days) &rarr; 🔵 Medium (&lt;1 year) &rarr; 🟢 OK. Recommended actions always included.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔒</div>
+          <h4>Input Sanitization</h4>
+          <p>All chat input is sanitized before reaching the LLM &mdash; prompt injection patterns are detected and rejected. URL and path inputs are validated before being passed to repo scanner tools.</p>
+        </div>
+      </div>
+
+      <h3>Persistence &amp; Memory</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">💾</div>
+          <h4>Conversation Persistence</h4>
+          <p>Every message, tool call, and result is stored per <code>thread_id</code> in MongoDB Atlas via LangGraph&rsquo;s MongoDBSaver. Restart the server mid-conversation &mdash; the agent picks up where it left off. No Redis, no queues.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔄</div>
+          <h4>Follow-up Awareness</h4>
+          <p>Full conversation history flows through the agent on every turn. &ldquo;What about that Django version?&rdquo; resolves from context &mdash; no need to repeat yourself. References across turns work naturally.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🧵</div>
+          <h4>Multi-Thread Support</h4>
+          <p>Each conversation gets a unique <code>thread_id</code>. Start a new conversation with a single button click while keeping all previous threads intact in Atlas. Threads persist indefinitely.</p>
+        </div>
+      </div>
+
+      <h3>UI &amp; Output</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">📊</div>
+          <h4>Live Dashboard</h4>
+          <p>Five metric cards (Scanned / Unsupported / Expiring / Unknown / Healthy) render in under 2 seconds from a direct MongoDB lookup &mdash; no LLM in the loop. Updates on every scan.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔊</div>
+          <h4>Voice Output</h4>
+          <p>ElevenLabs TTS integration reads agent responses aloud when enabled. Toggle per session. Designed for hands-free monitoring scenarios where you need to hear the risk summary.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">⚡</div>
+          <h4>Quick Follow-ups</h4>
+          <p>After every scan, contextual follow-up buttons appear: &ldquo;Check CVEs&rdquo;, &ldquo;Upgrade path?&rdquo;, &ldquo;How long to fix?&rdquo;. One click sends the next question with full context already loaded.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ───────────────────────────── -->
+    <section class="guide-section" id="section-how">
+      <h2>How It Works</h2>
+      <p>Three input modes feed a LangGraph agent that routes to one of six tools, queries MongoDB Atlas or live APIs, and writes every turn to a persistent checkpointer.</p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>You Ask, Scan, or Paste</h4>
+            <p>Type a question, paste a GitHub URL, or paste your <code>pip list</code> / <code>npm ls</code> output. The message shape determines which tool fires &mdash; no mode selection required.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>LLM Routes to the Right Tool</h4>
+            <p>deepseek-v4-flash follows hard RULE 1&ndash;6 blocks in the system prompt. Imperative &ldquo;IMMEDIATELY call&rdquo; grammar &mdash; not descriptive metadata &mdash; forces correct tool selection every time.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Tool Runs &mdash; Atlas or Live API</h4>
+            <p>EOL queries hit MongoDB Atlas <code>$vectorSearch</code> (Voyage AI 1024-dim asymmetric embeddings). CVE queries hit OSV.dev live. Scan tools run subprocess or HTTP fetches. All results flow back to the agent node.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>State Written to Atlas via MongoDBSaver</h4>
+            <p>Every message, every tool call result, every turn &mdash; serialized and stored per <code>thread_id</code> in the <code>checkpoints</code> collection. Two collections: <code>checkpoints</code> (completed steps) and <code>checkpoint_writes</code> (in-flight state for crash recovery).</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Risk-Grouped Report Streamed to UI</h4>
+            <p>Results grouped by severity: 🔴 Expired &rarr; 🟠 Critical &rarr; 🟡 High &rarr; 🔵 Medium &rarr; 🟢 OK. Dashboard metric cards update from a direct <code>find_one()</code> call &mdash; LLM not in the loop for the numbers.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="code-block"><span class="cm"># Three lines: graph + persistence + restart-safe conversations</span>
+graph = build_graph(checkpointer=<span class="kw">get_checkpointer</span>())  <span class="cm"># MongoDBSaver -> Atlas</span>
+result = graph.stream(input, config={<span class="st">"configurable"</span>: {<span class="st">"thread_id"</span>: tid}})
+
+<span class="cm"># Asymmetric embeddings: document at index, query at search</span>
+vo.embed(texts, input_type=<span class="st">"document"</span>)   <span class="cm"># ETL ingest time</span>
+vo.embed([query], input_type=<span class="st">"query"</span>)   <span class="cm"># runtime search</span></div>
+    </section>
+
+    <!-- ── ARCHITECTURE ───────────────────────────── -->
+    <section class="guide-section" id="section-arch">
+      <h2>Architecture</h2>
+      <p>Three layers: the Streamlit UI and input modes on the left, the LangGraph agent with six tools in the centre, and MongoDB Atlas plus external services on the right. All persistence flows through Atlas &mdash; no separate vector database, no Redis, no queues.</p>
+      <div class="diagram-wrap">
+        <img src="../images/techdebt/architecture.svg" alt="Tech Debt Copilot architecture diagram — User Layer, LangGraph Agent, Data Layer">
+        <div class="diagram-label">System Architecture &mdash; User Layer &rarr; LangGraph Agent &rarr; Data &amp; Services</div>
+      </div>
+    </section>
+
+    <!-- ── COMPONENT MAP ──────────────────────────── -->
+    <section class="guide-section" id="section-components">
+      <h2>Component Map</h2>
+      <p>Each Python file in the project, its responsibilities, and how they connect. The dashed arrows are paths that bypass the LLM &mdash; the dashboard reads MongoDB directly for sub-2s render without going through the agent.</p>
+      <div class="diagram-wrap">
+        <img src="../images/techdebt/components.svg" alt="Tech Debt Copilot component diagram — file-level dependencies and connections">
+        <div class="diagram-label">Component Map &mdash; file responsibilities and inter-module connections</div>
+      </div>
+    </section>
+
+    <!-- ── DATA SOURCE ────────────────────────────── -->
+    <section class="guide-section" id="section-data">
+      <h2>Data Source</h2>
+      <p>The knowledge base is built from <a href="https://endoflife.date" target="_blank">endoflife.date</a> &mdash; an open-source, community-maintained registry of software lifecycle dates. We downloaded the full dataset via their public API, normalized the schema, and ingested it into MongoDB Atlas with Voyage AI embeddings.</p>
+
+      <div class="data-callout">
+        <div class="data-col">
+          <strong>Source</strong>
+          <span>endoflife.date API<br>Open-source, community-maintained</span>
+        </div>
+        <div class="data-col">
+          <strong>Coverage</strong>
+          <span>464 products<br>8,322 lifecycle records</span>
+        </div>
+        <div class="data-col">
+          <strong>Embeddings</strong>
+          <span>Voyage AI voyage-3.5<br>1024-dim, asymmetric</span>
+        </div>
+      </div>
+
+      <h3>Why normalization was necessary</h3>
+      <p>The endoflife.date API returns non-uniform schemas per product &mdash; some have <code>eol: "2025-01-15"</code>, others have <code>eol: false</code>, others have <code>lts: true</code> with no EOL field. Storing this raw breaks every date comparison and aggregation query. The ETL script (<code>01_ingest.py</code>) normalizes all records before embedding: boolean EOL values are converted to null, <code>eol_display</code> is computed for UI rendering, and date strings are standardized. Products covered include languages (Python, Node.js, Go, Ruby, PHP), frameworks (Django, React, Spring, Rails), databases (MongoDB, PostgreSQL, Redis, MySQL), operating systems (Ubuntu, RHEL, Debian, Windows Server), and cloud services.</p>
+
+      <table class="comparison-table">
+        <thead><tr><th>Category</th><th>Example Products</th><th>Records</th></tr></thead>
+        <tbody>
+          <tr><td>Languages &amp; Runtimes</td><td>Python, Node.js, Go, Ruby, Java, PHP, .NET</td><td>~1,200</td></tr>
+          <tr><td>Frameworks &amp; Libraries</td><td>Django, React, Spring, Rails, Angular, Laravel</td><td>~2,100</td></tr>
+          <tr><td>Databases</td><td>MongoDB, PostgreSQL, MySQL, Redis, Elasticsearch</td><td>~800</td></tr>
+          <tr><td>Operating Systems</td><td>Ubuntu, RHEL, Debian, CentOS, Windows Server</td><td>~600</td></tr>
+          <tr><td>Cloud &amp; Infrastructure</td><td>Kubernetes, Docker, Terraform, AWS services</td><td>~1,400</td></tr>
+          <tr><td>Developer Tools</td><td>VS Code, Git, npm, pip, Gradle, Maven</td><td>~2,200</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── TECH STACK ─────────────────────────────── -->
+    <section class="guide-section" id="section-stack">
+      <h2>Tech Stack</h2>
+      <p>Every technology earned its place. The rule: MongoDB Atlas had to be the primary data layer, and every other tool had to genuinely improve on the alternatives available in the hackathon window.</p>
+
+      <table class="comparison-table">
+        <thead><tr><th>Library / Service</th><th>Role</th><th>Why This One</th></tr></thead>
+        <tbody>
+          <tr><td><code>MongoDB Atlas</code></td><td>Vector store + graph persistence</td><td>Two jobs in one service: <code>$vectorSearch</code> for EOL lookups, MongoDBSaver for conversation threads. Zero extra infrastructure.</td></tr>
+          <tr><td><code>Voyage AI voyage-3.5</code></td><td>Asymmetric embeddings</td><td>Separate <code>input_type</code> for documents vs queries. Measurably better recall on natural-language EOL questions than symmetric models.</td></tr>
+          <tr><td><code>Fireworks AI deepseek-v4-flash</code></td><td>LLM inference</td><td>Hackathon sponsor. Fast inference, low latency, responds well to imperative RULE-based system prompts for strict tool routing.</td></tr>
+          <tr><td><code>LangGraph</code></td><td>Agent orchestration</td><td>StateGraph handles the tool routing loop. MongoDBSaver drops in as a <code>checkpointer</code> argument &mdash; three lines of code for full persistence.</td></tr>
+          <tr><td><code>Streamlit</code></td><td>Web UI</td><td>Fastest path from Python to a shareable demo. Custom CSS achieves the full dark-mode design. Session state manages chat history between reruns.</td></tr>
+          <tr><td><code>endoflife.date API</code></td><td>EOL data source</td><td>Best freely available lifecycle dataset. 8,322 records across 464 products, community-maintained, regularly updated.</td></tr>
+          <tr><td><code>OSV.dev</code></td><td>CVE lookups</td><td>Open, structured, real-time vulnerability database. Simple REST API, no key required, returns structured advisory data.</td></tr>
+          <tr><td><code>ElevenLabs</code></td><td>Voice output (TTS)</td><td>Optional voice narration of agent responses. Toggleable per session for hands-free monitoring use cases.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LEARNINGS ──────────────────────────────── -->
+    <section class="guide-section" id="section-learnings">
+      <h2>What We Actually Learned</h2>
+      <p>Eight things we did not know going in. The ones we are most proud of are not the technical wins &mdash; they are the moments where a wrong assumption cost us hours and changed how we build next time.</p>
+
+      <div class="learning-item">
+        <div class="learning-num">01</div>
+        <div class="learning-title">LLMs follow rules differently than descriptions</div>
+        <div class="learning-body">We wrote descriptive tool metadata: <em>&ldquo;call this tool when the user provides a GitHub URL.&rdquo;</em> deepseek-v4-flash responded in prose instead of calling the tool. We lost about 3 hours. Rewriting the system prompt as hard RULE 1&ndash;6 blocks with &ldquo;IMMEDIATELY call&rdquo; language fixed it on the next run. Instruction-tuned models need rules, not descriptions.</div>
+        <div class="learning-quote">The prompt was the bug, not the model.</div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">02</div>
+        <div class="learning-title">Asymmetric embeddings require asymmetric usage</div>
+        <div class="learning-body">Voyage AI voyage-3.5 has two <code>input_type</code> modes: <code>"document"</code> at index time and <code>"query"</code> at search time. We initially skipped this. Recall on natural-language questions like &ldquo;is Python 3.9 still supported?&rdquo; was mediocre. After switching to proper asymmetric mode, results improved noticeably. Read the embedding model docs.</div>
+        <div class="learning-quote">The difference between symmetric and asymmetric usage is not subtle.</div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">03</div>
+        <div class="learning-title">Share database connections or pay latency on every call</div>
+        <div class="learning-body">The dashboard was silently returning None. Root cause: <code>_eol_lookup()</code> created a fresh <code>MongoClient()</code> on every render, which timed out on Atlas during congested periods. The graph builder&rsquo;s warm connection stayed alive; fresh ones didn&rsquo;t. Fix: <code>@st.cache_resource</code> on a shared client. One line.</div>
+        <div class="learning-quote">Share database connections. A fresh MongoClient() on every call is not free.</div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">04</div>
+        <div class="learning-title">scan_local_stack() scans the server, not the user</div>
+        <div class="learning-body">When deployed, the tool calls <code>subprocess</code> on the server, which reports the server&rsquo;s packages &mdash; not the user&rsquo;s laptop. The fix: a paste mode sidebar showing <code>pip list</code>, <code>pip freeze</code>, and <code>npm ls</code> commands. Users run them locally, paste the output, and RULE 2b in the system prompt parses it without calling the scan tool.</div>
+        <div class="learning-quote">Know which machine your code runs on. Conceptual bugs are harder than syntax errors.</div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">05</div>
+        <div class="learning-title">MongoDBSaver makes persistent context trivially easy</div>
+        <div class="learning-body">We expected persistence to be hard. <code>MongoDBSaver(client, db_name=...)</code> dropped in as the <code>checkpointer</code> argument to <code>graph.compile()</code>. Every message, tool invocation, and state transition is stored automatically per <code>thread_id</code>. Restart the server mid-conversation and the agent picks up exactly where it left off. That is the hackathon theme working as advertised.</div>
+        <div class="learning-quote">When the persistence layer is MongoDB, persistent context is genuinely easy.</div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">06</div>
+        <div class="learning-title">GitHub Push Protection will find your secrets even in history</div>
+        <div class="learning-body">We committed an API key in an early commit. GitHub blocked the push &mdash; not just the current commit, but rejected the entire push because the key existed in git history. Fix: squash and force-push to rewrite history. <code>.env</code> is now in <code>.gitignore</code> from commit one on every project we touch.</div>
+        <div class="learning-quote">Set up .gitignore before you write any code. Not after the push is blocked.</div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">07</div>
+        <div class="learning-title">Public APIs return data for humans, not databases</div>
+        <div class="learning-body">endoflife.date returns non-uniform schemas per product: some have <code>eol: "2025-01-15"</code>, others <code>eol: false</code>, others <code>lts: true</code> with no EOL field. Storing raw breaks every date comparison. Our ETL normalizes everything before embedding &mdash; boolean EOL to null, computed display strings, standardized date formats. Without this, the vector search is built on inconsistent data.</div>
+        <div class="learning-quote">Normalize before you store. ETL is not optional.</div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">08</div>
+        <div class="learning-title">Playwright&rsquo;s window.scrollTo does nothing in Streamlit</div>
+        <div class="learning-body">Taking automated screenshots, <code>window.scrollTo(0,0)</code> had zero effect. Streamlit renders inside its own scroll container, not the window. The fix was <code>element.scroll_into_view_if_needed()</code> on the specific element we needed visible &mdash; targeting the DOM element directly instead of the window scroll position.</div>
+        <div class="learning-quote">Test automation against the actual rendering model, not the DOM you assume.</div>
+      </div>
+    </section>
+
+    <!-- ── TEAM ───────────────────────────────────── -->
+    <section class="guide-section" id="section-team">
+      <h2>The Team</h2>
+      <p>Four people with four different initial ideas &mdash; the team started the day debating directions and converged on Tech Debt Copilot. What shipped was better for the tension. One working demo, one day.</p>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar av-2">R</div>
+          <div>
+            <div class="team-name">Rikin Shah</div>
+            <div class="team-role">Management &middot; DB &middot; Integrations &middot; Coordination</div>
+            <div class="team-contrib">Kept the team moving through the ideation debate. Owned MongoDB Atlas setup, collection schema, vector index configuration, and integration wiring between the ETL pipeline, agent tools, and the checkpointer layer.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar av-3">E</div>
+          <div>
+            <div class="team-name">Eshan Bhimani</div>
+            <div class="team-role">Video &middot; Project Submission &middot; Slides</div>
+            <div class="team-contrib">Produced the demo video and presentation slides under time pressure. Handled the full hackathon submission package &mdash; documentation, screen recordings, and the project writeup that got the tool in front of judges.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar av-4">K</div>
+          <div>
+            <div class="team-name">Kai Tran</div>
+            <div class="team-role">UX &middot; Integrations</div>
+            <div class="team-contrib">Designed the Streamlit UI flow, dashboard layout, and the step-by-step demo sidebar. Wired the ElevenLabs voice integration and the OSV.dev CVE lookup into the agent tool chain.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar av-1">S</div>
+          <div>
+            <div class="team-name">Sham</div>
+            <div class="team-role">Ideation &middot; Product Vision</div>
+            <div class="team-contrib">Originated the core concept: make software EOL visible before it becomes a crisis. Defined the problem framing, shaped the agent&rsquo;s conversation model, and drove the use-case prioritisation through a morning of competing ideas.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── GET STARTED ────────────────────────────── -->
+    <section class="guide-section" id="section-start">
+      <h2>Get Started</h2>
+      <p>Clone the repo, add your keys to <code>.env</code>, run the ETL once to populate Atlas (about 12&ndash;15 minutes for the full 8,322-record ingest with embeddings), then launch.</p>
+
+      <div class="code-block"><span class="cm"># 1. Clone and install</span>
+git clone https://github.com/shassanchi/tech-debt-copilot
+pip install -r requirements.txt
+
+<span class="cm"># 2. Configure (copy .env.example and fill in your keys)</span>
+cp .env.example .env
+
+<span class="cm"># 3. One-time ETL — populates Atlas with 8,322 EOL records + embeddings</span>
+python 00_download_data.py    <span class="cm"># fetch from endoflife.date</span>
+python 01_ingest.py           <span class="cm"># normalize + embed + upsert</span>
+python 02_setup_index.py      <span class="cm"># create $vectorSearch index</span>
+python verify_setup.py        <span class="cm"># confirm all checks pass</span>
+
+<span class="cm"># 4. Launch</span>
+streamlit run app.py</div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"Rubiks Cube coach","url":"/usecase/rubik-navigator-guide.html"},{"label":"PanchangChef Build","url":"/usecase/panchangchef-guide.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+function showDemo(id, btn) {
+  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('demo-' + id).classList.add('active');
+}
+
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>

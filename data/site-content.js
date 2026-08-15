@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Tech Debt Copilot — MongoDB BuildFest SF 2026",
+        excerpt: "An AI agent that audits your software stack for End-of-Life packages, CVE exposures, and upcoming deprecations — with full conversation persistence via MongoDB Atlas.",
+        date: "Aug 14, 2026",
+        image: "./images/techdebt/home.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/tech-debt-copilot.html",
+        linkedin: null
+      },
+      {
         title: "Rubik Navigator — Build Guide",
         excerpt: "How I built a Rubik's Cube coach on Replit that teaches your way — formula or free exploration. Framework, packages, architecture, and the loop bug that took five iterations to fix.",
         date: "Aug 12, 2026",
         image: "./images/cube.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/rubik-navigator-guide.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_buildinpublic-learningbydoing-weekendproject-share-7493227787093463041-fYQ8/"
       },
       {
         title: "PanchangChef: Calendar-Aware Indian Recipe AI on Snowflake",
