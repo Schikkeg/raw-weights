@@ -42,6 +42,8 @@
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 3rem; align-items: center;
     }
+    /* Critical: allow grid children to shrink below content width */
+    .hero-split > * { min-width: 0; }
     .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
     .guide-hero-label {
       display: inline-flex; align-items: center; gap: .4rem;
@@ -63,7 +65,7 @@
     .guide-hero h1 span { color: #2dd4bf; }
     .guide-hero p { font-size: 1rem; color: rgba(240,244,255,.7); margin: 0 0 1.5rem; line-height: 1.7; text-align: left; }
     .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
-    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; }
+    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; word-break: keep-all; }
 
     /* Hero right panel */
     /* Hero video panel */
@@ -90,6 +92,8 @@
       gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
       padding: 0 1.5rem; align-items: start;
     }
+    /* Critical: allow grid children to shrink below content width */
+    .guide-layout > * { min-width: 0; }
     .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
     .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
     .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
@@ -133,8 +137,7 @@
     /* ── Demo tabs ──────────────────────────────── */
     .demo-tabs-wrap { margin: 1.5rem 0; }
     .demo-tab-bar {
-      display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .5rem;
-      scrollbar-width: thin; scrollbar-color: var(--rw-border) transparent;
+      display: flex; gap: .5rem; flex-wrap: wrap; padding-bottom: .5rem;
       position: sticky; top: calc(var(--rw-nav-height)); z-index: 10;
       background: var(--rw-bg); padding-top: .5rem;
     }
@@ -246,22 +249,80 @@
     .prov-inferred { background: rgba(20,184,166,.12); color: #2dd4bf; border: 1px solid rgba(20,184,166,.2); }
     .prov-human { background: rgba(249,115,22,.12); color: #fb923c; border: 1px solid rgba(249,115,22,.2); }
 
+    /* ── Responsive ────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    /* everything wraps — no cutoff */
+    * { word-break: break-word; overflow-wrap: break-word; }
+    img, video, svg { max-width: 100%; height: auto; display: block; }
+    /* code wraps on mobile; tables stay scrollable in their own container */
+    .code-block { white-space: pre-wrap; word-break: break-all; }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.5rem 0; }
+    .table-scroll .comparison-table { margin: 0; min-width: 480px; }
+
+    /* Demo step nav dropdown — hidden on desktop, shown on mobile */
+    .demo-tab-select {
+      display: none; width: 100%;
+      padding: .6rem .85rem; border-radius: 8px;
+      border: 1.5px solid var(--rw-border); background: var(--rw-card);
+      color: var(--rw-text); font-family: var(--rw-font-display);
+      font-size: .9rem; font-weight: 600; cursor: pointer;
+      margin-bottom: 1rem; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right .85rem center;
+      padding-right: 2.5rem;
+      position: sticky; top: calc(var(--rw-nav-height, 56px)); z-index: 10;
+    }
+
+    /* Mobile stacked panels — each panel has its own heading + divider */
+    .demo-panel-heading {
+      display: none; font-family: var(--rw-font-display); font-weight: 700;
+      font-size: .82rem; color: var(--rw-text-subtle); text-transform: uppercase;
+      letter-spacing: .06em; margin-bottom: .6rem;
+    }
+
     @media (max-width: 1024px) {
-      .hero-split { grid-template-columns: 1fr; }
-      .hero-stat-panel { max-width: 480px; }
       .guide-layout { grid-template-columns: 1fr; }
       .guide-sidebar { position: static; }
-      .feature-grid { grid-template-columns: repeat(2,1fr); }
+      .guide-toc { flex-direction: row; flex-wrap: wrap; gap: .25rem; }
+      .guide-toc a { border-left: none; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; }
+      .guide-toc a:hover, .guide-toc a.active { border-bottom-color: var(--rw-orange); border-left-color: transparent; }
+      .guide-toc .toc-h3 { padding-left: .6rem; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
       .usecase-grid { grid-template-columns: 1fr; }
       .team-grid { grid-template-columns: 1fr; }
       .before-after { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 768px) {
+      /* Hero: stack text above video */
+      .hero-split { grid-template-columns: 1fr; gap: 1.75rem; }
+      .guide-hero { padding: 2.5rem 1.25rem 2rem; }
+      /* stat row: 3 per row */
+      .stat-row { flex-wrap: wrap; }
+      .stat-cell { flex: 1 1 calc(33.333% - 1px); border-right: 1px solid var(--rw-border); border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(3n) { border-right: none; }
+      .stat-cell:nth-last-child(-n+3) { border-bottom: none; }
+      /* tab bar → sticky dropdown; all panels shown stacked */
+      .demo-tab-bar { display: none; }
+      .demo-tab-select { display: block; }
+      .demo-panel { display: block !important; border-bottom: 1px solid var(--rw-border); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+      .demo-panel:last-child { border-bottom: none; margin-bottom: 0; }
+      .demo-panel-heading { display: block; }
+    }
+
     @media (max-width: 600px) {
+      .guide-layout { margin: 1.5rem auto; padding: 0 1rem; }
+      /* stat row: 2 per row */
+      .stat-cell { flex: 1 1 50%; }
+      .stat-cell:nth-child(3n) { border-right: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(2n) { border-right: none; }
+      .stat-cell:nth-last-child(-n+2) { border-bottom: none; }
+      .stat-cell:nth-last-child(-n+3) { border-bottom: 1px solid var(--rw-border); }
       .feature-grid { grid-template-columns: 1fr; }
-      .stat-row { flex-direction: column; }
-      .stat-cell { border-right: none; border-bottom: 1px solid var(--rw-border); }
-      .stat-cell:last-child { border-bottom: none; }
       .demo-img-row { grid-template-columns: 1fr; }
+      .guide-section h2 { font-size: 1.25rem; }
+      .guide-sidebar { display: none; }
     }
   </style>
 </head>
@@ -348,7 +409,7 @@
       <h2>The Memory Layer</h2>
       <p>Five Elasticsearch indexes hold everything the agent needs to reason about a trip:</p>
 
-      <table class="comparison-table">
+      <div class="table-scroll"><table class="comparison-table">
         <thead><tr><th>Index</th><th>What&rsquo;s Stored</th><th>Example</th></tr></thead>
         <tbody>
           <tr><td><code>trip-source-events</code></td><td>Raw messages: emails, chats, notes. Full text + metadata.</td><td>&ldquo;Maya needs accessible room, roll-in shower&rdquo; &mdash; email from Sofia</td></tr>
@@ -357,7 +418,7 @@
           <tr><td><code>hotel-search-runs</code></td><td>Results of each screening run with per-candidate evaluation outcomes.</td><td>Bayfront rejected: no elevator. Seaside rejected: $238 &gt; $230 cap.</td></tr>
           <tr><td><code>communication-status</code></td><td>Draft state per person &mdash; pending, sent, confirmed.</td><td>Ravi: draft pending. Maya: draft pending.</td></tr>
         </tbody>
-      </table>
+      </table></div>
 
       <p>Every decision that gets superseded stays in the index. It&rsquo;s marked <code>state: Superseded</code> and linked to its replacement. Nothing is deleted &mdash; the history is the audit trail.</p>
 
@@ -410,6 +471,16 @@
       <p>Six steps from cancellation to targeted drafts. Each tab shows a different moment in the recovery flow.</p>
 
       <div class="demo-tabs-wrap">
+        <!-- Mobile: dropdown -->
+        <select class="demo-tab-select" id="demo-select" onchange="showDemo(this.value)">
+          <option value="workspace">1. Workspace</option>
+          <option value="screening">3. Screening</option>
+          <option value="evidence">4. Evidence &amp; Approval</option>
+          <option value="ripple">5. Ripple</option>
+          <option value="drafts">6. Drafts</option>
+          <option value="trace">Agent Trace</option>
+        </select>
+        <!-- Desktop: tab bar -->
         <div class="demo-tab-bar">
           <button class="demo-tab active" onclick="showDemo('workspace',this)">1. Workspace</button>
           <button class="demo-tab" onclick="showDemo('screening',this)">3. Screening</button>
@@ -419,7 +490,8 @@
           <button class="demo-tab" onclick="showDemo('trace',this)">Agent Trace</button>
         </div>
 
-        <div class="demo-panel active" id="demo-workspace">
+        <div class="demo-panel active" id="demo-workspace" data-demo-id="workspace">
+          <div class="demo-panel-heading">1. Workspace</div>
           <div class="demo-img-frame">
             <img src="../images/tripripple/step1.png" alt="TripRipple workspace — 32 source events, 7 decisions loaded" loading="lazy">
           </div>
@@ -429,7 +501,8 @@
           </div>
         </div>
 
-        <div class="demo-panel" id="demo-screening">
+        <div class="demo-panel" id="demo-screening" data-demo-id="screening">
+          <div class="demo-panel-heading">3. Screening</div>
           <div class="demo-img-frame">
             <img src="../images/tripripple/step3.png" alt="Candidate screening — 0 contacts sent before rejection" loading="lazy">
           </div>
@@ -439,7 +512,8 @@
           </div>
         </div>
 
-        <div class="demo-panel" id="demo-evidence">
+        <div class="demo-panel" id="demo-evidence" data-demo-id="evidence">
+          <div class="demo-panel-heading">4. Evidence &amp; Approval</div>
           <div class="demo-img-frame">
             <img src="../images/tripripple/step4.png" alt="Evidence confirmed, approval gate before decision activates" loading="lazy">
           </div>
@@ -449,7 +523,8 @@
           </div>
         </div>
 
-        <div class="demo-panel" id="demo-ripple">
+        <div class="demo-panel" id="demo-ripple" data-demo-id="ripple">
+          <div class="demo-panel-heading">5. Ripple</div>
           <div class="demo-img-frame">
             <img src="../images/tripripple/step5.png" alt="Dependency ripple — 4 affected, 3 excluded" loading="lazy">
           </div>
@@ -459,7 +534,8 @@
           </div>
         </div>
 
-        <div class="demo-panel" id="demo-drafts">
+        <div class="demo-panel" id="demo-drafts" data-demo-id="drafts">
+          <div class="demo-panel-heading">6. Drafts</div>
           <div class="demo-img-frame">
             <img src="../images/tripripple/step6.png" alt="5 targeted drafts — each person only hears what their plan depends on" loading="lazy">
           </div>
@@ -469,7 +545,8 @@
           </div>
         </div>
 
-        <div class="demo-panel" id="demo-trace">
+        <div class="demo-panel" id="demo-trace" data-demo-id="trace">
+          <div class="demo-panel-heading">Agent Trace</div>
           <div class="demo-img-frame">
             <img src="../images/tripripple/trace.png" alt="Mastra workflow trace — 7 steps with suspend/resume" loading="lazy">
           </div>
@@ -653,7 +730,7 @@ traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve 
     <section class="guide-section" id="section-stack">
       <h2>Tech Stack</h2>
 
-      <table class="comparison-table">
+      <div class="table-scroll"><table class="comparison-table">
         <thead><tr><th>Library / Service</th><th>Role</th><th>Why This One</th></tr></thead>
         <tbody>
           <tr><td><code>Mastra 1.60.0</code></td><td>Workflow orchestration</td><td>Native suspend/resume for the evidence step. <code>createWorkflow</code> + <code>createStep</code> + <code>workflow.then(step).commit()</code>. The hackathon requirement was to use Mastra &mdash; this is where it fit naturally.</td></tr>
@@ -663,7 +740,7 @@ traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve 
           <tr><td><code>Tailwind CSS</code></td><td>Styling</td><td>Dark UI built quickly without writing custom CSS files. All spacing and color utilities inline.</td></tr>
           <tr><td><code>BroadcastChannel</code></td><td>Presenter sync</td><td>Main demo page broadcasts state updates; the notes page in a second window receives them. No WebSockets, no server involvement.</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </section>
 
     <!-- ── LEARNINGS ──────────────────────────────── -->
@@ -787,28 +864,78 @@ npm run dev</div>
 <script src="../includes/rw-footer.js?v=20260612"></script>
 
 <script>
+// ── Desktop tab switching ────────────────────────────────────────────────────
 function showDemo(id, btn) {
-  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('demo-' + id).classList.add('active');
+  // Only do tab-switching on desktop (tab bar visible)
+  if (window.innerWidth > 768) {
+    document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    var panel = document.getElementById('demo-' + id);
+    if (panel) panel.classList.add('active');
+  }
+  // Always sync select value
+  var sel = document.getElementById('demo-select');
+  if (sel) sel.value = id;
 }
 
+// ── Mobile: dropdown → scroll to panel ──────────────────────────────────────
+document.getElementById('demo-select').addEventListener('change', function() {
+  var id = this.value;
+  var panel = document.getElementById('demo-' + id);
+  if (!panel) return;
+  // On desktop, switch tab instead
+  if (window.innerWidth > 768) {
+    var btn = document.querySelector('.demo-tab[onclick*="' + id + '"]');
+    showDemo(id, btn);
+    return;
+  }
+  // On mobile: smooth scroll to the panel
+  var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--rw-nav-height') || '56', 10);
+  var selectH = document.getElementById('demo-select').offsetHeight + 8;
+  var top = panel.getBoundingClientRect().top + window.scrollY - navH - selectH - 8;
+  window.scrollTo({ top: top, behavior: 'smooth' });
+});
+
+// ── Mobile: scroll → update dropdown (scrollspy on panels) ──────────────────
 (function() {
-  const sections = document.querySelectorAll('.guide-section[id]');
-  const links = document.querySelectorAll('.guide-toc a');
+  var panels = document.querySelectorAll('.demo-panel[data-demo-id]');
+  if (!panels.length) return;
+  var sel = document.getElementById('demo-select');
+
+  var demoObserver = new IntersectionObserver(function(entries) {
+    // Pick the panel that is most visible (largest intersection ratio)
+    var best = null, bestRatio = 0;
+    entries.forEach(function(e) {
+      if (e.isIntersecting && e.intersectionRatio > bestRatio) {
+        best = e.target;
+        bestRatio = e.intersectionRatio;
+      }
+    });
+    if (best && sel && window.innerWidth <= 768) {
+      sel.value = best.getAttribute('data-demo-id');
+    }
+  }, { threshold: [0.15, 0.4, 0.6, 0.85] });
+
+  panels.forEach(function(p) { demoObserver.observe(p); });
+})();
+
+// ── TOC scrollspy ────────────────────────────────────────────────────────────
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links = document.querySelectorAll('.guide-toc a');
   if (!sections.length || !links.length) return;
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
       if (entry.isIntersecting) {
-        const id = entry.target.id;
-        links.forEach(link => {
+        var id = entry.target.id;
+        links.forEach(function(link) {
           link.classList.toggle('active', link.getAttribute('href') === '#' + id);
         });
       }
     });
   }, { rootMargin: '-60px 0px -70% 0px' });
-  sections.forEach(s => observer.observe(s));
+  sections.forEach(function(s) { observer.observe(s); });
 })();
 </script>
 
