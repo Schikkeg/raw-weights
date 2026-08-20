@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripRipple — Agent Memory Copilot | RawWeights</title>
+  <meta name="description" content="An AI agent that remembers why every travel decision was made, screens hotel replacements against those constraints, and notifies only the people whose plans depend on what changed. Built at the Mastra Agent Memory Hackathon 2026.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/tripripple.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/tripripple/Linkedin.png">
+  <meta property="og:url" content="https://rawweights.com/usecase/tripripple.html">
+  <meta property="og:title" content="TripRipple — Agent Memory Copilot">
+  <meta property="og:description" content="32 messages in. 7 decisions extracted. 0 contacts sent before hotel rejection. Built for the Mastra Agent Memory Hackathon 2026.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero split layout ───────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #0a1a20 50%, #0a1530 100%);
+      padding: 4rem 2rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -20%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(20,184,166,.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(99,102,241,.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(20,184,166,.12); border: 1px solid rgba(20,184,166,.3);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #2dd4bf;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .pulse-dot { width: 6px; height: 6px; background: #14b8a6; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.08; letter-spacing: -.03em; margin-bottom: 1rem;
+      text-align: left;
+    }
+    .guide-hero h1 span { color: #2dd4bf; }
+    .guide-hero p { font-size: 1rem; color: rgba(240,244,255,.7); margin: 0 0 1.5rem; line-height: 1.7; text-align: left; }
+    .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; }
+
+    /* Hero right panel */
+    /* Hero video panel */
+    .hero-video-wrap {
+      position: relative; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(20,184,166,.25);
+      box-shadow: 0 0 60px rgba(20,184,166,.12), 0 24px 48px rgba(0,0,0,.4);
+    }
+    .hero-video-wrap video {
+      width: 100%; height: auto; display: block;
+      background: #07111d;
+    }
+    .hero-video-label {
+      position: absolute; top: .75rem; left: .75rem;
+      background: rgba(7,17,29,.85); backdrop-filter: blur(8px);
+      border: 1px solid rgba(20,184,166,.3);
+      border-radius: 6px; padding: .25rem .65rem;
+      font-family: var(--rw-font-mono); font-size: .68rem; color: #2dd4bf;
+    }
+
+    /* ── Guide layout ───────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 230px 1fr;
+      gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
+      padding: 0 1.5rem; align-items: start;
+    }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
+    .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
+    .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
+
+    /* ── Sections ───────────────────────────────── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem;
+      border-bottom: 2px solid var(--rw-orange-light);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.5rem 0 .5rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
+
+    /* ── Stat row ───────────────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: var(--rw-orange); line-height: 1; }
+    .stat-val-green { color: #10b981; }
+    .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Use-case grid ──────────────────────────── */
+    .usecase-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .usecase-card {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.2rem;
+      border-left: 3px solid var(--rw-orange);
+    }
+    .usecase-card-top { display: flex; align-items: center; gap: .6rem; margin-bottom: .6rem; }
+    .usecase-emoji { font-size: 1.3rem; }
+    .usecase-role { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); }
+    .usecase-pain { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; margin-bottom: .6rem; }
+    .usecase-win { font-size: .78rem; color: var(--rw-orange); font-family: var(--rw-font-mono); padding: .3rem .55rem; background: var(--rw-orange-light); border-radius: 4px; display: inline-block; }
+
+    /* ── Demo tabs ──────────────────────────────── */
+    .demo-tabs-wrap { margin: 1.5rem 0; }
+    .demo-tab-bar {
+      display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .5rem;
+      scrollbar-width: thin; scrollbar-color: var(--rw-border) transparent;
+      position: sticky; top: calc(var(--rw-nav-height)); z-index: 10;
+      background: var(--rw-bg); padding-top: .5rem;
+    }
+    .demo-tab-bar::-webkit-scrollbar { height: 4px; }
+    .demo-tab-bar::-webkit-scrollbar-thumb { background: var(--rw-border); border-radius: 2px; }
+    .demo-tab {
+      white-space: nowrap; padding: .45rem 1rem;
+      border-radius: 9999px; border: 1.5px solid var(--rw-border);
+      background: transparent; color: var(--rw-text-muted);
+      font-family: var(--rw-font-display); font-size: .82rem; font-weight: 600;
+      cursor: pointer; transition: all .15s; flex-shrink: 0;
+    }
+    .demo-tab:hover { border-color: var(--rw-orange); color: var(--rw-orange); }
+    .demo-tab.active { background: var(--rw-orange); border-color: var(--rw-orange); color: #fff; }
+    .demo-panel { display: none; }
+    .demo-panel.active { display: block; }
+    .demo-img-frame {
+      border: 1px solid var(--rw-border); border-radius: var(--rw-r-md);
+      overflow: hidden; margin: 1rem 0 .75rem; background: var(--rw-bg-subtle);
+    }
+    .demo-img-frame img { width: 100%; height: auto; display: block; }
+    .demo-img-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0 .75rem; }
+    .demo-img-row .demo-img-frame { margin: 0; }
+    .demo-caption { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.55; }
+    .demo-caption strong { color: var(--rw-text); }
+    .tag { display: inline-block; font-family: var(--rw-font-mono); font-size: .72rem; padding: .1rem .45rem; border-radius: 4px; margin-right: .3rem; }
+    .tag-red { background: rgba(240,82,82,.15); color: #f05252; border: 1px solid rgba(240,82,82,.25); }
+    .tag-green { background: rgba(78,203,135,.12); color: #4ecb87; border: 1px solid rgba(78,203,135,.2); }
+    .tag-orange { background: rgba(240,114,53,.12); color: var(--rw-orange); border: 1px solid rgba(240,114,53,.2); }
+    .tag-teal { background: rgba(20,184,166,.12); color: #2dd4bf; border: 1px solid rgba(20,184,166,.2); }
+
+    /* ── Feature grid ───────────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
+    .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Step list ──────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Comparison table ───────────────────────── */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: .9rem; }
+    .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .8rem; text-align: left; padding: .75rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
+    .comparison-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+
+    /* ── SVG diagrams ───────────────────────────── */
+    .diagram-wrap {
+      border: 1px solid var(--rw-border); border-radius: var(--rw-r-md);
+      overflow: hidden; margin: 1.25rem 0; background: var(--rw-bg-subtle);
+    }
+    .diagram-wrap img { width: 100%; height: auto; display: block; }
+    .diagram-label {
+      padding: .6rem 1rem; font-family: var(--rw-font-mono); font-size: .72rem;
+      color: var(--rw-text-subtle); background: var(--rw-bg-subtle);
+      border-top: 1px solid var(--rw-border); text-align: center;
+      letter-spacing: .04em;
+    }
+
+    /* ── Learnings ──────────────────────────────── */
+    .learning-item {
+      border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange);
+      border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0;
+      padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--rw-card);
+    }
+    .learning-num { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--rw-orange); letter-spacing: .06em; margin-bottom: .3rem; }
+    .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .45rem; }
+    .learning-body { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .6rem; }
+    .learning-quote { padding: .45rem .85rem; background: var(--rw-orange-light); border-left: 2px solid var(--rw-orange); font-size: .8rem; color: var(--rw-orange); font-style: italic; border-radius: 0 4px 4px 0; }
+
+    /* ── Team ───────────────────────────────────── */
+    .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .team-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; }
+    .team-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; font-family: var(--rw-font-display); flex-shrink: 0; }
+    .av-1 { background: linear-gradient(135deg, #f07235, #c04400); color: #fff; }
+    .av-2 { background: linear-gradient(135deg, #14b8a6, #0f766e); color: #fff; }
+    .av-4 { background: linear-gradient(135deg, #818cf8, #4338ca); color: #fff; }
+    .team-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); }
+    .team-role { font-size: .75rem; color: var(--rw-text-subtle); font-family: var(--rw-font-mono); margin-bottom: .4rem; }
+    .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Before/After comparison ────────────────── */
+    .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .ba-box { border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem; }
+    .ba-without { background: rgba(240,82,82,.06); border: 1px solid rgba(240,82,82,.2); }
+    .ba-with { background: rgba(16,185,129,.06); border: 1px solid rgba(16,185,129,.2); }
+    .ba-label { font-family: var(--rw-font-mono); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .6rem; }
+    .ba-without .ba-label { color: #f05252; }
+    .ba-with .ba-label { color: #10b981; }
+    .ba-text { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.6; font-style: italic; }
+
+    /* ── Code block ─────────────────────────────── */
+    .code-block { background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; font-family: var(--rw-font-mono); font-size: .82rem; color: var(--rw-indigo); overflow-x: auto; margin: 1rem 0; line-height: 1.75; }
+    .code-block .cm { color: var(--rw-text-subtle); }
+    .code-block .kw { color: var(--rw-orange); }
+    .code-block .st { color: #4ecb87; }
+
+    /* ── Provenance badge ───────────────────────── */
+    .prov-row { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .prov-badge { font-family: var(--rw-font-mono); font-size: .7rem; padding: .2rem .55rem; border-radius: 4px; }
+    .prov-live { background: rgba(16,185,129,.12); color: #10b981; border: 1px solid rgba(16,185,129,.2); }
+    .prov-cached { background: rgba(99,102,241,.12); color: #818cf8; border: 1px solid rgba(99,102,241,.2); }
+    .prov-synthetic { background: rgba(245,158,11,.12); color: #f59e0b; border: 1px solid rgba(245,158,11,.2); }
+    .prov-inferred { background: rgba(20,184,166,.12); color: #2dd4bf; border: 1px solid rgba(20,184,166,.2); }
+    .prov-human { background: rgba(249,115,22,.12); color: #fb923c; border: 1px solid rgba(249,115,22,.2); }
+
+    @media (max-width: 1024px) {
+      .hero-split { grid-template-columns: 1fr; }
+      .hero-stat-panel { max-width: 480px; }
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .feature-grid { grid-template-columns: repeat(2,1fr); }
+      .usecase-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .before-after { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .stat-row { flex-direction: column; }
+      .stat-cell { border-right: none; border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:last-child { border-bottom: none; }
+      .demo-img-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> Mastra Agent Memory Hackathon &nbsp;&middot;&nbsp; 2026</span>
+      <h1>TripRipple<br><span>Remember the WHY</span></h1>
+      <p>Eight people planning a trip. The hotel cancels. Normally that&rsquo;s an hour of group messages. TripRipple had already stored why every decision was made &mdash; price cap, accessibility needs, who depends on what &mdash; so the agent could screen replacements, ask exactly one question, and notify only the four people whose plans actually changed.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Mastra 1.60.0</span>
+        <span class="hero-tag">Elasticsearch Serverless</span>
+        <span class="hero-tag">Next.js 16.3.1</span>
+        <span class="hero-tag">OpenRouter / Claude 3 Haiku</span>
+        <span class="hero-tag">Suspend &amp; Resume Workflow</span>
+        <span class="hero-tag">Decay Search</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the Build Story &darr;</a>
+        <a href="https://github.com/researchsite/TripRipple"  class="rw-btn rw-btn-primary">GitHub &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Hero video -->
+    <div class="hero-video-wrap">
+      <span class="hero-video-label">&#9654; Live Demo</span>
+      <video controls muted playsinline poster="/images/tripripple/Linkedin.png">
+        <source src="../images/tripripple/tripripple-demo.mp4" type="video/mp4">
+        <source src="../images/tripripple/tripripple-demo.webm" type="video/webm">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Content ─────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-what">What It Does</a></li>
+      <li><a href="#section-memory">The Memory Layer</a></li>
+      <li><a href="#section-usecases">Who It Helps</a></li>
+      <li><a href="#section-demo">See It In Action</a></li>
+      <li><a href="#section-before-after" class="toc-h3">Before / After</a></li>
+      <li><a href="#section-features">All Features</a></li>
+      <li><a href="#section-how">How It Works</a></li>
+      <li><a href="#section-arch" class="toc-h3">Architecture</a></li>
+      <li><a href="#section-components" class="toc-h3">Component Map</a></li>
+      <li><a href="#section-stack">Tech Stack</a></li>
+      <li><a href="#section-learnings">Real Learnings</a></li>
+      <li><a href="#section-team">The Team</a></li>
+      <li><a href="#section-start">Get Started</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── WHAT IT DOES ───────────────────────────── -->
+    <section class="guide-section" id="section-what">
+      <h2>What It Does</h2>
+      <p>Most AI assistants tell you <em>what</em> was decided. TripRipple stores <em>why</em>. When something changes &mdash; a hotel cancels, a vendor pulls out, a budget shifts &mdash; the agent already knows the constraints behind every open plan. It screens replacements against those constraints, asks exactly the questions it doesn&rsquo;t already know, waits for a human to approve, and then notifies only the people whose plans depend on what changed.</p>
+      <p>The demo scenario: eight people, one hotel cancellation, 32 prior messages that contain the reasoning. No one had to explain the $230 price cap or Maya&rsquo;s accessibility requirement again &mdash; it was already in Elasticsearch from when it was first discussed.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val">32</div><div class="stat-label">source events</div></div>
+        <div class="stat-cell"><div class="stat-val">7</div><div class="stat-label">decisions stored</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-green">0</div><div class="stat-label">premature contacts</div></div>
+        <div class="stat-cell"><div class="stat-val">1</div><div class="stat-label">question sent</div></div>
+        <div class="stat-cell"><div class="stat-val">5</div><div class="stat-label">targeted drafts</div></div>
+        <div class="stat-cell"><div class="stat-val">48m</div><div class="stat-label">saved</div></div>
+      </div>
+    </section>
+
+    <!-- ── THE MEMORY LAYER ──────────────────────── -->
+    <section class="guide-section" id="section-memory">
+      <h2>The Memory Layer</h2>
+      <p>Five Elasticsearch indexes hold everything the agent needs to reason about a trip:</p>
+
+      <table class="comparison-table">
+        <thead><tr><th>Index</th><th>What&rsquo;s Stored</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>trip-source-events</code></td><td>Raw messages: emails, chats, notes. Full text + metadata.</td><td>&ldquo;Maya needs accessible room, roll-in shower&rdquo; &mdash; email from Sofia</td></tr>
+          <tr><td><code>trip-memories</code></td><td>Extracted decisions and constraints. Each decision has a state (Active / Superseded) and links to the source event it came from.</td><td>Decision D-001: Harbor View chosen. Constraint C-001: Accessibility required.</td></tr>
+          <tr><td><code>trip-dependencies</code></td><td>Which plans depend on which decisions. The ripple graph.</td><td>Ravi&rsquo;s airport pickup depends on hotel location. Maya&rsquo;s room depends on accessibility decision.</td></tr>
+          <tr><td><code>hotel-search-runs</code></td><td>Results of each screening run with per-candidate evaluation outcomes.</td><td>Bayfront rejected: no elevator. Seaside rejected: $238 &gt; $230 cap.</td></tr>
+          <tr><td><code>communication-status</code></td><td>Draft state per person &mdash; pending, sent, confirmed.</td><td>Ravi: draft pending. Maya: draft pending.</td></tr>
+        </tbody>
+      </table>
+
+      <p>Every decision that gets superseded stays in the index. It&rsquo;s marked <code>state: Superseded</code> and linked to its replacement. Nothing is deleted &mdash; the history is the audit trail.</p>
+
+      <p>Search uses Elasticsearch <code>function_score</code> with exponential decay on the <code>timestamp</code> field. Recent events score higher. Scale: 7 days. This means a message from yesterday ranks above the same content from three weeks ago &mdash; which matters when people change their mind.</p>
+
+      <div class="prov-row">
+        <span class="prov-badge prov-live">LIVE_API</span>
+        <span class="prov-badge prov-cached">CACHED_API_RESPONSE</span>
+        <span class="prov-badge prov-synthetic">SYNTHETIC_EVENT</span>
+        <span class="prov-badge prov-inferred">INFERRED</span>
+        <span class="prov-badge prov-human">HUMAN_CONFIRMED</span>
+      </div>
+      <p style="font-size:.85rem;">Every piece of information in the UI carries a provenance badge showing where it came from. SYNTHETIC_EVENT means it was seeded demo data. INFERRED means the agent derived it from a message. HUMAN_CONFIRMED means a person verified it during the approval step. This matters for trust &mdash; you can see exactly how confident to be in any given fact.</p>
+    </section>
+
+    <!-- ── USE CASES ──────────────────────────────── -->
+    <section class="guide-section" id="section-usecases">
+      <h2>Who It Helps</h2>
+      <p>The demo is travel planning. The pattern it demonstrates applies anywhere a decision has dependencies and those dependencies belong to different people.</p>
+
+      <div class="usecase-grid">
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">🗺</span><span class="usecase-role">Trip Organizer</span></div>
+          <div class="usecase-pain">Hotel cancels three days before the trip. Has to manually check all the original constraints, text eight people, and figure out who actually needs to know.</div>
+          <span class="usecase-win">Agent already knows the constraints &rarr; screens candidates &rarr; you approve once</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">♿</span><span class="usecase-role">Traveler with accessibility needs</span></div>
+          <div class="usecase-pain">Accessibility requirement was mentioned once in a group chat months ago. It might not get checked when things change under time pressure.</div>
+          <span class="usecase-win">Constraint is in Elasticsearch &rarr; every screening run checks it automatically</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">📋</span><span class="usecase-role">Project / Event Coordinator</span></div>
+          <div class="usecase-pain">Vendor changes affect some team members but not others. Hard to know who depends on what without reading every plan manually.</div>
+          <span class="usecase-win">Dependency graph &rarr; only affected people get notified, excluded plans are shown explicitly</span>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-top"><span class="usecase-emoji">🏢</span><span class="usecase-role">Enterprise (same pattern)</span></div>
+          <div class="usecase-pain">Vendor decision changes. Some teams built their roadmap around it. No one knows who needs to be told or why the original choice was made.</div>
+          <span class="usecase-win">Hotel &rarr; Vendor. Traveler &rarr; Stakeholder. Cancellation &rarr; Risk event. Same architecture.</span>
+        </div>
+      </div>
+
+      <p>The enterprise mapping is direct: hotel decision becomes a vendor or platform choice, accessibility constraint becomes a compliance rule, price cap becomes a budget constraint, trip plans become sprint items. The agent doesn&rsquo;t care about the domain &mdash; it operates on the decision graph.</p>
+    </section>
+
+    <!-- ── DEMO ───────────────────────────────────── -->
+    <section class="guide-section" id="section-demo">
+      <h2>See It In Action</h2>
+      <p>Six steps from cancellation to targeted drafts. Each tab shows a different moment in the recovery flow.</p>
+
+      <div class="demo-tabs-wrap">
+        <div class="demo-tab-bar">
+          <button class="demo-tab active" onclick="showDemo('workspace',this)">1. Workspace</button>
+          <button class="demo-tab" onclick="showDemo('screening',this)">3. Screening</button>
+          <button class="demo-tab" onclick="showDemo('evidence',this)">4. Evidence &amp; Approval</button>
+          <button class="demo-tab" onclick="showDemo('ripple',this)">5. Ripple</button>
+          <button class="demo-tab" onclick="showDemo('drafts',this)">6. Drafts</button>
+          <button class="demo-tab" onclick="showDemo('trace',this)">Agent Trace</button>
+        </div>
+
+        <div class="demo-panel active" id="demo-workspace">
+          <div class="demo-img-frame">
+            <img src="../images/tripripple/step1.png" alt="TripRipple workspace — 32 source events, 7 decisions loaded" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-teal">Step 1</span>
+            <strong>Workspace loaded.</strong> 32 source events ingested from group emails and chats. 7 decisions and 6 constraints extracted and stored in Elasticsearch. The right panel shows the memory contents &mdash; each decision is stamped with its source event, the person who made it, and its current state (Active or Superseded). Harbor View is the active hotel decision.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-screening">
+          <div class="demo-img-frame">
+            <img src="../images/tripripple/step3.png" alt="Candidate screening — 0 contacts sent before rejection" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-orange">Step 3</span>
+            <strong>Constraint-aware screening. 0 contacts sent.</strong> Three hotels were found. Bayfront Suites was rejected because it has no elevator &mdash; constraint C-001 (accessibility) failed. Seaside Inn was rejected because the rate is $238, eight dollars over the $230 cap &mdash; constraint C-004 failed. Neither hotel was contacted. Mission Bay Suites passed four constraints but has one unknown: roll-in shower availability. One question to send.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-evidence">
+          <div class="demo-img-frame">
+            <img src="../images/tripripple/step4.png" alt="Evidence confirmed, approval gate before decision activates" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-teal">Step 4</span>
+            <strong>One question, one answer, one gate.</strong> Mission Bay Suites confirmed: room 105, roll-in shower available. Five hard requirements now pass. The original Harbor View decision is still active &mdash; the agent will not supersede it until a human approves. This is the approval gate. Harbor View stays in the audit trail permanently as a Superseded decision linked to the new one.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-ripple">
+          <div class="demo-img-frame">
+            <img src="../images/tripripple/step5.png" alt="Dependency ripple — 4 affected, 3 excluded" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-orange">Step 5</span>
+            <strong>Ripple graph: 4 affected, 3 explicitly excluded.</strong> Ravi&rsquo;s pickup route, Maya&rsquo;s room, Sofia&rsquo;s dinner reservation near the hotel, and Noah&rsquo;s parking plan all depend on the hotel location &mdash; they ripple. Three plans (surfing lesson, zoo day, packing list) have no hotel dependency and are shown as excluded &mdash; not just ignored, explicitly shown as &ldquo;not affected.&rdquo; The distinction matters: it tells the organizer the agent checked, not that it forgot.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-drafts">
+          <div class="demo-img-frame">
+            <img src="../images/tripripple/step6.png" alt="5 targeted drafts — each person only hears what their plan depends on" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-teal">Step 6</span>
+            <strong>5 drafts, 5 different messages.</strong> Each draft contains only the information that person&rsquo;s plan depends on. Ravi gets the new address and pickup time. Maya gets the room confirmation with accessibility details. Sofia gets the new location for her dinner reservation. Nobody gets a 200-word group blast explaining everything. The drafts are ready to send &mdash; no editing required.
+          </div>
+        </div>
+
+        <div class="demo-panel" id="demo-trace">
+          <div class="demo-img-frame">
+            <img src="../images/tripripple/trace.png" alt="Mastra workflow trace — 7 steps with suspend/resume" loading="lazy">
+          </div>
+          <div class="demo-caption">
+            <span class="tag tag-teal">Mastra Trace</span>
+            <strong>7-step Mastra workflow with real-time status.</strong> The Agent Trace tab in the right sidebar shows each step of the <code>recover-trip</code> workflow: Load Trip Memory &rarr; Trigger Cancellation &rarr; Screen Hotels &rarr; Resolve Evidence (suspend) &rarr; Approve Change &rarr; Map Ripples &rarr; Generate Drafts. The &ldquo;Resolve Evidence&rdquo; step suspends the workflow and waits for external confirmation before resuming &mdash; this is Mastra&rsquo;s suspend/resume pattern. Steps show live status: pending, running (animated), suspended (amber), complete (teal).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BEFORE / AFTER ────────────────────────── -->
+    <section class="guide-section" id="section-before-after">
+      <h2>Before / After: Ask Memory</h2>
+      <p>The &ldquo;Ask Memory&rdquo; feature in Step 1 shows two answers side by side for the same question: one from a raw AI with no context, one from the agent with Elasticsearch memory. The difference is what the memory layer actually does.</p>
+
+      <p>Question asked: <em>&ldquo;Why did we choose the hotel near Mission Bay?&rdquo;</em></p>
+
+      <div class="before-after">
+        <div class="ba-box ba-without">
+          <div class="ba-label">Without Memory (generic AI)</div>
+          <div class="ba-text">&ldquo;We chose the hotel near Mission Bay because of its proximity to the beach and water activities. The location offered easy access to the coastal attractions and recreational opportunities in the area.&rdquo;</div>
+        </div>
+        <div class="ba-box ba-with">
+          <div class="ba-label">With Memory (Elasticsearch + decay search)</div>
+          <div class="ba-text">&ldquo;The group chose the hotel near Mission Bay [D-002B] because the preferred hotel, Harbor View, could not accommodate the group&rsquo;s need to stay together. The Mission Bay Suites offered a suitable option that met the group&rsquo;s constraints, including accessibility requirements for Maya [C-001, C-002] and dietary needs for Ben [C-003], as well as the group&rsquo;s budget [C-004].&rdquo;</div>
+        </div>
+      </div>
+
+      <p>The memory-grounded answer cites specific decision IDs and constraint IDs. It knows <em>why</em> Harbor View was the original choice, why it became unavailable, and which constraints the replacement had to satisfy. The generic answer guessed based on geography.</p>
+    </section>
+
+    <!-- ── ALL FEATURES ───────────────────────────── -->
+    <section class="guide-section" id="section-features">
+      <h2>All Features</h2>
+
+      <h3>Memory &amp; Search</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🧠</div>
+          <h4>Decision Memory</h4>
+          <p>Every decision is stored with its rationale, source event, author, and state. Decisions are never deleted &mdash; superseded ones stay in the index, linked to what replaced them.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📉</div>
+          <h4>Decay Search</h4>
+          <p>Elasticsearch <code>function_score</code> with exponential decay on <code>timestamp</code>. Recent events score higher. Scale: 7 days. Offset: 1 day. If someone changed their mind last week, the newer preference ranks above the older one.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔗</div>
+          <h4>Dependency Graph</h4>
+          <p>Every plan is tagged with which decisions it depends on. When a decision changes, the graph tells the agent which plans ripple and which are unaffected &mdash; and the UI shows both lists explicitly.</p>
+        </div>
+      </div>
+
+      <h3>Workflow</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">⚙️</div>
+          <h4>Mastra Workflow (7 steps)</h4>
+          <p>The <code>recover-trip</code> workflow in Mastra 1.60.0: Load Memory &rarr; Trigger Cancellation &rarr; Screen Hotels &rarr; Resolve Evidence &rarr; Approve Change &rarr; Map Ripples &rarr; Generate Drafts. All 7 steps with live status updates.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">⏸</div>
+          <h4>Suspend &amp; Resume</h4>
+          <p>The Resolve Evidence step suspends the workflow and waits. When the hotel confirms room details, the workflow resumes from exactly where it paused. No polling loop, no state reconstruction.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">✅</div>
+          <h4>Approval Gate</h4>
+          <p>The active decision does not change until a human approves. You see the evidence, you see the candidates, you approve. Only then does the supersede write happen in Elasticsearch.</p>
+        </div>
+      </div>
+
+      <h3>Interactive Features</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">❓</div>
+          <h4>Ask Memory</h4>
+          <p>Ask any question about the trip. The agent searches Elasticsearch with decay, builds context from the top results, and answers. Shows the without-memory answer side by side for comparison.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📩</div>
+          <h4>Inject Event</h4>
+          <p>Paste any new message into the chat. The agent classifies the type (Cancellation, Update, Request, Confirmation), extracts who it affects, and adds it to the source event index.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🎛</div>
+          <h4>Constraint Editor</h4>
+          <p>In the screening step, adjust the price cap slider or change the room count. The agent re-evaluates all candidates against the new constraints without touching the stored decisions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ───────────────────────────── -->
+    <section class="guide-section" id="section-how">
+      <h2>How It Works</h2>
+      <p>A single Next.js app: API routes handle state transitions, Mastra orchestrates the workflow, Elasticsearch holds memory, and OpenRouter supplies the AI reasoning. In-memory fallback runs everything if no Elasticsearch URL is configured.</p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Ingest &amp; Extract</h4>
+            <p>32 source events (emails, chats, notes) seeded into <code>trip-source-events</code> with Voyage AI embeddings. Decisions and constraints extracted and stored separately in <code>trip-memories</code> with provenance links back to source events.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Cancellation triggers Mastra workflow</h4>
+            <p>The <code>/api/demo/cancel</code> route kicks off the <code>recover-trip</code> workflow. Step 1 loads all active decisions and constraints from Elasticsearch. The workflow ID is stored in app state so the trace panel can poll it.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Deterministic constraint evaluation</h4>
+            <p>Each hotel candidate is evaluated against stored constraints by a pure function &mdash; no LLM involved. Price cap check, room count check, accessibility check. The function returns pass/fail per constraint and an overall recommendation. This keeps the screening predictable and auditable.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Targeted evidence request (suspend)</h4>
+            <p>If one candidate passes all known constraints but has an unknown, the workflow suspends. One question is drafted to one hotel. The agent does not contact hotels that already failed &mdash; they were rejected before the question-drafting step.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Approval gate &amp; decision supersede</h4>
+            <p>The organizer sees the evidence and approves. On approval, the existing active decision is written as <code>state: Superseded</code> in Elasticsearch and a new active decision is created pointing back to it. Nothing is deleted.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Dependency ripple &amp; targeted drafts</h4>
+            <p>The dependency graph identifies which plans are affected. For each affected plan, a draft is generated with only the details that plan depends on. Plans with no hotel dependency are explicitly listed as excluded in the UI.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="code-block"><span class="cm"># Decay search: recent events rank higher than old ones</span>
+<span class="kw">function_score</span>: {
+  query: { multi_match: { query, fields: [<span class="st">'text^2'</span>, <span class="st">'subject^1.5'</span>] } },
+  functions: [{ exp: { timestamp: { origin: <span class="st">'now'</span>, scale: <span class="st">'7d'</span>, offset: <span class="st">'1d'</span>, decay: 0.5 } } }],
+  score_mode: <span class="st">'multiply'</span>
+}
+
+<span class="cm"># Mastra suspend/resume — workflow pauses, waits, continues</span>
+<span class="kw">if</span> (!state.evidenceConfirmed) {
+  traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve Evidence'</span>, <span class="st">'suspended'</span>);
+  <span class="kw">await</span> suspend?.({ question, targetHotel });  <span class="cm">// workflow sleeps here</span>
+}
+traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve Evidence'</span>, <span class="st">'complete'</span>, confirmation);</div>
+    </section>
+
+    <!-- ── ARCHITECTURE ───────────────────────────── -->
+    <section class="guide-section" id="section-arch">
+      <h2>Architecture</h2>
+      <p>Three layers: the Next.js UI and API routes on the left, the Mastra workflow and tool layer in the centre, and Elasticsearch plus external services on the right. Every memory read and write goes through Elasticsearch &mdash; in-memory arrays are a drop-in fallback for running without credentials.</p>
+      <div class="diagram-wrap">
+        <img src="../images/tripripple/architecture.svg" alt="TripRipple architecture diagram — UI layer, Mastra workflow, Elasticsearch memory">
+        <div class="diagram-label">System Architecture &mdash; Next.js UI &rarr; Mastra Workflow &rarr; Elasticsearch Memory</div>
+      </div>
+    </section>
+
+    <!-- ── COMPONENT MAP ──────────────────────────── -->
+    <section class="guide-section" id="section-components">
+      <h2>Component Map</h2>
+      <p>Each file in the project, its responsibility, and how they connect. The dashed arrows are paths that bypass the workflow &mdash; the constraint editor re-evaluates candidates directly without going through Mastra.</p>
+      <div class="diagram-wrap">
+        <img src="../images/tripripple/components.svg" alt="TripRipple component map — file responsibilities and connections">
+        <div class="diagram-label">Component Map &mdash; file responsibilities and inter-module connections</div>
+      </div>
+    </section>
+
+    <!-- ── TECH STACK ─────────────────────────────── -->
+    <section class="guide-section" id="section-stack">
+      <h2>Tech Stack</h2>
+
+      <table class="comparison-table">
+        <thead><tr><th>Library / Service</th><th>Role</th><th>Why This One</th></tr></thead>
+        <tbody>
+          <tr><td><code>Mastra 1.60.0</code></td><td>Workflow orchestration</td><td>Native suspend/resume for the evidence step. <code>createWorkflow</code> + <code>createStep</code> + <code>workflow.then(step).commit()</code>. The hackathon requirement was to use Mastra &mdash; this is where it fit naturally.</td></tr>
+          <tr><td><code>Elasticsearch Serverless</code></td><td>Memory store + decay search</td><td>5 indexes, <code>function_score</code> with exp decay, sub-200ms queries. Serverless means no cluster management during a one-day build.</td></tr>
+          <tr><td><code>Next.js 16.3.1</code></td><td>Full-stack app</td><td>App Router, API routes, Turbopack. One deploy target for UI and backend. TypeScript throughout.</td></tr>
+          <tr><td><code>OpenRouter</code></td><td>AI inference</td><td>OpenAI-compatible endpoint, <code>anthropic/claude-3-haiku</code> for fast classification and reasoning. Raw <code>fetch</code> &mdash; no SDK needed, no type conflicts.</td></tr>
+          <tr><td><code>Tailwind CSS</code></td><td>Styling</td><td>Dark UI built quickly without writing custom CSS files. All spacing and color utilities inline.</td></tr>
+          <tr><td><code>BroadcastChannel</code></td><td>Presenter sync</td><td>Main demo page broadcasts state updates; the notes page in a second window receives them. No WebSockets, no server involvement.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LEARNINGS ──────────────────────────────── -->
+    <section class="guide-section" id="section-learnings">
+      <h2>What We Actually Learned</h2>
+
+      <div class="learning-item">
+        <div class="learning-num">01</div>
+        <div class="learning-title">HTTP headers only accept ASCII &mdash; em dashes break API calls silently</div>
+        <div class="learning-body">We set the <code>X-Title</code> header to <code>"TripRipple &mdash; Agent Memory Copilot"</code> with a Unicode em dash (U+2014, decimal 8212). The fetch call threw <em>TypeError: Cannot convert argument to a ByteString because the character at index 11 has a value of 8212 which is greater than 255.</em> HTTP headers are ASCII only. The fix was a plain hyphen. We didn&rsquo;t catch this during development because the local Next.js server handled it differently than the browser&rsquo;s fetch.</div>
+        <div class="learning-quote">Read the error message carefully. &ldquo;Index 11&rdquo; was exactly the position of the em dash in the string.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">02</div>
+        <div class="learning-title">Decay search is not the same as sorting by date</div>
+        <div class="learning-body">A <code>sort</code> by timestamp ignores relevance entirely &mdash; the most recent message wins regardless of content. Elasticsearch&rsquo;s <code>function_score</code> with <code>exp</code> decay multiplies the relevance score by a time factor. A highly relevant old message can still outrank a tangentially related recent one. That is what you want for a memory layer: recent preferences win <em>when content is otherwise equal</em>, but a specific constraint stated three weeks ago still surfaces for a specific query about that constraint.</div>
+        <div class="learning-quote">Decay search and date sort are different operations. One is a bias, the other is an override.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">03</div>
+        <div class="learning-title">The constraint evaluator has to be deterministic or nobody trusts it</div>
+        <div class="learning-body">The first version of hotel screening called the LLM to evaluate each candidate. The results varied slightly between runs &mdash; sometimes Seaside Inn passed, sometimes it didn&rsquo;t, depending on how the prompt landed. Nobody would trust an approval workflow where the screening is probabilistic. We rewrote the evaluator as a pure function: price cap is a number comparison, rooms is a number comparison, accessibility is a boolean check. It&rsquo;s boring and it&rsquo;s correct every time.</div>
+        <div class="learning-quote">Use the LLM for reasoning and classification. Use deterministic code for decisions that need to be auditable.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">04</div>
+        <div class="learning-title">Showing exclusions is as important as showing inclusions</div>
+        <div class="learning-body">Early versions of the ripple step only showed the affected plans. A judge asked: &ldquo;How do I know you checked the surfing lesson and decided it wasn&rsquo;t affected, versus just missed it?&rdquo; We added an explicit excluded list with reasons. &ldquo;Surfing lesson &mdash; no hotel dependency.&rdquo; &ldquo;Zoo day &mdash; no hotel dependency.&rdquo; This changed the UI from &ldquo;here are the affected plans&rdquo; to &ldquo;here is the complete picture.&rdquo;</div>
+        <div class="learning-quote">Omissions look like errors unless you make them explicit.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">05</div>
+        <div class="learning-title">Mastra&rsquo;s suspend/resume requires the step to receive context from the resume call</div>
+        <div class="learning-body">When a step suspends, it stops execution. When it resumes, it does not automatically have the data that was passed to <code>suspend()</code> &mdash; that data goes into the workflow&rsquo;s pending input. The resume call needs to provide the confirmation data explicitly. We initially assumed suspend saved state and resume would restore it. It doesn&rsquo;t work that way. The resumeData flows in through the step&rsquo;s input on the resume invocation.</div>
+        <div class="learning-quote">Read the Mastra suspend/resume docs before assuming how state flows between suspend and resume.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">06</div>
+        <div class="learning-title">The before/after comparison is the clearest way to show what memory actually does</div>
+        <div class="learning-body">We initially just showed the memory-grounded answer. A teammate asked &ldquo;how does someone know that&rsquo;s better than what GPT would say without context?&rdquo; Adding the side-by-side comparison immediately made the value concrete. The generic answer guesses about geography. The memory answer cites decision IDs and constraint IDs. People who see both understand the memory layer immediately. People who only see one answer have to take it on faith.</div>
+        <div class="learning-quote">Show the baseline. Without a baseline, improvement is invisible.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">07</div>
+        <div class="learning-title">In-memory fallback made development fast but hid Elasticsearch bugs</div>
+        <div class="learning-body">The app falls back gracefully to in-memory arrays when no Elasticsearch URL is set. This was correct for local dev. But it meant we didn&rsquo;t discover that the decay query syntax was wrong until we seeded the real cluster. The <code>exp</code> function on <code>timestamp</code> requires ISO 8601 date strings in the indexed documents &mdash; not Unix timestamps, not JavaScript Date objects. Our seed data used ISO strings, but it was easy to imagine a case where it wouldn&rsquo;t.</div>
+        <div class="learning-quote">Fallback layers hide integration bugs. Test against the real service before the demo.</div>
+      </div>
+    </section>
+
+    <!-- ── TEAM ───────────────────────────────────── -->
+    <section class="guide-section" id="section-team">
+      <h2>The Team</h2>
+      <p>Three people. Built over one hackathon day. The travel scenario was deliberate &mdash; it&rsquo;s concrete enough to demo in two minutes and abstract enough that you can see the enterprise pattern underneath.</p>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar av-1">S</div>
+          <div>
+            <div class="team-name">Sham Hassanchi</div>
+            <div class="team-role">Agent Architecture &middot; Full-Stack</div>
+            <div class="team-contrib">Ideation was a team discussion. Designed the memory model (decisions vs constraints vs dependencies as separate constructs), built the Mastra workflow, API routes, Elasticsearch integration, and the interactive features. Owns the GitHub repo.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar av-2">Ar</div>
+          <div>
+            <div class="team-name">Arnav Channaveer</div>
+            <div class="team-role">Testing &middot; Video &middot; Use Cases &middot; UCSD</div>
+            <div class="team-contrib">Ideation was a team discussion. Handled testing across the full demo flow, produced the demo video, and mapped the travel scenario to enterprise patterns (vendor decisions, compliance constraints, stakeholder dependencies). Student Foundation Investment Committee at UC San Diego.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar av-4">Ah</div>
+          <div>
+            <div class="team-name">Muhammad Ahsan</div>
+            <div class="team-role">Submission &middot; ML &middot; Data Pipeline &middot; University of Houston</div>
+            <div class="team-contrib">Ideation was a team discussion. Owned the hackathon submission &mdash; DevPost writeup, project documentation, and final package. Also handled seed data design, Elasticsearch index schema, and constraint evaluator validation. MS Data Science &amp; AI at the University of Houston.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── GET STARTED ────────────────────────────── -->
+    <section class="guide-section" id="section-start">
+      <h2>Get Started</h2>
+      <p>Clone the repo, copy <code>.env.example</code> to <code>.env.local</code> and fill in your keys, then run the seed script to populate Elasticsearch. The app falls back to in-memory data if no Elasticsearch URL is set.</p>
+
+      <div class="code-block"><span class="cm"># 1. Clone and install</span>
+git clone https://github.com/researchsite/TripRipple
+npm install
+
+<span class="cm"># 2. Configure — copy and fill in your keys</span>
+cp .env.example .env.local
+<span class="cm"># OPENROUTER_API_KEY=sk-or-...</span>
+<span class="cm"># ELASTICSEARCH_URL=https://your-project.es.region.cloud.elastic.co:443</span>
+<span class="cm"># ELASTICSEARCH_API_KEY=...</span>
+
+<span class="cm"># 3. Seed Elasticsearch (safe to run multiple times — uses upserts)</span>
+npm run reset:elastic
+
+<span class="cm"># 4. Start</span>
+npm run dev</div>
+
+      <p>Open <code>http://localhost:3000</code> for the demo and <code>http://localhost:3000/notes</code> in a second window for presenter notes. The notes page syncs automatically with the demo via BroadcastChannel.</p>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"Rubiks Cube coach","url":"/usecase/rubik-navigator-guide.html"},{"label":"PanchangChef Build","url":"/usecase/panchangchef-guide.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+function showDemo(id, btn) {
+  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('demo-' + id).classList.add('active');
+}
+
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>
