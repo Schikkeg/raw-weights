@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "TripRipple — Agent Memory Copilot",
+        excerpt: "An AI agent that remembers why every travel decision was made, screens hotel replacements against those constraints, and notifies only the people whose plans depend on what changed. Built at the Mastra Agent Memory Hackathon 2026.",
+        date: "Aug 20, 2026",
+        image: "./images/tripripple/Linkedin.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/tripripple.html",
+        linkedin: null
+      },
+      {
         title: "Tech Debt Copilot — MongoDB BuildFest SF 2026",
         excerpt: "An AI agent that audits your software stack for End-of-Life packages, CVE exposures, and upcoming deprecations — with full conversation persistence via MongoDB Atlas.",
         date: "Aug 14, 2026",
         image: "./images/techdebt/home.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/tech-debt-copilot.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_tech-debt-copilot-atlas-lifecycle-ugcPost-7494507779974561793-57Gk/"
       },
       {
         title: "Rubik Navigator — Build Guide",
