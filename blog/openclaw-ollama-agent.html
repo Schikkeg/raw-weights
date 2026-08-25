@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Son Doesn't Have a Phone. So I Built Him an AI Morning Alarm. | RawWeights</title>
+  <meta name="description" content="Cloud rate limits during testing, a 7B model that sent JSON to Telegram at 6am instead of cricket news, and the one insight that fixed everything: request shape, not volume, is what triggers rate limits.">
+  <meta name="author" content="Sham Sundar HC">
+  <link rel="canonical" href="https://rawweights.com/blog/openclaw-ollama-agent.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/Daily_news.png">
+  <meta property="og:title" content="When My AI Agent Talked to Itself | RawWeights">
+  <meta property="og:description" content="Rate limits, 7B models printing JSON instead of executing, and what it took to get a daily Telegram delivery actually working.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero ─────────────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #120826 55%, #0a1230 100%);
+      padding: 5rem 1.5rem 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -20%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(249,115,22,.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(99,102,241,.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero-inner { max-width: 800px; margin: 0 auto; position: relative; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(249,115,22,.12); border: 1px solid rgba(249,115,22,.28);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #fb923c;
+      text-transform: uppercase; letter-spacing: .07em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.1; letter-spacing: -.03em; margin-bottom: 1rem;
+    }
+    .guide-hero h1 span { color: #fb923c; }
+    .guide-hero > .guide-hero-inner > p {
+      font-size: 1.05rem; color: rgba(240,244,255,.68);
+      max-width: 600px; margin: 0 auto 1.5rem; line-height: 1.72;
+    }
+    .hero-meta {
+      display: flex; align-items: center; gap: .8rem; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 1.5rem;
+      font-size: .84rem; color: rgba(240,244,255,.45); font-family: var(--rw-font-display);
+    }
+    .hero-meta strong { color: rgba(240,244,255,.75); }
+    .hero-stat-bar {
+      display: flex; border: 1px solid rgba(249,115,22,.16);
+      border-radius: var(--rw-r-md); overflow: hidden;
+      max-width: 520px; margin: 0 auto 2rem;
+      background: rgba(0,0,0,.28);
+    }
+    .hs { flex: 1; padding: .9rem .5rem; text-align: center; border-right: 1px solid rgba(249,115,22,.1); }
+    .hs:last-child { border-right: none; }
+    .hs-n { font-family: var(--rw-font-display); font-size: 1.45rem; font-weight: 800; color: var(--rw-orange); line-height: 1; margin-bottom: .2rem; }
+    .hs-l { font-size: .62rem; color: rgba(240,244,255,.38); font-family: var(--rw-font-display); text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ── Layout ───────────────────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 220px 1fr;
+      gap: 2.5rem; max-width: 1200px; margin: 2.5rem auto;
+      padding: 0 1.5rem; align-items: start;
+    }
+    .guide-layout > * { min-width: 0; }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .1rem; }
+    .guide-toc a { font-size: .82rem; color: var(--rw-text-muted); text-decoration: none; padding: .28rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
+    .guide-toc .toc-h3 { padding-left: 1rem; font-size: .76rem; }
+
+    /* ── Sections ─────────────────────────────────────── */
+    .guide-section { margin-bottom: 3rem; }
+    .guide-section h2 { font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800; color: var(--rw-text); margin-bottom: .9rem; padding-bottom: .5rem; border-bottom: 2px solid var(--rw-orange-light); scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.4rem 0 .45rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .96rem; color: var(--rw-text-muted); line-height: 1.74; margin-bottom: .85rem; }
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
+
+    /* ── Stat row (in-content) ───────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: var(--rw-orange); line-height: 1; }
+    .stat-val-green { color: #10b981; }
+    .stat-val-red { color: #ef4444; }
+    .stat-label { font-size: .72rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Feature / concept grid ──────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.1rem; position: relative; overflow: hidden; }
+    .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rw-orange), #f59e0b); }
+    .fc-icon { font-size: 1.4rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .3rem; }
+    .feature-card p { font-size: .81rem; color: var(--rw-text-muted); margin: 0; line-height: 1.55; }
+
+    /* ── Before / After ──────────────────────────────── */
+    .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .ba-box { border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem; }
+    .ba-fail { background: rgba(239,68,68,.05); border: 1px solid rgba(239,68,68,.2); }
+    .ba-win  { background: rgba(16,185,129,.05); border: 1px solid rgba(16,185,129,.2); }
+    .ba-label { font-family: var(--rw-font-mono); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .6rem; }
+    .ba-fail .ba-label { color: #ef4444; }
+    .ba-win  .ba-label  { color: #10b981; }
+    .ba-text { font-size: .83rem; color: var(--rw-text-muted); line-height: 1.6; font-family: var(--rw-font-mono); white-space: pre-wrap; word-break: break-all; }
+
+    /* ── Step list ────────────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; line-height: 1.6; }
+    .step-body .step-cmd { display: block; background: #0f172a; color: #4ade80; font-family: var(--rw-font-mono); font-size: .78rem; padding: .55rem .85rem; border-radius: 6px; margin-top: .5rem; white-space: pre-wrap; word-break: break-all; border: 1px solid #1e293b; }
+
+    /* ── Comparison table ─────────────────────────────── */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .88rem; }
+    .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .78rem; text-align: left; padding: .65rem .9rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); text-transform: uppercase; letter-spacing: .04em; }
+    .comparison-table td { padding: .6rem .9rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    .table-scroll .comparison-table { margin: 0; min-width: 500px; }
+    .badge-pass { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; font-weight: 700; font-family: var(--rw-font-display); background: rgba(16,185,129,.1); color: #059669; border: 1px solid rgba(16,185,129,.2); border-radius: 9999px; padding: .15rem .6rem; }
+    .badge-fail { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; font-weight: 700; font-family: var(--rw-font-display); background: rgba(239,68,68,.08); color: #dc2626; border: 1px solid rgba(239,68,68,.2); border-radius: 9999px; padding: .15rem .6rem; }
+    .badge-warn { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; font-weight: 700; font-family: var(--rw-font-display); background: rgba(245,158,11,.1); color: #d97706; border: 1px solid rgba(245,158,11,.2); border-radius: 9999px; padding: .15rem .6rem; }
+
+    /* ── Code / terminal block ────────────────────────── */
+    .code-block { background: #0f172a; border: 1px solid #1e293b; border-radius: var(--rw-r-md); padding: 1rem 1.25rem; font-family: var(--rw-font-mono); font-size: .8rem; color: #e2e8f0; overflow-x: auto; margin: 1rem 0; line-height: 1.75; white-space: pre-wrap; word-break: break-all; }
+    .code-block .cm { color: #64748b; }
+    .code-block .kw { color: var(--rw-orange); }
+    .code-block .st { color: #4ade80; }
+    .code-block .label { display: block; font-size: .62rem; font-weight: 700; font-family: var(--rw-font-display); text-transform: uppercase; letter-spacing: .1em; color: #22c55e; margin-bottom: .5rem; opacity: .8; }
+
+    /* ── Callouts ─────────────────────────────────────── */
+    .callout-orange { background: var(--rw-orange-light); border-left: 3px solid var(--rw-orange); border-radius: 0 var(--rw-r) var(--rw-r) 0; padding: .85rem 1.1rem; margin: .85rem 0; }
+    .callout-orange p { font-size: .88rem; color: var(--rw-text-muted); line-height: 1.6; margin: 0; }
+    .callout-orange .c-label { font-family: var(--rw-font-display); font-size: .67rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-orange); margin-bottom: .3rem; }
+    .callout-indigo { background: var(--rw-indigo-light); border-left: 3px solid var(--rw-indigo); border-radius: 0 var(--rw-r) var(--rw-r) 0; padding: .85rem 1.1rem; margin: .85rem 0; }
+    .callout-indigo p { font-size: .88rem; color: var(--rw-text-muted); line-height: 1.6; margin: 0; }
+    .callout-indigo .c-label { font-family: var(--rw-font-display); font-size: .67rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-indigo); margin-bottom: .3rem; }
+    .callout-green { background: rgba(16,185,129,.07); border-left: 3px solid #10b981; border-radius: 0 var(--rw-r) var(--rw-r) 0; padding: .85rem 1.1rem; margin: .85rem 0; }
+    .callout-green p { font-size: .88rem; color: var(--rw-text-muted); line-height: 1.6; margin: 0; }
+    .callout-green .c-label { font-family: var(--rw-font-display); font-size: .67rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #059669; margin-bottom: .3rem; }
+
+    /* ── Learning cards ───────────────────────────────── */
+    .learnings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .85rem; margin: 1.25rem 0; }
+    .lc { background: var(--rw-card); border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange); border-radius: 0 var(--rw-r-md) var(--rw-r-md) 0; padding: .9rem 1.1rem; }
+    .lc-n { font-family: var(--rw-font-mono); font-size: .65rem; font-weight: 800; color: var(--rw-orange); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .3rem; }
+    .lc h4 { font-family: var(--rw-font-display); font-size: .87rem; font-weight: 700; color: var(--rw-text); margin-bottom: .28rem; }
+    .lc p { font-size: .8rem; color: var(--rw-text-muted); line-height: 1.55; margin: 0; }
+
+    /* ── Telegram message preview ─────────────────────── */
+    .tg-phone {
+      max-width: 420px; margin: 1.5rem auto;
+      background: #17212b; border-radius: 16px;
+      overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,.4);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .tg-header {
+      background: #212d3b; padding: .75rem 1rem;
+      display: flex; align-items: center; gap: .75rem;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .tg-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--rw-orange), #ea580c);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .tg-title { font-family: var(--rw-font-display); font-size: .88rem; font-weight: 700; color: #fff; }
+    .tg-sub { font-size: .72rem; color: rgba(255,255,255,.4); }
+    .tg-body { padding: 1rem; }
+    .tg-bubble {
+      background: #182533; border-radius: 4px 12px 12px 12px;
+      padding: .85rem 1rem; color: #e8e8e8;
+      font-size: .84rem; line-height: 1.65;
+    }
+    .tg-bubble .tg-ts { font-size: .68rem; color: rgba(255,255,255,.28); text-align: right; margin-top: .5rem; }
+    .tg-bubble strong { color: #fff; }
+    .tg-bubble .tg-section { margin-top: .85rem; }
+    .tg-bubble .tg-section-head { font-weight: 700; color: #7ec8e3; }
+
+    /* ── Responsive ───────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    img, svg { max-width: 100%; height: auto; display: block; }
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .learnings-grid { grid-template-columns: 1fr; }
+      .before-after { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .guide-layout { margin: 1.5rem auto; padding: 0 1rem; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .guide-section h2 { font-size: 1.25rem; }
+      .guide-sidebar { display: none; }
+      .stat-row { flex-wrap: wrap; }
+      .stat-cell { flex: 1 1 50%; border-bottom: 1px solid var(--rw-border); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ─────────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="guide-hero-inner">
+    <span class="guide-hero-label">🤖 Build Log &nbsp;·&nbsp; Local AI &nbsp;·&nbsp; Personal Agent</span>
+    <h1>My Son Doesn't Have<br>a Phone. So I Built Him<br><span>an AI Morning Alarm.</span></h1>
+    <p>Cloud models rate-limited me before I could even finish testing. A 7B local model sent him JSON at 6am instead of cricket news. Three attempts, one key insight — and now it runs every morning without me touching it.</p>
+
+    <div class="hero-meta">
+      <strong>Sham Sundar HC</strong>&nbsp;·&nbsp;August 2026&nbsp;·&nbsp;12 min read
+    </div>
+
+    <div class="hero-stat-bar">
+      <div class="hs"><div class="hs-n">3</div><div class="hs-l">Models Tested</div></div>
+      <div class="hs"><div class="hs-n">7B</div><div class="hs-l">Breaking Point</div></div>
+      <div class="hs"><div class="hs-n">1</div><div class="hs-l">Cron Job Live</div></div>
+      <div class="hs"><div class="hs-n">6am</div><div class="hs-l">Every Morning</div></div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#guide-content" class="rw-btn rw-btn-primary">Read the Story →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Layout ──────────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#goal">The Idea</a></li>
+      <li><a href="#wall1">Rate Limit — Can't Even Test</a></li>
+      <li><a href="#wall2">Going Local (6am Moment)</a></li>
+      <li><a href="#json">Why the JSON Doesn't Execute</a></li>
+      <li><a href="#models">Three Models, Three Lessons</a></li>
+      <li><a href="#insight">The Insight That Fixed It</a></li>
+      <li><a href="#setup">Full Setup Guide</a></li>
+      <li><a href="#s-install" class="toc-h3">Install</a></li>
+      <li><a href="#s-telegram" class="toc-h3">Telegram</a></li>
+      <li><a href="#s-cron" class="toc-h3">Cron Job</a></li>
+      <li><a href="#commands">Command Reference</a></li>
+      <li><a href="#proof">Today's Delivery</a></li>
+      <li><a href="#learnings">9 Things Learned</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── THE IDEA ──────────────────────────────────── -->
+    <section class="guide-section" id="goal">
+      <h2>The Idea</h2>
+
+      <p>My son is in middle school and doesn't have a phone yet. Every morning, getting him up is a negotiation. I walk in, he pulls the blanket. I walk in again, he says "five more minutes."</p>
+
+      <p>Then I had a different idea. What if I walked in with something worth waking up for — cricket scores, a car story, something weird in the world? Written like it's meant for a curious kid, not a search engine. Not me summarizing the news. An AI doing it overnight, delivered to my Telegram at 6am, ready to read the moment I open his door.</p>
+
+      <p>OpenClaw handles scheduled jobs, connects to Ollama, and can deliver messages via Telegram channels. I have an NVIDIA RTX 4060 Laptop GPU with 8GB VRAM sitting idle most of the night. This seemed like exactly the kind of thing I could set up in an evening.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">⏰</div>
+          <h4>6am every day</h4>
+          <p>Cron job fires, AI writes a kid-friendly news roundup overnight, delivered to Telegram before I get up.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🦙</div>
+          <h4>Local, always-on</h4>
+          <p>Ollama on my RTX 4060. No ongoing API cost, no rate limits — or so I thought before I started testing.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">📢</div>
+          <h4>The morning ritual</h4>
+          <p>My son doesn't need a phone. I have one. The news brief is my opening line when I walk into his room. It works better than an alarm.</p>
+        </div>
+      </div>
+
+      <p>It did not work in an evening. It took several evenings, two dead ends, and one insight I didn't see coming.</p>
+    </section>
+
+    <!-- ── FIRST WALL ────────────────────────────────── -->
+    <section class="guide-section" id="wall1">
+      <h2>First Wall: I Couldn't Even Finish Testing</h2>
+
+      <p>The default model in many OpenClaw setups is <code>minimax-m3:cloud</code>. It looks like a local Ollama model — you pull it the same way, it shows up in <code>ollama list</code>, you access it on the same port. But the <code>:cloud</code> suffix means the inference runs on Ollama's hosted servers. Free tier, shared quota.</p>
+
+      <div class="callout-orange">
+        <div class="c-label">The `:cloud` Trap</div>
+        <p>Any Ollama model with a <strong>:cloud</strong> suffix routes through Ollama's hosted servers. It shares a free-tier quota with everyone else. You're accessing it via your local Ollama — but the compute, and the rate limits, belong to Ollama's side.</p>
+      </div>
+
+      <p>The rate limit hit before I got anywhere useful. Not because I was sending a lot of traffic — I wasn't, it was day one. It hit because <em>setup itself is bursty</em>. Every time I tried to verify the full end-to-end pipeline — explore in chat, configure something, trigger the cron manually, check the Telegram delivery — each of those steps was a separate API call. Five minutes of testing meant 8–10 calls. That's a burst. Free tier throttled.</p>
+
+      <p>The brutal part: when you hit the rate limit mid-test, you can't tell whether the thing you just configured is broken or whether the rate limit is hiding the real answer. I spent 20 minutes questioning my Telegram config because I couldn't tell if the message failed or if the model never ran.</p>
+
+      <p>Then OpenClaw's own bug made it permanent: there's a documented issue where the cooldown state gets <em>stuck</em> after a rate limit hit, looking like a permanent failure until you restart the gateway. What should be a 30-second wait becomes an hour of confused troubleshooting.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val stat-val-red">Burst</div><div class="stat-label">rate limit type — per-minute, not daily</div></div>
+        <div class="stat-cell"><div class="stat-val">8–10</div><div class="stat-label">API calls in a typical setup session</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-red">Stuck</div><div class="stat-label">cooldown bug — needs gateway restart</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-green">1</div><div class="stat-label">production call per day — never a problem</div></div>
+      </div>
+
+      <p>The standard advice at this point: switch to a fully local model. No rate limits, no cloud dependency. That's what I did — and the problem got more interesting.</p>
+    </section>
+
+    <!-- ── GOING LOCAL ───────────────────────────────── -->
+    <section class="guide-section" id="wall2">
+      <h2>Going Local — the 6am Moment</h2>
+
+      <p><code>qwen2.5-coder:7b</code> is tool-use tuned, fits entirely in 8GB VRAM, runs locally with no rate limits. I pulled it, updated the config, verified the right model was running, and scheduled the job. Everything looked correct.</p>
+
+      <p>Then I went to bed and waited for the morning.</p>
+
+      <p>At 6am I checked Telegram. Something had arrived. But it wasn't the news. It was this:</p>
+
+      <div class="before-after" style="grid-template-columns: 1fr;">
+        <div class="ba-box ba-fail">
+          <div class="ba-label">What arrived at 6am — instead of cricket scores</div>
+          <div class="ba-text">{
+  "tool": "sessions_send",
+  "parameters": {
+    "session": "main",
+    "message": "📰 Kids News Roundup — Monday...\n\n🏏 Cricket: Australia..."
+  }
+}</div>
+        </div>
+      </div>
+
+      <p>The model had written the news content perfectly — it was right there, inside the JSON. It had decided to call the correct tool with the correct parameters. But instead of <em>executing</em> the tool call through the protocol OpenClaw's gateway watches for, it printed the whole thing as a plain text message. And that became the delivery.</p>
+
+      <p>I walked into his room that morning with nothing useful to say. The AI had talked to itself all night.</p>
+    </section>
+
+    <!-- ── THE JSON PROBLEM ──────────────────────────── -->
+    <section class="guide-section" id="json">
+      <h2>The JSON Problem — Why Tool Calls Don't Execute</h2>
+
+      <p>This isn't a bug you can fix with prompt engineering. It's a capability threshold, and understanding it changes how you think about local model selection for agentic work.</p>
+
+      <p>When OpenClaw runs an agent, it injects a system prompt that describes all available tools — their names, parameter schemas, and when to use them. A capable model reads this, decides which tool to call, and emits the call in a structured binary/JSON format that OpenClaw's gateway intercepts and executes. A model at or near its capability ceiling reads the same system prompt and decides to call the tool — but then writes the JSON as ordinary chat text instead of emitting it through the tool-call protocol.</p>
+
+      <div class="before-after">
+        <div class="ba-box ba-fail">
+          <div class="ba-label">7B behaviour — prints JSON as text</div>
+          <div class="ba-text">I'll send this now:
+
+{"tool": "send",
+ "params": {"to": "7913...",
+  "msg": "📰 Kids News..."}}</div>
+        </div>
+        <div class="ba-box ba-win">
+          <div class="ba-label">Cloud model — executes the call</div>
+          <div class="ba-text">[OpenClaw gateway receives
+structured tool call,
+executes delivery silently,
+message appears in Telegram]</div>
+        </div>
+      </div>
+
+      <p>The smoking gun came when the 7B model started leaking OpenClaw's <em>own internal runtime context</em> — the metadata block that tells the model where to deliver the message — directly into the printed JSON. It wasn't misunderstanding the instructions. It couldn't hold the full agent tool surface in working memory and execute the protocol correctly at the same time.</p>
+
+      <div class="callout-indigo">
+        <div class="c-label">Technical Note</div>
+        <p>This is separate from the <code>baseUrl</code> issue. If <code>models.providers.ollama.baseUrl</code> points to <code>http://127.0.0.1:11434/v1</code> (the OpenAI-compatible path), tool calling <em>also</em> breaks — Ollama's streaming format on that path doesn't carry tool call metadata correctly. The native endpoint is <code>http://127.0.0.1:11434</code>. Check this first before blaming the model. In my case, the baseUrl was already correct — the 7B model was the actual limit.</p>
+      </div>
+
+      <p>This failure showed up across all three tool types I tested: <code>sessions_spawn</code>, <code>sessions_send</code>, and the basic <code>send</code>. It wasn't the complexity of the task — even a single-step delivery failed. Which meant there was no prompt rewrite that could fix it.</p>
+    </section>
+
+    <!-- ── THREE MODELS ──────────────────────────────── -->
+    <section class="guide-section" id="models">
+      <h2>Three Models, Three Lessons</h2>
+
+      <p>I tested the progression you'd naturally try on 8GB VRAM: start small, scale up until something works.</p>
+
+      <div class="table-scroll">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Type</th>
+              <th>VRAM</th>
+              <th>Tool Call Result</th>
+              <th>Failure Mode</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>qwen2.5-coder:7b</code></td>
+              <td>Local</td>
+              <td>~4 GB</td>
+              <td><span class="badge-fail">✗ Fails</span></td>
+              <td>Emits JSON as chat text. Delivery body becomes raw JSON.</td>
+            </tr>
+            <tr>
+              <td><code>qwen2.5:14b</code></td>
+              <td>Local</td>
+              <td>~8 GB (partial CPU)</td>
+              <td><span class="badge-warn">✗ Fails differently</span></td>
+              <td>Stops emitting raw JSON, but gets confused by OpenClaw's injected runtime context block — asks for clarification instead of proceeding silently.</td>
+            </tr>
+            <tr>
+              <td><code>minimax-m3:cloud</code> (chat bursts)</td>
+              <td>Cloud via Ollama</td>
+              <td>None (hosted)</td>
+              <td><span class="badge-warn">⚠ Rate-limited</span></td>
+              <td>Works correctly per call, but multi-step chat sessions exceed free-tier burst limits. Stuck-cooldown bug compounds this.</td>
+            </tr>
+            <tr>
+              <td><code>minimax-m3:cloud</code> (cron only)</td>
+              <td>Cloud via Ollama</td>
+              <td>None (hosted)</td>
+              <td><span class="badge-pass">✓ Works</span></td>
+              <td>None. 1–2 calls per day, once at 6am. Never approaches burst limit. This is the current production setup.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The 14B result was the most interesting. It had enough capacity to stop printing raw JSON — that capability threshold was cleared. But it hit a different wall: OpenClaw injects a metadata block into the system prompt that tells the model where to deliver the output. A 7B model can't hold all of this and produce structured output. A 14B model holds it, reads the delivery instructions, and then asks for confirmation rather than following them silently. Same underlying gap — following a complex injected system instruction — just surfacing differently.</p>
+
+      <p>32B would likely clear both bars, but would require heavy CPU offload on 8GB VRAM — probably too slow to be practical for a morning delivery that needs to complete in seconds.</p>
+
+      <div class="callout-green">
+        <div class="c-label">The Right Call</div>
+        <p>Keeping <code>minimax-m3:cloud</code> for the single daily cron job is a legitimate permanent setup. One call at 6am, outside of any burst window, never hits the rate limit. Local <code>qwen2.5-coder:7b</code> handles all casual chat. Per-job model overrides (<code>openclaw cron edit &lt;job-id&gt; --model "..."</code>) make this mix-and-match trivial.</p>
+      </div>
+    </section>
+
+    <!-- ── THE INSIGHT ───────────────────────────────── -->
+    <section class="guide-section" id="insight">
+      <h2>The Insight That Fixed Everything</h2>
+
+      <p>Here's the thing I didn't understand at the start: the cloud model that rate-limited me during testing is the same model that runs perfectly in production. The model didn't change. The request shape did.</p>
+
+      <div class="before-after">
+        <div class="ba-box ba-fail">
+          <div class="ba-label">Testing — bursty, rate-limited</div>
+          <div class="ba-text">Explore in chat → configure →
+test cron → check delivery →
+adjust → re-test → repeat
+
+= 8-10 API calls in 3 minutes
+= burst limit hit every session
+= can't tell if config is broken
+  or if rate limit ate the error</div>
+        </div>
+        <div class="ba-box ba-win">
+          <div class="ba-label">Production — single call, never limited</div>
+          <div class="ba-text">Cron job fires at 6am
+
+= 1 API call
+= content generated
+= --announce handles delivery
+= model never needs a tool call
+= no burst, no rate limit, ever</div>
+        </div>
+      </div>
+
+      <p>The workaround isn't really a workaround. It's just correctly understanding what the cron job is — a single, isolated task that does one thing. The cloud rate limit applies to <em>burst conversations</em>. A daily cron call that fires once at 6am and asks the model to write one piece of content is never going to be a burst. The same model works for both; you just can't verify it using a bursty chat session.</p>
+
+      <div class="callout-indigo">
+        <div class="c-label">The key design decision</div>
+        <p>Use <code>--announce</code> with <code>--channel</code> and <code>--to</code> — these flags tell OpenClaw to handle delivery itself, outside the model's control. The model's only job is to write text. It never needs to make a tool call. No tool call means no tool-call failure. This is what made the cloud model safe for this use case — one clean content-generation request, nothing else.</p>
+      </div>
+
+      <p>Once I understood this, the setup became obvious: local model for casual chat (fine for non-tool tasks), cloud model for the one daily cron job (reliable tool execution when needed, single call so no burst). Two models, different jobs, zero conflicts.</p>
+    </section>
+
+    <!-- ── SETUP GUIDE ───────────────────────────────── -->
+    <section class="guide-section" id="setup">
+      <h2>Full Setup Guide</h2>
+      <p>Start to finish, from a clean Windows machine. These are the exact steps I ran.</p>
+
+      <h3 id="s-install">Install Ollama and OpenClaw</h3>
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Install Ollama</h4>
+            <p>Download from <strong>ollama.com</strong> and run the installer. Ollama starts as a background service automatically. Verify it's running:</p>
+            <code class="step-cmd">ollama list</code>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Pull a local model (for casual chat)</h4>
+            <p>For general chat and non-tool tasks. Does <em>not</em> need to handle tool calls.</p>
+            <code class="step-cmd">ollama pull qwen2.5-coder:7b</code>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Install OpenClaw</h4>
+            <p>Follow the OpenClaw installer for Windows. After install, verify the config file location:</p>
+            <code class="step-cmd">openclaw config file</code>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Edit openclaw.json directly — not via CLI JSON args</h4>
+            <p>PowerShell strips double quotes differently than bash. For any config value containing JSON structures, edit <code>openclaw.json</code> in a text editor instead of using <code>--strict-json</code> CLI flags. Set the native Ollama endpoint:</p>
+            <code class="step-cmd"><span class="cm"># In openclaw.json:</span>
+"models": {
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://127.0.0.1:11434",
+      <span class="cm">// NOT http://...11434/v1</span>
+    }
+  }
+},
+"agents": {
+  "defaults": {
+    "model": { "primary": "ollama/qwen2.5-coder:7b" }
+  }
+}</code>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Verify config (in your OS terminal, not the OpenClaw chat window)</h4>
+            <p>OpenClaw has two interfaces: the chat window (shows the agent status bar at the bottom) and the OS terminal (PowerShell, Command Prompt). All CLI commands must run in the OS terminal.</p>
+            <code class="step-cmd">openclaw config get agents.defaults.model
+openclaw config get models.providers.ollama.baseUrl
+openclaw config validate</code>
+          </div>
+        </li>
+      </ul>
+
+      <h3 id="s-telegram">Set Up Telegram</h3>
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Create a Telegram bot</h4>
+            <p>In Telegram, message <strong>@BotFather</strong> → <code>/newbot</code> → follow prompts. Copy the bot token.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h4>Add bot token to openclaw.json</h4>
+            <p>Telegram does <em>not</em> use <code>openclaw channels login telegram</code>. The token goes directly in config — channels login is for other providers.</p>
+            <code class="step-cmd"><span class="cm"># In openclaw.json, under channels.telegram:</span>
+"telegram": {
+  "botToken": "YOUR_BOT_TOKEN_HERE"
+}</code>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">8</div>
+          <div class="step-body">
+            <h4>Restart the gateway and pair</h4>
+            <p>The user must message the bot first to initiate pairing. After restarting:</p>
+            <code class="step-cmd">openclaw gateway restart
+<span class="cm"># User messages the bot → bot replies with pairing code</span>
+openclaw pairing list telegram
+openclaw pairing approve telegram &lt;PAIRING_CODE&gt;</code>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">9</div>
+          <div class="step-body">
+            <h4>Test delivery manually</h4>
+            <p>Get the user's Telegram chat ID from <code>pairing list</code> output and test:</p>
+            <code class="step-cmd">openclaw message send --channel telegram --target &lt;CHAT_ID&gt; --message "test"</code>
+          </div>
+        </li>
+      </ul>
+
+      <h3 id="s-cron">Create the Cron Job</h3>
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">10</div>
+          <div class="step-body">
+            <h4>Add the cron job — with one critical rule on the prompt</h4>
+            <p>Never instruct the model to "send" or "deliver" anything in the <code>--message</code> prompt. The <code>--announce</code> flag handles delivery outside the model's control. If the model is also told to send, it attempts a redundant tool call it can't complete — and that failure becomes the message body.</p>
+            <code class="step-cmd">openclaw cron add \
+  --name "Daily Kids News" \
+  --cron "0 6 * * *" \
+  --tz "America/Los_Angeles" \
+  --session isolated \
+  --message "Write a middle-school-friendly news roundup: \
+1) latest cricket news, \
+2) latest car/automotive news, \
+3) one interesting story from the last 24 hours. \
+Keep language simple and fun for a middle schooler. \
+Format with clear headers." \
+  --announce \
+  --channel telegram \
+  --to "&lt;CHAT_ID&gt;"</code>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">11</div>
+          <div class="step-body">
+            <h4>Set the model override for this job specifically</h4>
+            <p>After creating the job, override its model to one that can reliably execute tool calls. This keeps local <code>qwen2.5-coder:7b</code> for chat while the cron job uses the cloud model.</p>
+            <code class="step-cmd">openclaw cron list
+<span class="cm"># Copy the job ID, then:</span>
+openclaw cron edit &lt;job-id&gt; --model "ollama/minimax-m3:cloud"
+openclaw cron run &lt;job-id&gt;
+<span class="cm"># Verify the delivery arrived before enabling</span>
+openclaw cron enable &lt;job-id&gt;</code>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── COMMANDS ──────────────────────────────────── -->
+    <section class="guide-section" id="commands">
+      <h2>Command Reference</h2>
+      <p>All the commands I actually needed, grouped by purpose. Run these in your OS terminal, not the OpenClaw chat window.</p>
+
+      <div class="code-block"><span class="label">Diagnostics</span><span class="cm"># Check what's running</span>
+ollama list
+ollama ps
+ollama show qwen2.5-coder:7b
+<span class="cm"># Test Ollama directly</span>
+curl http://127.0.0.1:11434/api/chat \
+  -d '{"model":"qwen2.5-coder:7b","messages":[{"role":"user","content":"hi"}]}'</div>
+
+      <div class="code-block"><span class="label">OpenClaw Config</span><span class="cm"># Find the config file</span>
+openclaw config file
+<span class="cm"># Read values</span>
+openclaw config get agents.defaults.model
+openclaw config get models.providers.ollama.baseUrl
+openclaw config get agents.entries
+openclaw config validate
+<span class="cm"># Set values (simple strings only — JSON values: edit the file)</span>
+openclaw config set agents.defaults.model.primary "ollama/qwen2.5-coder:7b"
+openclaw config set models.providers.ollama.baseUrl "http://127.0.0.1:11434"</div>
+
+      <div class="code-block"><span class="label">Gateway</span>openclaw gateway restart
+<span class="cm"># Use this to clear stuck cooldown state after rate limit hits</span></div>
+
+      <div class="code-block"><span class="label">Telegram</span>openclaw pairing list telegram
+openclaw pairing approve telegram &lt;PAIRING_CODE&gt;
+openclaw channels logs --channel telegram --limit 5
+openclaw message send --channel telegram --target &lt;CHAT_ID&gt; --message "test"</div>
+
+      <div class="code-block"><span class="label">Cron Jobs</span>openclaw cron list
+openclaw cron run &lt;job-id&gt;
+openclaw cron runs &lt;job-id&gt;
+openclaw cron edit &lt;job-id&gt; --model "ollama/minimax-m3:cloud"
+openclaw cron edit &lt;job-id&gt; --message "new prompt here"
+openclaw cron enable &lt;job-id&gt;
+openclaw cron disable &lt;job-id&gt;
+openclaw cron remove &lt;job-id&gt;</div>
+
+      <div class="code-block"><span class="label">Model Pulls</span>ollama pull qwen2.5-coder:7b
+ollama pull qwen2.5:14b
+<span class="cm"># cloud (not local — requires Ollama account)</span>
+ollama pull minimax-m3:cloud</div>
+    </section>
+
+    <!-- ── LIVE PROOF ────────────────────────────────── -->
+    <section class="guide-section" id="proof">
+      <h2>Today's Delivery</h2>
+      <p>This arrived at 6am this morning. My son doesn't have a phone — I read it to him when I walk into his room. Cricket, a car recall, a robot that beat Usain Bolt. He was out of bed before I finished the third one.</p>
+      <p>The model wrote it. OpenClaw delivered it to my Telegram. Nothing leaked. No JSON.</p>
+
+      <div class="tg-phone">
+        <div class="tg-header">
+          <div class="tg-avatar">🤖</div>
+          <div>
+            <div class="tg-title">Morning News Bot</div>
+            <div class="tg-sub">6:00 AM · August 24, 2026</div>
+          </div>
+        </div>
+        <div class="tg-body">
+          <div class="tg-bubble">
+            <strong>📰 Kids News Roundup — Monday, August 24, 2026</strong>
+
+            <div class="tg-section">
+              <div class="tg-section-head">🏏 Cricket News: Australia Crushes Bangladesh in Two Days!</div>
+              Big news! Australia beat Bangladesh in the second Test in Mackay in just two days — super fast for a five-day game. Mitchell Starc grabbed 10 wickets including 6-12 in the first innings. Bangladesh scored 64 then 95. Australia won by an innings, tying the series 1-1.
+            </div>
+
+            <div class="tg-section">
+              <div class="tg-section-head">🚗 Car News: Tesla Recalls Almost 3 Million Cars</div>
+              Tesla recalled ~3 million cars in China — their hidden door handles can get stuck and not open in an emergency. Chinese carmakers are recalling 1M+ more for similar issues. Tesla will fix them free, usually with a software update.
+            </div>
+
+            <div class="tg-section">
+              <div class="tg-section-head">🤖 Cool Story: A Robot Beat Usain Bolt's 100m Record!</div>
+              At a robot sports event in Beijing, a humanoid robot called "Lightning" ran the 100m faster than any human ever — faster than Usain Bolt! Engineers say robots keep getting better at running and balancing. The future of sports might look very different!
+            </div>
+
+            <div class="tg-ts">✓✓ Delivered · 6:02 AM</div>
+          </div>
+        </div>
+      </div>
+
+      <p style="text-align:center;font-size:.83rem;color:var(--rw-text-subtle);margin-top:.5rem;">Written by <code>minimax-m3:cloud</code>. Delivered by OpenClaw <code>--announce</code>. The model's only job was writing — no tool call needed.</p>
+    </section>
+
+    <!-- ── LEARNINGS ─────────────────────────────────── -->
+    <section class="guide-section" id="learnings">
+      <h2>9 Things I Actually Learned</h2>
+      <p>The things the tutorials don't say — discovered by hitting each one in sequence.</p>
+
+      <div class="learnings-grid">
+        <div class="lc">
+          <div class="lc-n">01</div>
+          <h4><code>:cloud</code> suffix = not local</h4>
+          <p>Ollama models with <code>:cloud</code> route through Ollama's hosted servers with a shared free-tier quota. The rate limit is per-minute, not daily — a burst of setup chat is enough to hit it.</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">02</div>
+          <h4>7B models break at tool-call output, not decision</h4>
+          <p>They correctly decide which tool to call and what parameters to pass. They fail at emitting the structured format OpenClaw's gateway intercepts. Different failure than "doesn't understand the task."</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">03</div>
+          <h4>Testing is bursty. Production isn't. They behave differently.</h4>
+          <p>A setup session fires 8–10 API calls in minutes — that's a burst. A daily cron fires 1 call at 6am — that's not. The cloud model that rate-limited me during testing works fine in production because the request shape is completely different. You can't verify end-to-end with a conversational test session.</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">04</div>
+          <h4><code>baseUrl</code> must be the native Ollama endpoint</h4>
+          <p><code>http://127.0.0.1:11434</code> — not <code>.../v1</code>. The OpenAI-compatible path breaks tool-calling streaming. Check this before blaming the model.</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">05</div>
+          <h4>OpenClaw chat window ≠ OS terminal</h4>
+          <p>Typing <code>openclaw cron list</code> into the OpenClaw chat asks the agent to interpret it, not run it. CLI commands only work in PowerShell/CMD.</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">06</div>
+          <h4>Never tell the model to "send" anything in the cron prompt</h4>
+          <p><code>--announce</code> handles delivery outside the model's control. If the prompt also says "send to Telegram," the model tries a tool call it can't complete — and the failure JSON becomes the message.</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">07</div>
+          <h4>Per-job model overrides let you mix local and cloud</h4>
+          <p><code>openclaw cron edit &lt;job-id&gt; --model "..."</code> sets a model for just that job. Chat stays local. The one cron job that needs reliable tool calls gets the cloud model.</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">08</div>
+          <h4>PowerShell JSON quoting is fragile</h4>
+          <p>For any config value containing JSON structures, edit <code>openclaw.json</code> directly in a text editor. The <code>--strict-json</code> CLI flag + PowerShell quoting is a reliable way to corrupt your config.</p>
+        </div>
+        <div class="lc">
+          <div class="lc-n">09</div>
+          <h4>Shortcut labels are stale — trust <code>config get</code></h4>
+          <p>Start Menu and taskbar tiles cache the model name separately from <code>openclaw.json</code>. The tile can show <code>minimax-m3:cloud</code> while the actual runtime model is something completely different. Always verify with <code>openclaw config get</code> and <code>ollama ps</code>.</p>
+        </div>
+      </div>
+
+      <div class="callout-orange" style="margin-top:1.5rem;">
+        <div class="c-label">Where Things Stand</div>
+        <p>The path to fully local would be a 32B model — heavy CPU offload on 8GB VRAM, probably too slow for a 6am delivery. The current setup (local 7B for chat, cloud model for the one daily cron) is stable, never hits rate limits, and does exactly what it was built to do. Sometimes the right architecture is the one that's boring enough to run every morning without anyone noticing.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[{"label":"TripRipple Agent Memory","url":"/usecase/tripripple.html"},{"label":"PanchangChef Build","url":"/usecase/panchangchef-guide.html"},{"label":"Rubiks Cube coach ","url":"/usecase/rubik-navigator-guide.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var id = e.target.id;
+        links.forEach(function(l) {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(function(s) { obs.observe(s); });
+})();
+</script>
+
+</body>
+</html>

@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "My Son Doesn't Have a Phone. So I Built Him an AI Morning Alarm.",
+        excerpt: "Cloud rate limits during testing, a 7B model that sent JSON to Telegram at 6am instead of cricket news, and the one insight that fixed everything: request shape, not volume, is what triggers rate limits.",
+        date: "Aug 24, 2026",
+        image: "./images/Daily_news.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/openclaw-ollama-agent.html",
+        linkedin: null
+      },
+      {
         title: "TripRipple — Agent Memory Copilot",
         excerpt: "An AI agent that remembers why every travel decision was made, screens hotel replacements against those constraints, and notifies only the people whose plans depend on what changed. Built at the Mastra Agent Memory Hackathon 2026.",
         date: "Aug 20, 2026",
         image: "./images/tripripple/Linkedin.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/tripripple.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_agentmemory-enterpriseai-elasticsearch-share-7496105716697493504-54rk/"
       },
       {
         title: "Tech Debt Copilot — MongoDB BuildFest SF 2026",
