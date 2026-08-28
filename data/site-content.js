@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Drop-Off Oasis: An AI Concierge for the 45-Minute Wait",
+        excerpt: "How I built an AI walk concierge so my mom and I could make the most of the 45 minutes between school drop-off and pickup.",
+        date: "Aug 26, 2026",
+        image: "./images/dropoasis.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/drop-off-oasis.html",
+        linkedin: null
+      },
+      {
         title: "My Son Doesn't Have a Phone. So I Built Him an AI Morning Alarm.",
         excerpt: "Cloud rate limits during testing, a 7B model that sent JSON to Telegram at 6am instead of cricket news, and the one insight that fixed everything: request shape, not volume, is what triggers rate limits.",
         date: "Aug 24, 2026",
         image: "./images/Daily_news.png",
         type: "Blog",
         link: "https://rawweights.com/blog/openclaw-ollama-agent.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_ai-openclaw-ollama-share-7497863524199616512-4ucp"
       },
       {
         title: "TripRipple — Agent Memory Copilot",

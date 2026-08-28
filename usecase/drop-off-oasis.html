@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drop-Off Oasis — Built with Google ADK | Raw Weights</title>
+  <meta name="description" content="How I built an AI walk concierge so my mom and I could make the most of the 45 minutes between school drop-off and pickup.">
+  <meta property="og:title" content="Drop-Off Oasis: An AI Concierge for the 45-Minute Wait">
+  <meta property="og:description" content="My mom flew in from India. The only time we get together is after I drop my son at class. I built an app for that.">
+  <meta property="og:image" content="https://rawweights.com/images/dropoasis.png">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+
+  <style>
+    /* ── Brand tokens ──────────────────────────────────────────── */
+    :root {
+      --g: #2D6A4F;
+      --g-hover: #245a42;
+      --g-dim: rgba(45,106,79,0.08);
+      --g-mid: rgba(45,106,79,0.22);
+      --g-bright: #6ee7a0;
+      --g-text: #1a4a35;
+    }
+    [data-theme="dark"] {
+      --g-dim: rgba(45,106,79,0.15);
+      --g-mid: rgba(45,106,79,0.3);
+      --g-text: #6ee7a0;
+    }
+
+    /* ── Layout ────────────────────────────────────────────────── */
+    .guide-layout {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .guide-sidebar {
+      position: sticky;
+      top: var(--rw-nav-height,60px);
+      height: calc(100vh - var(--rw-nav-height,60px));
+      overflow-y: auto;
+      border-right: 1px solid var(--rw-border);
+      padding: 2rem 1.1rem;
+      background: var(--rw-bg);
+    }
+    .guide-sidebar h4 {
+      font-family: var(--rw-font-display);
+      font-size: 0.67rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--rw-text-subtle);
+      margin: 1.4rem 0 0.45rem;
+    }
+    .guide-sidebar h4:first-child { margin-top: 0; }
+    .toc-link {
+      display: block;
+      font-size: 0.83rem;
+      color: var(--rw-text-muted);
+      text-decoration: none;
+      padding: 0.28rem 0.65rem;
+      border-radius: 6px;
+      border-left: 2px solid transparent;
+      transition: all 0.13s;
+      font-family: var(--rw-font-display);
+      font-weight: 500;
+    }
+    .toc-link:hover, .toc-link.active {
+      background: var(--g-dim);
+      color: var(--g);
+      border-left-color: var(--g);
+    }
+    .toc-link.active { font-weight: 600; }
+    .guide-main {
+      padding: 3rem 3.5rem 5rem;
+      max-width: 800px;
+    }
+    .guide-section {
+      scroll-margin-top: calc(var(--rw-nav-height,60px) + 2rem);
+      margin-bottom: 5rem;
+    }
+    .guide-section:last-child { margin-bottom: 2rem; }
+
+    /* ── Section labels ────────────────────────────────────────── */
+    .sec-label {
+      font-family: var(--rw-font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--g);
+      margin-bottom: 0.5rem;
+    }
+    .sec-title {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.4rem,2.5vw,1.85rem);
+      font-weight: 800;
+      color: var(--rw-text);
+      letter-spacing: -0.02em;
+      margin: 0 0 1.25rem;
+      line-height: 1.2;
+    }
+    .sec-body {
+      font-size: 1rem;
+      color: var(--rw-text-muted);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+    .sec-body strong { color: var(--rw-text); font-weight: 600; }
+
+    /* ── Hero ──────────────────────────────────────────────────── */
+    .doo-hero {
+      background: linear-gradient(135deg,#0b1f15 0%,#1a3a27 55%,#0c2419 100%);
+      padding: 5rem 0 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .doo-hero::before {
+      content:'';position:absolute;top:-40%;right:-10%;
+      width:600px;height:600px;
+      background:radial-gradient(circle,rgba(45,106,79,.3) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .doo-hero::after {
+      content:'';position:absolute;bottom:-30%;left:-5%;
+      width:420px;height:420px;
+      background:radial-gradient(circle,rgba(45,106,79,.12) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .hero-split {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:4rem;
+      align-items:center;
+      max-width:1200px;
+      margin:0 auto;
+      padding:0 2.5rem;
+      position:relative;
+      z-index:1;
+    }
+    .hero-label {
+      display:inline-flex;align-items:center;gap:.5rem;
+      font-family:var(--rw-font-mono);font-size:.71rem;font-weight:600;
+      letter-spacing:.08em;text-transform:uppercase;
+      color:var(--g-bright);background:rgba(110,231,160,.1);
+      padding:.35rem .85rem;border-radius:100px;
+      border:1px solid rgba(110,231,160,.22);margin-bottom:1.4rem;
+    }
+    .hero-title {
+      font-family:var(--rw-font-display);
+      font-size:clamp(1.9rem,3.5vw,2.9rem);
+      font-weight:800;color:#fff;
+      line-height:1.13;letter-spacing:-.025em;
+      margin:0 0 1rem;
+    }
+    .hero-title .accent { color:var(--g-bright); }
+    .hero-subtitle {
+      font-size:1.05rem;color:rgba(255,255,255,.66);
+      line-height:1.7;margin:0 0 2rem;
+    }
+    .hero-meta {
+      display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+    }
+    .hero-avatar {
+      width:36px;height:36px;border-radius:50%;
+      background:linear-gradient(135deg,#2D6A4F,#6ee7a0);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:.8rem;color:white;
+      font-family:var(--rw-font-display);flex-shrink:0;
+    }
+    .hero-author-name {
+      font-size:.85rem;font-weight:600;
+      color:rgba(255,255,255,.82);
+      font-family:var(--rw-font-display);display:block;
+    }
+    .hero-author-date { font-size:.72rem;color:rgba(255,255,255,.4);font-family:var(--rw-font-mono); }
+    .hero-div { width:1px;height:26px;background:rgba(255,255,255,.14); }
+    .hero-readtime { font-size:.78rem;color:rgba(255,255,255,.38);font-family:var(--rw-font-mono); }
+
+    .hero-video-wrap {
+      position:relative;border-radius:14px;overflow:hidden;
+      border:1px solid rgba(45,106,79,.45);
+      box-shadow:0 0 60px rgba(45,106,79,.22),0 24px 48px rgba(0,0,0,.55);
+    }
+    .hero-video-wrap video { width:100%;display:block; }
+    .hero-video-label {
+      position:absolute;bottom:12px;left:12px;
+      font-family:var(--rw-font-mono);font-size:.7rem;
+      color:rgba(255,255,255,.72);background:rgba(0,0,0,.6);
+      padding:.25rem .6rem;border-radius:6px;backdrop-filter:blur(4px);
+    }
+    .hero-video-badge {
+      position:absolute;top:-12px;right:16px;
+      background:var(--g);color:white;
+      font-family:var(--rw-font-display);font-size:.7rem;font-weight:700;
+      padding:.3rem .8rem;border-radius:100px;
+    }
+
+    /* ── Stat bar ──────────────────────────────────────────────── */
+    .stat-row {
+      display:grid;grid-template-columns:repeat(3,1fr);
+      border-top:1px solid var(--rw-border);
+      border-bottom:1px solid var(--rw-border);
+      background:var(--rw-bg-alt);
+    }
+    .stat-cell { padding:1.75rem 2rem;text-align:center;border-right:1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right:none; }
+    .stat-val {
+      font-family:var(--rw-font-display);font-size:1.75rem;font-weight:800;
+      color:var(--g);letter-spacing:-.02em;display:block;
+    }
+    .stat-label {
+      font-size:.73rem;color:var(--rw-text-muted);
+      font-family:var(--rw-font-display);font-weight:600;
+      text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem;
+    }
+
+    /* ── Journey timeline strip ────────────────────────────────── */
+    .journey-strip {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:0;
+      border:1px solid var(--rw-border);
+      border-radius:12px;
+      overflow:hidden;
+      margin: 0 0 2rem;
+    }
+    .journey-step {
+      padding:1.4rem 1rem 1.25rem;
+      text-align:center;
+      background:var(--rw-bg-alt);
+      border-right:1px solid var(--rw-border);
+      position:relative;
+    }
+    .journey-step:last-child { border-right:none; }
+    .journey-step::after {
+      content:'→';
+      position:absolute;
+      right:-14px;top:50%;transform:translateY(-50%);
+      color:var(--g);font-size:1rem;font-weight:700;
+      z-index:2;
+    }
+    .journey-step:last-child::after { display:none; }
+    .journey-emoji { font-size:1.8rem;margin-bottom:.5rem;display:block; }
+    .journey-step-label {
+      font-family:var(--rw-font-display);font-size:.72rem;
+      font-weight:700;text-transform:uppercase;
+      letter-spacing:.06em;color:var(--g);margin-bottom:.25rem;
+    }
+    .journey-step-text { font-size:.82rem;color:var(--rw-text-muted);line-height:1.4; }
+
+    /* ── Pull quote ────────────────────────────────────────────── */
+    .pull-quote {
+      margin:2rem 0;
+      padding:1.5rem 1.75rem 1.5rem 2.25rem;
+      background:var(--g-dim);
+      border-left:4px solid var(--g);
+      border-radius:0 10px 10px 0;
+      font-size:1.1rem;font-style:italic;
+      color:var(--rw-text);line-height:1.72;
+      position:relative;
+    }
+    .pull-quote::before {
+      content:'"';font-family:Georgia,serif;font-size:5rem;
+      color:var(--g);opacity:.18;
+      position:absolute;top:-.75rem;left:.6rem;
+      line-height:1;pointer-events:none;
+    }
+
+    /* ── Before / After ────────────────────────────────────────── */
+    .before-after {
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:1.15rem;margin:2rem 0;
+    }
+    .ba-card { padding:1.5rem;border-radius:10px;border:1px solid; }
+    .ba-without { background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.18); }
+    .ba-with    { background:var(--g-dim);border-color:var(--g-mid); }
+    .ba-label {
+      font-family:var(--rw-font-display);font-size:.69rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;
+    }
+    .ba-without .ba-label { color:#ef4444; }
+    .ba-with    .ba-label { color:var(--g); }
+    .ba-item {
+      display:flex;align-items:flex-start;gap:.6rem;
+      font-size:.88rem;color:var(--rw-text-muted);
+      margin-bottom:.65rem;line-height:1.5;
+    }
+    .ba-icon { flex-shrink:0; }
+
+    /* ── App Mockup ────────────────────────────────────────────── */
+    .app-mockup-wrap {
+      margin:2rem 0;
+      border:1px solid var(--rw-border);
+      border-radius:14px;
+      overflow:hidden;
+      background:var(--rw-bg-alt);
+    }
+    .app-mockup-bar {
+      padding:.65rem 1rem;
+      background:var(--rw-bg-alt);
+      border-bottom:1px solid var(--rw-border);
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
+    .mockup-dot { width:10px;height:10px;border-radius:50%; }
+    .d-red  { background:#ff5f56; }
+    .d-yel  { background:#ffbd2e; }
+    .d-grn  { background:#27c93f; }
+    .mockup-url {
+      margin-left:auto;margin-right:auto;
+      font-family:var(--rw-font-mono);font-size:.7rem;
+      color:var(--rw-text-subtle);
+      background:var(--rw-bg);
+      padding:.2rem .75rem;border-radius:6px;
+      border:1px solid var(--rw-border);
+    }
+    .app-mockup {
+      display:grid;
+      grid-template-columns:260px 1fr;
+      height:420px;
+    }
+    .mockup-sidebar {
+      border-right:1px solid var(--rw-border);
+      background:var(--rw-bg);
+      padding:1rem .75rem;
+      display:flex;flex-direction:column;gap:.5rem;
+    }
+    .mockup-sidebar-title {
+      font-family:var(--rw-font-display);font-size:.68rem;
+      font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+      color:var(--rw-text-subtle);padding:.3rem .5rem;margin-bottom:.25rem;
+    }
+    .chip {
+      padding:.45rem .8rem;border-radius:8px;
+      font-family:var(--rw-font-display);font-size:.78rem;font-weight:600;
+      color:var(--rw-text-muted);cursor:pointer;
+      transition:background .12s,color .12s;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .chip:hover { background:var(--g-dim);color:var(--g); }
+    .chip.active-chip {
+      background:var(--g-dim);color:var(--g);
+      border-left:2px solid var(--g);border-radius:0 8px 8px 0;
+    }
+    .mockup-chat {
+      display:flex;flex-direction:column;
+      overflow:hidden;
+    }
+    .chat-messages {
+      flex:1;overflow-y:auto;
+      padding:1.25rem;
+      display:flex;flex-direction:column;gap:1rem;
+    }
+    .msg-user {
+      align-self:flex-end;
+      background:var(--g);color:white;
+      padding:.65rem 1rem;border-radius:12px 12px 4px 12px;
+      font-size:.84rem;max-width:75%;line-height:1.5;
+    }
+    .msg-ai { align-self:flex-start;max-width:90%;display:flex;flex-direction:column;gap:.6rem; }
+    .msg-ai-text {
+      background:var(--rw-bg-alt);
+      border:1px solid var(--rw-border);
+      padding:.65rem 1rem;border-radius:12px 12px 12px 4px;
+      font-size:.84rem;color:var(--rw-text-muted);line-height:1.5;
+    }
+    /* Walk result card inside mockup */
+    .walk-result {
+      background:var(--rw-bg);border:1px solid var(--rw-border);
+      border-radius:10px;overflow:hidden;
+    }
+    .walk-result-img {
+      width:100%;height:80px;
+      background:linear-gradient(135deg,#1a3a27,#2D6A4F,#4a8a6a);
+      display:flex;align-items:center;justify-content:center;
+      font-size:2rem;
+    }
+    .walk-result-body { padding:.7rem .85rem; }
+    .walk-result-name {
+      font-family:var(--rw-font-display);font-size:.85rem;
+      font-weight:700;color:var(--rw-text);margin-bottom:.3rem;
+    }
+    .walk-result-meta {
+      display:flex;gap:.75rem;flex-wrap:wrap;
+    }
+    .walk-tag {
+      font-size:.72rem;font-family:var(--rw-font-display);font-weight:600;
+      color:var(--g);background:var(--g-dim);
+      padding:.15rem .5rem;border-radius:4px;
+    }
+    /* Weather badge */
+    .weather-row {
+      display:flex;gap:.5rem;flex-wrap:wrap;
+    }
+    .wx-badge {
+      padding:.35rem .7rem;border-radius:6px;
+      font-size:.75rem;font-weight:600;font-family:var(--rw-font-display);
+      background:var(--rw-bg-alt);border:1px solid var(--rw-border);
+      color:var(--rw-text-muted);
+    }
+    /* Schedule */
+    .schedule-mini {
+      background:var(--rw-bg);border:1px solid var(--rw-border);
+      border-radius:8px;overflow:hidden;
+    }
+    .sch-row {
+      padding:.45rem .75rem;
+      display:flex;align-items:center;gap:.6rem;
+      font-size:.76rem;color:var(--rw-text-muted);
+      border-bottom:1px solid var(--rw-border);
+    }
+    .sch-row:last-child { border-bottom:none; }
+    .sch-row.active-sch { background:var(--g-dim);color:var(--g);font-weight:600; }
+    .sch-time { font-family:var(--rw-font-mono);font-size:.7rem;flex-shrink:0;min-width:50px; }
+    /* Audio player */
+    .audio-row {
+      background:linear-gradient(90deg,#1a3a27,#0f2a1e);
+      border:1px solid var(--g-mid);border-radius:8px;
+      padding:.65rem .9rem;display:flex;align-items:center;gap:.75rem;
+    }
+    .play-circle {
+      width:28px;height:28px;border-radius:50%;background:var(--g);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.65rem;color:white;flex-shrink:0;
+    }
+    .audio-info { flex:1;min-width:0; }
+    .audio-track { font-size:.76rem;font-weight:600;color:var(--g-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .audio-sub { font-size:.68rem;color:rgba(255,255,255,.4); }
+    .audio-waveform { display:flex;align-items:center;gap:2px;height:18px; }
+    .wv { width:3px;border-radius:2px;background:rgba(110,231,160,.55); }
+    /* Chat input bar */
+    .chat-input-bar {
+      padding:.75rem 1rem;border-top:1px solid var(--rw-border);
+      display:flex;gap:.5rem;
+      background:var(--rw-bg);
+    }
+    .chat-input {
+      flex:1;padding:.5rem .85rem;border-radius:8px;
+      border:1px solid var(--rw-border);background:var(--rw-bg-alt);
+      font-family:var(--rw-font-display);font-size:.8rem;
+      color:var(--rw-text);outline:none;
+    }
+    .chat-send {
+      padding:.5rem .9rem;background:var(--g);color:white;
+      border:none;border-radius:8px;cursor:pointer;font-size:.85rem;
+    }
+
+    /* ── Feature grid ──────────────────────────────────────────── */
+    .feature-grid {
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:1rem;margin:1.75rem 0 0;
+    }
+    .feature-card {
+      padding:1.25rem 1rem;
+      background:var(--rw-bg-alt);border:1px solid var(--rw-border);
+      border-radius:10px;transition:transform .14s,box-shadow .14s,border-color .14s;
+    }
+    .feature-card:hover {
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(0,0,0,.08);
+      border-color:var(--g-mid);
+    }
+    .feature-icon { font-size:1.6rem;margin-bottom:.6rem;display:block; }
+    .feature-name {
+      font-family:var(--rw-font-display);font-size:.88rem;
+      font-weight:700;color:var(--rw-text);margin-bottom:.3rem;
+    }
+    .feature-desc { font-size:.82rem;color:var(--rw-text-muted);line-height:1.55; }
+
+    /* ── Architecture flow visual ──────────────────────────────── */
+    .arch-flow {
+      background:var(--rw-bg-alt);border:1px solid var(--rw-border);
+      border-radius:12px;padding:2rem;margin:1.75rem 0;
+    }
+    .arch-flow-title {
+      font-family:var(--rw-font-mono);font-size:.7rem;
+      color:var(--rw-text-subtle);margin-bottom:1.5rem;
+      text-transform:uppercase;letter-spacing:.07em;
+    }
+    /* Top row: user → frontend → agent → gemini */
+    .arch-top-row {
+      display:flex;align-items:center;gap:0;margin-bottom:1.5rem;
+    }
+    .arch-node {
+      flex:1;padding:.85rem .75rem;text-align:center;
+      background:var(--rw-bg);border:1px solid var(--rw-border);
+      border-radius:8px;position:relative;
+    }
+    .arch-node.highlight {
+      background:var(--g-dim);border-color:var(--g-mid);
+    }
+    .arch-node-icon { font-size:1.25rem;display:block;margin-bottom:.3rem; }
+    .arch-node-name {
+      font-family:var(--rw-font-display);font-size:.75rem;
+      font-weight:700;color:var(--rw-text);display:block;
+    }
+    .arch-node-sub {
+      font-family:var(--rw-font-mono);font-size:.62rem;
+      color:var(--rw-text-subtle);
+    }
+    .arch-conn {
+      width:32px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      color:var(--g);font-size:.9rem;font-weight:700;
+    }
+    /* Tools strip */
+    .arch-tools-label {
+      font-family:var(--rw-font-mono);font-size:.65rem;
+      color:var(--rw-text-subtle);text-transform:uppercase;
+      letter-spacing:.06em;margin-bottom:.6rem;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .arch-tools-label::before,.arch-tools-label::after {
+      content:'';flex:1;height:1px;background:var(--rw-border);
+    }
+    .arch-tools-strip {
+      display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;
+    }
+    .tool-pill {
+      padding:.4rem .8rem;border-radius:100px;
+      background:var(--rw-bg);border:1px solid var(--rw-border);
+      font-family:var(--rw-font-display);font-size:.75rem;font-weight:600;
+      color:var(--rw-text-muted);
+      display:flex;align-items:center;gap:.35rem;
+    }
+    /* Data stores */
+    .arch-stores {
+      display:flex;gap:.75rem;margin-top:1.25rem;
+    }
+    .store-node {
+      flex:1;padding:.7rem .85rem;
+      background:var(--rw-bg);border:1px solid var(--rw-border);
+      border-radius:8px;display:flex;align-items:center;gap:.6rem;
+    }
+    .store-icon { font-size:1.1rem;flex-shrink:0; }
+    .store-name {
+      font-family:var(--rw-font-display);font-size:.75rem;font-weight:700;color:var(--rw-text);
+    }
+    .store-tech { font-family:var(--rw-font-mono);font-size:.6rem;color:var(--rw-text-subtle); }
+
+    /* ── Arch cards ─────────────────────────────────────────────── */
+    .arch-grid {
+      display:flex;flex-direction:column;gap:.85rem;margin:1.5rem 0;
+    }
+    .arch-card {
+      display:grid;grid-template-columns:44px 1fr;gap:1rem;align-items:start;
+      padding:1.1rem 1.4rem;
+      background:var(--rw-bg-alt);border:1px solid var(--rw-border);
+      border-left:3px solid var(--g);border-radius:0 10px 10px 0;
+      transition:background .13s;
+    }
+    .arch-card:hover { background:var(--g-dim); }
+    .arch-icon-box {
+      width:40px;height:40px;background:var(--g-dim);
+      border:1px solid var(--g-mid);border-radius:9px;
+      display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+    }
+    .arch-name {
+      font-family:var(--rw-font-display);font-size:.9rem;
+      font-weight:700;color:var(--rw-text);margin-bottom:.12rem;
+    }
+    .arch-tech {
+      font-family:var(--rw-font-mono);font-size:.67rem;
+      color:var(--g);font-weight:600;display:block;margin-bottom:.4rem;
+    }
+    .arch-desc { font-size:.85rem;color:var(--rw-text-muted);line-height:1.6; }
+
+    /* ── Technical section ─────────────────────────────────────── */
+    .code-block {
+      background:#0d1117;border-radius:10px;overflow:hidden;
+      margin:1.5rem 0;border:1px solid rgba(255,255,255,.07);
+    }
+    .code-bar {
+      background:#161b22;padding:.55rem 1rem;
+      display:flex;align-items:center;gap:.5rem;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .code-dot { width:10px;height:10px;border-radius:50%; }
+    .code-filename {
+      margin-left:auto;font-family:var(--rw-font-mono);font-size:.72rem;
+      color:rgba(255,255,255,.35);
+    }
+    .code-body {
+      padding:1.4rem 1.5rem;
+      font-family:var(--rw-font-mono);font-size:.8rem;
+      line-height:1.85;color:#c9d1d9;overflow-x:auto;
+    }
+    .cm { color:#8b949e; }
+    .kw { color:#ff7b72; }
+    .fn { color:#d2a8ff; }
+    .st { color:#a5d6ff; }
+    .deco { color:#ffa657; }
+    .num { color:#79c0ff; }
+
+    .tech-feature-grid {
+      display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.75rem 0;
+    }
+    .tech-card {
+      padding:1.25rem 1.4rem;
+      background:var(--rw-bg-alt);border:1px solid var(--rw-border);
+      border-radius:10px;
+    }
+    .tech-card-head {
+      display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;
+    }
+    .tech-tag {
+      font-family:var(--rw-font-mono);font-size:.65rem;font-weight:700;
+      padding:.2rem .55rem;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;
+    }
+    .tag-green { background:rgba(110,231,160,.12);color:#6ee7a0;border:1px solid rgba(110,231,160,.2); }
+    .tag-blue  { background:rgba(121,192,255,.12);color:#79c0ff;border:1px solid rgba(121,192,255,.2); }
+    .tag-orange{ background:rgba(255,166,87,.12); color:#ffa657;border:1px solid rgba(255,166,87,.2); }
+    .tag-purple{ background:rgba(210,168,255,.12);color:#d2a8ff;border:1px solid rgba(210,168,255,.2); }
+    .tech-card-title {
+      font-family:var(--rw-font-display);font-size:.88rem;
+      font-weight:700;color:var(--rw-text);
+    }
+    .tech-card-body { font-size:.84rem;color:var(--rw-text-muted);line-height:1.6; }
+
+    /* ── Learnings — 2×2 grid ──────────────────────────────────── */
+    .learnings-grid {
+      display:grid;grid-template-columns:repeat(2,1fr);
+      gap:1.1rem;margin:2rem 0;
+    }
+    .learning-card {
+      padding:1.4rem 1.5rem;
+      background:var(--rw-bg-alt);border:1px solid var(--rw-border);
+      border-radius:10px;
+      position:relative;overflow:hidden;
+      transition:border-color .13s;
+    }
+    .learning-card:hover { border-color:var(--g-mid); }
+    .learning-card::before {
+      content:attr(data-num);
+      position:absolute;top:.75rem;right:1rem;
+      font-family:var(--rw-font-display);font-size:3rem;font-weight:900;
+      color:var(--g);opacity:.07;line-height:1;
+    }
+    .learning-num {
+      font-family:var(--rw-font-mono);font-size:.67rem;
+      color:var(--g);font-weight:700;margin-bottom:.4rem;
+    }
+    .learning-title {
+      font-family:var(--rw-font-display);font-size:.95rem;
+      font-weight:700;color:var(--rw-text);margin-bottom:.5rem;line-height:1.3;
+    }
+    .learning-body { font-size:.84rem;color:var(--rw-text-muted);line-height:1.6; }
+    .learning-quote {
+      margin-top:.9rem;padding:.6rem .85rem;
+      background:var(--g-dim);border-radius:6px;
+      font-size:.8rem;font-style:italic;color:var(--rw-text-muted);
+      border-left:2px solid var(--g);
+    }
+
+    /* ── Team grid ─────────────────────────────────────────────── */
+    .team-grid {
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:1rem;margin:2rem 0;
+    }
+    .team-card {
+      padding:1.5rem 1.25rem;
+      background:var(--rw-bg-alt);border:1px solid var(--rw-border);
+      border-radius:12px;text-align:center;
+      transition:transform .13s,box-shadow .13s,border-color .13s;
+    }
+    .team-card:hover {
+      transform:translateY(-3px);
+      box-shadow:0 10px 24px rgba(0,0,0,.09);
+      border-color:var(--g-mid);
+    }
+    .team-avatar {
+      width:56px;height:56px;border-radius:50%;
+      background:linear-gradient(135deg,var(--g),var(--g-bright));
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--rw-font-display);font-weight:800;
+      font-size:1.1rem;color:white;
+      margin:0 auto .85rem;
+      box-shadow:0 0 0 3px var(--g-dim);
+    }
+    .team-name {
+      font-family:var(--rw-font-display);font-size:.9rem;
+      font-weight:700;color:var(--rw-text);margin-bottom:.2rem;
+    }
+    .team-role { font-size:.8rem;color:var(--rw-text-muted);margin-bottom:.5rem;line-height:1.4; }
+    .team-note {
+      font-size:.76rem;color:var(--g);
+      font-family:var(--rw-font-mono);
+    }
+
+    /* ── Event badge ────────────────────────────────────────────── */
+    .event-banner {
+      display:flex;align-items:center;gap:1rem;
+      padding:1.1rem 1.4rem;
+      background:var(--g-dim);border:1px solid var(--g-mid);
+      border-radius:10px;margin-bottom:2rem;
+    }
+    .event-icon { font-size:1.5rem;flex-shrink:0; }
+    .event-title {
+      font-family:var(--rw-font-display);font-size:.9rem;
+      font-weight:700;color:var(--rw-text);
+    }
+    .event-sub { font-size:.82rem;color:var(--rw-text-muted); }
+
+    /* ── CTA ────────────────────────────────────────────────────── */
+    .doo-cta {
+      background:linear-gradient(135deg,#0b1f15 0%,#1a3a27 100%);
+      padding:4.5rem 2.5rem;text-align:center;
+      position:relative;overflow:hidden;
+    }
+    .doo-cta::before {
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 50% 50%,rgba(45,106,79,.28) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .doo-cta-inner { position:relative;z-index:1; }
+    .doo-cta-title {
+      font-family:var(--rw-font-display);
+      font-size:clamp(1.5rem,3vw,2rem);
+      font-weight:800;color:white;margin-bottom:.75rem;
+    }
+    .doo-cta-sub { color:rgba(255,255,255,.5);margin-bottom:2rem;font-size:1rem; }
+    .cta-btns { display:flex;gap:1rem;justify-content:center;flex-wrap:wrap; }
+    .btn-green {
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.8rem 1.75rem;background:var(--g);color:white;
+      font-family:var(--rw-font-display);font-weight:700;font-size:.9rem;
+      border-radius:100px;text-decoration:none;
+      transition:background .14s,transform .14s;
+    }
+    .btn-green:hover { background:var(--g-hover);transform:translateY(-1px); }
+    .btn-ghost {
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.8rem 1.75rem;background:transparent;
+      color:rgba(255,255,255,.76);
+      font-family:var(--rw-font-display);font-weight:600;font-size:.9rem;
+      border-radius:100px;text-decoration:none;
+      border:1px solid rgba(255,255,255,.2);
+      transition:background .14s,border-color .14s;
+    }
+    .btn-ghost:hover { background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.4); }
+
+    /* ── Responsive ─────────────────────────────────────────────── */
+    @media (max-width:1050px) {
+      .guide-layout { grid-template-columns:1fr; }
+      .guide-sidebar { display:none; }
+      .guide-main { padding:2rem 1.5rem 4rem;max-width:100%; }
+    }
+    @media (max-width:780px) {
+      .hero-split { grid-template-columns:1fr;gap:2.5rem;padding:0 1.5rem; }
+      .hero-video-col { order:-1; }
+      .before-after,.feature-grid,.tech-feature-grid,.learnings-grid { grid-template-columns:1fr; }
+      .stat-row,.team-grid { grid-template-columns:1fr; }
+      .stat-cell { border-right:none;border-bottom:1px solid var(--rw-border); }
+      .stat-cell:last-child { border-bottom:none; }
+      .journey-strip { grid-template-columns:repeat(2,1fr); }
+      .app-mockup { grid-template-columns:1fr;height:auto; }
+      .mockup-sidebar { display:none; }
+      .arch-top-row { flex-wrap:wrap;gap:.5rem; }
+      .arch-conn { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════════ -->
+<section class="doo-hero">
+  <div class="hero-split">
+    <div>
+      <div class="hero-label">🌿 Built with Google ADK · #BuildWithGemini</div>
+      <h1 class="hero-title">
+        Finding walks so my <span class="accent">mom and I</span> actually use those 45 minutes
+      </h1>
+      <p class="hero-subtitle">
+        My mom flew in from India. The only unhurried time we have together is after I drop my son at his class. I built an AI to make that window count.
+      </p>
+      <div class="hero-meta">
+        <div style="display:flex;align-items:center;gap:.6rem;">
+          <div class="hero-avatar">SH</div>
+          <div>
+            <span class="hero-author-name">Sham Sundar HC</span>
+            <span class="hero-author-date">August 2026</span>
+          </div>
+        </div>
+        <div class="hero-div"></div>
+        <span class="hero-readtime">8 min read</span>
+      </div>
+    </div>
+    <div class="hero-video-col">
+      <div class="hero-video-wrap">
+        <video poster="./drop-off-oasis-poster.jpg" controls playsinline preload="none"
+               style="aspect-ratio:16/9;object-fit:cover;">
+          <source src="../images/videos/Dropoasis.mp4" type="video/mp4">
+        </video>
+        <span class="hero-video-label">Live demo — Drop-Off Oasis</span>
+        <span class="hero-video-badge">Watch 2 min demo</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     STATS
+════════════════════════════════════════════════════════════════════ -->
+<div class="stat-row">
+  <div class="stat-cell">
+    <span class="stat-val">45 min</span>
+    <div class="stat-label">Average wait window</div>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-val">7 tools</span>
+    <div class="stat-label">Powering the AI agent</div>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-val">1 mom</span>
+    <div class="stat-label">The real user it was built for</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     MAIN LAYOUT
+════════════════════════════════════════════════════════════════════ -->
+<div class="guide-layout">
+
+  <aside class="guide-sidebar">
+    <h4>On this page</h4>
+    <a href="#story"        class="toc-link">The story</a>
+    <a href="#problem"      class="toc-link">The problem</a>
+    <a href="#app"          class="toc-link">What it does</a>
+    <a href="#architecture" class="toc-link">How it works</a>
+    <a href="#technical"    class="toc-link">The code</a>
+    <a href="#learnings"    class="toc-link">What I learned</a>
+    <a href="#thanks"       class="toc-link">Thank you</a>
+  </aside>
+
+  <main class="guide-main">
+
+    <!-- ── STORY ───────────────────────────────────────────────── -->
+    <section class="guide-section" id="story">
+      <div class="sec-label">The story</div>
+      <h2 class="sec-title">She came 8,000 miles. We had 45 minutes.</h2>
+
+      <!-- Visual journey strip -->
+      <div class="journey-strip">
+        <div class="journey-step">
+          <span class="journey-emoji">🇮🇳</span>
+          <div class="journey-step-label">Arrival</div>
+          <div class="journey-step-text">Mom flies in from India. 3 month visit.</div>
+        </div>
+        <div class="journey-step">
+          <span class="journey-emoji">🚗</span>
+          <div class="journey-step-label">The gap</div>
+          <div class="journey-step-text">45 min after son's drop-off. No plan.</div>
+        </div>
+        <div class="journey-step">
+          <span class="journey-emoji">📱</span>
+          <div class="journey-step-label">The wake-up</div>
+          <div class="journey-step-text">Both on phones. Same car. Completely separate.</div>
+        </div>
+        <div class="journey-step">
+          <span class="journey-emoji">🌿</span>
+          <div class="journey-step-label">The build</div>
+          <div class="journey-step-text">Built at #BuildWithGemini in a single day.</div>
+        </div>
+      </div>
+
+      <p class="sec-body">
+        My mom doesn't visit often. A trip this far takes planning, money, and convincing herself to leave home. Three months sounds like a lot of time — but I work, my wife works, our son has school and activities. She's in America but mostly watching it from the kitchen window.
+      </p>
+
+      <div class="pull-quote">
+        One evening we sat in the parking lot — both on our phones. She was watching YouTube, I was scrolling news. Same car, completely separate. That felt like a waste.
+      </div>
+
+      <p class="sec-body">
+        I started searching for parks nearby. Every time I'd find something, I had to answer a dozen questions first: Too long? Make it back in time? Weather okay? It took more mental energy than the walk itself. Most days we stayed in the car.
+      </p>
+      <p class="sec-body">
+        So I built an app to do that thinking for me. Not for everyone — just for us, for this window.
+      </p>
+    </section>
+
+    <!-- ── PROBLEM ──────────────────────────────────────────────── -->
+    <section class="guide-section" id="problem">
+      <div class="sec-label">The problem</div>
+      <h2 class="sec-title">Not a lack of parks. Too many decisions.</h2>
+
+      <p class="sec-body">
+        Good walking spots existed within 10 minutes of the class. The problem was every walk required answering a set of questions before the first step.
+      </p>
+
+      <div class="before-after">
+        <div class="ba-card ba-without">
+          <div class="ba-label">❌ Without the app</div>
+          <div class="ba-item"><span class="ba-icon">😰</span><span>"Parks near me" returns a list with zero useful context</span></div>
+          <div class="ba-item"><span class="ba-icon">🕐</span><span>Manually estimate if you can walk there and back in time</span></div>
+          <div class="ba-item"><span class="ba-icon">🌧️</span><span>Open a separate app to check weather</span></div>
+          <div class="ba-item"><span class="ba-icon">🔄</span><span>Default to the same spot every time — the only one you know</span></div>
+          <div class="ba-item"><span class="ba-icon">🚗</span><span>Give up and wait in the car</span></div>
+        </div>
+        <div class="ba-card ba-with">
+          <div class="ba-label">✅ With Drop-Off Oasis</div>
+          <div class="ba-item"><span class="ba-icon">💬</span><span>Tell the AI your pickup time — it handles all the decisions</span></div>
+          <div class="ba-item"><span class="ba-icon">⏱️</span><span>Walk sized to your window with a buffer built in</span></div>
+          <div class="ba-item"><span class="ba-icon">☀️</span><span>Live weather included — temperature, UV, rain chance</span></div>
+          <div class="ba-item"><span class="ba-icon">🗺️</span><span>Fresh spots every visit — remembers where you've been</span></div>
+          <div class="ba-item"><span class="ba-icon">🎵</span><span>Walking soundtrack in any language, mood-matched</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── APP IN ACTION ────────────────────────────────────────── -->
+    <section class="guide-section" id="app">
+      <div class="sec-label">What it does</div>
+      <h2 class="sec-title">One conversation. Walk plan ready.</h2>
+
+      <p class="sec-body">You talk to it like texting a friend. It figures out the rest.</p>
+
+      <!-- App UI Mockup -->
+      <div class="app-mockup-wrap">
+        <div class="app-mockup-bar">
+          <div class="mockup-dot d-red"></div>
+          <div class="mockup-dot d-yel"></div>
+          <div class="mockup-dot d-grn"></div>
+          <span class="mockup-url">drop-off-oasis · AI Walk Concierge</span>
+        </div>
+        <div class="app-mockup">
+          <!-- Left sidebar with quick actions -->
+          <div class="mockup-sidebar">
+            <div class="mockup-sidebar-title">Quick Actions</div>
+            <div class="chip active-chip">🗺️ Find walks nearby</div>
+            <div class="chip">🌤️ Check weather</div>
+            <div class="chip">⏱️ Plan my time</div>
+            <div class="chip">🎵 Play music</div>
+            <div class="chip">👥 Find walk buddy</div>
+            <div class="chip">📸 Leave a review</div>
+          </div>
+          <!-- Chat area -->
+          <div class="mockup-chat">
+            <div class="chat-messages">
+              <!-- User message -->
+              <div class="msg-user">Pickup at 5:30pm near Rengstorff Park. We have about 40 min. What can we do?</div>
+              <!-- AI response -->
+              <div class="msg-ai">
+                <div class="msg-ai-text">Perfect — 42 minutes to work with. Found a spot you haven't been to yet 🌿</div>
+                <!-- Walk card -->
+                <div class="walk-result">
+                  <div class="walk-result-img">🌊</div>
+                  <div class="walk-result-body">
+                    <div class="walk-result-name">Shoreline at Mountain View</div>
+                    <div class="walk-result-meta">
+                      <span class="walk-tag">⏱ 25 min walk</span>
+                      <span class="walk-tag">1.2 miles</span>
+                      <span class="walk-tag">Easy trail</span>
+                      <span class="walk-tag">⭐ 4.7</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Weather -->
+                <div class="weather-row">
+                  <span class="wx-badge">🌡️ 74°F</span>
+                  <span class="wx-badge">☀️ Sunny</span>
+                  <span class="wx-badge">🧴 UV 3 — sunscreen advised</span>
+                  <span class="wx-badge">🌟 Walk score 8/10</span>
+                </div>
+                <!-- Schedule -->
+                <div class="schedule-mini">
+                  <div class="sch-row"><span class="sch-time">4:45 PM</span> Drop-off done — head out</div>
+                  <div class="sch-row active-sch"><span class="sch-time">4:50 PM</span> 🌿 Arrive at trailhead · walk starts</div>
+                  <div class="sch-row"><span class="sch-time">5:15 PM</span> Turnaround point — head back</div>
+                  <div class="sch-row"><span class="sch-time">5:25 PM</span> ☕ Back to car · 5 min buffer</div>
+                  <div class="sch-row"><span class="sch-time">5:30 PM</span> 🎒 Pickup — right on time</div>
+                </div>
+                <!-- Audio player -->
+                <div class="audio-row">
+                  <div class="play-circle">▶</div>
+                  <div class="audio-info">
+                    <div class="audio-track">🎵 Kannada Walk Soundtrack · Calm mood</div>
+                    <div class="audio-sub">Generated · 3:40 · AI-composed lyrics</div>
+                  </div>
+                  <div class="audio-waveform">
+                    <div class="wv" style="height:4px"></div>
+                    <div class="wv" style="height:9px"></div>
+                    <div class="wv" style="height:6px"></div>
+                    <div class="wv" style="height:12px"></div>
+                    <div class="wv" style="height:5px"></div>
+                    <div class="wv" style="height:8px"></div>
+                    <div class="wv" style="height:4px"></div>
+                    <div class="wv" style="height:10px"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Input bar -->
+            <div class="chat-input-bar">
+              <input class="chat-input" placeholder="Ask anything — 'play a calm Hindi song'…" readonly>
+              <button class="chat-send">→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature grid below mockup -->
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🗺️</span>
+          <div class="feature-name">Scenic Walk Finder</div>
+          <div class="feature-desc">Never suggests the same spot twice — remembers your history via Firestore.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🌤️</span>
+          <div class="feature-name">Live Weather</div>
+          <div class="feature-desc">Real-time temperature, UV, rain chance. Walk suitability score out of 10.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⏱️</span>
+          <div class="feature-name">Time Budget</div>
+          <div class="feature-desc">Give it pickup time — get a minute-by-minute schedule with a safety buffer.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🎵</span>
+          <div class="feature-name">Walk Soundtrack</div>
+          <div class="feature-desc">AI-generated lyrics in English, Hindi, Kannada, Spanish. Mood-matched beats.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">👥</span>
+          <div class="feature-name">Walk Buddy</div>
+          <div class="feature-desc">Find another parent doing the same drop-off. Walk together, not alone.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📸</span>
+          <div class="feature-name">Community Reviews</div>
+          <div class="feature-desc">Upload photos, leave trail notes. Suggestions improve as the community grows.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ──────────────────────────────────────────── -->
+    <section class="guide-section" id="architecture">
+      <div class="sec-label">How it works</div>
+      <h2 class="sec-title">The tech, explained without jargon</h2>
+
+      <p class="sec-body">
+        Think of the app as a small team. The AI agent coordinates specialists — each one does one job well. You send a message, the agent decides which specialists to call, and they all work together to send back one answer.
+      </p>
+
+      <!-- Visual architecture diagram -->
+      <div class="arch-flow">
+        <div class="arch-flow-title">System architecture — how one message becomes a walk plan</div>
+
+        <!-- Top row: data flow -->
+        <div class="arch-top-row">
+          <div class="arch-node">
+            <span class="arch-node-icon">👤</span>
+            <span class="arch-node-name">You</span>
+            <span class="arch-node-sub">Browser</span>
+          </div>
+          <div class="arch-conn">→</div>
+          <div class="arch-node">
+            <span class="arch-node-icon">⚡</span>
+            <span class="arch-node-name">Frontend</span>
+            <span class="arch-node-sub">FastAPI · A2A</span>
+          </div>
+          <div class="arch-conn">→</div>
+          <div class="arch-node highlight">
+            <span class="arch-node-icon">🧠</span>
+            <span class="arch-node-name">ADK Agent</span>
+            <span class="arch-node-sub">Vertex AI Cloud</span>
+          </div>
+          <div class="arch-conn">↔</div>
+          <div class="arch-node">
+            <span class="arch-node-icon">💬</span>
+            <span class="arch-node-name">Gemini 2.5</span>
+            <span class="arch-node-sub">Flash · Language</span>
+          </div>
+        </div>
+
+        <!-- Tools strip -->
+        <div class="arch-tools-label">7 specialist tools the agent can call</div>
+        <div class="arch-tools-strip">
+          <div class="tool-pill">🗺️ Walk Finder</div>
+          <div class="tool-pill">🌤️ Weather</div>
+          <div class="tool-pill">⏱️ Time Budget</div>
+          <div class="tool-pill">🎵 Soundtrack</div>
+          <div class="tool-pill">👥 Walk Buddy</div>
+          <div class="tool-pill">📊 Walk Streak</div>
+          <div class="tool-pill">📸 Reviews</div>
+        </div>
+
+        <!-- Data stores -->
+        <div class="arch-stores" style="margin-top:1.25rem;">
+          <div class="store-node">
+            <div class="store-icon">🗄️</div>
+            <div>
+              <div class="store-name">Memory</div>
+              <div class="store-tech">Cloud Firestore</div>
+            </div>
+          </div>
+          <div class="store-node">
+            <div class="store-icon">🌤️</div>
+            <div>
+              <div class="store-name">Weather</div>
+              <div class="store-tech">Open-Meteo API</div>
+            </div>
+          </div>
+          <div class="store-node">
+            <div class="store-icon">🗣️</div>
+            <div>
+              <div class="store-name">Voice + Music</div>
+              <div class="store-tech">Cloud TTS · FFmpeg</div>
+            </div>
+          </div>
+          <div class="store-node">
+            <div class="store-icon">☁️</div>
+            <div>
+              <div class="store-name">Audio Storage</div>
+              <div class="store-tech">Cloud Storage (GCS)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Individual piece explanations -->
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-icon-box">🧠</div>
+          <div>
+            <div class="arch-name">The Coordinator</div>
+            <span class="arch-tech">Google Agent Development Kit (ADK)</span>
+            <div class="arch-desc">ADK decides what to do next. When you send a message, it figures out: find walks? check weather? make a schedule? It calls the right tools in the right order so you get one coherent answer.</div>
+          </div>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon-box">💬</div>
+          <div>
+            <div class="arch-name">The Language Brain</div>
+            <span class="arch-tech">Gemini 2.5 Flash</span>
+            <div class="arch-desc">Understands what you write, reasons about it, and formats raw tool output into plain-English responses. Also writes the lyrics for your walking soundtrack in any language you ask.</div>
+          </div>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon-box">☁️</div>
+          <div>
+            <div class="arch-name">Where It Lives</div>
+            <span class="arch-tech">Vertex AI Agent Runtime (Reasoning Engine)</span>
+            <div class="arch-desc">The agent runs in Google's cloud — always on, no install needed. Your browser contacts it, it thinks, you get an answer. Fast without needing a server or any local setup.</div>
+          </div>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon-box">🗄️</div>
+          <div>
+            <div class="arch-name">The Memory</div>
+            <span class="arch-tech">Google Cloud Firestore</span>
+            <div class="arch-desc">Stores which spots you've already visited — so you never get the same suggestion twice. Also tracks walk streaks and community reviews. Persists across sessions automatically.</div>
+          </div>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon-box">🌤️</div>
+          <div>
+            <div class="arch-name">Weather — No Account Needed</div>
+            <span class="arch-tech">Open-Meteo API</span>
+            <div class="arch-desc">Free, open weather data with no API key required. The agent calls it with your coordinates and gets live temperature, UV index, and rain chance — then computes a "walk suitability score."</div>
+          </div>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon-box">🎵</div>
+          <div>
+            <div class="arch-name">Voice + Music Pipeline</div>
+            <span class="arch-tech">Cloud TTS · FFmpeg · Cloud Storage</span>
+            <div class="arch-desc">Gemini writes the lyrics. Cloud TTS speaks them with a natural voice. FFmpeg generates a rhythmic background beat and mixes the two. Result: an MP3 walk soundtrack uploaded to GCS and playable directly in the app.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TECHNICAL ─────────────────────────────────────────────── -->
+    <section class="guide-section" id="technical">
+      <div class="sec-label">The code</div>
+      <h2 class="sec-title">How agent-first development actually feels</h2>
+
+      <p class="sec-body">
+        With Google ADK, you write Python functions and the agent figures out when to call them. That's it. You don't build routing logic or decision trees — you describe what a tool does and let the model orchestrate.
+      </p>
+
+      <!-- Code: one tool definition -->
+      <div class="code-block">
+        <div class="code-bar">
+          <div class="code-dot" style="background:#ff5f56"></div>
+          <div class="code-dot" style="background:#ffbd2e"></div>
+          <div class="code-dot" style="background:#27c93f"></div>
+          <span class="code-filename">app/agent.py — one tool, plain Python</span>
+        </div>
+        <pre class="code-body"><span class="deco">@tool</span>
+<span class="kw">def</span> <span class="fn">get_nearby_scenic_walks</span>(user_location_coords: <span class="st">str</span>) -> dict:
+    <span class="st">"""Find nature walks near the user's drop-off location.
+    Never suggests a spot the user has already visited.
+    """</span>
+    <span class="cm"># Pull seen spots from Firestore memory</span>
+    seen = db.collection(<span class="st">"sessions"</span>).document(session_id)\
+             .collection(<span class="st">"seen_spots"</span>).stream()
+    seen_ids = {doc.id <span class="kw">for</span> doc <span class="kw">in</span> seen}
+
+    <span class="cm"># Return only fresh spots</span>
+    fresh = [s <span class="kw">for</span> s <span class="kw">in</span> ALL_SPOTS <span class="kw">if</span> s[<span class="st">"place_id"</span>] <span class="kw">not in</span> seen_ids]
+    <span class="kw">return</span> {<span class="st">"spots"</span>: fresh[:<span class="num">3</span>], <span class="st">"total_available"</span>: len(fresh)}</pre>
+      </div>
+
+      <!-- Code: agent wiring -->
+      <div class="code-block">
+        <div class="code-bar">
+          <div class="code-dot" style="background:#ff5f56"></div>
+          <div class="code-dot" style="background:#ffbd2e"></div>
+          <div class="code-dot" style="background:#27c93f"></div>
+          <span class="code-filename">app/agent.py — wiring 7 tools to one agent</span>
+        </div>
+        <pre class="code-body"><span class="kw">from</span> google.adk.agents <span class="kw">import</span> Agent
+<span class="kw">from</span> google.adk.models <span class="kw">import</span> Gemini
+
+<span class="fn">agent</span> = Agent(
+    model=Gemini(<span class="st">"gemini-2.5-flash"</span>),
+    tools=[
+        get_nearby_scenic_walks,   <span class="cm"># 🗺️  finds fresh spots</span>
+        get_weather,               <span class="cm"># 🌤️  live conditions</span>
+        calculate_time_budget,     <span class="cm"># ⏱️  minute-by-minute plan</span>
+        generate_walk_soundtrack,  <span class="cm"># 🎵  AI-composed music</span>
+        find_walk_buddy,           <span class="cm"># 👥  connect parents</span>
+        log_walk_streak,           <span class="cm"># 📊  track progress</span>
+        submit_place_review,       <span class="cm"># 📸  community notes</span>
+    ],
+    system_prompt=SYSTEM_PROMPT,
+)</pre>
+      </div>
+
+      <!-- What's different about this approach -->
+      <div class="tech-feature-grid">
+        <div class="tech-card">
+          <div class="tech-card-head">
+            <span class="tech-tag tag-green">ADK</span>
+            <div class="tech-card-title">You write what, not when</div>
+          </div>
+          <div class="tech-card-body">Each tool is a plain Python function with a docstring. The agent reads that docstring to decide when to call it. No routing tables, no switch statements.</div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-head">
+            <span class="tech-tag tag-blue">Streaming</span>
+            <div class="tech-card-title">Responses arrive in parts</div>
+          </div>
+          <div class="tech-card-body">The agent sends results as they arrive via the A2A protocol. The frontend tracks artifact IDs to prevent duplicate content from appearing during streaming.</div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-head">
+            <span class="tech-tag tag-orange">Firestore</span>
+            <div class="tech-card-title">Memory across sessions</div>
+          </div>
+          <div class="tech-card-body">Every spot the user visits is written to <code style="font-family:var(--rw-font-mono);font-size:.78em;color:var(--g)">sessions/{id}/seen_spots</code>. The walk finder filters against this collection every call.</div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-head">
+            <span class="tech-tag tag-purple">Audio</span>
+            <div class="tech-card-title">Lyrics → voice → beat → mix</div>
+          </div>
+          <div class="tech-card-body">Gemini writes lyrics → Cloud TTS voices them → FFmpeg generates a mood-matched rhythm using amplitude-modulated <code style="font-family:var(--rw-font-mono);font-size:.78em;color:var(--g)">aevalsrc</code> → FFmpeg mixes both into one MP3.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LEARNINGS ─────────────────────────────────────────────── -->
+    <section class="guide-section" id="learnings">
+      <div class="sec-label">What I learned</div>
+      <h2 class="sec-title">Four things building this taught me</h2>
+
+      <div class="learnings-grid">
+        <div class="learning-card" data-num="1">
+          <div class="learning-num">01</div>
+          <div class="learning-title">Real constraints make better products</div>
+          <div class="learning-body">A fixed 45-minute pickup window made every decision obvious. I didn't design for "someone who might want to walk." The time budget tool, suitability score, and seen-spot memory all exist because constraints were real.</div>
+          <div class="learning-quote">Building for one person isn't limiting. It's clarifying.</div>
+        </div>
+        <div class="learning-card" data-num="2">
+          <div class="learning-num">02</div>
+          <div class="learning-title">ADK changes how you think about features</div>
+          <div class="learning-body">In a traditional app, features are screens or buttons. With ADK, each feature is a tool — a function the agent calls when it decides it's needed. Adding walk buddy finder was writing one Python function.</div>
+          <div class="learning-quote">You write what the feature does. AI figures out when.</div>
+        </div>
+        <div class="learning-card" data-num="3">
+          <div class="learning-num">03</div>
+          <div class="learning-title">AI is the easy part. Everything around it is not.</div>
+          <div class="learning-body">Gemini understanding requests was straightforward. The hard parts: preventing duplicate messages in streaming, getting an MP3 from agent to browser, formatting output to look like a plan instead of a wall of text.</div>
+          <div class="learning-quote">AI handles reasoning. Engineering handles everything else.</div>
+        </div>
+        <div class="learning-card" data-num="4">
+          <div class="learning-num">04</div>
+          <div class="learning-title">Imperfect apps still solve real problems</div>
+          <div class="learning-body">The song still reads more than it sings. Some cards don't render right. There are bugs I haven't fixed. But my mom and I took three walks we wouldn't have taken. That was the actual goal.</div>
+          <div class="learning-quote">Ship the thing that solves the problem.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── THANK YOU ─────────────────────────────────────────────── -->
+    <section class="guide-section" id="thanks">
+      <div class="sec-label">Thank you</div>
+      <h2 class="sec-title">The people who made the room work</h2>
+
+      <div class="event-banner">
+        <div class="event-icon">🏗️</div>
+        <div>
+          <div class="event-title">Build with Gemini · Mountain View</div>
+          <div class="event-sub">Track 3: App Builders — "Building Applications with Agent-First Workflows." I walked in without a project idea. The problem found me once we started building.</div>
+        </div>
+      </div>
+
+      <p class="sec-body">
+        This wouldn't exist without the people who created an environment where you could show up with a vague idea and leave with a working app. A genuine thank you to:
+      </p>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">SP</div>
+          <div class="team-name">Srinath Padmanabhan</div>
+          <div class="team-role">Direction, architecture guidance, and the kind of support that makes a hackathon actually useful.</div>
+          <div class="team-note">Track mentor</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">CZ</div>
+          <div class="team-name">Christina Z.</div>
+          <div class="team-role">Energy that kept the room moving all day. The person who makes these events feel like they matter.</div>
+          <div class="team-note">Event support</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:linear-gradient(135deg,#1a4a35,#2D6A4F);">G</div>
+          <div class="team-name">Google ADK Team</div>
+          <div class="team-role">For building a framework that makes agent-first development feel natural and not like plumbing.</div>
+          <div class="team-note">google-adk open source</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     CTA
+════════════════════════════════════════════════════════════════════ -->
+<div class="doo-cta">
+  <div class="doo-cta-inner">
+    <h2 class="doo-cta-title">Built in a day. Still taking walks.</h2>
+    <p class="doo-cta-sub">The code is on GitHub. Questions welcome on LinkedIn.</p>
+    <div class="cta-btns">
+      <a href="https://github.com/researchsite/buildwithgemini-drop-off-oasis"
+         class="btn-green" target="_blank" rel="noopener">View on GitHub</a>
+      <a href="https://www.linkedin.com/in/shamhc/"
+         class="btn-ghost" target="_blank" rel="noopener">Connect on LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<div id="rw-footer"></div>
+<script src="../includes/rw-footer.js?v=20260615"></script>
+
+<script>
+  (function () {
+    var links = document.querySelectorAll('.toc-link');
+    var sections = Array.from(links).map(function (l) {
+      return document.querySelector(l.getAttribute('href'));
+    }).filter(Boolean);
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('active'); });
+          var a = document.querySelector('.toc-link[href="#' + e.target.id + '"]');
+          if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-12% 0px -72% 0px', threshold: 0 });
+
+    sections.forEach(function (s) { io.observe(s); });
+  })();
+</script>
+</body>
+</html>
