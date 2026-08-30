@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "SecondEar — Built at the Guava Voice Hackathon ",
+        excerpt: "How two people built a silent FDCPA compliance voice agent in two days at the Guava Voice Hackathon. Honest account of the platform, the learnings, and the moments in between.",
+        date: "Aug 29, 2026",
+        image: "./images/secondear.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/secondear.html",
+        linkedin: null
+      },
+      {
         title: "Drop-Off Oasis: An AI Concierge for the 45-Minute Wait",
         excerpt: "How I built an AI walk concierge so my mom and I could make the most of the 45 minutes between school drop-off and pickup.",
         date: "Aug 26, 2026",
         image: "./images/dropoasis.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/drop-off-oasis.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_buildwithgemini-googlelyria-googleadk-share-7498997988141187072-CQ5l/"
       },
       {
         title: "My Son Doesn't Have a Phone. So I Built Him an AI Morning Alarm.",
