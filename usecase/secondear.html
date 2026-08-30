@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecondEar — Built at the Guava Voice Hackathon | RawWeights</title>
+  <meta name="description" content="How two people built a silent FDCPA compliance voice agent in two days at the Guava Voice Hackathon. Honest account of the platform, the learnings, and the moments in between.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/secondear.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://rawweights.com/images/secondear.png">
+  <meta property="og:url" content="https://rawweights.com/usecase/secondear.html">
+  <meta property="og:title" content="SecondEar — Built at the Guava Voice Hackathon">
+  <meta property="og:description" content="I didn't know what TTS stood for on Friday. By Sunday I had a working voice agent on a phone line. Here's what actually happened.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero ──────────────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #07101f 0%, #0f0b28 50%, #071530 100%);
+      padding: 4rem 2rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -15%; right: -3%;
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(99,102,241,.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(6,182,212,.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-split {
+      max-width: 1160px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .hero-split > * { min-width: 0; }
+    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
+
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(99,102,241,.12); border: 1px solid rgba(99,102,241,.3);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #a5b4fc;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .pulse-dot {
+      width: 6px; height: 6px; background: #818cf8; border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
+
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.08; letter-spacing: -.03em; margin-bottom: 1rem; text-align: left;
+    }
+    .guide-hero h1 span { color: #818cf8; }
+    .guide-hero p { font-size: 1rem; color: rgba(240,244,255,.68); margin: 0 0 1.5rem; line-height: 1.75; text-align: left; }
+
+    .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-tag {
+      font-size: .72rem; font-family: var(--rw-font-mono);
+      color: rgba(240,244,255,.5); background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.11); border-radius: 6px; padding: .2rem .6rem;
+    }
+
+    /* ── Terminal animation ─────────────────────────── */
+    .hero-terminal-wrap {
+      position: relative; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(99,102,241,.28);
+      box-shadow: 0 0 60px rgba(99,102,241,.14), 0 24px 48px rgba(0,0,0,.45);
+    }
+    .term-bar {
+      background: #0d1525; padding: .6rem 1rem;
+      display: flex; align-items: center; gap: .45rem;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .term-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .td-r { background: #ff5f57; } .td-y { background: #ffbd2e; } .td-g { background: #28ca42; }
+    .term-title {
+      margin-left: .5rem; font-family: var(--rw-font-mono); font-size: .7rem;
+      color: rgba(255,255,255,.3); letter-spacing: .04em;
+    }
+    .term-live {
+      margin-left: auto; font-family: var(--rw-font-mono); font-size: .65rem;
+      color: #4ade80; display: flex; align-items: center; gap: .35rem;
+    }
+    .term-live-dot { width: 5px; height: 5px; background: #4ade80; border-radius: 50%; animation: pulse 1.5s infinite; }
+    .term-body {
+      background: #060d1a; padding: 1.1rem 1.25rem;
+      font-family: 'Courier New', Courier, monospace; font-size: .73rem;
+      line-height: 1.65; min-height: 240px; overflow: hidden;
+    }
+    .term-line {
+      display: block; opacity: 0; transform: translateY(3px);
+      animation: lineIn .25s ease forwards;
+      white-space: pre;
+    }
+    @keyframes lineIn { to { opacity: 1; transform: translateY(0); } }
+    .tl-dim    { color: #2a3a54; }
+    .tl-base   { color: #cbd5e1; }
+    .tl-muted  { color: #4a5e7a; }
+    .tl-speech { color: #7a94b3; }
+    .tl-hit    { color: #4ade80; font-weight: bold; }
+    .tl-warn   { color: #fbbf24; font-weight: bold; }
+    .tl-crm    { color: #818cf8; }
+    .tl-good   { color: #4ade80; font-weight: bold; letter-spacing: .04em; }
+
+    /* ── Layout ─────────────────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 230px 1fr;
+      gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
+      padding: 0 1.5rem; align-items: start;
+    }
+    .guide-layout > * { min-width: 0; }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
+    .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
+    .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
+
+    /* ── Sections ───────────────────────────────────── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem;
+      border-bottom: 2px solid var(--rw-orange-light);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.5rem 0 .5rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
+
+    /* ── Stat row ───────────────────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: var(--rw-orange); line-height: 1; }
+    .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Feature grid ───────────────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
+    .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Flow diagram ───────────────────────────────── */
+    .flow-diagram {
+      display: flex; align-items: center; gap: 0;
+      margin: 1.5rem 0; overflow-x: auto;
+    }
+    .flow-node {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1rem 1.1rem;
+      text-align: center; min-width: 120px; flex-shrink: 0;
+    }
+    .flow-node-icon { font-size: 1.4rem; margin-bottom: .3rem; }
+    .flow-node-label { font-family: var(--rw-font-display); font-size: .78rem; font-weight: 700; color: var(--rw-text); }
+    .flow-node-sub { font-size: .68rem; color: var(--rw-text-subtle); margin-top: .15rem; font-family: var(--rw-font-mono); }
+    .flow-arrow {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      color: var(--rw-text-subtle); font-size: .9rem; min-width: 32px; flex-shrink: 0;
+    }
+    .flow-node.accent { border-color: rgba(99,102,241,.4); background: rgba(99,102,241,.05); }
+    .flow-node.accent .flow-node-label { color: #818cf8; }
+
+    /* ── Step list ──────────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Learning items ─────────────────────────────── */
+    .learning-item {
+      border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange);
+      border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0;
+      padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--rw-card);
+    }
+    .learning-num { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--rw-orange); letter-spacing: .06em; margin-bottom: .3rem; }
+    .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .45rem; }
+    .learning-body { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .6rem; }
+    .learning-quote { padding: .45rem .85rem; background: var(--rw-orange-light); border-left: 2px solid var(--rw-orange); font-size: .8rem; color: var(--rw-orange); font-style: italic; border-radius: 0 4px 4px 0; }
+
+    /* ── Moment tiles (for "conversations" section) ─── */
+    .moment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .moment-tile {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.2rem;
+    }
+    .moment-tile-top { display: flex; align-items: center; gap: .6rem; margin-bottom: .5rem; }
+    .moment-emoji { font-size: 1.3rem; }
+    .moment-label { font-family: var(--rw-font-display); font-size: .85rem; font-weight: 700; color: var(--rw-text); }
+    .moment-body { font-size: .83rem; color: var(--rw-text-muted); line-height: 1.6; }
+
+    /* ── Platform review ────────────────────────────── */
+    .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .review-box { border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem; }
+    .review-liked { background: rgba(74,222,128,.06); border: 1px solid rgba(74,222,128,.2); }
+    .review-gotcha { background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.2); }
+    .review-box-label { font-family: var(--rw-font-mono); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .6rem; }
+    .review-liked .review-box-label { color: #4ade80; }
+    .review-gotcha .review-box-label { color: #fbbf24; }
+    .review-list { list-style: none; display: flex; flex-direction: column; gap: .45rem; }
+    .review-list li { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.5; padding-left: 1.1rem; position: relative; }
+    .review-list li::before { content: '—'; position: absolute; left: 0; color: var(--rw-text-subtle); }
+
+    /* ── Comparison table ───────────────────────────── */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: .9rem; }
+    .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .8rem; text-align: left; padding: .75rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
+    .comparison-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.5rem 0; }
+    .table-scroll .comparison-table { margin: 0; min-width: 480px; }
+
+    /* ── Team ───────────────────────────────────────── */
+    .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .team-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; }
+    .team-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; font-family: var(--rw-font-display); flex-shrink: 0; }
+    .av-1 { background: linear-gradient(135deg, #f07235, #c04400); color: #fff; }
+    .av-2 { background: linear-gradient(135deg, #818cf8, #4338ca); color: #fff; }
+    .team-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); }
+    .team-role { font-size: .75rem; color: var(--rw-text-subtle); font-family: var(--rw-font-mono); margin-bottom: .4rem; }
+    .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Architecture diagram ──────────────────────────── */
+    .arch-diagram { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0; }
+    .arch-layer { border-radius: var(--rw-r-md); padding: .9rem 1.1rem; display: flex; flex-direction: column; gap: .6rem; }
+    .arch-layer-label { font-family: var(--rw-font-mono); font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--rw-text-subtle); }
+    .arch-boxes { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .arch-box { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: 8px; padding: .65rem .9rem; flex: 1; min-width: 110px; }
+    .arch-box-name { font-family: var(--rw-font-display); font-size: .8rem; font-weight: 700; color: var(--rw-text); margin-bottom: .15rem; }
+    .arch-box-sub { font-family: var(--rw-font-mono); font-size: .65rem; color: var(--rw-text-subtle); line-height: 1.5; }
+    .arch-connector { text-align: center; padding: .25rem 0; position: relative; display: flex; align-items: center; justify-content: center; }
+    .arch-connector::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--rw-border); z-index: 0; }
+    .arch-connector-label { position: relative; z-index: 1; background: var(--rw-bg); padding: .1rem .7rem; font-family: var(--rw-font-mono); font-size: .65rem; color: var(--rw-text-subtle); border-radius: 9999px; border: 1px solid var(--rw-border); }
+    .arch-layer-cloud { background: rgba(6,182,212,.05); border: 1px solid rgba(6,182,212,.2); }
+    .arch-layer-cloud .arch-layer-label { color: #06b6d4; }
+    .arch-layer-cloud .arch-box { border-color: rgba(6,182,212,.2); }
+    .arch-layer-core { background: rgba(99,102,241,.07); border: 1px solid rgba(99,102,241,.3); }
+    .arch-layer-core .arch-layer-label { color: #818cf8; }
+    .arch-layer-core .arch-box { border-color: rgba(99,102,241,.25); }
+    .arch-layer-modules { background: rgba(16,185,129,.05); border: 1px solid rgba(16,185,129,.2); }
+    .arch-layer-modules .arch-layer-label { color: #10b981; }
+    .arch-layer-output { background: rgba(251,191,36,.05); border: 1px solid rgba(251,191,36,.2); }
+    .arch-layer-output .arch-layer-label { color: #fbbf24; }
+
+    /* ── Callouts ───────────────────────────────────── */
+    .rw-callout-indigo {
+      background: rgba(99,102,241,.07); border-left: 3px solid #6366f1;
+      border-radius: 0 var(--rw-r) var(--rw-r) 0; padding: 1rem 1.25rem;
+      font-size: .9rem; color: var(--rw-text-muted); margin: 1rem 0;
+    }
+    .rw-callout-indigo strong { color: #818cf8; }
+
+    /* ── Responsive ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    * { word-break: break-word; overflow-wrap: break-word; }
+    img, video, svg { max-width: 100%; height: auto; display: block; }
+
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .guide-toc { flex-direction: row; flex-wrap: wrap; gap: .25rem; }
+      .guide-toc a { border-left: none; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; }
+      .guide-toc a:hover, .guide-toc a.active { border-bottom-color: var(--rw-orange); border-left-color: transparent; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .team-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .hero-split { grid-template-columns: 1fr; gap: 2rem; }
+      .guide-hero { padding: 2.5rem 1.25rem 2rem; }
+      .stat-row { flex-wrap: wrap; }
+      .stat-cell { flex: 1 1 50%; border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(2n) { border-right: none; }
+      .moment-grid { grid-template-columns: 1fr; }
+      .review-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .guide-layout { margin: 1.5rem auto; padding: 0 1rem; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .guide-section h2 { font-size: 1.25rem; }
+      .guide-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ─────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> Guava Voice Hackathon &nbsp;&middot;&nbsp; Aug 2026</span>
+      <h1>SecondEar<br><span>Listen. Check. Report.</span></h1>
+      <p>The goal was a hackathon win. What we actually got was harder to put on a leaderboard — fluency in a new platform, a working demoable agent, and a clearer picture of where voice AI is going in regulated industries.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Guava SDK 0.40.0</span>
+        <span class="hero-tag">Python</span>
+        <span class="hero-tag">FDCPA Compliance</span>
+        <span class="hero-tag">Voice AI</span>
+        <span class="hero-tag">Real-time Redaction</span>
+        <span class="hero-tag">CRM Lookup</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the Build Story &darr;</a>
+        <a href="https://github.com/researchsite/secondear" class="rw-btn rw-btn-primary">GitHub &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Animated terminal -->
+    <div class="hero-terminal-wrap">
+      <div class="term-bar">
+        <div class="term-dot td-r"></div>
+        <div class="term-dot td-y"></div>
+        <div class="term-dot td-g"></div>
+        <span class="term-title">secondear &mdash; guava run .</span>
+        <span class="term-live"><span class="term-live-dot"></span>LIVE</span>
+      </div>
+      <div class="term-body" id="termBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Content ──────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-what">What It Does</a></li>
+      <li><a href="#section-arch">Architecture</a></li>
+      <li><a href="#section-how" class="toc-h3">How It Works</a></li>
+      <li><a href="#section-components" class="toc-h3">Components</a></li>
+      <li><a href="#section-learnings">Real Learnings</a></li>
+      <li><a href="#section-moments" class="toc-h3">Moments In Between</a></li>
+      <li><a href="#section-platform">Platform Review</a></li>
+      <li><a href="#section-team">The Team</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── WHAT IT DOES ──────────────────────────────── -->
+    <section class="guide-section" id="section-what">
+      <h2>What It Does</h2>
+      <p>SecondEar silently joins a regulated debt collection call and monitors it against three FDCPA requirements in real time. No human reviewer needed. When the call ends, a structured JSON report lands in <code>reports/</code>.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val">3</div><div class="stat-label">FDCPA checklist items</div></div>
+        <div class="stat-cell"><div class="stat-val">2</div><div class="stat-label">days to build</div></div>
+        <div class="stat-cell"><div class="stat-val">0</div><div class="stat-label">words spoken by agent</div></div>
+        <div class="stat-cell"><div class="stat-val">2</div><div class="stat-label">team members</div></div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🎙️</div>
+          <h4>Listens, Never Speaks</h4>
+          <p>Joins the call as a silent party. The LLM is locked into a task with no completion criteria — it can never decide to greet or respond.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">✅</div>
+          <h4>Live Checklist</h4>
+          <p>Checks every utterance against the mini-Miranda, identity verification, and dispute rights. Marks hits with timestamps as soon as keywords land.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🛡️</div>
+          <h4>Auto-Redaction</h4>
+          <p>Card numbers and SSNs are masked before anything is logged. A separate flag tracks when sensitive data was spoken and by whom.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔍</div>
+          <h4>CRM Match</h4>
+          <p>Scans utterances for debtor names. When a match is found, the account record — balance, status, DOB — surfaces instantly in the terminal.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📄</div>
+          <h4>Compliance Report</h4>
+          <p>On hangup, a structured JSON report captures the checklist verdict, full redacted transcript, flags, and the CRM account if matched.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">☁️</div>
+          <h4>Deployed on Guava Cloud</h4>
+          <p>Runs on a real provisioned number. Any call to <code>+1 (484) 317-4203</code> is monitored. No server to manage.</p>
+        </div>
+      </div>
+
+      <div class="rw-callout-indigo">
+        <strong>The FDCPA checklist:</strong> Mini-Miranda (§807(11)) &mdash; "This is an attempt to collect a debt." &nbsp;·&nbsp; Identity check before account discussion. &nbsp;·&nbsp; Dispute rights (§809(a)) &mdash; "You have the right to dispute this debt within 30 days."
+      </div>
+    </section>
+
+    <!-- ── ARCHITECTURE ─────────────────────────────── -->
+    <section class="guide-section" id="section-arch">
+      <h2>Architecture</h2>
+      <p>Three layers. Guava Cloud owns the phone network and speech-to-text. <code>main.py</code> receives events and orchestrates the pipeline. Four expert modules each do exactly one job.</p>
+
+      <div class="arch-diagram">
+
+        <!-- Layer 1: Input -->
+        <div class="arch-layer" style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);text-align:center;padding:.75rem;">
+          <div class="arch-layer-label" style="text-align:center;">Inbound</div>
+          <div style="font-family:var(--rw-font-display);font-weight:700;color:var(--rw-text);font-size:.9rem;">📞 &nbsp; Phone Call &nbsp;·&nbsp; +1 (484) 317-4203</div>
+        </div>
+
+        <div class="arch-connector"><span class="arch-connector-label">PSTN</span></div>
+
+        <!-- Layer 2: Guava Cloud -->
+        <div class="arch-layer arch-layer-cloud">
+          <div class="arch-layer-label">Guava Cloud</div>
+          <div class="arch-boxes">
+            <div class="arch-box">
+              <div class="arch-box-name">Phone Gateway</div>
+              <div class="arch-box-sub">Accepts inbound PSTN<br>provisions +1 (484) 317-4203</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">STT Engine</div>
+              <div class="arch-box-sub">Streams partial transcripts<br>fires events per utterance</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">Session Manager</div>
+              <div class="arch-box-sub">Tracks call lifecycle<br>routes on_call_start / on_session_end</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-connector"><span class="arch-connector-label">SDK events</span></div>
+
+        <!-- Layer 3: SecondEar Core -->
+        <div class="arch-layer arch-layer-core">
+          <div class="arch-layer-label">SecondEar Core &mdash; main.py</div>
+          <div class="arch-boxes">
+            <div class="arch-box">
+              <div class="arch-box-name">on_call_start</div>
+              <div class="arch-box-sub">init per-call state<br>set_task(silent, never-ends)</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">on_caller_speech</div>
+              <div class="arch-box-sub">dedup by utterance_id<br>→ redact → CRM → checklist</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">on_agent_speech</div>
+              <div class="arch-box-sub">safety net only<br>SecondEar never speaks</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">on_session_end</div>
+              <div class="arch-box-sub">build report → save<br>clear call state</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-connector"><span class="arch-connector-label">module calls</span></div>
+
+        <!-- Layer 4: Expert Modules -->
+        <div class="arch-layer arch-layer-modules">
+          <div class="arch-layer-label">Expert Modules</div>
+          <div class="arch-boxes">
+            <div class="arch-box">
+              <div class="arch-box-name">redactor.py</div>
+              <div class="arch-box-sub">regex strips card / SSN<br>before any storage</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">checklist.py</div>
+              <div class="arch-box-sub">3 FDCPA keyword arrays<br>first hit per item wins</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">crm.py</div>
+              <div class="arch-box-sub">name scan → account lookup<br>returns on first match</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">report.py</div>
+              <div class="arch-box-sub">builds JSON + verdict<br>prints terminal summary</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-connector"><span class="arch-connector-label">output</span></div>
+
+        <!-- Layer 5: Output -->
+        <div class="arch-layer arch-layer-output">
+          <div class="arch-layer-label">Output</div>
+          <div class="arch-boxes">
+            <div class="arch-box">
+              <div class="arch-box-name">Terminal &mdash; live hits</div>
+              <div class="arch-box-sub">✔ checklist hits as they land<br>CRM card on name match<br>⚠ redaction alerts</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-name">report_*.json</div>
+              <div class="arch-box-sub">COMPLIANT / NON-COMPLIANT<br>full redacted transcript<br>timestamps + CRM record</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ─────────────────────────────── -->
+    <section class="guide-section" id="section-how">
+      <h2>How It Works</h2>
+      <p>A single Python file, four supporting modules, and a cloud deploy. The entire processing pipeline fits in under 200 lines.</p>
+
+      <div class="flow-diagram">
+        <div class="flow-node">
+          <div class="flow-node-icon">📞</div>
+          <div class="flow-node-label">Inbound Call</div>
+          <div class="flow-node-sub">+1 (484) 317-4203</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-icon">☁️</div>
+          <div class="flow-node-label">Guava Cloud</div>
+          <div class="flow-node-sub">STT · Session</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node accent">
+          <div class="flow-node-icon">👂</div>
+          <div class="flow-node-label">SecondEar</div>
+          <div class="flow-node-sub">Guava Python SDK</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-icon">📋</div>
+          <div class="flow-node-label">Report</div>
+          <div class="flow-node-sub">COMPLIANT / NOT</div>
+        </div>
+      </div>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Call arrives</h4>
+            <p><code>on_call_start</code> fires. SecondEar immediately sets a task: <em>"Stay silent for the entire call. Never greet. This task never completes."</em> This locks the LLM from ever speaking.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Speech events arrive — deduplicated</h4>
+            <p>Guava's STT fires <code>on_caller_speech</code> multiple times per sentence as it refines the transcript. SecondEar tracks <code>utterance_id → last text</code> and skips unchanged events — otherwise every sentence is processed 3&ndash;5 times.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Redact, then check</h4>
+            <p>The redactor strips card numbers and SSNs before anything is stored. The cleaned text is then checked against the 3-item FDCPA keyword list. First match per item wins — no re-processing.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>CRM lookup on name detection</h4>
+            <p>Every utterance is scanned for known debtor names. On first match, the account record is printed to the terminal and stored in call state. Subsequent utterances skip the lookup.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Hangup triggers the report</h4>
+            <p><code>on_session_end</code> builds a JSON report: checklist verdict (COMPLIANT / NON-COMPLIANT), all hits with timestamps, the redacted transcript, any flags, and the CRM record if matched.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── COMPONENTS ────────────────────────────────── -->
+    <section class="guide-section" id="section-components">
+      <h2>Components</h2>
+      <p>Every file in the project, its single responsibility, and the key implementation detail a developer needs to know.</p>
+
+      <div class="table-scroll"><table class="comparison-table">
+        <thead>
+          <tr><th>File</th><th>Role</th><th>Key Detail</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>main.py</code></td>
+            <td>Agent definition + all four Guava callbacks. Owns per-call state dict and the processing pipeline.</td>
+            <td>Uses <code>_state[call.id]</code> dict. Each call gets its own <code>hits</code>, <code>transcript</code>, <code>flags</code>, <code>seen_ids</code>, and <code>crm_matched</code> keys. Cleared on <code>on_session_end</code>.</td>
+          </tr>
+          <tr>
+            <td><code>checklist.py</code></td>
+            <td>FDCPA compliance items. Each item has an id, a human label, a keyword list, and a required flag.</td>
+            <td>Keyword matching is <code>any(kw in lower for kw in item["keywords"])</code>. Add more synonyms here if STT mis-transcribes an industry phrase.</td>
+          </tr>
+          <tr>
+            <td><code>redactor.py</code></td>
+            <td>Strips card numbers (12–19 digits, space/hyphen-separated) and SSNs (###-##-####) from any string.</td>
+            <td>Regex requires the final char to be a digit: <code>\b(?:\d[ -]?){12,18}\d\b</code> — avoids eating the trailing space and swallowing the next word.</td>
+          </tr>
+          <tr>
+            <td><code>crm.py</code></td>
+            <td>Mock CRM. Dict of 4 accounts. <code>lookup(text)</code> scans for first/last name in the utterance.</td>
+            <td>Only fires once per call (guarded by <code>state["crm_matched"]</code>). In production: replace the dict with a real CRM API call.</td>
+          </tr>
+          <tr>
+            <td><code>report.py</code></td>
+            <td>Builds the JSON report and prints the terminal summary at call end.</td>
+            <td>Verdict is COMPLIANT if every <code>required: True</code> checklist item has a hit. Writes to <code>reports/report_{call.id}.json</code>.</td>
+          </tr>
+          <tr>
+            <td><code>chat_sim.py</code></td>
+            <td>Windows-safe test mode. Simulates caller utterances via <code>stdin</code> — no phone, no audio device needed.</td>
+            <td>Wraps stdout in a UTF-8 encoder so ✔ / ⚠ / ─ render correctly on Windows. Guava's <code>agent.chat()</code> uses <code>curses</code> which isn't available on Windows Python.</td>
+          </tr>
+          <tr>
+            <td><code>start.bat</code></td>
+            <td>Local startup script. Reads <code>.env</code>, sets <code>PYTHONUTF8=1</code>, runs <code>guava run .</code></td>
+            <td>Sets code page 65001 (<code>chcp 65001</code>) so the Windows terminal renders Unicode output correctly before Python even starts.</td>
+          </tr>
+          <tr>
+            <td><code>guava.toml</code></td>
+            <td>Guava project config — project ID, org ID, phone number.</td>
+            <td>The <code>phone_number</code> here is what <code>guava deploy up</code> uses. The env var <code>GUAVA_AGENT_NUMBER</code> is auto-injected by Guava cloud on top of this at runtime.</td>
+          </tr>
+        </tbody>
+      </table></div>
+
+      <div class="rw-callout-indigo">
+        <strong>Call state is per-call, not global.</strong> <code>_state</code> is a module-level dict keyed by <code>call.id</code>. Concurrent calls each get their own isolated state and it&rsquo;s garbage-collected in <code>on_session_end</code>. Adding multi-call support required no extra architecture.
+      </div>
+    </section>
+
+    <!-- ── REAL LEARNINGS ────────────────────────────── -->
+    <section class="guide-section" id="section-learnings">
+      <h2>What We Actually Learned</h2>
+      <p>Two days. One platform we'd never touched. Here's what we got wrong before we got it right.</p>
+
+      <div class="learning-item">
+        <div class="learning-num">01</div>
+        <div class="learning-title">The agent kept saying "How can I help?" — not a bug, a missing concept</div>
+        <div class="learning-body">We set the agent's <code>purpose</code> to say it was a silent recorder. It still greeted callers. Turns out <code>purpose</code> shapes personality, but the LLM still needs an active <em>task</em> to stop it from defaulting to a greeting. We had to call <code>call.set_task()</code> in <code>on_call_start</code> with an objective of staying silent and a <code>completion_criteria</code> of "Never." That combination finally stopped it.</div>
+        <div class="learning-quote">Purpose shapes who the agent is. Task shapes what it does right now. You need both.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">02</div>
+        <div class="learning-title"><code>on_caller_speech</code> fires 3–5 times per sentence</div>
+        <div class="learning-body">Guava's STT refines the transcript incrementally. The same <code>utterance_id</code> fires multiple times with progressively more complete text. Without deduplication, every FDCPA keyword check ran 3–5 times per sentence. The fix: track a dict of <code>utterance_id → last seen text</code> and skip the callback if the text hasn't changed. This is not in the main quickstart doc — we hit it during testing.</div>
+        <div class="learning-quote">STT events are a stream, not a list of final sentences. Deduplicate or process everything multiple times.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">03</div>
+        <div class="learning-title"><code>agent.chat()</code> doesn't work on Windows</div>
+        <div class="learning-body">The Guava Python SDK's <code>chat()</code> mode uses the <code>curses</code> module, which isn't available on Windows Python. We lost 45 minutes trying to get it running before reading the error message carefully. We ended up writing a custom Windows-compatible simulator (<code>chat_sim.py</code>) using <code>stdin</code> input. Not a problem in production, but worth knowing before a demo where you're on a Windows laptop.</div>
+        <div class="learning-quote">Read error messages before googling. "No module named '_curses'" tells you everything.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">04</div>
+        <div class="learning-title">Guava cloud deployment doesn't accept <code>GUAVA_API_KEY</code> in <code>.env</code></div>
+        <div class="learning-body">Both <code>GUAVA_API_KEY</code> and <code>GUAVA_AGENT_NUMBER</code> are reserved — Guava auto-injects them on cloud. If you include them in your <code>.env</code>, <code>guava deploy up</code> fails with a "reserved variable" error. The fix is to remove them from <code>.env</code> entirely for deploy. For local dev, you still need to set them manually or in a gitignored file.</div>
+        <div class="learning-quote">Cloud env vars auto-injected by the platform shouldn't appear in your own .env. Check which ones are reserved.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">05</div>
+        <div class="learning-title">Went from zero to deployed in about two days — that's the real outcome</div>
+        <div class="learning-body">Before Friday, I didn't know what TTS stood for, hadn't heard of Guava, and had never built a voice agent. By Sunday we had a working agent deployed on a real phone number, with silent monitoring, live checklist hits, real-time redaction, and a CRM lookup. That's a concrete, transferable skill — not a hackathon trophy. You can have your own opinion about the leaderboard. This part is factual.</div>
+        <div class="learning-quote">Platform fluency in 48 hours is a real outcome, independent of where you placed.</div>
+      </div>
+    </section>
+
+    <!-- ── MOMENTS IN BETWEEN ────────────────────────── -->
+    <section class="guide-section" id="section-moments">
+      <h2>Moments in Between</h2>
+      <p>The things that don't make the GitHub commit history — the conversations, the wrong turns, the "what if we used this for&hellip;" threads.</p>
+
+      <div class="moment-grid">
+        <div class="moment-tile">
+          <div class="moment-tile-top"><span class="moment-emoji">🔇</span><span class="moment-label">Muting the Welcome</span></div>
+          <div class="moment-body">The first thing Guava does when a call connects is greet the caller. For a silent monitor, that's a problem. We spent longer than expected understanding that suppressing it required both a strongly-worded <code>purpose</code> and an active task — one or the other wasn't enough. The moment it finally stayed quiet was genuinely satisfying.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tile-top"><span class="moment-emoji">🗣️</span><span class="moment-label">When It Mishears</span></div>
+          <div class="moment-body">STT is good but not perfect. "Dispute rights" got transcribed as "this cute nights" in one test. We added more keyword variants to the checklist, but the right long-term fix is fuzzy matching or a small embedding model over utterances. A quick hackathon fix often reveals a harder production problem.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tile-top"><span class="moment-emoji">💡</span><span class="moment-label">Other Ideas, Live</span></div>
+          <div class="moment-body">Once people at the event saw the demo, the ideas came fast. Healthcare calls. Financial advice suitability checks. Immigration attorney lines. Real estate disclosures. The compliance monitoring pattern generalises anywhere a regulated professional has to say specific things. We wrote them down. A few are worth building.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tile-top"><span class="moment-emoji">🤝</span><span class="moment-label">Face Time with the Team</span></div>
+          <div class="moment-body">Guava is based in LA. Getting weekend access to their engineering team — not their docs, their actual engineers — is something you don't get from a solo build. Questions that would have taken hours to debug took minutes. That access alone was worth showing up to the hackathon.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tile-top"><span class="moment-emoji">💻</span><span class="moment-label">Local First, Cloud Later</span></div>
+          <div class="moment-body">The real development loop was: write it in chat-sim mode on the laptop, no phone call, no audio, just typed input simulating utterances. Once the checklist logic was solid, flip to <code>guava run .</code> locally against a real call. Cloud deploy was last — only after local was confirmed clean. That sequence saved hours of waiting on deploys to test basic logic.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLATFORM REVIEW ───────────────────────────── -->
+    <section class="guide-section" id="section-platform">
+      <h2>Platform Review — Guava</h2>
+      <p>Honest take after two days of actual building, not after reading the landing page.</p>
+
+      <div class="review-grid">
+        <div class="review-box review-liked">
+          <div class="review-box-label">✓ What Worked Well</div>
+          <ul class="review-list">
+            <li>Zero infrastructure. Deploy one command, get a real phone number.</li>
+            <li>The callback model (<code>on_caller_speech</code>, <code>on_session_end</code>) is clean and predictable.</li>
+            <li>Cloud deploy is fast — under 2 minutes from code change to live.</li>
+            <li><code>guava deploy logs</code> streams real-time output without any setup.</li>
+            <li>Python SDK feel is close to Flask — familiar enough to move fast.</li>
+          </ul>
+        </div>
+        <div class="review-box review-gotcha">
+          <div class="review-box-label">⚠ Watch Out For</div>
+          <ul class="review-list">
+            <li><code>agent.chat()</code> is Linux/Mac only. Not in the docs prominently.</li>
+            <li>STT deduplication is your problem — the SDK fires every partial transcript.</li>
+            <li><code>guava deploy up</code> needs an interactive TTY — can't pipe a &ldquo;y&rdquo; to it from CI.</li>
+            <li>Reserved env vars (<code>GUAVA_API_KEY</code>, <code>GUAVA_AGENT_NUMBER</code>) can't appear in your <code>.env</code>.</li>
+            <li>WebRTC + phone simultaneously requires <code>guava.Runner</code> — not the default pattern.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-scroll"><table class="comparison-table">
+        <thead><tr><th>Feature</th><th>Experience</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Phone provisioning</td><td>Works instantly</td><td>Number auto-assigned. No Twilio account needed.</td></tr>
+          <tr><td>STT quality</td><td>Good, not perfect</td><td>Industry terms can mis-transcribe. Worth testing your specific vocabulary.</td></tr>
+          <tr><td>Cloud deploy</td><td>Fast, CLI-driven</td><td>Requires interactive terminal. Can't automate from a non-TTY shell.</td></tr>
+          <tr><td>Python SDK</td><td>Comfortable</td><td>Decorator-based callbacks. Close to Flask. No async footguns.</td></tr>
+          <tr><td>Docs</td><td>Starter-complete</td><td>Covers 80% of what you need. Edge cases (dedup, multi-channel) require experimentation.</td></tr>
+          <tr><td>WebRTC</td><td>Available, extra step</td><td>Needs <code>guava.Runner</code> if you want phone + browser simultaneously.</td></tr>
+        </tbody>
+      </table></div>
+
+      <p>Would we use it again? Yes, for voice-first projects where the main loop is listen &rarr; process &rarr; optionally respond. It removes almost all of the infrastructure layer that would otherwise eat a hackathon weekend.</p>
+    </section>
+
+    <!-- ── TEAM ──────────────────────────────────────── -->
+    <section class="guide-section" id="section-team">
+      <h2>The Team</h2>
+      <p>Two people. Built over a hackathon weekend. The debt collection scenario was chosen because FDCPA is specific enough that checklist items are well-defined — no ambiguity about what "compliant" means.</p>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar av-1">S</div>
+          <div>
+            <div class="team-name">Sham Sundar HC</div>
+            <div class="team-role">Architecture &middot; Python &middot; Guava SDK</div>
+            <div class="team-contrib">Built the agent, all callbacks, redactor, checklist, CRM lookup, and deploy pipeline. Came in not knowing what TTS meant; left with a deployed voice agent on a real number.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar av-2">Ar</div>
+          <div>
+            <div class="team-name">Arnav Channaveer</div>
+            <div class="team-role">Testing &middot; Demo &middot; Use Cases</div>
+            <div class="team-contrib">Covered the demo flow end to end, stress-tested the checklist against edge cases, and mapped the compliance pattern to adjacent industries. Spotted the STT mis-transcription problem during a live test run.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"Drop-Off Oasis","url":"/usecase/drop-off-oasis.html"},{"label":"TripRipple Agent Memory","url":"/usecase/tripripple.html"},{"label":"PanchangChef Build","url":"/usecase/panchangchef-guide.html"},{"label":"Rubiks Cube coach ","url":"/usecase/rubik-navigator-guide.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// ── Terminal animation ───────────────────────────────────────────────────────
+(function() {
+  var lines = [
+    { t: '───────────────────────────────────────────────────────', c: 'tl-dim',    d: 0 },
+    { t: '  SecondEar listening  |  call 679d2063',              c: 'tl-base',   d: 180, b: true },
+    { t: '───────────────────────────────────────────────────────', c: 'tl-dim',    d: 360 },
+    { t: '  Monitoring: Debt statement · Identity · Dispute rights', c: 'tl-muted', d: 540 },
+    { t: '───────────────────────────────────────────────────────', c: 'tl-dim',    d: 720 },
+    { t: '',                                                        c: '',          d: 900 },
+    { t: '  caller › "This is an attempt to collect a debt..."',  c: 'tl-speech', d: 1300 },
+    { t: '  ✔  States this is a debt collection attempt',         c: 'tl-hit',    d: 1800 },
+    { t: '',                                                        c: '',          d: 2100 },
+    { t: '  ┌─ CRM MATCH ─────────────────────────────────────┐', c: 'tl-crm',    d: 2400 },
+    { t: '  │  Name    : John Smith                            │', c: 'tl-crm',    d: 2580 },
+    { t: '  │  Account : ACT-1001  ·  Balance : $1,240.00     │', c: 'tl-crm',    d: 2760 },
+    { t: '  │  Status  : Delinquent 60d                        │', c: 'tl-crm',    d: 2940 },
+    { t: '  └──────────────────────────────────────────────────┘', c: 'tl-crm',    d: 3120 },
+    { t: '',                                                        c: '',          d: 3300 },
+    { t: '  caller › "...card 4111 1111 1111 1111..."',          c: 'tl-speech', d: 3600 },
+    { t: '  ⚠  Sensitive data detected — redacted',              c: 'tl-warn',   d: 4050 },
+    { t: '',                                                        c: '',          d: 4300 },
+    { t: '  ✔  Confirms identity before discussing account',     c: 'tl-hit',    d: 4700 },
+    { t: '  ✔  States the right to dispute the debt',            c: 'tl-hit',    d: 5400 },
+    { t: '',                                                        c: '',          d: 5700 },
+    { t: '  ───────────────────────────────────────────────────',  c: 'tl-dim',    d: 6000 },
+    { t: '  ✓  COMPLIANT  ·  3 / 3  ·  report_679d2063.json',   c: 'tl-good',   d: 6300 },
+    { t: '  ───────────────────────────────────────────────────',  c: 'tl-dim',    d: 6500 },
+  ];
+
+  var body = document.getElementById('termBody');
+  var timers = [];
+
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+  function runSequence() {
+    body.innerHTML = '';
+    clearTimers();
+    lines.forEach(function(l) {
+      var t = setTimeout(function() {
+        var span = document.createElement('span');
+        span.className = 'term-line' + (l.c ? ' ' + l.c : '');
+        if (l.b) span.style.fontWeight = 'bold';
+        span.textContent = l.t;
+        body.appendChild(span);
+        // Auto-scroll
+        body.scrollTop = body.scrollHeight;
+      }, l.d);
+      timers.push(t);
+    });
+    // Restart after last line + pause
+    var restart = setTimeout(function() {
+      // Fade out
+      body.style.transition = 'opacity .6s';
+      body.style.opacity = '0';
+      setTimeout(function() {
+        body.style.opacity = '1';
+        runSequence();
+      }, 700);
+    }, 6500 + 2500);
+    timers.push(restart);
+  }
+
+  runSequence();
+})();
+
+// ── TOC scrollspy ────────────────────────────────────────────────────────────
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        links.forEach(function(link) {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(function(s) { observer.observe(s); });
+})();
+</script>
+
+</body>
+</html>
