@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LaunchKit — Complete Domain Lifecycle Tool | RawWeights</title>
+  <meta name="description" content="Your domain already replaces Bitly, Linktree & Google Workspace ($56/mo). LaunchKit makes it easy: AI naming, branded links, email, DNS, security & brand protection. Built on the name.com API.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/LaunchKit.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/LaunchKit.html">
+  <meta property="og:title" content="LaunchKit — Complete Domain Lifecycle Tool">
+  <meta property="og:description" content="48 API endpoints. 9 feature areas. $56/mo saved. Built for the name.com API Hackathon 2026.">
+  <meta property="og:image" content="https://rawweights.com/images/launchkit/01-landing.png">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero ───────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #07101f 0%, #0f0b28 50%, #071530 100%);
+      padding: 4rem 2rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -20%; right: -5%;
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(129,140,248,.2) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(99,102,241,.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .hero-split > * { min-width: 0; }
+    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(129,140,248,.12); border: 1px solid rgba(129,140,248,.3);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #818cf8;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .pulse-dot { width: 6px; height: 6px; background: #818cf8; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.9rem, 3.5vw, 3.1rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.08; letter-spacing: -.03em; margin-bottom: 1rem; text-align: left;
+    }
+    .guide-hero h1 span { color: #818cf8; }
+    .guide-hero p { font-size: 1rem; color: rgba(240,244,255,.72); margin: 0 0 1.5rem; line-height: 1.7; text-align: left; }
+    .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; word-break: keep-all; }
+
+    /* ── Terminal animation ─────────────────────── */
+    .hero-terminal {
+      background: #0d1117; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(129,140,248,.25);
+      box-shadow: 0 0 60px rgba(129,140,248,.1), 0 24px 48px rgba(0,0,0,.4);
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .65rem 1rem; background: rgba(255,255,255,.04);
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-red { background: #ff5f57; } .t-yellow { background: #febc2e; } .t-green { background: #28c840; }
+    .terminal-title { font-family: var(--rw-font-mono); font-size: .72rem; color: rgba(255,255,255,.35); margin-left: auto; }
+    .terminal-body { padding: 1.1rem 1.25rem; min-height: 340px; }
+    .terminal-body pre {
+      font-family: var(--rw-font-mono); font-size: .78rem; line-height: 1.75;
+      color: rgba(240,244,255,.8); margin: 0; white-space: pre-wrap; word-break: break-all;
+    }
+    .t-prompt { color: #818cf8; }
+    .t-success { color: #4ade80; }
+    .t-warn { color: #fbbf24; }
+    .t-dim { color: rgba(240,244,255,.38); }
+    .t-cursor { display: inline-block; width: 7px; height: 14px; background: #818cf8; vertical-align: middle; animation: blink .85s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── Guide layout ───────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 230px 1fr;
+      gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
+      padding: 0 1.5rem; align-items: start;
+    }
+    .guide-layout > * { min-width: 0; }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
+    .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
+    .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
+
+    /* ── Sections ───────────────────────────────── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 { font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800; color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem; border-bottom: 2px solid var(--rw-orange-light); scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.5rem 0 .5rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
+
+    /* ── Stat row ───────────────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: var(--rw-orange); line-height: 1; }
+    .stat-val-green { color: #10b981; }
+    .stat-val-indigo { color: #818cf8; }
+    .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Savings table ──────────────────────────── */
+    .savings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .savings-card {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem;
+      border-top: 3px solid var(--rw-orange);
+    }
+    .savings-card .replaced { font-size: .72rem; font-family: var(--rw-font-mono); color: var(--rw-text-subtle); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .35rem; }
+    .savings-card .price { font-family: var(--rw-font-display); font-size: 1.4rem; font-weight: 800; color: #f05252; text-decoration: line-through; margin-bottom: .2rem; }
+    .savings-card .now { font-size: .8rem; font-weight: 700; color: #10b981; margin-bottom: .5rem; }
+    .savings-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .3rem; }
+    .savings-card p { font-size: .8rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Demo tabs ──────────────────────────────── */
+    .demo-tabs-wrap { margin: 1.5rem 0; }
+    .demo-tab-bar { display: flex; gap: .5rem; flex-wrap: wrap; padding-bottom: .5rem; position: sticky; top: calc(var(--rw-nav-height)); z-index: 10; background: var(--rw-bg); padding-top: .5rem; }
+    .demo-tab { white-space: nowrap; padding: .45rem 1rem; border-radius: 9999px; border: 1.5px solid var(--rw-border); background: transparent; color: var(--rw-text-muted); font-family: var(--rw-font-display); font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+    .demo-tab:hover { border-color: var(--rw-orange); color: var(--rw-orange); }
+    .demo-tab.active { background: var(--rw-orange); border-color: var(--rw-orange); color: #fff; }
+    .demo-panel { display: none; }
+    .demo-panel.active { display: block; }
+    .demo-img-frame { border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1rem 0 .75rem; background: var(--rw-bg-subtle); }
+    .demo-img-frame img { width: 100%; height: auto; display: block; }
+    .demo-img-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0 .75rem; }
+    .demo-img-row .demo-img-frame { margin: 0; }
+    .demo-caption { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.55; }
+    .demo-caption strong { color: var(--rw-text); }
+    .tag { display: inline-block; font-family: var(--rw-font-mono); font-size: .72rem; padding: .1rem .45rem; border-radius: 4px; margin-right: .3rem; }
+    .tag-indigo { background: rgba(129,140,248,.12); color: #818cf8; border: 1px solid rgba(129,140,248,.2); }
+    .tag-green { background: rgba(78,203,135,.12); color: #4ecb87; border: 1px solid rgba(78,203,135,.2); }
+    .tag-orange { background: rgba(240,114,53,.12); color: var(--rw-orange); border: 1px solid rgba(240,114,53,.2); }
+    .tag-red { background: rgba(240,82,82,.15); color: #f05252; border: 1px solid rgba(240,82,82,.25); }
+    .demo-tab-select { display: none; width: 100%; padding: .6rem .85rem; border-radius: 8px; border: 1.5px solid var(--rw-border); background: var(--rw-card); color: var(--rw-text); font-family: var(--rw-font-display); font-size: .9rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .85rem center; padding-right: 2.5rem; position: sticky; top: calc(var(--rw-nav-height, 56px)); z-index: 10; }
+    .demo-panel-heading { display: none; font-family: var(--rw-font-display); font-weight: 700; font-size: .82rem; color: var(--rw-text-subtle); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .6rem; }
+
+    /* ── Feature grid ───────────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
+    .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Step list ──────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Architecture diagram ───────────────────── */
+    .arch-diagram {
+      background: var(--rw-bg-subtle); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.5rem; margin: 1.25rem 0;
+      font-family: var(--rw-font-mono); font-size: .82rem;
+    }
+    .arch-layer {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: .75rem;
+    }
+    .arch-layer:last-child { margin-bottom: 0; }
+    .arch-layer-title {
+      font-family: var(--rw-font-display); font-size: .75rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: .6rem;
+    }
+    .arch-layer-title.browser { color: #818cf8; }
+    .arch-layer-title.server  { color: var(--rw-orange); }
+    .arch-layer-title.api     { color: #10b981; }
+    .arch-rows { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+    .arch-box {
+      background: var(--rw-bg-subtle); border: 1px solid var(--rw-border);
+      border-radius: 7px; padding: .5rem .75rem;
+      font-size: .74rem; color: var(--rw-text-muted); text-align: center;
+    }
+    .arch-box.hi { border-color: rgba(129,140,248,.4); color: #818cf8; background: rgba(129,140,248,.06); }
+    .arch-box.ho { border-color: rgba(249,115,22,.3); color: var(--rw-orange); background: rgba(249,115,22,.06); }
+    .arch-box.hg { border-color: rgba(16,185,129,.3); color: #10b981; background: rgba(16,185,129,.06); }
+    .arch-arrow { text-align: center; color: var(--rw-text-subtle); font-size: .9rem; margin: .35rem 0; letter-spacing: .1em; }
+
+    /* ── Component table ────────────────────────── */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: .88rem; }
+    .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .78rem; text-align: left; padding: .75rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
+    .comparison-table td { padding: .65rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.5rem 0; }
+    .table-scroll .comparison-table { margin: 0; min-width: 480px; }
+
+    /* ── Learnings ──────────────────────────────── */
+    .learning-item { border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange); border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0; padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--rw-card); }
+    .learning-num { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--rw-orange); letter-spacing: .06em; margin-bottom: .3rem; }
+    .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .45rem; }
+    .learning-body { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .6rem; }
+    .learning-quote { padding: .45rem .85rem; background: var(--rw-orange-light); border-left: 2px solid var(--rw-orange); font-size: .8rem; color: var(--rw-orange); font-style: italic; border-radius: 0 4px 4px 0; }
+
+    /* ── Moments ────────────────────────────────── */
+    .moments-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .moment-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .moment-icon { font-size: 1.6rem; margin-bottom: .6rem; }
+    .moment-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .4rem; }
+    .moment-body { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.6; }
+
+    /* ── Before/After ───────────────────────────── */
+    .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .ba-box { border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem; }
+    .ba-without { background: rgba(240,82,82,.06); border: 1px solid rgba(240,82,82,.2); }
+    .ba-with { background: rgba(16,185,129,.06); border: 1px solid rgba(16,185,129,.2); }
+    .ba-label { font-family: var(--rw-font-mono); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .6rem; }
+    .ba-without .ba-label { color: #f05252; }
+    .ba-with .ba-label { color: #10b981; }
+    .ba-list { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+    .ba-list li { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.5; display: flex; gap: .5rem; align-items: flex-start; }
+    .ba-list li::before { font-size: .85rem; flex-shrink: 0; margin-top: .05rem; }
+    .ba-without .ba-list li::before { content: '✕'; color: #f05252; }
+    .ba-with .ba-list li::before { content: '✓'; color: #10b981; }
+
+    /* ── Team ───────────────────────────────────── */
+    .team-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 1rem; margin: 1.25rem 0; max-width: 420px; }
+    .team-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; }
+    .team-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; font-family: var(--rw-font-display); flex-shrink: 0; }
+    .av-indigo { background: linear-gradient(135deg, #818cf8, #4338ca); color: #fff; }
+    .team-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); }
+    .team-role { font-size: .75rem; color: var(--rw-text-subtle); font-family: var(--rw-font-mono); margin-bottom: .4rem; }
+    .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Code block ─────────────────────────────── */
+    .code-block { background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; font-family: var(--rw-font-mono); font-size: .82rem; color: var(--rw-indigo); overflow-x: auto; margin: 1rem 0; line-height: 1.75; white-space: pre-wrap; word-break: break-all; }
+    .code-block .cm { color: var(--rw-text-subtle); }
+    .code-block .kw { color: var(--rw-orange); }
+    .code-block .st { color: #4ecb87; }
+
+    /* ── Responsive ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    * { word-break: break-word; overflow-wrap: break-word; }
+    img, video, svg { max-width: 100%; height: auto; display: block; }
+
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .guide-toc { flex-direction: row; flex-wrap: wrap; gap: .25rem; }
+      .guide-toc a { border-left: none; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; }
+      .guide-toc a:hover, .guide-toc a.active { border-bottom-color: var(--rw-orange); border-left-color: transparent; }
+      .guide-toc .toc-h3 { padding-left: .6rem; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .savings-grid { grid-template-columns: repeat(2, 1fr); }
+      .moments-grid { grid-template-columns: repeat(2, 1fr); }
+      .arch-rows { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero-split { grid-template-columns: 1fr; gap: 1.75rem; }
+      .guide-hero { padding: 2.5rem 1.25rem 2rem; }
+      .stat-row { flex-wrap: wrap; }
+      .stat-cell { flex: 1 1 calc(33.333% - 1px); border-right: 1px solid var(--rw-border); border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(3n) { border-right: none; }
+      .stat-cell:nth-last-child(-n+3) { border-bottom: none; }
+      .demo-tab-bar { display: none; }
+      .demo-tab-select { display: block; }
+      .demo-panel { display: block !important; border-bottom: 1px solid var(--rw-border); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+      .demo-panel:last-child { border-bottom: none; margin-bottom: 0; }
+      .demo-panel-heading { display: block; }
+      .before-after { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .guide-layout { margin: 1.5rem auto; padding: 0 1rem; }
+      .stat-cell { flex: 1 1 50%; }
+      .stat-cell:nth-child(3n) { border-right: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(2n) { border-right: none; }
+      .feature-grid, .savings-grid, .moments-grid { grid-template-columns: 1fr; }
+      .demo-img-row { grid-template-columns: 1fr; }
+      .guide-section h2 { font-size: 1.25rem; }
+      .guide-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ───────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> name.com API Hackathon &nbsp;&middot;&nbsp; 2026</span>
+      <h1>LaunchKit<br><span>Your domain already does this</span></h1>
+      <p>Every founder opens three tabs the day they register a domain: Bitly, Linktree, Google Workspace. That&rsquo;s $56/month for features your domain already supports. LaunchKit surfaces them all &mdash; AI naming, branded links, email forwarding, security, brand protection, DNS &mdash; in one tool built entirely on the name.com API.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Next.js 15</span>
+        <span class="hero-tag">TypeScript</span>
+        <span class="hero-tag">name.com Core API v1</span>
+        <span class="hero-tag">Claude claude-sonnet-4-6</span>
+        <span class="hero-tag">Tailwind CSS + shadcn/ui</span>
+        <span class="hero-tag">48 API Endpoints</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the Build Story &darr;</a>
+        <a href="https://github.com/researchsite/launchkit" class="rw-btn rw-btn-primary">GitHub &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Animated terminal -->
+    <div class="hero-terminal">
+      <div class="terminal-bar">
+        <div class="t-dot t-red"></div>
+        <div class="t-dot t-yellow"></div>
+        <div class="t-dot t-green"></div>
+        <span class="terminal-title">launchkit &mdash; domain lifecycle</span>
+      </div>
+      <div class="terminal-body">
+        <pre id="terminal-out"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Content ──────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-what">What It Does</a></li>
+      <li><a href="#section-replaces" class="toc-h3">What It Replaces</a></li>
+      <li><a href="#section-demo">See Every Screen</a></li>
+      <li><a href="#section-how">How It Works</a></li>
+      <li><a href="#section-arch">Architecture</a></li>
+      <li><a href="#section-components" class="toc-h3">Component Map</a></li>
+      <li><a href="#section-api" class="toc-h3">48 API Endpoints</a></li>
+      <li><a href="#section-learnings">Real Learnings</a></li>
+      <li><a href="#section-moments">Moments In Between</a></li>
+      <li><a href="#section-platform">Platform Review</a></li>
+      <li><a href="#section-team">The Team</a></li>
+      <li><a href="#section-start">Get Started</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── WHAT IT DOES ─────────────────────────── -->
+    <section class="guide-section" id="section-what">
+      <h2>What It Does</h2>
+      <p>LaunchKit is a complete domain lifecycle tool built on top of the name.com API. It starts before you buy a domain (AI name generation with trademark warnings) and stays useful after you launch (branded links, email, security, DNS, brand protection, webhooks). Every feature is something founders currently pay for separately &mdash; or skip entirely because it&rsquo;s too hard to set up.</p>
+      <p>The app has nine feature areas. Each one maps directly to name.com API endpoints. Nothing is mocked: every action in the UI makes real API calls against the name.com sandbox.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val">48</div><div class="stat-label">API endpoints used</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-green">$56</div><div class="stat-label">saved per month</div></div>
+        <div class="stat-cell"><div class="stat-val">9</div><div class="stat-label">feature areas</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-indigo">25</div><div class="stat-label">brand variants per scan</div></div>
+        <div class="stat-cell"><div class="stat-val">1</div><div class="stat-label">API call for brand scan</div></div>
+        <div class="stat-cell"><div class="stat-val">6</div><div class="stat-label">brand page themes</div></div>
+      </div>
+
+      <h3>Nine Features, One App</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🤖</div>
+          <h4>AI Name Generation</h4>
+          <p>Describe your business. Claude generates 8 brand names with rationale. Live availability across .com, .io, .co, .app, .ai with trademark warnings via <code>CheckDomainClaims</code>.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔗</div>
+          <h4>Link Hub</h4>
+          <p>Branded short links on your own domain: <code>/instagram</code>, <code>/book</code>, <code>/sale</code>. Click counts tracked server-side. Visible in the dashboard. Bitly charges $35/mo for this.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🌐</div>
+          <h4>Brand Page</h4>
+          <p>Live shareable bio page at <code>/b/[domain]</code>. Brand name, tagline, bio, CTA button, link cards. 6 animated themes. AI Brand Kit generates all copy in one click.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📧</div>
+          <h4>Email Hub</h4>
+          <p><code>hello@yourdomain.com</code> forwarded to any Gmail. Name.com sets the MX records. No Google Workspace subscription needed.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔒</div>
+          <h4>Security Center</h4>
+          <p>Transfer lock, WHOIS privacy, auto-renew, DNSSEC surfaced as a 0&ndash;4 score with one-click fixes and plain-language explanations. None of this guidance exists in name.com&rsquo;s own dashboard.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🛡️</div>
+          <h4>Brand Protection</h4>
+          <p>25 typo/TLD/prefix variants scanned in a single <code>CheckAvailability</code> call. Brand Safety Score 0&ndash;100. Green = register defensively. Red = already taken &mdash; a potential squatter threat.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🗂️</div>
+          <h4>DNS Manager</h4>
+          <p>Full CRUD for A, CNAME, MX, TXT, SRV, CAA records &mdash; grouped by type with inline hints. Add, edit, delete without leaving the app.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔔</div>
+          <h4>Notification Center</h4>
+          <p>Self-hosted webhook receiver built into LaunchKit. Subscribe to 8 event types. Watch payloads arrive live. Pipe them to Slack, your CRM, or any downstream system.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🧾</div>
+          <h4>Orders &amp; Transfers</h4>
+          <p>Full purchase history with refund requests. Transfer manager: auth code to move out, cancel unauthorized outbound transfers, check eligibility for inbound transfers.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WHAT IT REPLACES ──────────────────────── -->
+    <section class="guide-section" id="section-replaces">
+      <h2>What It Replaces</h2>
+      <p>The $56/month figure is real. These are actual subscription prices for the tools founders typically open the day they register a domain. LaunchKit replaces all of them using name.com&rsquo;s existing infrastructure &mdash; no third-party accounts, no monthly fees.</p>
+
+      <div class="savings-grid">
+        <div class="savings-card">
+          <div class="replaced">Replaces Bitly</div>
+          <div class="price">$35/mo</div>
+          <div class="now">&#10003;&nbsp; $0 with LaunchKit</div>
+          <h4>Branded Short Links</h4>
+          <p>URL forwarding on your own domain. Click tracking in the dashboard. No Bitly account.</p>
+        </div>
+        <div class="savings-card">
+          <div class="replaced">Replaces Linktree</div>
+          <div class="price">$9/mo</div>
+          <div class="now">&#10003;&nbsp; $0 with LaunchKit</div>
+          <h4>Brand Bio Page</h4>
+          <p>Live shareable page at your domain. 6 themes, CTA button, AI-generated copy. More control, no subscription.</p>
+        </div>
+        <div class="savings-card">
+          <div class="replaced">Replaces Google Workspace</div>
+          <div class="price">$12/mo</div>
+          <div class="now">&#10003;&nbsp; $0 with LaunchKit</div>
+          <h4>Professional Email</h4>
+          <p>hello@yourdomain.com forwarding. Name.com sets MX records. Lands in Gmail. No Google subscription.</p>
+        </div>
+      </div>
+
+      <p>Beyond the $56/month: brand protection typically requires a lawyer or brand agency to monitor for typosquatters. LaunchKit does it in a two-second scan. Legal protection that used to cost thousands &mdash; no agency needed.</p>
+    </section>
+
+    <!-- ── SEE EVERY SCREEN ──────────────────────── -->
+    <section class="guide-section" id="section-demo">
+      <h2>See Every Screen</h2>
+      <p>12 screens covering the full lifecycle &mdash; from AI name generation to brand protection. Each screenshot was captured from the running app against the name.com sandbox with real data.</p>
+
+      <div class="demo-tabs-wrap">
+        <select class="demo-tab-select" id="demo-select" onchange="showDemo(this.value)">
+          <option value="landing">Landing</option>
+          <option value="launch">AI Names</option>
+          <option value="dashboard">Dashboard</option>
+          <option value="overview">Overview</option>
+          <option value="links">Link Hub</option>
+          <option value="brandpage">Brand Page</option>
+          <option value="email">Email Hub</option>
+          <option value="security">Security</option>
+          <option value="protect">Brand Protection</option>
+          <option value="dns">DNS Manager</option>
+          <option value="notifications">Notifications</option>
+          <option value="orders">Orders</option>
+        </select>
+        <div class="demo-tab-bar">
+          <button class="demo-tab active" onclick="showDemo('landing',this)">Landing</button>
+          <button class="demo-tab" onclick="showDemo('launch',this)">AI Names</button>
+          <button class="demo-tab" onclick="showDemo('dashboard',this)">Dashboard</button>
+          <button class="demo-tab" onclick="showDemo('overview',this)">Overview</button>
+          <button class="demo-tab" onclick="showDemo('links',this)">Link Hub</button>
+          <button class="demo-tab" onclick="showDemo('brandpage',this)">Brand Page</button>
+          <button class="demo-tab" onclick="showDemo('email',this)">Email Hub</button>
+          <button class="demo-tab" onclick="showDemo('security',this)">Security</button>
+          <button class="demo-tab" onclick="showDemo('protect',this)">Brand Protection</button>
+          <button class="demo-tab" onclick="showDemo('dns',this)">DNS Manager</button>
+          <button class="demo-tab" onclick="showDemo('notifications',this)">Notifications</button>
+          <button class="demo-tab" onclick="showDemo('orders',this)">Orders</button>
+        </div>
+
+        <div class="demo-panel active" id="demo-landing" data-demo-id="landing">
+          <div class="demo-panel-heading">Landing</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/01-landing.png" alt="LaunchKit landing page" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 01</span> <strong>The opening argument.</strong> The $56/month breakdown is the first thing visitors see &mdash; Bitly, Linktree, and Google Workspace itemized. The hero then lists what LaunchKit replaces each with. No abstract value prop: just the receipts.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-launch" data-demo-id="launch">
+          <div class="demo-panel-heading">AI Names</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/02-launch.png" alt="AI name generation screen" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 02</span> <strong>Describe your business &rarr; 8 brand names with rationale.</strong> Claude generates names with a one-line explanation for each. Then <code>Search</code> and <code>CheckAvailability</code> check all five TLDs at once. <code>CheckDomainClaims</code> adds trademark warnings before you spend a dollar. Pricing from <code>TldPriceList</code>. Five API calls, one page.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-dashboard" data-demo-id="dashboard">
+          <div class="demo-panel-heading">Dashboard</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/03-dashboard.png" alt="Portfolio dashboard" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-orange">Screen 03</span> <strong>Portfolio at a glance.</strong> All domains via <code>ListDomains</code>. Each card shows expiry countdown and lock status. Domains expiring within 60 days get a warning badge. One click into any domain opens the full management panel.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-overview" data-demo-id="overview">
+          <div class="demo-panel-heading">Overview</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/04-overview.png" alt="Domain overview page" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 04</span> <strong>The command center for one domain.</strong> Branded hero card with theme, avatar, and tagline. AI Brand Kit button generates tagline, bio, and color theme via Claude in one click. Launch checklist tracks progress from registration to fully live. Stats grid links to each sub-feature.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-links" data-demo-id="links">
+          <div class="demo-panel-heading">Link Hub</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/05-links.png" alt="Link Hub" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 05</span> <strong>Branded links on your domain. Click counts in the dashboard.</strong> Create <code>/instagram</code>, <code>/book</code>, <code>/summer-sale</code> via <code>CreateURLForwarding</code>. Edit and delete in-place. Click counts shown per link &mdash; tracked silently on the public brand page, visible here.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-brandpage" data-demo-id="brandpage">
+          <div class="demo-panel-heading">Brand Page</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/10-brandpage.png" alt="Live brand page" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-green">Screen 06</span> <strong>The public face of the domain.</strong> Animated mesh background, avatar with glow ring, brand name, tagline, bio, CTA button, and link cards. Visitors see a clean page. Click tracking happens silently. Six themes via the domain overview editor.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-email" data-demo-id="email">
+          <div class="demo-panel-heading">Email Hub</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/06-email.png" alt="Email Hub" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 07</span> <strong>Professional email without Google Workspace.</strong> <code>CreateEmailForwarding</code> sets up <code>hello@domain.com &rarr; your Gmail</code>. Name.com writes the MX records. Add, edit, and delete routes. No subscription. Saves $12/month for any one-person business.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-security" data-demo-id="security">
+          <div class="demo-panel-heading">Security</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/07-security.png" alt="Security Center" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-orange">Screen 08</span> <strong>Four security controls, one score.</strong> Transfer lock, WHOIS privacy, auto-renew, and DNSSEC surfaced with plain-language explanations. Each control is a toggle. The score goes from 0&ndash;4. A score below 4 shows exactly what&rsquo;s missing. None of this guidance exists in name.com&rsquo;s own interface.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-protect" data-demo-id="protect">
+          <div class="demo-panel-heading">Brand Protection</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/08-protect.png" alt="Brand Protection scanner" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-orange">Screen 09</span> <strong>25 variants. One API call. Two seconds.</strong> TLD alternatives (.net, .org, .co), typo domains (doubled letters, missing letters, transpositions), prefix/suffix patterns (get-, -hq, -app). Brand Safety Score 0&ndash;100. Green = register defensively. Red = already taken, flag it. One click from red to checkout.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-dns" data-demo-id="dns">
+          <div class="demo-panel-heading">DNS Manager</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/09-dns.png" alt="DNS Manager" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 10</span> <strong>Full DNS record CRUD grouped by type.</strong> A, CNAME, MX, TXT, SRV, CAA &mdash; all in one panel with inline format hints. Add and delete records without leaving the dashboard. Uses <code>ListRecords</code>, <code>CreateRecord</code>, <code>DeleteRecord</code>, and <code>ZoneCheck</code>.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-notifications" data-demo-id="notifications">
+          <div class="demo-panel-heading">Notifications</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/11-notifications.png" alt="Notification Center" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 11</span> <strong>Self-hosted webhook receiver built into the app.</strong> Subscribe to 8 event types via <code>SubscribeToNotification</code>. LaunchKit ships its own <code>/api/webhook</code> receiver. Send a test event and watch the payload appear live in the log. Pipe it to Slack, your CRM, or any HTTP endpoint.</div>
+        </div>
+
+        <div class="demo-panel" id="demo-orders" data-demo-id="orders">
+          <div class="demo-panel-heading">Orders</div>
+          <div class="demo-img-frame"><img src="../images/launchkit/12-orders.png" alt="Order history" loading="lazy"></div>
+          <div class="demo-caption"><span class="tag tag-indigo">Screen 12</span> <strong>Full purchase history with refund requests.</strong> <code>ListOrders</code> pulls every domain purchase. Each order shows item-level refund status. <code>ProcessRefund</code> lets you request a refund within the add-grace period, directly from the dashboard.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ──────────────────────────── -->
+    <section class="guide-section" id="section-how">
+      <h2>How It Works</h2>
+      <p>A single Next.js app. All name.com API calls happen in server-side API routes &mdash; credentials never touch the browser. Claude handles name generation and brand kit. In-memory state covers brand profiles and click counters (trivially replaceable with a KV store in production).</p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Describe your business &rarr; AI names</h4>
+            <p>The browser POSTs to <code>/api/generate</code>. That route calls Claude with a structured prompt. Eight brand names come back with rationale. All server-side &mdash; the Anthropic API key never leaves the server.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Availability + trademark check in one pass</h4>
+            <p><code>/api/availability</code> calls <code>Search</code> then <code>CheckAvailability</code> for all five TLDs in one batch. <code>CheckDomainClaims</code> runs in parallel to surface trademark warnings before the user registers. <code>TldPriceList</code> provides accurate pricing.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Register &rarr; setup wizard</h4>
+            <p><code>CreateDomain</code> registers the chosen domain. The setup wizard immediately offers two things: <code>CreateEmailForwarding</code> for a professional email address and <code>CreateURLForwarding</code> for the first branded link. Most founders need both in the first five minutes.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Dashboard: manage everything from one place</h4>
+            <p><code>ListDomains</code> powers the portfolio view. Each domain gets its own tabbed panel: Links, Email, Security, Brand Protection, DNS, Transfer, and Health. Every tab is a set of name.com API calls proxied through <code>/api/domains/[domain]/*</code> routes.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Brand protection: 25 variants, 1 API call</h4>
+            <p><code>CheckAvailability</code> accepts up to 50 domains per request. LaunchKit generates 25 variants (6 TLD, 10 typo, 9 prefix/suffix) and sends them all in one call. The Brand Safety Score is <code>(1 &minus; taken/total) &times; 100</code>. Green variants link directly to the registration flow.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Brand page: live at /b/[domain]</h4>
+            <p>The public brand page fetches the profile from <code>/api/profile/[domain]</code> (in-memory store, POST from the dashboard edit panel) and the link list from <code>/api/domains/[domain]/links</code>. Every link click silently POSTs to <code>/api/track/[domain]/[slug]</code>. Counts visible in the Link Hub dashboard, invisible to visitors.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="code-block"><span class="cm">// Brand protection: one call, 25 variants</span>
+<span class="kw">function</span> generateVariants(sld, tld) {
+  <span class="cm">// 6 TLD alternatives</span>
+  altTlds.slice(0, 6).forEach(t => add(`${sld}.${t}`, <span class="st">'tld'</span>));
+  <span class="cm">// 10 typo domains (doubled letters, missing, adjacent swap)</span>
+  typoVariants(sld).forEach(v => add(`${v}.${tld}`, <span class="st">'typo'</span>));
+  <span class="cm">// 9 prefix/suffix patterns</span>
+  [<span class="st">'get'</span>,<span class="st">'the'</span>,<span class="st">'my'</span>].forEach(p => add(`${p}${sld}.${tld}`, <span class="st">'prefix'</span>));
+  [<span class="st">'s'</span>,<span class="st">'hq'</span>,<span class="st">'app'</span>].forEach(s => add(`${sld}${s}.${tld}`, <span class="st">'suffix'</span>));
+}
+
+<span class="cm">// One API call for all 25 — CheckAvailability accepts 50 per request</span>
+<span class="kw">const</span> result = <span class="kw">await</span> namecom.domains.checkAvailability(variants);
+<span class="kw">const</span> score  = (1 - result.taken.length / result.total) * 100;</div>
+    </section>
+
+    <!-- ── ARCHITECTURE ──────────────────────────── -->
+    <section class="guide-section" id="section-arch">
+      <h2>Architecture</h2>
+      <p>Three layers. The browser talks to Next.js API routes. The API routes talk to name.com (and Claude for AI features). Credentials never reach the client. In-memory state covers ephemeral data that doesn&rsquo;t need persistence.</p>
+
+      <div class="arch-diagram">
+        <div class="arch-layer">
+          <div class="arch-layer-title browser">&#9679; Browser &mdash; Next.js Client</div>
+          <div class="arch-rows">
+            <div class="arch-box hi">/ Landing</div>
+            <div class="arch-box hi">/launch AI wizard</div>
+            <div class="arch-box hi">/dashboard portfolio</div>
+            <div class="arch-box hi">/b/[domain] brand page</div>
+            <div class="arch-box hi">/dashboard/[domain]/links</div>
+            <div class="arch-box hi">/dashboard/[domain]/security</div>
+            <div class="arch-box hi">/dashboard/[domain]/protect</div>
+            <div class="arch-box hi">/notifications /orders</div>
+          </div>
+        </div>
+
+        <div class="arch-arrow">&#8595; fetch() &nbsp;&nbsp; credentials never leave this layer &nbsp;&nbsp; &#8595;</div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-title server">&#9679; Next.js API Routes &mdash; Server</div>
+          <div class="arch-rows">
+            <div class="arch-box ho">/api/generate &rarr; Claude AI</div>
+            <div class="arch-box ho">/api/availability</div>
+            <div class="arch-box ho">/api/register</div>
+            <div class="arch-box ho">/api/brandkit &rarr; Claude AI</div>
+            <div class="arch-box ho">/api/domains/[d]/links</div>
+            <div class="arch-box ho">/api/domains/[d]/email</div>
+            <div class="arch-box ho">/api/domains/[d]/security</div>
+            <div class="arch-box ho">/api/domains/[d]/protect</div>
+            <div class="arch-box ho">/api/domains/[d]/dns</div>
+            <div class="arch-box ho">/api/domains/[d]/transfer</div>
+            <div class="arch-box ho">/api/profile/[d] (in-mem)</div>
+            <div class="arch-box ho">/api/track/[d]/[slug] (in-mem)</div>
+            <div class="arch-box ho">/api/notifications</div>
+            <div class="arch-box ho">/api/webhook receiver</div>
+            <div class="arch-box ho">/api/orders + refunds</div>
+            <div class="arch-box ho">/api/domains/[d]/renew</div>
+          </div>
+        </div>
+
+        <div class="arch-arrow">&#8595; HTTP Basic Auth &nbsp;&nbsp; NAMECOM_API_TOKEN &nbsp;&nbsp; &#8595;</div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-title api">&#9679; External Services</div>
+          <div class="arch-rows">
+            <div class="arch-box hg">name.com API v1 (sandbox)</div>
+            <div class="arch-box hg">name.com API v1 (production)</div>
+            <div class="arch-box hg">Anthropic Claude claude-sonnet-4-6</div>
+            <div class="arch-box hg">48 endpoints across 9 categories</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COMPONENT MAP ────────────────────────── -->
+    <section class="guide-section" id="section-components">
+      <h2>Component Map</h2>
+      <p>Every file in the project, its responsibility, and what it connects to. The pattern is consistent: each page fetches via its <code>/api/domains/[domain]/*</code> route, which wraps the relevant name.com endpoints.</p>
+
+      <div class="table-scroll"><table class="comparison-table">
+        <thead><tr><th>File</th><th>Type</th><th>What It Does</th></tr></thead>
+        <tbody>
+          <tr><td><code>src/lib/namecom.ts</code></td><td>Library</td><td>Typed client for all 48 name.com endpoints. HTTP Basic Auth, error handling, response types. Every API route imports from here.</td></tr>
+          <tr><td><code>src/lib/claude.ts</code></td><td>Library</td><td>Anthropic SDK wrapper. Two functions: brand name generation and brand kit (tagline/bio/theme). Used by <code>/api/generate</code> and <code>/api/brandkit</code>.</td></tr>
+          <tr><td><code>src/lib/utils.ts</code></td><td>Library</td><td>Tailwind class merge utility (<code>cn()</code>). Used by all UI components.</td></tr>
+          <tr><td><code>src/components/nav.tsx</code></td><td>Component</td><td>Top nav bar &mdash; logo, links, theme toggle.</td></tr>
+          <tr><td><code>src/components/ui/*</code></td><td>UI primitives</td><td>shadcn/ui: Button, Input, Badge, Card, Alert, Tabs, Dialog, Toast, Label, Select, Textarea.</td></tr>
+          <tr><td><code>src/app/page.tsx</code></td><td>Page</td><td>Landing page. $56/month savings breakdown. Links to launch wizard.</td></tr>
+          <tr><td><code>src/app/launch/page.tsx</code></td><td>Page</td><td>Business description form. POSTs to <code>/api/generate</code> for AI names.</td></tr>
+          <tr><td><code>src/app/launch/results/page.tsx</code></td><td>Page</td><td>Availability grid. Trademark warnings. Pricing. Register button &rarr; <code>/api/register</code>.</td></tr>
+          <tr><td><code>src/app/launch/setup/page.tsx</code></td><td>Page</td><td>Post-registration wizard. Email forwarding + first branded link in two steps.</td></tr>
+          <tr><td><code>src/app/dashboard/page.tsx</code></td><td>Page</td><td>Portfolio view. <code>ListDomains</code> &rarr; cards with expiry and lock status.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/layout.tsx</code></td><td>Layout</td><td>Tab navigation for a domain: Overview / Links / Email / Security / Protect / DNS / Transfer / Health.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/page.tsx</code></td><td>Page</td><td>Domain overview. Brand card, stats grid, launch checklist, profile editor with AI Brand Kit.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/links/page.tsx</code></td><td>Page</td><td>Link Hub. CRUD for URL forwardings. Per-link click counts fetched from <code>/api/track</code>.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/email/page.tsx</code></td><td>Page</td><td>Email Hub. CRUD for email forwardings. Add, edit, delete routes.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/security/page.tsx</code></td><td>Page</td><td>Security Center. Lock/WHOIS/DNSSEC/auto-renew as a 0&ndash;4 score with one-click toggles.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/protect/page.tsx</code></td><td>Page</td><td>Brand Protection. Calls <code>/api/domains/[d]/protect</code>, renders Safety Score and variant grid.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/dns/page.tsx</code></td><td>Page</td><td>DNS Manager. Full CRUD for all record types grouped by type.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/transfer/page.tsx</code></td><td>Page</td><td>Transfer Manager. Auth code export, inbound transfer eligibility, cancel unauthorized outbound.</td></tr>
+          <tr><td><code>src/app/dashboard/[domain]/health/page.tsx</code></td><td>Page</td><td>Domain health. Expiry countdown, ZoneCheck result, renewal button.</td></tr>
+          <tr><td><code>src/app/b/[domain]/page.tsx</code></td><td>Page</td><td>Public brand page. Fetches profile + links. Animated mesh, 6 themes, CTA button, link cards.</td></tr>
+          <tr><td><code>src/app/notifications/page.tsx</code></td><td>Page</td><td>Notification Center. Webhook subscription CRUD + live event log from <code>/api/webhook</code>.</td></tr>
+          <tr><td><code>src/app/orders/page.tsx</code></td><td>Page</td><td>Order history. <code>ListOrders</code> + <code>ProcessRefund</code> for items in add-grace period.</td></tr>
+          <tr><td><code>src/app/api/domains/[domain]/protect/route.ts</code></td><td>API Route</td><td>Generates 25 variants, calls <code>CheckAvailability</code> in one request, returns Safety Score.</td></tr>
+          <tr><td><code>src/app/api/profile/[domain]/route.ts</code></td><td>API Route</td><td>In-memory brand profile store. GET returns current profile, POST updates arbitrary JSON fields.</td></tr>
+          <tr><td><code>src/app/api/track/[domain]/[slug]/route.ts</code></td><td>API Route</td><td>Per-link click counter. GET returns count, POST increments. In-memory, server-scoped.</td></tr>
+          <tr><td><code>src/app/api/webhook/route.ts</code></td><td>API Route</td><td>Inbound webhook receiver. Appends payloads to an in-memory log. Notifications page polls this.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ── 48 API ENDPOINTS ──────────────────────── -->
+    <section class="guide-section" id="section-api">
+      <h2>48 API Endpoints</h2>
+      <p>Every endpoint in the name.com Core API that applies to the product&rsquo;s scope. Grouped by category.</p>
+
+      <div class="table-scroll"><table class="comparison-table">
+        <thead><tr><th>Category</th><th>Endpoints</th><th>Used For</th></tr></thead>
+        <tbody>
+          <tr><td>Domain lifecycle</td><td><code>ListDomains</code> <code>GetDomain</code> <code>CreateDomain</code> <code>RenewDomain</code> <code>EnableAutorenew</code> <code>DisableAutorenew</code></td><td>Portfolio, health, registration, renewal, auto-renew toggle</td></tr>
+          <tr><td>Availability</td><td><code>Search</code> <code>CheckAvailability</code> <code>TldPriceList</code> <code>CheckDomainClaims</code> <code>GetTldRequirementsV2</code></td><td>AI launch wizard + brand protection scanner</td></tr>
+          <tr><td>Security</td><td><code>LockDomain</code> <code>UnlockDomain</code> <code>EnableWhoisPrivacy</code> <code>DisableWhoisPrivacy</code> <code>PurchasePrivacy</code></td><td>Security Center toggles</td></tr>
+          <tr><td>DNSSEC</td><td><code>ListDNSSECs</code> <code>CreateDNSSEC</code> <code>GetDNSSEC</code> <code>DeleteDNSSEC</code></td><td>Security Center DNSSEC section</td></tr>
+          <tr><td>URL Forwarding</td><td><code>ListURLForwardings</code> <code>ListURLForwardingsByDomain</code> <code>GetURLForwardingById</code> <code>CreateURLForwarding</code> <code>UpdateURLForwardingById</code> <code>DeleteURLForwardingById</code></td><td>Link Hub + brand page</td></tr>
+          <tr><td>Email Forwarding</td><td><code>ListEmailForwardings</code> <code>GetEmailForwarding</code> <code>CreateEmailForwarding</code> <code>UpdateEmailForwarding</code> <code>DeleteEmailForwarding</code></td><td>Email Hub</td></tr>
+          <tr><td>DNS Records</td><td><code>ListRecords</code> <code>GetRecord</code> <code>CreateRecord</code> <code>UpdateRecord</code> <code>DeleteRecord</code> <code>ZoneCheck</code></td><td>DNS Manager + domain health</td></tr>
+          <tr><td>Transfers</td><td><code>GetTransferEligibility</code> <code>CreateTransfer</code> <code>ListTransfers</code> <code>GetTransfer</code> <code>CancelTransfer</code> <code>GetAuthCodeForDomain</code> <code>CancelOutboundTransfer</code></td><td>Transfer Manager</td></tr>
+          <tr><td>Notifications</td><td><code>SubscribeToNotification</code> <code>GetSubscribedNotifications</code> <code>ModifySubscription</code> <code>DeleteSubscription</code></td><td>Notification Center</td></tr>
+          <tr><td>Orders</td><td><code>ListOrders</code> <code>GetOrder</code> <code>ProcessRefund</code></td><td>Order history + refund manager</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ── REAL LEARNINGS ────────────────────────── -->
+    <section class="guide-section" id="section-learnings">
+      <h2>What We Actually Learned</h2>
+
+      <div class="learning-item">
+        <div class="learning-num">01</div>
+        <div class="learning-title">One API endpoint can unlock a whole feature</div>
+        <div class="learning-body"><code>CheckAvailability</code> accepts up to 50 domains in a single call. We initially planned to call it once per variant &mdash; that would have been 25 sequential requests. Reading the API docs carefully revealed the batch parameter. The brand protection scanner went from a 30-second wait to a 2-second scan. The feature only became viable because of that one detail.</div>
+        <div class="learning-quote">Read the full API spec before assuming you need multiple calls. Batching is often there &mdash; you just have to look.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">02</div>
+        <div class="learning-title">Server-side API routes are the right default for third-party credentials</div>
+        <div class="learning-body">Every name.com call goes through a Next.js API route. The <code>NAMECOM_API_TOKEN</code> never reaches the browser. This wasn&rsquo;t a security afterthought &mdash; it was the first architectural decision. The benefit: the client-side code is completely decoupled from the API shape. When we changed how security data was aggregated, only the API route changed. The React components didn&rsquo;t notice.</div>
+        <div class="learning-quote">API routes as a proxy layer cost almost nothing to add in Next.js and remove an entire class of credential leak risk.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">03</div>
+        <div class="learning-title">The brand page needed a name fallback or it looked empty</div>
+        <div class="learning-body">The original brand page showed the domain as a small pill at the top and used the tagline as the headline. If the user hadn&rsquo;t filled in a tagline, the page had no dominant text &mdash; just a domain name in 12px font. The fix was a fallback: if <code>profile.name</code> is empty, derive it from the SLD. <code>designspark.com &rarr; Designspark</code>. The page went from looking like a broken template to looking like a brand page, even with zero content configured.</div>
+        <div class="learning-quote">A UI that looks broken with empty data is a UI that will be abandoned. Fallbacks are not edge cases &mdash; they&rsquo;re the default state for a new user.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">04</div>
+        <div class="learning-title">PowerShell SAPI path escaping: forward slashes, not backslashes</div>
+        <div class="learning-body">The narration script generated WAV files via Windows SAPI TTS, writing a <code>.ps1</code> temp file per slide. The path to the output WAV was escaped with doubled backslashes (<code>C:\\path\\to\\file.wav</code>) following the usual JavaScript string convention. PowerShell treated the doubled backslashes as literal path separators and SAPI failed to open the file. The fix: use forward slashes. PowerShell and SAPI both accept <code>C:/path/to/file.wav</code> without escaping. One character change fixed a bug that looked like a permissions problem.</div>
+        <div class="learning-quote">When a Windows API fails to open a file path, check the slash direction before checking permissions.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">05</div>
+        <div class="learning-title">Click counts on a public brand page feel like analytics tools, not brand pages</div>
+        <div class="learning-body">The first version of the brand page showed per-link click counts as badge overlays on each link card. The intent was to signal &ldquo;this is active, people click here.&rdquo; In practice it felt like a developer metrics dashboard, not a brand page. Visitors to a Linktree-style page don&rsquo;t expect to see numbers. We moved the counts to the Link Hub dashboard (owner-facing) and removed them from the public page entirely. The brand page immediately felt more polished.</div>
+        <div class="learning-quote">Metrics that help the owner understand their business are noise when shown to visitors. Separate the views.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">06</div>
+        <div class="learning-title">The demo transcript needs to match what&rsquo;s actually on screen</div>
+        <div class="learning-body">We wrote the demo transcript before finalizing the brand page redesign. After removing click counts from the public page, the transcript still said &ldquo;14 clicks, right there&rdquo; while pointing at the brand page. During a rehearsal walkthrough it was immediately obvious: the number wasn&rsquo;t there anymore. The fix was simple &mdash; pivot to the Link Hub to show the counts &mdash; but it demonstrated that transcripts drift faster than you expect when the UI is still changing.</div>
+        <div class="learning-quote">Write the demo transcript after the UI is final, not before. Or build in a check step.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">07</div>
+        <div class="learning-title">In-memory state is fine for a hackathon if you design the API correctly</div>
+        <div class="learning-body">Brand profiles and click counters live in a global JavaScript object on the server, reset on restart. This was a deliberate choice: no database to configure, no migration to run, deployable anywhere. The API shape (<code>GET /api/profile/[domain]</code>, <code>POST /api/profile/[domain]</code> with arbitrary JSON) is exactly what a KV store like Upstash or Vercel KV would use. Swapping the implementation is a one-file change.</div>
+        <div class="learning-quote">Design the API contract first. The storage backend can change without touching any other file.</div>
+      </div>
+    </section>
+
+    <!-- ── MOMENTS IN BETWEEN ────────────────────── -->
+    <section class="guide-section" id="section-moments">
+      <h2>Moments In Between</h2>
+
+      <div class="moments-grid">
+        <div class="moment-card">
+          <div class="moment-icon">⚡</div>
+          <div class="moment-title">The CheckAvailability batch moment</div>
+          <div class="moment-body">We were planning to loop 25 API calls sequentially for brand protection &mdash; which would have taken 30+ seconds and probably hit rate limits. Opened the API docs one more time. <code>checkAvailability</code> accepts an array of up to 50 domains. The entire feature changed from &ldquo;maybe too slow to demo&rdquo; to a 2-second scan. Sometimes the API does exactly what you need; you just have to read it.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-icon">🎙️</div>
+          <div class="moment-title">The silent video problem</div>
+          <div class="moment-body">The first demo video had no audio. The narration script wrote PowerShell to generate speech via SAPI, but the path escaping was wrong &mdash; doubled backslashes that SAPI couldn&rsquo;t resolve. The WAV files were being created (zero bytes). Two hours of debugging. The fix: swap backslashes for forward slashes. Single character. The final video had real speech at &minus;20 dB mean volume, confirmed with ffmpeg&rsquo;s volumedetect filter.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-icon">🎨</div>
+          <div class="moment-title">&ldquo;It doesn&rsquo;t look like a branded page&rdquo;</div>
+          <div class="moment-body">The brand page had animated backgrounds, glassmorphism cards, six themes &mdash; and still looked plain. The issue: no dominant text. The domain was shown in 12px in a dim pill. The tagline was 26px if set, nothing if not. Adding a name fallback derived from the SLD and making it 34px/900 weight transformed the page. Less about adding features, more about finding the visual anchor the eye needed.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-icon">📝</div>
+          <div class="moment-title">The transcript that didn&rsquo;t match the screen</div>
+          <div class="moment-body">During a walkthrough the demo transcript said &ldquo;14 clicks, right there&rdquo; while the brand page showed no click counts at all &mdash; we&rsquo;d moved them to the dashboard. The pivot took one rehearsal pass to notice and two minutes to fix. The lesson: transcripts go stale the moment the UI changes. Write the final version last.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-icon">🔍</div>
+          <div class="moment-title">Screenshots captured mid-load</div>
+          <div class="moment-body">The first set of screenshots used Chrome&rsquo;s built-in <code>--screenshot</code> flag. Every dynamic page was captured before the API data arrived &mdash; skeleton states everywhere. The fix: Puppeteer with <code>waitUntil: &lsquo;networkidle0&rsquo;</code> plus per-page extra wait times tuned to each route&rsquo;s fetch latency. The gallery went from loading spinners to real data in all 12 shots.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-icon">🏁</div>
+          <div class="moment-title">48 endpoints on deadline day</div>
+          <div class="moment-body">The original plan was 38 endpoints across 6 features. Brand protection (new) and auto-renew toggle surfaced during the final build sprint. Adding them pushed the count to 48 &mdash; exactly the maximum API depth scoring range. That number wasn&rsquo;t planned. It came from genuinely building more features, not from padding the count. When the plan said you need the hackathon to end, you notice these things.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLATFORM REVIEW ───────────────────────── -->
+    <section class="guide-section" id="section-platform">
+      <h2>Platform Review: name.com API</h2>
+      <p>An honest take on building against the name.com Core API v1 for a week-long hackathon.</p>
+
+      <div class="before-after">
+        <div class="ba-box ba-with">
+          <div class="ba-label">&#10003;&nbsp; What We Liked</div>
+          <ul class="ba-list">
+            <li>HTTP Basic Auth is simple and reliable &mdash; no OAuth flow to debug</li>
+            <li><code>CheckAvailability</code> batch parameter (up to 50 domains) made the brand protection feature viable</li>
+            <li>Sandbox at <code>api.dev.name.com</code> is fully functional &mdash; real CRUD, no fake responses, no charges</li>
+            <li>Consistent REST conventions across all endpoint categories &mdash; easy to build a typed client</li>
+            <li><code>CheckDomainClaims</code> is a genuinely useful endpoint that most registrars don&rsquo;t expose</li>
+            <li>Webhook subscription model is straightforward &mdash; subscribe to a topic, receive at your URL</li>
+          </ul>
+        </div>
+        <div class="ba-box ba-without">
+          <div class="ba-label">&#9888;&nbsp; Gotchas</div>
+          <ul class="ba-list">
+            <li>No real-time event streaming &mdash; webhook delivery requires polling the receiver endpoint</li>
+            <li>Some endpoints return undocumented fields; a few documented fields are sometimes absent</li>
+            <li><code>ZoneCheck</code> result format is not well-documented &mdash; had to infer the schema from responses</li>
+            <li>Rate limiting is not publicly documented; had to be conservative with parallel calls</li>
+            <li>Transfer status codes require inference &mdash; no enum reference in the docs</li>
+            <li>No built-in pagination cursor for <code>ListOrders</code> on large accounts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-scroll"><table class="comparison-table" style="margin-top:1rem;">
+        <thead><tr><th>Feature</th><th>name.com API</th><th>What We&rsquo;d Want</th></tr></thead>
+        <tbody>
+          <tr><td>Bulk availability check</td><td>✓ Up to 50 domains per call</td><td>&mdash;</td></tr>
+          <tr><td>Trademark warnings</td><td>✓ <code>CheckDomainClaims</code></td><td>&mdash;</td></tr>
+          <tr><td>Webhook subscriptions</td><td>✓ Multiple event types</td><td>Real-time push rather than pull</td></tr>
+          <tr><td>Email forwarding</td><td>✓ Full CRUD, MX auto-set</td><td>&mdash;</td></tr>
+          <tr><td>API documentation</td><td>Mostly complete</td><td>Enum values for status codes</td></tr>
+          <tr><td>Sandbox fidelity</td><td>High &mdash; real CRUD</td><td>&mdash;</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ── TEAM ──────────────────────────────────── -->
+    <section class="guide-section" id="section-team">
+      <h2>The Team</h2>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar av-indigo">S</div>
+          <div>
+            <div class="team-name">Sham Hassanchi</div>
+            <div class="team-role">Architecture &middot; Full-Stack &middot; Product</div>
+            <div class="team-contrib">Designed the feature set and API mapping (48 endpoints across 9 areas). Built the name.com client, all API routes, all UI pages, brand page, screenshots, demo video with narration, and the README. Built for the name.com API Hackathon 2026.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── GET STARTED ───────────────────────────── -->
+    <section class="guide-section" id="section-start">
+      <h2>Get Started</h2>
+
+      <div class="code-block"><span class="cm"># 1. Clone and install</span>
+git clone https://github.com/researchsite/launchkit
+cd launchkit
+npm install
+
+<span class="cm"># 2. Configure</span>
+cp .env.example .env.local
+<span class="cm"># NAMECOM_USERNAME=your-username</span>
+<span class="cm"># NAMECOM_API_TOKEN=your-api-token</span>
+<span class="cm"># NAMECOM_API_BASE=https://api.dev.name.com   # sandbox</span>
+<span class="cm"># ANTHROPIC_API_KEY=sk-ant-...                 # optional — AI degrades gracefully</span>
+
+<span class="cm"># 3. Run</span>
+npm run dev</div>
+
+      <p>Open <code>http://localhost:3000</code>. Describe a business and watch it generate names. The name.com sandbox is fully functional &mdash; real domain registration, real forwardings, real DNS changes, zero charges.</p>
+      <p>Get a name.com API token: name.com &rarr; Account Settings &rarr; API Access &rarr; Create token. The Anthropic API key is optional &mdash; all name.com features work without it.</p>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"TripRipple Build","url":"/usecase/tripripple.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// ── Terminal animation ─────────────────────────────────────────────────────
+(function() {
+  var LINES = [
+    { t: 'p', v: '$ launchkit init' },
+    { t: 'd', v: '' },
+    { t: 'p', v: '> Describe your business:' },
+    { t: 'i', v: 'Dog training & homemade treats for health-conscious pet owners' },
+    { t: 'd', v: '' },
+    { t: 'l', v: '⟳  Generating brand names with AI...' },
+    { t: 'd', v: '' },
+    { t: 'n', v: '  1. WoofRoute     — movement + service, memorable' },
+    { t: 'n', v: '  2. PawCraft      — artisan, treat-forward' },
+    { t: 'n', v: '  3. TreatHaven   — safety + premium positioning' },
+    { t: 'd', v: '' },
+    { t: 'l', v: '⟳  Checking availability (name.com CheckAvailability)...' },
+    { t: 'd', v: '' },
+    { t: 's', v: '  woofroutepets.com   ✓  Available   $17.99' },
+    { t: 's', v: '  woofroutepets.io    ✓  Available   $39.00' },
+    { t: 'w', v: '  woofroutepets.ai    ✗  Taken' },
+    { t: 's', v: '  ⚠  No trademark claims (CheckDomainClaims)' },
+    { t: 'd', v: '' },
+    { t: 'p', v: '$ Registering woofroutepets.com...' },
+    { t: 's', v: '  ✓  Domain registered!' },
+    { t: 's', v: '  ✓  hello@woofroutepets.com → Gmail (MX auto-set)' },
+    { t: 's', v: '  ✓  /instagram → branded link live' },
+    { t: 's', v: '  ✓  Brand page: /b/woofroutepets.com' },
+    { t: 'd', v: '' },
+    { t: 'l', v: '⟳  Scanning 25 brand protection variants...' },
+    { t: 's', v: '  Brand Safety Score: 72 / 100' },
+    { t: 'w', v: '  4 variants taken — register the green ones now' },
+    { t: 'd', v: '' },
+    { t: 's', v: '  Security score: 4/4  ✓  All controls enabled' },
+  ];
+
+  var out = document.getElementById('terminal-out');
+  if (!out) return;
+
+  var lineIdx = 0, charIdx = 0, html = '';
+
+  function colorClass(type) {
+    if (type === 's') return 'class="t-success"';
+    if (type === 'w') return 'class="t-warn"';
+    if (type === 'p') return 'class="t-prompt"';
+    if (type === 'l') return 'class="t-dim"';
+    if (type === 'i') return 'class="t-success"';
+    return '';
+  }
+
+  function renderHtml(lines, partialLine, partialType) {
+    var s = '';
+    for (var i = 0; i < lines; i++) {
+      var line = LINES[i];
+      if (line.t === 'd') { s += '\n'; continue; }
+      s += '<span ' + colorClass(line.t) + '>' + escHtml(line.v) + '</span>\n';
+    }
+    if (partialLine !== null) {
+      var line = LINES[lines];
+      if (line && line.t !== 'd') {
+        s += '<span ' + colorClass(line.t) + '>' + escHtml(partialLine) + '</span>';
+      }
+    }
+    s += '<span class="t-cursor"></span>';
+    return s;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function tick() {
+    if (lineIdx >= LINES.length) {
+      // pause then restart
+      setTimeout(function() {
+        lineIdx = 0; charIdx = 0; html = '';
+        out.innerHTML = renderHtml(0, null, null);
+        setTimeout(tick, 400);
+      }, 3000);
+      return;
+    }
+
+    var line = LINES[lineIdx];
+
+    if (line.t === 'd') {
+      lineIdx++;
+      out.innerHTML = renderHtml(lineIdx, null, null);
+      setTimeout(tick, 80);
+      return;
+    }
+
+    if (charIdx < line.v.length) {
+      charIdx++;
+      out.innerHTML = renderHtml(lineIdx, line.v.slice(0, charIdx), line.t);
+      var delay = line.t === 'i' ? 28 : (line.t === 'p' ? 45 : 12);
+      setTimeout(tick, delay);
+    } else {
+      lineIdx++;
+      charIdx = 0;
+      var pause = line.t === 'p' ? 300 : (line.t === 's' ? 120 : 80);
+      out.innerHTML = renderHtml(lineIdx, null, null);
+      setTimeout(tick, pause);
+    }
+  }
+
+  setTimeout(tick, 600);
+})();
+
+// ── Demo tab switching ─────────────────────────────────────────────────────
+function showDemo(id, btn) {
+  if (window.innerWidth > 768) {
+    document.querySelectorAll('.demo-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.demo-panel').forEach(function(p) { p.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    var panel = document.getElementById('demo-' + id);
+    if (panel) panel.classList.add('active');
+  }
+  var sel = document.getElementById('demo-select');
+  if (sel) sel.value = id;
+}
+
+document.getElementById('demo-select').addEventListener('change', function() {
+  var id = this.value;
+  if (window.innerWidth > 768) {
+    var btn = document.querySelector('.demo-tab[onclick*="\'' + id + '\'"]');
+    showDemo(id, btn);
+    return;
+  }
+  var panel = document.getElementById('demo-' + id);
+  if (!panel) return;
+  var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--rw-nav-height') || '56', 10);
+  var selectH = document.getElementById('demo-select').offsetHeight + 8;
+  window.scrollTo({ top: panel.getBoundingClientRect().top + window.scrollY - navH - selectH - 8, behavior: 'smooth' });
+});
+
+// ── Mobile scrollspy for demo panels ─────────────────────────────────────
+(function() {
+  var panels = document.querySelectorAll('.demo-panel[data-demo-id]');
+  var sel = document.getElementById('demo-select');
+  if (!panels.length || !sel) return;
+  var obs = new IntersectionObserver(function(entries) {
+    var best = null, bestR = 0;
+    entries.forEach(function(e) { if (e.isIntersecting && e.intersectionRatio > bestR) { best = e.target; bestR = e.intersectionRatio; } });
+    if (best && window.innerWidth <= 768) sel.value = best.getAttribute('data-demo-id');
+  }, { threshold: [0.15, 0.4, 0.6, 0.85] });
+  panels.forEach(function(p) { obs.observe(p); });
+})();
+
+// ── TOC scrollspy ─────────────────────────────────────────────────────────
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        links.forEach(function(link) { link.classList.toggle('active', link.getAttribute('href') === '#' + id); });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(function(s) { obs.observe(s); });
+})();
+</script>
+
+</body>
+</html>
