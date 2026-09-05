@@ -16,6 +16,15 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "DebateCast — Two AI Voices. One Live Debate",
+        excerpt: "How We built DebateCast in 2 hours at a hackathon — an app where two AI voices debate any topic using live web data. Built with Lovable, ElevenLabs, and Linkup.",
+        date: "Sep 05, 2026",
+        image: "./images/debatscast.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/debatecast.html",
+        linkedin: null
+      },
+      {
         title: "SecondEar — Built at the Guava Voice Hackathon ",
         excerpt: "How two people built a silent FDCPA compliance voice agent in two days at the Guava Voice Hackathon. Honest account of the platform, the learnings, and the moments in between.",
         date: "Aug 29, 2026",

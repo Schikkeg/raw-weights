@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DebateCast — Two AI Voices. One Live Debate. | RawWeights</title>
+  <meta name="description" content="How I built DebateCast in 2 hours at a hackathon — an app where two AI voices debate any topic using live web data. Built with Lovable, ElevenLabs, and Linkup.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/debatecast.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/debatecast.html">
+  <meta property="og:title" content="DebateCast — Two AI Voices. One Live Debate.">
+  <meta property="og:description" content="Built in 2 hours at a hackathon. Any topic. Two AI voices. Real web data. The boldest demo: debating the sponsors in front of the sponsors.">
+  <meta property="og:image" content="https://rawweights.com/images/debatscast.png">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero ───────────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #07101f 0%, #0f0b28 50%, #071530 100%);
+      padding: 4rem 2rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -20%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(129,140,248,.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(74,222,128,.10) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .hero-split > * { min-width: 0; }
+    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(129,140,248,.12); border: 1px solid rgba(129,140,248,.3);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #818cf8;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .pulse-dot { width: 6px; height: 6px; background: #818cf8; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.08; letter-spacing: -.03em; margin-bottom: 1rem;
+      text-align: left;
+    }
+    .guide-hero h1 span.accent-a { color: #818cf8; }
+    .guide-hero h1 span.accent-b { color: #4ade80; }
+    .guide-hero p { font-size: 1rem; color: rgba(240,244,255,.7); margin: 0 0 1.5rem; line-height: 1.7; text-align: left; }
+    .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; }
+
+    /* Hero video panel */
+    .hero-video-wrap {
+      position: relative; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(129,140,248,.25);
+      box-shadow: 0 0 60px rgba(129,140,248,.12), 0 24px 48px rgba(0,0,0,.5);
+    }
+    .hero-video-wrap video {
+      width: 100%; height: auto; display: block;
+      background: #07111d;
+    }
+    .hero-video-label {
+      position: absolute; top: .75rem; left: .75rem;
+      background: rgba(7,17,29,.85); backdrop-filter: blur(8px);
+      border: 1px solid rgba(129,140,248,.3);
+      border-radius: 6px; padding: .25rem .65rem;
+      font-family: var(--rw-font-mono); font-size: .68rem; color: #818cf8;
+    }
+
+    /* ── Guide layout ──────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 230px 1fr;
+      gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
+      padding: 0 1.5rem; align-items: start;
+    }
+    .guide-layout > * { min-width: 0; }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
+    .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
+    .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
+
+    /* ── Sections ──────────────────────────────── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem;
+      border-bottom: 2px solid var(--rw-orange-light);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.5rem 0 .5rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
+
+    /* ── Stat row ──────────────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: var(--rw-orange); line-height: 1; }
+    .stat-val-indigo { color: #818cf8; }
+    .stat-val-green { color: #4ade80; }
+    .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Feature / mode grid ───────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
+    .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Two-mode showcase ─────────────────────── */
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .mode-card {
+      border-radius: var(--rw-r-md); padding: 1.4rem;
+      border: 1px solid rgba(129,140,248,.25);
+      background: rgba(129,140,248,.04);
+    }
+    .mode-card.green {
+      border-color: rgba(74,222,128,.25);
+      background: rgba(74,222,128,.04);
+    }
+    .mode-label { font-family: var(--rw-font-mono); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #818cf8; margin-bottom: .5rem; }
+    .mode-card.green .mode-label { color: #4ade80; }
+    .mode-title { font-family: var(--rw-font-display); font-weight: 700; font-size: 1rem; color: var(--rw-text); margin-bottom: .5rem; }
+    .mode-desc { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.6; margin-bottom: .75rem; }
+    .mode-flow { font-family: var(--rw-font-mono); font-size: .72rem; color: rgba(240,244,255,.4); line-height: 1.8; }
+
+    /* ── Architecture blocks ───────────────────── */
+    .arch-flow {
+      display: flex; align-items: center; gap: 0; margin: 1.5rem 0;
+      overflow-x: auto; padding-bottom: .5rem;
+    }
+    .arch-block {
+      flex-shrink: 0; background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: .85rem 1rem; text-align: center;
+      min-width: 110px;
+    }
+    .arch-block-icon { font-size: 1.3rem; margin-bottom: .3rem; }
+    .arch-block-name { font-family: var(--rw-font-display); font-size: .78rem; font-weight: 700; color: var(--rw-text); }
+    .arch-block-sub { font-size: .68rem; color: var(--rw-text-subtle); font-family: var(--rw-font-mono); margin-top: .15rem; }
+    .arch-arrow { font-size: 1.1rem; color: var(--rw-text-subtle); padding: 0 .4rem; flex-shrink: 0; }
+
+    /* ── API table ─────────────────────────────── */
+    .api-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: .875rem; }
+    .api-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .78rem; text-align: left; padding: .65rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
+    .api-table td { padding: .65rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; font-family: var(--rw-font-mono); font-size: .78rem; }
+    .api-table td:first-child { color: var(--rw-text); font-weight: 600; }
+    .api-table tr:hover td { background: var(--rw-bg-alt); }
+
+    /* ── Prompt code block ─────────────────────── */
+    .code-block {
+      background: #060d1a; border: 1px solid rgba(129,140,248,.2);
+      border-radius: var(--rw-r-md); padding: 1.25rem 1.5rem;
+      font-family: var(--rw-font-mono); font-size: .8rem; color: rgba(240,244,255,.8);
+      overflow-x: auto; margin: 1.25rem 0; line-height: 1.75;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .code-block .kw { color: #818cf8; }
+    .code-block .st { color: #4ade80; }
+    .code-block .cm { color: rgba(240,244,255,.3); }
+    .code-block .num { color: #f59e0b; }
+
+    /* ── Debate transcript ─────────────────────── */
+    .debate-preview { margin: 1.5rem 0; display: flex; flex-direction: column; gap: .75rem; }
+    .db-bubble { border-radius: 10px; padding: .85rem 1.1rem; max-width: 90%; }
+    .db-bubble-a { background: rgba(129,140,248,.12); border: 1px solid rgba(129,140,248,.2); align-self: flex-start; }
+    .db-bubble-b { background: rgba(74,222,128,.10); border: 1px solid rgba(74,222,128,.2); align-self: flex-end; }
+    .db-label-a { font-family: var(--rw-font-mono); font-size: .65rem; color: #818cf8; margin-bottom: .35rem; font-weight: 700; }
+    .db-label-b { font-family: var(--rw-font-mono); font-size: .65rem; color: #4ade80; margin-bottom: .35rem; font-weight: 700; text-align: right; }
+    .db-text { font-size: .88rem; color: var(--rw-text); line-height: 1.6; }
+
+    /* ── Screenshots section ───────────────────── */
+    .screenshot-frame {
+      border: 1px solid var(--rw-border); border-radius: var(--rw-r-md);
+      overflow: hidden; margin: 1rem 0; background: var(--rw-bg-subtle);
+    }
+    .screenshot-frame img { width: 100%; height: auto; display: block; }
+    .screenshot-caption { padding: .6rem 1rem; font-size: .82rem; color: var(--rw-text-muted); background: var(--rw-bg-subtle); border-top: 1px solid var(--rw-border); }
+    .screenshot-placeholder {
+      border: 2px dashed rgba(129,140,248,.3); border-radius: var(--rw-r-md);
+      padding: 3rem 2rem; margin: 1rem 0; text-align: center;
+      background: rgba(129,140,248,.03);
+    }
+    .screenshot-placeholder-icon { font-size: 2rem; margin-bottom: .75rem; }
+    .screenshot-placeholder-title { font-family: var(--rw-font-display); font-weight: 700; color: var(--rw-text); margin-bottom: .4rem; font-size: .95rem; }
+    .screenshot-placeholder-note { font-size: .82rem; color: var(--rw-text-subtle); line-height: 1.6; }
+
+    /* ── Step list ─────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Learnings ─────────────────────────────── */
+    .learning-item {
+      border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange);
+      border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0;
+      padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--rw-card);
+    }
+    .learning-num { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--rw-orange); letter-spacing: .06em; margin-bottom: .3rem; }
+    .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .45rem; }
+    .learning-body { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.65; }
+
+    /* ── Moment tiles ──────────────────────────── */
+    .moment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .moment-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.2rem; }
+    .moment-emoji { font-size: 1.4rem; margin-bottom: .5rem; }
+    .moment-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .88rem; color: var(--rw-text); margin-bottom: .4rem; }
+    .moment-text { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.6; }
+
+    /* ── Platform review ───────────────────────── */
+    .platform-review { margin: 1.5rem 0; }
+    .platform-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+    .platform-label { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .75rem; }
+    .liked-box { background: rgba(74,222,128,.06); border: 1px solid rgba(74,222,128,.2); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; }
+    .gotcha-box { background: rgba(245,158,11,.06); border: 1px solid rgba(245,158,11,.2); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; }
+    .box-label { font-family: var(--rw-font-mono); font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .6rem; }
+    .liked-box .box-label { color: #4ade80; }
+    .gotcha-box .box-label { color: #f59e0b; }
+    .review-item { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.65; padding: .3rem 0; border-bottom: 1px solid var(--rw-border); }
+    .review-item:last-child { border-bottom: none; }
+
+    /* ── Team ──────────────────────────────────── */
+    .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .team-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; }
+    .team-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; font-family: var(--rw-font-display); flex-shrink: 0; }
+    .av-1 { background: linear-gradient(135deg, #818cf8, #4338ca); color: #fff; }
+    .av-2 { background: linear-gradient(135deg, #4ade80, #16a34a); color: #fff; }
+    .team-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); }
+    .team-role { font-size: .75rem; color: var(--rw-text-subtle); font-family: var(--rw-font-mono); margin-bottom: .4rem; }
+    .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; }
+
+    /* ── Tag chips ─────────────────────────────── */
+    .tag { display: inline-block; font-family: var(--rw-font-mono); font-size: .72rem; padding: .1rem .45rem; border-radius: 4px; margin-right: .3rem; }
+    .tag-indigo { background: rgba(129,140,248,.12); color: #818cf8; border: 1px solid rgba(129,140,248,.2); }
+    .tag-green { background: rgba(74,222,128,.12); color: #4ade80; border: 1px solid rgba(74,222,128,.2); }
+    .tag-orange { background: rgba(240,114,53,.12); color: var(--rw-orange); border: 1px solid rgba(240,114,53,.2); }
+
+    /* ── Callout ───────────────────────────────── */
+    .callout {
+      background: rgba(249,115,22,.07); border: 1px solid rgba(249,115,22,.25);
+      border-left: 3px solid var(--rw-orange);
+      border-radius: 0 var(--rw-r-md) var(--rw-r-md) 0;
+      padding: 1rem 1.25rem; margin: 1.25rem 0;
+      font-size: .9rem; color: var(--rw-text-muted); line-height: 1.7;
+    }
+    .callout strong { color: var(--rw-text); }
+
+    /* ── Responsive ────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    * { word-break: break-word; overflow-wrap: break-word; }
+    img, video, svg { max-width: 100%; height: auto; display: block; }
+    .code-block { white-space: pre-wrap; word-break: break-all; }
+
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .guide-toc { flex-direction: row; flex-wrap: wrap; gap: .25rem; }
+      .guide-toc a { border-left: none; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; }
+      .guide-toc a:hover, .guide-toc a.active { border-bottom-color: var(--rw-orange); border-left-color: transparent; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero-split { grid-template-columns: 1fr; gap: 2rem; }
+      .mode-grid { grid-template-columns: 1fr; }
+      .moment-grid { grid-template-columns: 1fr; }
+      .platform-row { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .arch-flow { flex-direction: column; align-items: flex-start; gap: .25rem; }
+      .arch-arrow { transform: rotate(90deg); }
+    }
+    @media (max-width: 600px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .stat-row { flex-direction: column; }
+      .stat-cell { border-right: none; border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ──────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> Hackathon Build · Sep 4, 2026</span>
+      <h1>⚔️ Debate<span class="accent-a">Cast</span></h1>
+      <p>I had an idea this morning and no way to explain it. So I built a tool that takes any topic, finds real arguments on both sides from the live web, and has two AI voices debate it out loud.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Lovable</span>
+        <span class="hero-tag">ElevenLabs</span>
+        <span class="hero-tag">Linkup</span>
+        <span class="hero-tag">OpenAI</span>
+        <span class="hero-tag">2h build</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="https://debate-spark-duel.lovable.app/" target="_blank" class="rw-btn rw-btn-primary">Try DebateCast ↗</a>
+        <a href="#section-idea" class="rw-btn" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#f0f4ff;">Read the story ↓</a>
+      </div>
+    </div>
+
+    <div class="hero-video-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="../images/videos/debatecast-demo.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-label">⏺ LIVE DEMO</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Stat row ───────────────────────────────────────── -->
+<div style="max-width:1160px;margin:0 auto;padding:0 1.5rem;">
+  <div class="stat-row">
+    <div class="stat-cell">
+      <div class="stat-val">2h</div>
+      <div class="stat-label">build to demo</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val stat-val-indigo">3</div>
+      <div class="stat-label">sponsor APIs deeply used</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val stat-val-green">5</div>
+      <div class="stat-label">preset debate topics</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val">6</div>
+      <div class="stat-label">ElevenLabs calls per debate</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val stat-val-indigo">2</div>
+      <div class="stat-label">distinct AI voices</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Content ────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <!-- Sidebar TOC -->
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">The Journey</div>
+    <ul class="guide-toc">
+      <li><a href="#section-idea">The Idea</a></li>
+      <li><a href="#section-what">What It Does</a></li>
+      <li><a href="#section-build">The Build</a></li>
+      <li><a href="#section-prompt" class="toc-h3">The Prompt</a></li>
+      <li><a href="#section-arch">Architecture</a></li>
+      <li><a href="#section-apis" class="toc-h3">Open APIs</a></li>
+      <li><a href="#section-screenshots">Screenshots</a></li>
+      <li><a href="#section-learnings">Real Learnings</a></li>
+      <li><a href="#section-moments">Moments In Between</a></li>
+      <li><a href="#section-platforms">Platform Review</a></li>
+      <li><a href="#section-team">Team</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── 1. The Idea ──────────────────────────────── -->
+    <section class="guide-section" id="section-idea">
+      <h2>The Idea</h2>
+      <p>The First Non-Tech Buildathon at AWS Builder Loft gave every team the same starting point: Lovable, ElevenLabs, and Linkup. Three sponsors. Two hours. Make something real with all three.</p>
+      <p>I was paired with Mahima — her first hackathon. The first thing we talked through wasn't what to build. It was a more useful question: <strong>what makes these three tools interesting together, not just separately?</strong> That's the harder question, and the right one to start with.</p>
+      <p>Linkup searches the live web. ElevenLabs makes text audible. Lovable ships a working app in minutes. You could string all three in sequence without any of them doing anything the others couldn't replace — a search summary, read aloud, deployed. That's the trap. Three tools, one workflow, nothing new.</p>
+      <p>So the brainstorm kept circling one constraint: what's only possible when all three are working in the loop at the same time? Real search feeding real audio, deployed instantly — not a summary tool, not a podcast, but something that generates a live voice experience from live data, on any topic, on demand.</p>
+      <p>That constraint led to DebateCast. Two AI voices arguing both sides of any topic — Voice A the optimist, Voice B the skeptic — using Linkup results as their facts, ElevenLabs as their voices, and Lovable as the stage.</p>
+
+      <div class="callout">
+        <strong>The boldest move:</strong> The demo topics are the sponsors' own tools. "Is Lovable actually production-ready?" — searched live on Linkup, voiced by ElevenLabs, running inside a Lovable-built app, in front of the Lovable team. If the stack works under those conditions, it works.
+      </div>
+    </section>
+
+    <!-- ── 2. What It Does ──────────────────────────── -->
+    <section class="guide-section" id="section-what">
+      <h2>What It Does</h2>
+      <p>DebateCast takes any topic or document, searches both sides using live web data, and has two AI voices argue it out loud with a synchronized scrolling transcript.</p>
+
+      <div class="mode-grid">
+        <div class="mode-card">
+          <div class="mode-label">🌐 Mode 1</div>
+          <div class="mode-title">Hot Topic</div>
+          <div class="mode-desc">Type any topic or pick a preset. Linkup searches real web for supporting evidence and counterarguments. Two voices debate it live.</div>
+          <div class="mode-flow">Topic → Linkup × 2 → Script → ElevenLabs × 6 → Play</div>
+        </div>
+        <div class="mode-card green">
+          <div class="mode-label" style="color:#4ade80;">📄 Mode 2</div>
+          <div class="mode-title">Doc vs Reality</div>
+          <div class="mode-desc">Paste any document or policy. Voice A reads what it claims. Voice B reads what Linkup found in 2026. The document gets fact-checked out loud.</div>
+          <div class="mode-flow">Document → Extract claims → Linkup search → ElevenLabs × 6 → Play</div>
+        </div>
+      </div>
+
+      <h3>Preset Topics</h3>
+      <p>The presets aren't random — they're the sponsors' own pain points, chosen to prove Linkup is finding real current data:</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🏗️</div>
+          <h4>Is Lovable production-ready?</h4>
+          <p>The boldest one. Real Reddit and ProductHunt complaints voiced back in front of the Lovable team.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🎙️</div>
+          <h4>Is ElevenLabs worth the price?</h4>
+          <p>Debated using ElevenLabs itself. The irony was the point.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔍</div>
+          <h4>Is Linkup better than Googling?</h4>
+          <p>Linkup searches both sides of its own value proposition.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🤖</div>
+          <h4>Will AI replace developers?</h4>
+          <p>Safe opener for the demo. Real data, strong opinions on both sides.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🏠</div>
+          <h4>Is remote work actually dead?</h4>
+          <p>Timely, divisive, and Linkup finds real 2026 RTO data.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. The Build ─────────────────────────────── -->
+    <section class="guide-section" id="section-build">
+      <h2>The Build</h2>
+      <p>The entire UI was built in Lovable from a single prompt. No manual coding. I described the screens, the API logic, the playback behavior, and the template — Lovable generated a full working React app.</p>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Write the prompt</h4>
+            <p>Described both screens, both modes, all API integrations, and the exact debate template. One shot.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Lovable generates the app</h4>
+            <p>Full React app — dark theme, two tabs, preset chips, loading bar, transcript bubbles, audio player. Took under 5 minutes.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Wire in the APIs</h4>
+            <p>Linkup search, ElevenLabs TTS (6 sequential calls), optional OpenAI script upgrade — all described in the prompt, generated correctly.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Deploy</h4>
+            <p>Lovable deployed directly to a public URL. Live at <a href="https://debate-spark-duel.lovable.app/" target="_blank">debate-spark-duel.lovable.app</a> within minutes.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Rehearse the demo</h4>
+            <p>Two runs. First safe topic, then the bold one. Timed the silences. Practiced stopping talking when the audio played.</p>
+          </div>
+        </li>
+      </ul>
+
+      <h3 id="section-prompt">The Prompt</h3>
+      <p>This is the exact prompt I used to build the app in Lovable. One input. Everything below came out of it.</p>
+      <div class="code-block"><span class="cm">// Lovable prompt — Sep 4, 2026</span>
+
+<span class="kw">Build a dark-themed web app called DebateCast</span>
+with tagline <span class="st">"Two voices. One truth. Zero agreement."</span>
+
+Design: background #07101f · accent A: indigo #818cf8
+accent B: green #4ade80 · fonts: Space Grotesk + Inter
+
+<span class="kw">SCREEN 1 — HOME</span>
+Tab 1 — Hot Topic: text input + 5 preset chips:
+  "Is Lovable actually production-ready?"
+  "Is ElevenLabs worth the price?"
+  "Is Linkup better than just Googling?"
+  "Will AI replace developers?"
+  "Is remote work actually dead?"
+
+Tab 2 — Doc vs Reality:
+  Textarea: paste any document or policy
+  Label: "Voice A reads what the doc claims.
+          Voice B reads what's true now."
+
+Full-width button: ⚔️ Start the Debate
+
+<span class="kw">SCREEN 2 — DEBATE OUTPUT</span>
+Loading bar cycling: "Searching the web…"
+  → "Building arguments…" → "Waking up the voices…"
+
+Three sections:
+  Research panel — two columns, Linkup pro/con
+  Audio player — avatars A and B, topic, progress
+  Transcript — chat bubbles, A indigo, B green
+
+<span class="kw">LOGIC</span>
+Step 1 — Linkup: two searches per topic (FOR + AGAINST)
+Step 2 — Build script from template:
+  A: "Look, the evidence is clear. [pro0]. I don't know why we're even having this conversation."
+  B: "Adorable. [con0]. But please, continue."
+  A: "[pro1]. The data doesn't lie. You're welcome."
+  B: "[con1]. I've seen stronger arguments in a fortune cookie."
+  A: "Final point. [pro2]. Case closed."
+  B: "[con2]. I think we both know how this ends."
+Step 3 — ElevenLabs TTS: 6 calls, alternating VOICE_A / VOICE_B
+Step 4 — Playback: sequential, 400ms gap, bubbles highlight in sync
+
+OPTIONAL: if OPENAPI_API_KEY exists, call GPT for funnier script</div>
+    </section>
+
+    <!-- ── 4. Architecture ──────────────────────────── -->
+    <section class="guide-section" id="section-arch">
+      <h2>Architecture</h2>
+      <p>Four services chain together. Each one hands off to the next. Lovable built the shell that wires them all.</p>
+
+      <div class="arch-flow">
+        <div class="arch-block">
+          <div class="arch-block-icon">💬</div>
+          <div class="arch-block-name">User Input</div>
+          <div class="arch-block-sub">topic or doc</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block" style="border-color:rgba(129,140,248,.4);">
+          <div class="arch-block-icon">🔍</div>
+          <div class="arch-block-name">Linkup</div>
+          <div class="arch-block-sub">2× search</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block" style="border-color:rgba(245,158,11,.3);">
+          <div class="arch-block-icon">🧠</div>
+          <div class="arch-block-name">OpenAI</div>
+          <div class="arch-block-sub">optional script</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block" style="border-color:rgba(74,222,128,.4);">
+          <div class="arch-block-icon">🎙️</div>
+          <div class="arch-block-name">ElevenLabs</div>
+          <div class="arch-block-sub">6× TTS</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block" style="border-color:rgba(249,115,22,.4);">
+          <div class="arch-block-icon">▶️</div>
+          <div class="arch-block-name">Playback</div>
+          <div class="arch-block-sub">sequential</div>
+        </div>
+      </div>
+
+      <h3 id="section-apis">Open APIs</h3>
+      <div class="table-scroll" style="overflow-x:auto;margin:1.25rem 0;">
+        <table class="api-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Endpoint</th>
+              <th>Method</th>
+              <th>Key header</th>
+              <th>What it returns</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Linkup</td>
+              <td>api.linkup.so/v1/search</td>
+              <td>POST</td>
+              <td>Authorization: Bearer</td>
+              <td>{ answer, sources } — real web results</td>
+            </tr>
+            <tr>
+              <td>ElevenLabs</td>
+              <td>api.elevenlabs.io/v1/text-to-speech/{voice_id}</td>
+              <td>POST</td>
+              <td>xi-api-key</td>
+              <td>audio/mpeg binary blob</td>
+            </tr>
+            <tr>
+              <td>OpenAI</td>
+              <td>api.openai.com/v1/chat/completions</td>
+              <td>POST</td>
+              <td>Authorization: Bearer</td>
+              <td>Funnier debate transcript</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Linkup's <code>outputType: sourcedAnswer</code> returns a clean structured answer with citations — no scraping or parsing needed. ElevenLabs uses model <code>eleven_turbo_v2_5</code> for fast generation. The six audio blobs are stored as URL objects and played sequentially.</p>
+
+      <h3>Live Output — "Is Lovable actually production-ready?"</h3>
+      <p>This is real output from running the demo topic live. Linkup searched both sides of the argument, the script was generated, ElevenLabs voiced it. Nothing below was written by a human.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1.25rem 0;">
+        <div style="background:rgba(129,140,248,.07);border:1px solid rgba(129,140,248,.2);border-left:3px solid #818cf8;border-radius:0 var(--rw-r-md) var(--rw-r-md) 0;padding:1rem 1.25rem;">
+          <div style="font-family:var(--rw-font-mono);font-size:.65rem;font-weight:700;color:#818cf8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;">🔵 The Case For</div>
+          <div style="font-size:.84rem;color:var(--rw-text-muted);line-height:1.65;">Generates code that is <strong style="color:var(--rw-text);">90% production-ready</strong> — one custom utility function needed for CSV export logic.</div>
+          <div style="font-size:.84rem;color:var(--rw-text-muted);line-height:1.65;margin-top:.5rem;">Subscription checkout flows reach <strong style="color:var(--rw-text);">95% completion</strong> with minor adjustments.</div>
+          <div style="font-size:.84rem;color:var(--rw-text-muted);line-height:1.65;margin-top:.5rem;">Production-ready for low-volume B2B SaaS, internal tools, and validation MVPs.</div>
+        </div>
+        <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.18);border-left:3px solid #4ade80;border-radius:0 var(--rw-r-md) var(--rw-r-md) 0;padding:1rem 1.25rem;">
+          <div style="font-family:var(--rw-font-mono);font-size:.65rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;">🟢 The Case Against</div>
+          <div style="font-size:.84rem;color:var(--rw-text-muted);line-height:1.65;">Not fully production-ready for all use cases — significant limitations for high-traffic consumer apps, regulated industries, and complex financial applications.</div>
+          <div style="font-size:.84rem;color:var(--rw-text-muted);line-height:1.65;margin-top:.5rem;">Research found <strong style="color:var(--rw-text);">10 database security vulnerabilities</strong> in generated code for complex use cases.</div>
+        </div>
+      </div>
+
+      <div class="debate-preview">
+        <div class="db-bubble db-bubble-a">
+          <div class="db-label-a">🔵 THE OPTIMIST (Voice A)</div>
+          <div class="db-text">"Lovable is nearly there! With 90% production-ready code, you only need one little utility function for CSV export — what's a minor tweak among friends?"</div>
+        </div>
+        <div class="db-bubble db-bubble-b">
+          <div class="db-label-b">🟢 THE SKEPTIC (Voice B)</div>
+          <div class="db-text">"Ah yes, 'nearly there,' like a car that runs on three wheels. Let's not forget it's still not fully production-ready for all use cases in 2026."</div>
+        </div>
+        <div class="db-bubble db-bubble-a">
+          <div class="db-label-a">🔵 THE OPTIMIST (Voice A)</div>
+          <div class="db-text">"But for low-volume B2B SaaS and internal tools, it's practically a miracle! 95% completion for subscription checkout flows is a steal."</div>
+        </div>
+        <div class="db-bubble db-bubble-b">
+          <div class="db-label-b">🟢 THE SKEPTIC (Voice B)</div>
+          <div class="db-text">"Sure, if you enjoy navigating significant limitations and potential database security vulnerabilities. Who doesn't love a little thrill in their tech stack?"</div>
+        </div>
+        <div class="db-bubble db-bubble-a">
+          <div class="db-label-a">🔵 THE OPTIMIST (Voice A)</div>
+          <div class="db-text">"A little risk is just part of the innovation game! Besides, think of the exciting MVPs you could validate with Lovable."</div>
+        </div>
+        <div class="db-bubble db-bubble-b">
+          <div class="db-label-b">🟢 THE SKEPTIC (Voice B)</div>
+          <div class="db-text">"Exciting indeed, as long as you don't mind your app crashing during tax season. Sounds like a fun time to me."</div>
+        </div>
+      </div>
+      <p style="font-size:.8rem;color:var(--rw-text-subtle);font-family:var(--rw-font-mono);">↑ Real Linkup data. Real ElevenLabs voices. Zero human-written lines.</p>
+    </section>
+
+    <!-- ── 6. Screenshots ───────────────────────────── -->
+    <section class="guide-section" id="section-screenshots">
+      <h2>Screenshots</h2>
+
+      <div class="screenshot-frame">
+        <img src="../images/debatecast-screenshot.png" alt="DebateCast home screen — dark theme, two tabs, preset chips">
+        <div class="screenshot-caption">Home screen — dark background, ⚔️ DebateCast title, two tabs (Hot Topic / Doc vs Reality), 5 preset chips, Start the Debate button.</div>
+      </div>
+
+      <div class="screenshot-placeholder">
+        <div class="screenshot-placeholder-icon">🎭</div>
+        <div class="screenshot-placeholder-title">Demo Mode — Coming Soon</div>
+        <div class="screenshot-placeholder-note">Demo mode with pre-generated real debates (Linkup data + ElevenLabs audio bundled as static files) is being added. Screenshot will be updated once Lovable credits are refreshed and the update is deployed.</div>
+      </div>
+
+      <div class="screenshot-placeholder" style="border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.03);">
+        <div class="screenshot-placeholder-icon">🔴</div>
+        <div class="screenshot-placeholder-title">Live Mode — Settings Panel</div>
+        <div class="screenshot-placeholder-note">Settings drawer showing 5 API key fields (Linkup, ElevenLabs, Voice A, Voice B, OpenAI). Screenshot pending next Lovable update.</div>
+      </div>
+    </section>
+
+    <!-- ── 7. Real Learnings ────────────────────────── -->
+    <section class="guide-section" id="section-learnings">
+      <h2>Real Learnings</h2>
+
+      <div class="learning-item">
+        <div class="learning-num">LEARNING 01</div>
+        <div class="learning-title">The demo topic IS the proof</div>
+        <div class="learning-body">Debating "Is Lovable actually production-ready?" in front of the Lovable team, using Linkup to find real complaints, voiced by ElevenLabs — that's not just a demo. It's proof the whole stack works under adversarial conditions. Pick a topic that makes the judges nervous and then run it. That's how you're remembered.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">LEARNING 02</div>
+        <div class="learning-title">ElevenLabs API key ID ≠ API key</div>
+        <div class="learning-body">The ElevenLabs dashboard shows a key ID (a long hex string). That is not your API key. The actual key starts with <code>sk_</code>. Spent real time on this during the build. Always check the format before assuming the key is wrong.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">LEARNING 03</div>
+        <div class="learning-title">Lovable builds fast — credits run out faster</div>
+        <div class="learning-body">The initial build from one prompt was clean. But iterating — adding new modes, tweaking the layout, fixing edge cases — burns credits quickly. For a 2-hour hackathon that's fine. For a production app, budget your iterations or use GitHub to hand off to a real codebase.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">LEARNING 04</div>
+        <div class="learning-title">Linkup query design changes everything</div>
+        <div class="learning-body">Generic queries return generic answers. <code>"[topic] supporting evidence data statistics 2026"</code> returns very different (and better) results than just the topic. The year matters — Linkup finds current data, so anchoring to 2026 stops it from surfacing outdated results.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">LEARNING 05</div>
+        <div class="learning-title">Two voices beat one — dialogue creates tension</div>
+        <div class="learning-body">A single AI voice summarizing both sides is a summary. Two voices arguing is a show. The format forces listening. People in the room stopped talking when the audio started. That almost never happens at hackathon demos.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">LEARNING 06</div>
+        <div class="learning-title">The name has to encode the idea</div>
+        <div class="learning-body">Early names were RecapCast, Briefcast, DemoCast — none of them said what made it interesting. DebateCast says it in one word: debate + broadcast. When the name already tells the story, you don't have to explain it before showing it.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">LEARNING 07</div>
+        <div class="learning-title">Stop talking when the demo runs</div>
+        <div class="learning-body">The hardest discipline in a live demo: shut up. When ElevenLabs voices are playing, any narration competes with them. The silence during the audio is what lets the product speak. The demo script has "STOP TALKING" written in caps three times. It needs to be that explicit.</div>
+      </div>
+    </section>
+
+    <!-- ── 8. Moments In Between ────────────────────── -->
+    <section class="guide-section" id="section-moments">
+      <h2>Moments In Between</h2>
+      <div class="moment-grid">
+        <div class="moment-card">
+          <div class="moment-emoji">🔑</div>
+          <div class="moment-title">The key that wasn't a key</div>
+          <div class="moment-text">ElevenLabs gave me a hex string in the dashboard. Pasted it in. Error: "API key ID used as API key — only valid API keys can be used." The actual key starts with <code>sk_</code> and lives under a different settings tab. Found it on the second search.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">😬</div>
+          <div class="moment-title">Running the Lovable debate live</div>
+          <div class="moment-text">Typing "Is Lovable actually production-ready?" into a Lovable-built app, in front of the Lovable sponsor team, and then waiting for Linkup to return real Reddit complaints — that moment of not knowing what it would say was the realest thing in the demo.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">📄</div>
+          <div class="moment-title">The 2023 policy vs 2026 reality</div>
+          <div class="moment-text">The Meridian document was fake — but realistic. When Voice B read 2026 Linkup data against a claim that AI isn't suitable for professional work, the gap did the work. Nobody needed to explain the joke. The data just won.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">💡</div>
+          <div class="moment-title">The name pivot</div>
+          <div class="moment-text">RecapCast, Briefcast, DemoCast all felt close. "DebateCast" came late in the ideation — and it immediately felt like the one. The idea of two voices literally broadcasting a debate was in the name. Everything else snapped into place after that.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">⚡</div>
+          <div class="moment-title">Lovable hit its credit limit mid-build</div>
+          <div class="moment-text">During iteration, Lovable ran out of credits. Switched to building locally with Claude. Then realized the Lovable version was cleaner and better hosted. Deleted the local version. Sometimes the cloud tool wins over the custom build.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9. Platform Review ───────────────────────── -->
+    <section class="guide-section" id="section-platforms">
+      <h2>Platform Review</h2>
+
+      <div class="platform-review">
+        <div class="platform-label">Lovable</div>
+        <div class="platform-row">
+          <div class="liked-box">
+            <div class="box-label">✓ Liked</div>
+            <div class="review-item">Ships a real deployed URL in under 5 minutes from a single prompt</div>
+            <div class="review-item">GitHub integration — push to repo, full codebase is yours</div>
+            <div class="review-item">Generated multi-screen React app with working API calls from one description</div>
+            <div class="review-item">The prompt language is natural — describe UI and behavior together</div>
+          </div>
+          <div class="gotcha-box">
+            <div class="box-label">⚠ Gotcha</div>
+            <div class="review-item">Credit limits hit during iteration — each prompt change costs tokens</div>
+            <div class="review-item">Complex edge cases need multiple prompt rounds</div>
+            <div class="review-item">Harder to debug when the generated code breaks silently</div>
+          </div>
+        </div>
+
+        <div class="platform-label">ElevenLabs</div>
+        <div class="platform-row">
+          <div class="liked-box">
+            <div class="box-label">✓ Liked</div>
+            <div class="review-item"><code>eleven_turbo_v2_5</code> generates fast — 6 sequential calls completed in seconds</div>
+            <div class="review-item">Voice character is real — The Optimist and The Skeptic sound genuinely different</div>
+            <div class="review-item">Binary blob response is easy to store as URL objects for playback</div>
+          </div>
+          <div class="gotcha-box">
+            <div class="box-label">⚠ Gotcha</div>
+            <div class="review-item">Key ID in dashboard ≠ API key. The actual key starts with <code>sk_</code></div>
+            <div class="review-item">6 TTS calls per debate adds up — cache or pre-generate for demo mode</div>
+            <div class="review-item">Header is <code>xi-api-key</code>, not <code>Authorization: Bearer</code></div>
+          </div>
+        </div>
+
+        <div class="platform-label">Linkup</div>
+        <div class="platform-row">
+          <div class="liked-box">
+            <div class="box-label">✓ Liked</div>
+            <div class="review-item"><code>outputType: sourcedAnswer</code> returns clean structured text — no parsing</div>
+            <div class="review-item">Results are genuinely current — 2026 data, real Reddit threads, real research</div>
+            <div class="review-item">Two searches (FOR + AGAINST) is all you need for a complete debate</div>
+          </div>
+          <div class="gotcha-box">
+            <div class="box-label">⚠ Gotcha</div>
+            <div class="review-item">Query wording matters — include the year and search intent for better results</div>
+            <div class="review-item">Generic topics return generic answers — be specific in the query</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 10. Team ─────────────────────────────────── -->
+    <section class="guide-section" id="section-team">
+      <h2>Team</h2>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar av-1">SH</div>
+          <div>
+            <div class="team-name">Sham Hassanchi</div>
+            <div class="team-role">idea · design · build · demo</div>
+            <div class="team-contrib">Came up with DebateCast, wrote the Lovable prompt, wired the APIs, built the demo script, and presented on stage. The whole arc from idea to shipped happened on September 4th.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar av-2">MR</div>
+          <div>
+            <div class="team-name">Mahima Raja</div>
+            <div class="team-role">paired at the hackathon</div>
+            <div class="team-contrib">First hackathon. Paired together for part of the build — a good reminder that new people show up and participate and that's what these events are for.</div>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top:1.5rem;">Built at the <strong>First Non-Tech Buildathon</strong>, AWS Builder Loft, 525 Market St, San Francisco — September 4, 2026. Sponsors: Lovable · ElevenLabs · Linkup.</p>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"Drop-Off Oasis","url":"/usecase/drop-off-oasis.html"},{"label":"TripRipple Agent Memory","url":"/usecase/tripripple.html"},{"label":"PanchangChef Build","url":"/usecase/panchangchef-guide.html"},{"label":"Rubiks Cube coach ","url":"/usecase/rubik-navigator-guide.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// Scrollspy
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+})();
+</script>
+
+</body>
+</html>
