@@ -16,13 +16,40 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "BuildBridge — Article to GitHub Repo in 30s",
+        excerpt: "Paste any technical article or YouTube video. BuildBridge extracts every step, lets you edit, then creates a GitHub repo, Slack notification, Ambiguous task, and a follow-up reminder — in one click. Built solo for a hackathon in one day.",
+        date: "Sep 13, 2026",
+        image: "./images/buildbridge-linkedin.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/buildbridge-ai.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_reading-a-good-tutorial-and-actually-starting-share-7505001399315980288-6MXL/"
+      },
+      {
         title: "DebateCast — Two AI Voices. One Live Debate",
         excerpt: "How We built DebateCast in 2 hours at a hackathon — an app where two AI voices debate any topic using live web data. Built with Lovable, ElevenLabs, and Linkup.",
         date: "Sep 05, 2026",
         image: "./images/debatscast.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/debatecast.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_youve-read-both-sides-of-an-argument-youve-share-7502000081772900352-EVbT/"
+      },
+      {
+        title: "LaunchKit — Complete Domain Lifecycle Tool ",
+        excerpt: "Your domain already replaces Bitly, Linktree & Google Workspace ($56/mo). LaunchKit makes it easy: AI naming, branded links, email, DNS, security & brand protection. Built on the name.com API.",
+        date: "Sep 03, 2026",
+        image: "./images/launchkit/01-landing.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/LaunchKit.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_serpdelta-hackathon-buildinpublic-share-7501538642088308736-TvPT/"
+      },
+      {
+        title: "SERP Delta — LLM Knowledge Gap Detector ",
+        excerpt: "Detect and score LLM knowledge staleness against live Google search results. Zero infrastructure. One API call between you and the truth.",
+        date: "Sep 03, 2026",
+        image: "./images/images/serpdelta.jpeg",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/serpdelta.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_apiworldhackathon-git-apitesting-ugcPost-7501175547671236609-j_Rf/"
       },
       {
         title: "SecondEar — Built at the Guava Voice Hackathon ",
@@ -31,7 +58,7 @@
         image: "./images/secondear.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/secondear.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_goguava-share-7499883410711228417-E_6d/"
       },
       {
         title: "Drop-Off Oasis: An AI Concierge for the 45-Minute Wait",
