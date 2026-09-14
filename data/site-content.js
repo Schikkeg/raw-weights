@@ -46,7 +46,7 @@
         title: "SERP Delta — LLM Knowledge Gap Detector ",
         excerpt: "Detect and score LLM knowledge staleness against live Google search results. Zero infrastructure. One API call between you and the truth.",
         date: "Sep 03, 2026",
-        image: "./images/images/serpdelta.jpeg",
+        image: "./images/serpdelta.jpeg",
         type: "Usecase",
         link: "https://rawweights.com/usecase/serpdelta.html",
         linkedin: "https://www.linkedin.com/posts/shamhc_apiworldhackathon-git-apitesting-ugcPost-7501175547671236609-j_Rf/"
