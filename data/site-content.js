@@ -16,6 +16,15 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Durable, Retrievable, and Trustworthy",
+        excerpt: "What I learned architecting an agentic pipeline on Temporal, MongoDB Atlas, and Keycard — durability, retrieval, and identity, each owning exactly one layer.",
+        date: "Sep 16, 2026",
+        image: "./images/temporal-agentic-pipeline.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/temporal-agentic-pipeline.html",
+        linkedin: null
+      },
+      {
         title: "BuildBridge — Article to GitHub Repo in 30s",
         excerpt: "Paste any technical article or YouTube video. BuildBridge extracts every step, lets you edit, then creates a GitHub repo, Slack notification, Ambiguous task, and a follow-up reminder — in one click. Built solo for a hackathon in one day.",
         date: "Sep 13, 2026",

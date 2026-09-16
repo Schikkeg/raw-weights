@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Durable, Retrievable, and Trustworthy | RawWeights</title>
+  <meta name="description" content="What I learned architecting an agentic pipeline on Temporal, MongoDB Atlas, and Keycard — durability, retrieval, and identity, each owning exactly one layer.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/blog/temporal-agentic-pipeline.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/blog/temporal-agentic-pipeline.html">
+  <meta property="og:image" content="https://rawweights.com/images/temporal-agentic-pipeline.png">
+  <meta property="og:title" content="Durable, Retrievable, and Trustworthy | RawWeights">
+  <meta property="og:description" content="What I learned architecting an agentic pipeline on Temporal, MongoDB Atlas, and Keycard — durability, retrieval, and identity, each owning exactly one layer.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Base reset ───────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    * { word-break: break-word; overflow-wrap: break-word; }
+    img, svg { max-width: 100%; height: auto; display: block; }
+
+    /* ── Hero ─────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #07101f 0%, #0f0b28 50%, #071530 100%);
+      padding: 4rem 2rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -20%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(129,140,248,.22) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(74,222,128,.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .hero-split > * { min-width: 0; }
+    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(129,140,248,.12); border: 1px solid rgba(129,140,248,.3);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #818cf8;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .pulse-dot { width: 6px; height: 6px; background: #818cf8; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.5)} }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      font-weight: 800; color: #f0f4ff;
+      line-height: 1.08; letter-spacing: -.03em; margin-bottom: 1rem;
+      text-align: left;
+    }
+    .guide-hero h1 span { color: #818cf8; }
+    .guide-hero p { font-size: 1rem; color: rgba(240,244,255,.72); margin: 0 0 1.5rem; line-height: 1.72; text-align: left; }
+    .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; }
+
+    /* Hero terminal panel */
+    .hero-terminal {
+      border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(129,140,248,.28);
+      box-shadow: 0 0 60px rgba(129,140,248,.14), 0 24px 48px rgba(0,0,0,.45);
+      background: #070d1a;
+    }
+    .terminal-bar {
+      padding: .6rem 1rem; background: rgba(255,255,255,.04);
+      border-bottom: 1px solid rgba(129,140,248,.15);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-red { background: #f05252; }
+    .t-yellow { background: #f59e0b; }
+    .t-green { background: #4ade80; }
+    .t-title { font-family: var(--rw-font-mono); font-size: .7rem; color: rgba(240,244,255,.35); margin-left: auto; }
+    .terminal-body {
+      padding: 1.25rem 1.25rem 1.5rem;
+      font-family: var(--rw-font-mono); font-size: .78rem;
+      min-height: 280px; overflow: hidden;
+    }
+    .t-line {
+      line-height: 1.7; display: block;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity .3s ease, transform .3s ease;
+    }
+    .t-line.visible { opacity: 1; transform: translateY(0); }
+    .t-cmd { color: #a5b4fc; }
+    .t-ok { color: #4ade80; }
+    .t-warn { color: #fbbf24; }
+    .t-info { color: rgba(240,244,255,.55); }
+    .t-deny { color: #f87171; }
+    .t-blank { opacity: 0 !important; }
+    .t-cursor { display: inline-block; width: 2px; height: 1em; background: #818cf8; animation: blink 1s step-end infinite; vertical-align: text-bottom; margin-left: 1px; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── Guide layout ─────────────────────────── */
+    .guide-layout {
+      display: grid; grid-template-columns: 230px 1fr;
+      gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
+      padding: 0 1.5rem; align-items: start;
+    }
+    .guide-layout > * { min-width: 0; }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
+    .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: #818cf8; border-left-color: #818cf8; background: rgba(129,140,248,.08); }
+    .guide-toc .toc-sub { padding-left: 1rem; font-size: .78rem; }
+
+    /* ── Sections ────────────────────────────── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 {
+      font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
+      color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem;
+      border-bottom: 2px solid rgba(129,140,248,.18);
+      scroll-margin-top: calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.75rem 0 .6rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.78; margin-bottom: 1rem; }
+    .guide-section strong { color: var(--rw-text); }
+
+    /* ── Layer badge ─────────────────────────── */
+    .layer-badge {
+      display: inline-flex; align-items: center; gap: .45rem;
+      border-radius: 9999px; padding: .28rem .85rem;
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+      font-family: var(--rw-font-display); margin-bottom: 1rem;
+    }
+    .lb-indigo { background: rgba(129,140,248,.12); border: 1px solid rgba(129,140,248,.3); color: #818cf8; }
+    .lb-green { background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.25); color: #4ade80; }
+    .lb-amber { background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.25); color: #fbbf24; }
+    .lb-red { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.25); color: #f87171; }
+
+    /* ── Stat row ────────────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: #818cf8; line-height: 1; }
+    .stat-val-g { color: #4ade80; }
+    .stat-label { font-size: .72rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Feature grid ────────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
+    .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; line-height: 1.6; }
+
+    /* ── Architecture diagram ─────────────────── */
+    .arch-wrap {
+      margin: 1.5rem 0; padding: 1.75rem;
+      background: var(--rw-bg-subtle); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+    }
+    .arch-source {
+      text-align: center; padding: .7rem 1.25rem;
+      border: 1px dashed rgba(255,255,255,.2); border-radius: 8px;
+      font-family: var(--rw-font-mono); font-size: .8rem; color: rgba(240,244,255,.5);
+      margin-bottom: .5rem;
+    }
+    .arch-arrow {
+      text-align: center; color: rgba(255,255,255,.25);
+      font-size: 1.2rem; padding: .2rem 0;
+      line-height: 1;
+    }
+    .arch-layer {
+      border-radius: 10px; padding: 1.1rem 1.25rem; margin: .3rem 0;
+      cursor: pointer; transition: transform .15s, box-shadow .15s;
+      display: flex; gap: 1.1rem; align-items: flex-start;
+    }
+    .arch-layer:hover { transform: translateX(3px); }
+    .arch-temporal { background: rgba(129,140,248,.08); border: 1.5px solid rgba(129,140,248,.35); }
+    .arch-temporal:hover { box-shadow: 0 0 20px rgba(129,140,248,.15); }
+    .arch-mongo { background: rgba(74,222,128,.07); border: 1.5px solid rgba(74,222,128,.3); }
+    .arch-mongo:hover { box-shadow: 0 0 20px rgba(74,222,128,.12); }
+    .arch-keycard { background: rgba(251,191,36,.07); border: 1.5px solid rgba(251,191,36,.28); }
+    .arch-keycard:hover { box-shadow: 0 0 20px rgba(251,191,36,.1); }
+    .arch-icon { font-size: 1.75rem; flex-shrink: 0; padding-top: .1rem; }
+    .arch-content {}
+    .arch-name { font-family: var(--rw-font-display); font-size: .95rem; font-weight: 800; color: var(--rw-text); margin-bottom: .2rem; }
+    .arch-owns { font-family: var(--rw-font-mono); font-size: .7rem; margin-bottom: .4rem; font-style: italic; }
+    .arch-temporal .arch-owns { color: #818cf8; }
+    .arch-mongo .arch-owns { color: #4ade80; }
+    .arch-keycard .arch-owns { color: #fbbf24; }
+    .arch-primitives { font-size: .78rem; color: var(--rw-text-muted); }
+    .arch-dest {
+      text-align: center; padding: .6rem 1.25rem; margin-top: .3rem;
+      border: 1px solid rgba(129,140,248,.25); border-radius: 8px; background: rgba(129,140,248,.07);
+      font-family: var(--rw-font-display); font-size: .8rem; font-weight: 700; color: #818cf8;
+    }
+    .arch-rule {
+      margin-top: 1.1rem; padding: .75rem 1rem;
+      background: rgba(255,255,255,.03); border-radius: 8px;
+      border-left: 3px solid rgba(129,140,248,.4);
+      font-size: .82rem; color: var(--rw-text-muted); font-style: italic; line-height: 1.6;
+    }
+
+    /* ── Code tabs ───────────────────────────── */
+    .code-tabs-wrap { margin: 1.5rem 0; }
+    .code-tab-bar {
+      display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 0;
+    }
+    .code-tab {
+      padding: .4rem .95rem;
+      border-radius: 8px 8px 0 0; border: 1px solid var(--rw-border);
+      border-bottom: none; background: var(--rw-bg-subtle);
+      color: var(--rw-text-muted); font-family: var(--rw-font-display);
+      font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .15s;
+    }
+    .code-tab:hover { color: #818cf8; border-color: rgba(129,140,248,.35); }
+    .code-tab.active { background: #0d1117; border-color: rgba(129,140,248,.4); color: #a5b4fc; }
+    .code-panel { display: none; }
+    .code-panel.active { display: block; }
+    .code-block {
+      background: #0d1117; border: 1px solid rgba(129,140,248,.2);
+      border-radius: 0 8px 8px 8px;
+      padding: 1.1rem 1.25rem; font-family: var(--rw-font-mono);
+      font-size: .8rem; overflow-x: auto; line-height: 1.8;
+      white-space: pre; margin: 0;
+    }
+    .cm { color: #4a5568; }
+    .kw { color: #818cf8; }
+    .fn { color: #fbbf24; }
+    .st { color: #4ade80; }
+    .nu { color: #f87171; }
+    .dc { color: #60a5fa; }
+    .code-caption { font-size: .78rem; color: var(--rw-text-subtle); padding: .55rem 1rem; background: rgba(129,140,248,.06); border: 1px solid rgba(129,140,248,.15); border-top: none; border-radius: 0 0 8px 8px; }
+
+    /* ── Callout box ─────────────────────────── */
+    .callout {
+      border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem; margin: 1.25rem 0;
+    }
+    .callout-indigo { background: rgba(129,140,248,.08); border: 1px solid rgba(129,140,248,.25); border-left: 3px solid #818cf8; }
+    .callout-green { background: rgba(74,222,128,.07); border: 1px solid rgba(74,222,128,.2); border-left: 3px solid #4ade80; }
+    .callout-amber { background: rgba(251,191,36,.07); border: 1px solid rgba(251,191,36,.2); border-left: 3px solid #fbbf24; }
+    .callout-title { font-family: var(--rw-font-display); font-size: .82rem; font-weight: 700; margin-bottom: .4rem; }
+    .callout-indigo .callout-title { color: #818cf8; }
+    .callout-green .callout-title { color: #4ade80; }
+    .callout-amber .callout-title { color: #fbbf24; }
+    .callout p { font-size: .85rem; color: var(--rw-text-muted); margin: 0; line-height: 1.65; }
+
+    /* ── Liked / Gotcha review ────────────────── */
+    .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .review-col {}
+    .review-col-label { font-family: var(--rw-font-mono); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; padding: .35rem .75rem; border-radius: 6px 6px 0 0; display: inline-block; }
+    .liked-label { background: rgba(74,222,128,.15); color: #4ade80; border: 1px solid rgba(74,222,128,.25); }
+    .gotcha-label { background: rgba(251,191,36,.12); color: #fbbf24; border: 1px solid rgba(251,191,36,.22); }
+    .review-items { border-radius: 0 8px 8px 8px; overflow: hidden; }
+    .liked-items { border: 1px solid rgba(74,222,128,.2); }
+    .gotcha-items { border: 1px solid rgba(251,191,36,.18); }
+    .review-item { padding: .75rem 1rem; border-bottom: 1px solid var(--rw-border); }
+    .review-item:last-child { border-bottom: none; }
+    .review-item-title { font-family: var(--rw-font-display); font-size: .84rem; font-weight: 700; color: var(--rw-text); margin-bottom: .25rem; }
+    .review-item-body { font-size: .78rem; color: var(--rw-text-muted); line-height: 1.6; }
+
+    /* ── Learning cards ──────────────────────── */
+    .learning-item {
+      border: 1px solid var(--rw-border); border-left: 3px solid #818cf8;
+      border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0;
+      padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--rw-card);
+    }
+    .learning-num { font-family: var(--rw-font-mono); font-size: .67rem; color: #818cf8; letter-spacing: .06em; margin-bottom: .3rem; }
+    .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .45rem; }
+    .learning-body { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.67; margin-bottom: .6rem; }
+    .learning-quote { padding: .45rem .85rem; background: rgba(129,140,248,.08); border-left: 2px solid #818cf8; font-size: .8rem; color: #818cf8; font-style: italic; border-radius: 0 4px 4px 0; }
+
+    /* ── Moment tiles ────────────────────────── */
+    .moment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .moment-tile {
+      background: var(--rw-card); border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md); padding: 1.2rem;
+    }
+    .moment-tag { font-family: var(--rw-font-mono); font-size: .67rem; color: var(--rw-text-subtle); letter-spacing: .06em; margin-bottom: .6rem; text-transform: uppercase; }
+    .moment-body { font-size: .85rem; color: var(--rw-text-muted); line-height: 1.65; }
+    .moment-body strong { color: var(--rw-text); }
+
+    /* ── Comparison table ─────────────────────── */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.25rem 0; }
+    .comparison-table { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 480px; }
+    .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .78rem; text-align: left; padding: .7rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
+    .comparison-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; line-height: 1.6; }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+    .comparison-table code { font-family: var(--rw-font-mono); font-size: .82em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: #818cf8; }
+
+    /* ── Step list ───────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: #818cf8; color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .92rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; line-height: 1.65; }
+
+    /* ── Team ────────────────────────────────── */
+    .people-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    .person-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem; }
+    .person-org { font-family: var(--rw-font-mono); font-size: .67rem; color: var(--rw-text-subtle); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+    .person-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .92rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .person-role { font-size: .75rem; color: #818cf8; font-family: var(--rw-font-mono); margin-bottom: .45rem; }
+    .person-note { font-size: .78rem; color: var(--rw-text-muted); line-height: 1.6; }
+
+    /* ── Inline code ─────────────────────────── */
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: #818cf8; }
+
+    /* ── Meta lesson banner ──────────────────── */
+    .meta-banner {
+      background: linear-gradient(135deg, rgba(129,140,248,.1), rgba(74,222,128,.07));
+      border: 1px solid rgba(129,140,248,.3); border-radius: var(--rw-r-md);
+      padding: 1.5rem 1.75rem; margin: 1.5rem 0;
+    }
+    .meta-banner p { font-size: 1rem; color: var(--rw-text-muted); line-height: 1.75; margin: 0; font-style: italic; }
+    .meta-banner strong { color: var(--rw-text); font-style: normal; }
+
+    /* ── Plain English analogy cards ────────── */
+    .analogy-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
+    .analogy-card { border-radius:var(--rw-r-md); padding:1.2rem 1.25rem; }
+    .analogy-card-t { background:rgba(129,140,248,.07); border:1px solid rgba(129,140,248,.22); }
+    .analogy-card-m { background:rgba(74,222,128,.06); border:1px solid rgba(74,222,128,.18); }
+    .analogy-card-k { background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.18); }
+    .analogy-tool { font-family:var(--rw-font-display); font-size:.85rem; font-weight:800; margin-bottom:.25rem; }
+    .analogy-card-t .analogy-tool { color:#818cf8; }
+    .analogy-card-m .analogy-tool { color:#4ade80; }
+    .analogy-card-k .analogy-tool { color:#fbbf24; }
+    .analogy-label { font-family:var(--rw-font-mono); font-size:.64rem; color:var(--rw-text-subtle); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.55rem; }
+    .analogy-text { font-size:.83rem; color:var(--rw-text-muted); line-height:1.65; }
+    .analogy-text strong { color:var(--rw-text); }
+
+    /* ── Temporal Developer Skill CTA ────────── */
+    .skill-cta {
+      display:flex; gap:1.1rem; align-items:flex-start;
+      background:linear-gradient(135deg,rgba(129,140,248,.1),rgba(74,222,128,.06));
+      border:1px solid rgba(129,140,248,.3); border-radius:var(--rw-r-md);
+      padding:1.25rem 1.5rem; margin:1.5rem 0; text-decoration:none; color:inherit;
+      transition:box-shadow .15s, transform .12s;
+    }
+    .skill-cta:hover { box-shadow:0 0 28px rgba(129,140,248,.18); transform:translateY(-1px); }
+    .skill-cta-icon { font-size:2rem; flex-shrink:0; }
+    .skill-cta-label { font-family:var(--rw-font-mono); font-size:.64rem; color:#818cf8; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.3rem; }
+    .skill-cta-title { font-family:var(--rw-font-display); font-weight:800; font-size:.98rem; color:var(--rw-text); margin-bottom:.3rem; }
+    .skill-cta-desc { font-size:.82rem; color:var(--rw-text-muted); line-height:1.6; }
+    .skill-cta-arrow { margin-top:.45rem; font-size:.8rem; color:#818cf8; font-weight:700; font-family:var(--rw-font-display); }
+
+    /* ── Go Deeper list ──────────────────────── */
+    .go-deeper-list { list-style:none; display:flex; flex-direction:column; gap:.55rem; margin:1.1rem 0; padding:0; }
+    .go-deeper-item { display:flex; gap:.85rem; align-items:center; padding:.85rem 1rem; background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-sm); text-decoration:none; color:inherit; transition:border-color .15s, background .15s; }
+    .go-deeper-item:hover { border-color:rgba(129,140,248,.4); background:rgba(129,140,248,.04); }
+    .go-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .go-dt { background:#818cf8; }
+    .go-dm { background:#4ade80; }
+    .go-dk { background:#fbbf24; }
+    .go-item-body { flex:1; min-width:0; }
+    .go-item-org { font-family:var(--rw-font-mono); font-size:.64rem; color:var(--rw-text-subtle); text-transform:uppercase; letter-spacing:.06em; }
+    .go-item-title { font-family:var(--rw-font-display); font-size:.88rem; font-weight:700; color:var(--rw-text); margin:.1rem 0; }
+    .go-item-desc { font-size:.78rem; color:var(--rw-text-muted); line-height:1.55; }
+    .go-item-arrow { color:rgba(129,140,248,.6); font-size:.85rem; flex-shrink:0; }
+
+    /* ── Responsive ──────────────────────────── */
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .guide-toc { flex-direction: row; flex-wrap: wrap; gap: .25rem; }
+      .guide-toc a { border-left: none; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; }
+      .guide-toc a:hover, .guide-toc a.active { border-bottom-color: #818cf8; border-left-color: transparent; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .people-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero-split { grid-template-columns: 1fr; gap: 1.75rem; }
+      .guide-hero { padding: 2.5rem 1.25rem 2rem; }
+      .stat-row { flex-wrap: wrap; }
+      .stat-cell { flex: 1 1 calc(33.333% - 1px); border-right: 1px solid var(--rw-border); border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(3n) { border-right: none; }
+      .stat-cell:nth-last-child(-n+3) { border-bottom: none; }
+      .review-grid { grid-template-columns: 1fr; }
+      .moment-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .guide-layout { margin: 1.5rem auto; padding: 0 1rem; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .people-grid { grid-template-columns: 1fr; }
+      .guide-section h2 { font-size: 1.25rem; }
+      .guide-sidebar { display: none; }
+      .stat-cell { flex: 1 1 50%; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ───────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> Builder After Hours &nbsp;&middot;&nbsp; Temporal · MongoDB · Keycard</span>
+      <h1>Durable, Retrievable,<br><span>and Trustworthy</span></h1>
+      <p>Agentic systems fail in ways traditional web apps don&rsquo;t. A crash mid-pipeline can leave you with half-embedded content, duplicated side effects, or an agent holding more access than it should. I stress-tested a three-layer architecture &mdash; Temporal, MongoDB Atlas, and Keycard &mdash; against the people who build this infrastructure for a living.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Temporal Python SDK</span>
+        <span class="hero-tag">MongoDB Atlas + Voyage AI</span>
+        <span class="hero-tag">Keycard</span>
+        <span class="hero-tag">Durable Execution</span>
+        <span class="hero-tag">Vector Search</span>
+        <span class="hero-tag">Task-Scoped Credentials</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the Writeup &darr;</a>
+      </div>
+    </div>
+
+    <!-- Animated terminal -->
+    <div class="hero-terminal">
+      <div class="terminal-bar">
+        <span class="t-dot t-red"></span>
+        <span class="t-dot t-yellow"></span>
+        <span class="t-dot t-green"></span>
+        <span class="t-title">temporal-pipeline ~ agentic</span>
+      </div>
+      <div class="terminal-body" id="terminal-output"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Content ─────────────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-problem">Three Questions</a></li>
+      <li><a href="#section-concepts">Plain English</a></li>
+      <li><a href="#section-arch">Architecture</a></li>
+      <li><a href="#section-temporal">Layer 1 — Temporal</a></li>
+      <li><a href="#section-temporal-code" class="toc-sub">Code example</a></li>
+      <li><a href="#section-mongodb">Layer 2 — MongoDB Atlas</a></li>
+      <li><a href="#section-mongodb-code" class="toc-sub">Code example</a></li>
+      <li><a href="#section-keycard">Layer 3 — Keycard</a></li>
+      <li><a href="#section-keycard-code" class="toc-sub">Code example</a></li>
+      <li><a href="#section-cost">Cost Levers</a></li>
+      <li><a href="#section-review">Platform Review</a></li>
+      <li><a href="#section-learnings">Learnings</a></li>
+      <li><a href="#section-moments">Moments In Between</a></li>
+      <li><a href="#section-meta">The Meta-Lesson</a></li>
+      <li><a href="#section-deeper">Go Deeper</a></li>
+      <li><a href="#section-people">People</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── THREE QUESTIONS ──────────────────────────────────── -->
+    <section class="guide-section" id="section-problem">
+      <h2>Three Questions, Three Layers</h2>
+      <p>Getting an agentic pipeline right means answering three questions that each belong to a different part of the stack. Answering them with the wrong tool &mdash; or letting one layer bleed into another &mdash; is where things quietly break.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell">
+          <div class="stat-val">1</div>
+          <div class="stat-label">Can my pipeline survive failure without redoing or duplicating work?</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">2</div>
+          <div class="stat-label">Can retrieval and application state stay in sync without a separate sync layer?</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">3</div>
+          <div class="stat-label">Can I prove an agent only ever touched what it was supposed to?</div>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">⏱</div>
+          <h4>Durable Execution</h4>
+          <p>Temporal. Owns time: retries, resumability, and state that survives process death &mdash; without touching the data layer.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🗄</div>
+          <h4>Data + Retrieval</h4>
+          <p>MongoDB Atlas + Voyage AI. Owns data: vector search and operational state in one place, no sync lag between what a pipeline writes and what an agent reads.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔑</div>
+          <h4>Identity + Access</h4>
+          <p>Keycard. Owns trust: short-lived, task-scoped credentials with deny-by-default policy, so you can prove what touched what.</p>
+        </div>
+      </div>
+
+      <p>The moment one layer starts doing another&rsquo;s job &mdash; a raw credential ends up inside a workflow&rsquo;s replay history, say, or a database query reaches back to manage its own retry logic &mdash; you&rsquo;ve broken the boundary and created something that&rsquo;s hard to spot until it bites you in production.</p>
+    </section>
+
+    <!-- ── PLAIN ENGLISH ────────────────────────────────────── -->
+    <section class="guide-section" id="section-concepts">
+      <h2>Plain English First</h2>
+      <p>New to any of these tools? Here&rsquo;s what each one actually does &mdash; before any technical detail. Come back here if a later section loses you.</p>
+
+      <div class="analogy-grid">
+        <div class="analogy-card analogy-card-t">
+          <div class="analogy-tool">Temporal</div>
+          <div class="analogy-label">In plain English</div>
+          <div class="analogy-text">Imagine a video game with <strong>mid-level saves</strong>. Normally if the power goes out, you restart from the beginning. Temporal is the autosave &mdash; but for server-side programs. Your pipeline can process 40 of 100 documents, the server can completely die, and when a new server starts it picks up at document 41. No re-doing, no duplicates, no data loss.</div>
+        </div>
+        <div class="analogy-card analogy-card-m">
+          <div class="analogy-tool">MongoDB Atlas + Voyage AI</div>
+          <div class="analogy-label">In plain English</div>
+          <div class="analogy-text">Think of it as <strong>a filing cabinet that can also read meaning</strong>. Normally you search a database by exact keyword. Vector search lets you search by <em>concept</em> &mdash; &ldquo;anything about late payments&rdquo; returns results even if those exact words don&rsquo;t appear. Atlas combines both in one place, so there&rsquo;s no second system to keep in sync with what your pipeline just wrote.</div>
+        </div>
+        <div class="analogy-card analogy-card-k">
+          <div class="analogy-tool">Keycard</div>
+          <div class="analogy-label">In plain English</div>
+          <div class="analogy-text">Think of it like giving a <strong>contractor a temporary badge</strong> that only unlocks the specific doors they need, only during their shift, and automatically expires when the job is done. The contractor never has the master key, never keeps the badge overnight, and there&rsquo;s a log every time they open a door. That&rsquo;s what Keycard does &mdash; for AI agents accessing databases and APIs.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-indigo">
+        <div class="callout-title">Why do all three matter together?</div>
+        <p>Each one solves a different failure mode that the others don&rsquo;t cover. Without Temporal: a crash halfway through loses progress and can duplicate work. Without the right data layer: what your pipeline just wrote and what your agent can read are out of step. Without access control: when something goes wrong, you can&rsquo;t prove what the agent touched or didn&rsquo;t touch. They&rsquo;re not alternatives &mdash; they each own a separate concern.</p>
+      </div>
+    </section>
+
+    <!-- ── ARCHITECTURE ─────────────────────────────────────── -->
+    <section class="guide-section" id="section-arch">
+      <h2>The Core Architecture</h2>
+      <p>Each layer owns exactly one concern. Click any layer to jump to the deep-dive.</p>
+
+      <div class="arch-wrap">
+        <div class="arch-source">Source content &mdash; documents, chunks, raw text</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-layer arch-temporal" onclick="document.getElementById('section-temporal').scrollIntoView({behavior:'smooth'})" title="Jump to Temporal section">
+          <div class="arch-icon">⏱</div>
+          <div class="arch-content">
+            <div class="arch-name">Temporal &mdash; Durable Execution</div>
+            <div class="arch-owns">owns: time (retries, resumability, event history)</div>
+            <div class="arch-primitives">Workflows &bull; Activities &bull; Signals &bull; Queries &bull; Continue-As-New</div>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-layer arch-mongo" onclick="document.getElementById('section-mongodb').scrollIntoView({behavior:'smooth'})" title="Jump to MongoDB section">
+          <div class="arch-icon">🗄</div>
+          <div class="arch-content">
+            <div class="arch-name">MongoDB Atlas + Voyage AI &mdash; Data + Retrieval</div>
+            <div class="arch-owns">owns: data (vector search + operational state, one place)</div>
+            <div class="arch-primitives">Vector Index &bull; Hybrid Search &bull; Auto-Embeddings &bull; Content-hash dedup</div>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-layer arch-keycard" onclick="document.getElementById('section-keycard').scrollIntoView({behavior:'smooth'})" title="Jump to Keycard section">
+          <div class="arch-icon">🔑</div>
+          <div class="arch-content">
+            <div class="arch-name">Keycard &mdash; Identity + Access</div>
+            <div class="arch-owns">owns: trust (least-privilege, ephemeral, auditable)</div>
+            <div class="arch-primitives">Task-scoped credentials &bull; Deny-by-default &bull; MCP server boundary &bull; Workload identity</div>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-dest">Agent + Application</div>
+        <div class="arch-rule">&ldquo;The moment one layer starts doing another&rsquo;s job, you&rsquo;ve created a vulnerability that&rsquo;s hard to spot until it bites you.&rdquo;</div>
+      </div>
+    </section>
+
+    <!-- ── TEMPORAL ─────────────────────────────────────────── -->
+    <section class="guide-section" id="section-temporal">
+      <h2>Layer 1 — Temporal: Durable Execution</h2>
+      <span class="layer-badge lb-indigo">⏱ owns: time</span>
+
+      <p>Temporal is not &ldquo;a retry library.&rdquo; A retry decorator in a typical framework lives entirely inside one running process &mdash; if that process crashes mid-retry, the retry state is gone. Temporal externalizes state to a server outside your process, replays an event history to reconstruct exactly where execution left off, and resumes on a different machine if needed. That&rsquo;s a categorically different guarantee: not &ldquo;retry the call,&rdquo; but <strong>&ldquo;the process itself can die and the work still finishes.&rdquo;</strong></p>
+
+      <p>Business logic splits into two kinds of code: <strong>Workflows</strong> (the deterministic orchestration plan) and <strong>Activities</strong> (the actual side-effecting work &mdash; API calls, embedding a chunk, writing to the database). If the worker crashes after chunk 40 of 100, a new worker replays the event history, sees chunks 1&ndash;40 already completed, and resumes at 41. No re-embedding. No duplicate API calls.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🔁</div>
+          <h4>Event History Replay</h4>
+          <p>Temporal replays workflow history to reconstruct state after a crash. The worker recovers without you writing any recovery logic.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🛑</div>
+          <h4>Signals + Queries</h4>
+          <p>Pause a workflow until an external party approves (Signal), or inspect what decisions were made (Query). The primitives for approval-gating in compliance workflows.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📜</div>
+          <h4>Continue-As-New</h4>
+          <p>Cap event history growth on long-running workflows by continuing execution with a fresh history. Essential for large pipelines that run indefinitely.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <div class="callout-title">⚠ Idempotency is still your job</div>
+        <p>Retries aren&rsquo;t automatically safe for side-effecting operations. If an activity charges a card, a naive retry after a timeout could double-charge. You structure the activity to check whether the action was already recorded in event history before retrying, and either skip or explicitly reverse. Temporal gives you the durable record to check against &mdash; you still have to write the check.</p>
+      </div>
+
+      <div class="callout callout-indigo">
+        <div class="callout-title">What about using event history as a compliance record?</div>
+        <p>I asked directly whether workflow event history could serve as a compliance artifact &mdash; proof of what was approved, and when. The answer from Temporal&rsquo;s developer advocate: <em>&ldquo;I don&rsquo;t know the right answer for that, actually.&rdquo;</em> No confident yes. Event history is an operational replay log, not a product feature warrantied as a compliance artifact. The actual primitives for approval-gating are Signals (pause and wait for external approval) and Queries (inspect decisions made). A real distinction if compliance is a hard requirement.</p>
+      </div>
+
+      <div class="callout callout-green">
+        <div class="callout-title">Self-hostable forever (Apache 2.0). Lock-in is programming-model, not data.</div>
+        <p>Adopting Temporal requires restructuring code into workflows and activities. Migrating off means rewriting that structure &mdash; it&rsquo;s real but mitigated by keeping activities as thin wrappers around plain functions. The core is Apache-2.0 licensed. No vendor controls your data. The managed Cloud tier starts around $100/month; self-hosting is free with your own ops burden.</p>
+      </div>
+
+      <a class="skill-cta" href="https://temporal.io/blog/introducing-temporal-developer-skill" target="_blank" rel="noopener">
+        <div class="skill-cta-icon">🎓</div>
+        <div>
+          <div class="skill-cta-label">Mentioned in the session &mdash; try it yourself</div>
+          <div class="skill-cta-title">Temporal Developer Skill (Public Preview)</div>
+          <div class="skill-cta-desc">Loads expert-level Temporal knowledge into your AI coding agent. Covers workflow determinism, activity patterns, retry policies, error handling, testing strategies, and common pitfalls. About 80% is language-agnostic; Python, TypeScript, and Go specifics are included now, with Java, .NET, and more coming. Install in Claude Code: <code>/plugin marketplace add temporalio/agent-skills</code> &mdash; or via npx: <code>npx skills add https://github.com/temporalio/skill-temporal-developer</code></div>
+          <div class="skill-cta-arrow">Read the announcement &rarr;</div>
+        </div>
+      </a>
+
+      <h3 id="section-temporal-code">Code: Idempotent Ingest Workflow</h3>
+
+      <div class="code-tabs-wrap">
+        <div class="code-tab-bar">
+          <button class="code-tab active" onclick="showCode('temporal', 'workflow', this)">Workflow</button>
+          <button class="code-tab" onclick="showCode('temporal', 'activity', this)">Activity (idempotency)</button>
+        </div>
+        <div id="temporal-workflow" class="code-panel active">
+          <pre class="code-block"><span class="kw">from</span> temporalio <span class="kw">import</span> workflow, activity
+<span class="kw">from</span> temporalio.common <span class="kw">import</span> RetryPolicy
+<span class="kw">from</span> datetime <span class="kw">import</span> timedelta
+
+<span class="dc">@workflow.defn</span>
+<span class="kw">class</span> <span class="fn">IngestWorkflow</span>:
+    <span class="dc">@workflow.run</span>
+    <span class="kw">async def</span> <span class="fn">run</span>(self, document_id: str, chunks: list[dict]) -&gt; None:
+        <span class="kw">for</span> chunk <span class="kw">in</span> chunks:
+            <span class="cm"># Each activity is retried independently</span>
+            <span class="cm"># If worker crashes after chunk 40, replay resumes at 41</span>
+            <span class="kw">await</span> workflow.execute_activity(
+                embed_chunk,
+                args=[chunk[<span class="st">"id"</span>], chunk[<span class="st">"text"</span>]],
+                start_to_close_timeout=timedelta(minutes=<span class="nu">5</span>),
+                retry_policy=RetryPolicy(maximum_attempts=<span class="nu">3</span>),
+            )</pre>
+          <div class="code-caption">Workflow orchestrates; activities do the actual work. If the worker crashes at chunk 40/100, a new worker replays history and resumes at 41 — no duplicate API calls.</div>
+        </div>
+        <div id="temporal-activity" class="code-panel">
+          <pre class="code-block"><span class="dc">@activity.defn</span>
+<span class="kw">async def</span> <span class="fn">embed_chunk</span>(chunk_id: str, text: str) -&gt; None:
+    <span class="cm"># Idempotency check: skip if this content was already embedded</span>
+    <span class="cm"># Temporal gives you the durable record; you write the check</span>
+    existing = <span class="kw">await</span> mongo.find_one({
+        <span class="st">"chunk_id"</span>: chunk_id,
+        <span class="st">"content_hash"</span>: hash(text)
+    })
+    <span class="kw">if</span> existing:
+        <span class="kw">return</span>  <span class="cm"># Already done, skip — safe to retry</span>
+
+    vector = <span class="kw">await</span> voyage_client.embed(text)
+    <span class="kw">await</span> mongo.upsert({<span class="st">"chunk_id"</span>: chunk_id, <span class="st">"embedding"</span>: vector})</pre>
+          <div class="code-caption">Content-hash check before embedding. Without this, a retry after timeout could call the embedding API twice for the same content — wasted cost and potentially duplicated data.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MONGODB ───────────────────────────────────────────── -->
+    <section class="guide-section" id="section-mongodb">
+      <h2>Layer 2 — MongoDB Atlas: Data + Retrieval</h2>
+      <span class="layer-badge lb-green">🗄 owns: data</span>
+
+      <p>The core value proposition: collapsing vector database + operational database + embedding service into one platform. No sync lag between what a pipeline writes and what an agent reads, because there&rsquo;s no separate sync layer to get out of step.</p>
+
+      <p>Worth being precise about where AI actually lives in this layer. MongoDB Atlas the database does not use AI &mdash; it&rsquo;s a database and an index. The one place AI genuinely shows up is Voyage AI&rsquo;s embedding model, generating the vector representations. Everything else (storage, indexing, hybrid vector + full-text search) is conventional infrastructure.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🔍</div>
+          <h4>Hybrid Vector Search</h4>
+          <p>Combine semantic vector similarity with traditional field filters in one query &mdash; approval status, content type, tags &mdash; without separate filter passes.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">♻️</div>
+          <h4>Blue/Green Model Migration</h4>
+          <p>Different embedding models produce non-comparable vector spaces. Write new embeddings to a new index while the old one serves traffic, then flip a pointer once backfill completes.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">⚡</div>
+          <h4>Auto-Embeddings</h4>
+          <p>When an underlying document field updates, the embedding regenerates automatically. Distinct from the blue/green migration &mdash; that&rsquo;s for swapping the model; this is for keeping content in sync under a single model.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-indigo">
+        <div class="callout-title">Content-hash dedup: a correctness guarantee, not just a cost optimization</div>
+        <p>A content-hash check before re-embedding means unchanged content never triggers a wasted embedding call. Under Temporal&rsquo;s retry semantics, this matters: without it, a transient failure could cause the same chunk to be embedded twice, producing duplicate vectors in your index that degrade retrieval quality over time.</p>
+      </div>
+
+      <div class="callout callout-amber">
+        <div class="callout-title">⚠ Blue/green vs. auto-embeddings solve adjacent but distinct problems</div>
+        <p>Blue/green cutover is for migrating the <em>model itself</em>: you can&rsquo;t swap model names in place because vector spaces aren&rsquo;t comparable across models. Auto-embeddings is for keeping a <em>single model&rsquo;s</em> embeddings in sync as content changes. Worth checking current Atlas docs before assuming which one your use case actually needs.</p>
+      </div>
+
+      <h3 id="section-mongodb-code">Code: Hybrid Query with Metadata-Only Projection</h3>
+
+      <div class="code-tabs-wrap">
+        <div class="code-tab-bar">
+          <button class="code-tab active" onclick="showCode('mongodb', 'query', this)">Hybrid query</button>
+          <button class="code-tab" onclick="showCode('mongodb', 'hash', this)">Content-hash dedup</button>
+        </div>
+        <div id="mongodb-query" class="code-panel active">
+          <pre class="code-block"><span class="cm">// Hybrid vector search — filter on approval status,</span>
+<span class="cm">// project only metadata (never raw content)</span>
+db.knowledge.aggregate([
+  {
+    <span class="st">"$vectorSearch"</span>: {
+      <span class="st">"index"</span>: <span class="st">"vector_index"</span>,
+      <span class="st">"path"</span>: <span class="st">"embedding"</span>,
+      <span class="st">"queryVector"</span>: queryEmbedding,
+      <span class="st">"numCandidates"</span>: <span class="nu">100</span>,
+      <span class="st">"limit"</span>: <span class="nu">5</span>,
+      <span class="st">"filter"</span>: { <span class="st">"legal_approved_status"</span>: <span class="st">"approved"</span> }
+    }
+  },
+  {
+    <span class="st">"$project"</span>: {
+      <span class="st">"_id"</span>: <span class="nu">0</span>,
+      <span class="st">"id"</span>: <span class="nu">1</span>,
+      <span class="st">"component_type"</span>: <span class="nu">1</span>,
+      <span class="st">"tags"</span>: <span class="nu">1</span>
+      <span class="cm">// "text" is NOT projected — agent sees IDs and tags, not raw content</span>
+    }
+  }
+]);</pre>
+          <div class="code-caption">The agent receives IDs and metadata. The filter on legal_approved_status is enforced at the query layer — not in application code that could be bypassed or accidentally removed.</div>
+        </div>
+        <div id="mongodb-hash" class="code-panel">
+          <pre class="code-block"><span class="kw">import</span> hashlib
+
+<span class="kw">async def</span> <span class="fn">upsert_chunk_if_changed</span>(chunk_id: str, text: str):
+    content_hash = hashlib.sha256(text.encode()).hexdigest()
+
+    <span class="cm"># Check if the same content was already embedded</span>
+    existing = <span class="kw">await</span> db.chunks.find_one({
+        <span class="st">"chunk_id"</span>: chunk_id,
+        <span class="st">"content_hash"</span>: content_hash
+    })
+
+    <span class="kw">if</span> existing:
+        <span class="kw">return</span>  <span class="cm"># Unchanged content — skip embedding API call</span>
+
+    vector = <span class="kw">await</span> voyage_client.embed(text)
+    <span class="kw">await</span> db.chunks.update_one(
+        {<span class="st">"chunk_id"</span>: chunk_id},
+        {<span class="st">"$set"</span>: {<span class="st">"embedding"</span>: vector, <span class="st">"content_hash"</span>: content_hash}},
+        upsert=True
+    )</pre>
+          <div class="code-caption">Content-hash check prevents re-embedding unchanged content on retries. Both a cost optimization (no wasted Voyage AI calls) and a correctness guarantee (no duplicate vectors in the index).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── KEYCARD ───────────────────────────────────────────── -->
+    <section class="guide-section" id="section-keycard">
+      <h2>Layer 3 — Keycard: Identity + Access</h2>
+      <span class="layer-badge lb-amber">🔑 owns: trust</span>
+
+      <p>Keycard is identity and access management infrastructure for AI agents &mdash; the same product category as Okta or Auth0, purpose-built for agents calling tools autonomously instead of humans clicking a UI. It doesn&rsquo;t run models or make ML-driven decisions; policy evaluation (RBAC/ABAC/ReBAC) is deterministic rule matching.</p>
+
+      <p>A live Q&A clarified the mechanism precisely: identity and access gets scoped to the <strong>MCP server itself</strong>, which mediates what it exposes downstream. The agent never holds or sees raw credentials &mdash; the MCP server is the thing actually connecting to the database or API, and that&rsquo;s the layer where access gets limited. This is a more precise mental model than &ldquo;the agent mints a per-call token&rdquo; &mdash; the server is the trust boundary, not the agent.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">⏲</div>
+          <h4>Ephemeral Credentials</h4>
+          <p>Short-lived, task-scoped credentials minted at the point of use, never held statically. When the task ends, the credential expires. Nothing to rotate, nothing to leak.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🚫</div>
+          <h4>Deny by Default</h4>
+          <p>Access must be explicitly granted. Versioned policies that can be rolled back. If a grant is revoked mid-flight, the next credential mint fails closed &mdash; the activity records the denial and the workflow falls back gracefully.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🏷</div>
+          <h4>Workload Identity</h4>
+          <p>Associate identities with a platform or service, not just human users. An agentic pipeline is a first-class identity &mdash; you can grant and audit it separately from the developer who built it.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <div class="callout-title">⚠ Two gaps confirmed directly in the Q&amp;A (not inferred from docs)</div>
+        <p><strong>No behavioral anomaly detection.</strong> Keycard doesn&rsquo;t detect misuse or anomalous agent behavior on its own. That&rsquo;s on the developer to build via policy design. Remediation (revoking a grant) can be manual or programmatic, but there&rsquo;s no built-in behavioral monitoring. <br><br><strong>Java has no official SDK and no near-term roadmap.</strong> Python, TypeScript, and Go are first-party. Java integration is possible via direct HTTP/OAuth calls (OAuth 2.1, token exchange) &mdash; you just lose the SDK convenience and take on more manual plumbing.</p>
+      </div>
+
+      <div class="callout callout-indigo">
+        <div class="callout-title">Maturity trade-off: purpose-built vs. battle-tested</div>
+        <p>Keycard&rsquo;s architectural model (task-scoped, ephemeral, agent-native) is purpose-built for exactly this problem. The alternative path &mdash; extending Auth0 or WorkOS into agent use cases &mdash; trades that native fit for a battle-tested, broadly-supported platform. Neither is strictly better; it&rsquo;s early-stage-purpose-built vs. mature-but-adapted, and worth evaluating against how much production track record you need.</p>
+      </div>
+
+      <h3 id="section-keycard-code">Code: Task-Scoped Credential, Minted at Call Time</h3>
+
+      <div class="code-tabs-wrap">
+        <div class="code-tab-bar">
+          <button class="code-tab active" onclick="showCode('keycard', 'activity', this)">Scoped activity</button>
+          <button class="code-tab" onclick="showCode('keycard', 'revoke', this)">Fail-closed revocation</button>
+        </div>
+        <div id="keycard-activity" class="code-panel active">
+          <pre class="code-block"><span class="kw">from</span> keycard <span class="kw">import</span> grant, access
+
+<span class="dc">@activity.defn</span>
+<span class="dc">@grant(resource=<span class="st">"mongodb://knowledge-collection"</span>, scope=<span class="st">"read:metadata"</span>)</span>
+<span class="kw">async def</span> <span class="fn">search_components</span>(query_embedding: list[float]) -&gt; list[dict]:
+    <span class="cm"># Credential is minted here, scoped to exactly this resource + scope</span>
+    <span class="cm"># Short-lived. Never stored. Never written into Temporal workflow history.</span>
+    credential = <span class="kw">await</span> access(<span class="st">"mongodb://knowledge-collection"</span>)
+    client = mongo_client(credential=credential)
+
+    <span class="kw">return</span> client.knowledge.vector_search(
+        query_embedding,
+        project_fields=[<span class="st">"id"</span>, <span class="st">"component_type"</span>, <span class="st">"tags"</span>],
+        <span class="cm"># "text" not projected — enforced at query layer too</span>
+    )</pre>
+          <div class="code-caption">The @grant decorator declares what this function is allowed to touch. The credential is minted only at call time, with exactly this scope. It is never stored, reused, or written into Temporal's workflow history.</div>
+        </div>
+        <div id="keycard-revoke" class="code-panel">
+          <pre class="code-block"><span class="kw">from</span> keycard <span class="kw">import</span> grant, access, AccessDeniedError
+
+<span class="dc">@activity.defn</span>
+<span class="dc">@grant(resource=<span class="st">"mongodb://knowledge-collection"</span>, scope=<span class="st">"read:metadata"</span>)</span>
+<span class="kw">async def</span> <span class="fn">search_with_fallback</span>(query_embedding: list[float]):
+    <span class="kw">try</span>:
+        credential = <span class="kw">await</span> access(<span class="st">"mongodb://knowledge-collection"</span>)
+        <span class="cm"># ...search logic...</span>
+        <span class="kw">return</span> results
+
+    <span class="kw">except</span> AccessDeniedError <span class="kw">as</span> e:
+        <span class="cm"># Grant was revoked mid-flight (incident, policy change, etc)</span>
+        <span class="cm"># access() fails closed — activity records the denial</span>
+        <span class="cm"># Temporal workflow can catch this and fall back gracefully</span>
+        <span class="kw">return</span> {<span class="st">"status"</span>: <span class="st">"access_denied"</span>, <span class="st">"reason"</span>: str(e)}</pre>
+          <div class="code-caption">If someone revokes the grant mid-flight during an incident, the next access() call fails closed. The activity records the denial. The Temporal workflow catches it and can fall back gracefully rather than crash outright.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COST LEVERS ───────────────────────────────────────── -->
+    <section class="guide-section" id="section-cost">
+      <h2>Cost Levers Before You Scale</h2>
+      <p>Each tool has one or two levers that matter disproportionately. Knowing them before you hit scale is more useful than a full pricing table.</p>
+
+      <div class="table-scroll"><table class="comparison-table">
+        <thead><tr><th>Tool</th><th>Billing model</th><th>Key lever</th><th>What it avoids</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Temporal Cloud</strong></td>
+            <td>Per Action + storage (~$100/mo base, usage-based)</td>
+            <td>Batch multiple items into fewer workflow executions. Use <code>Continue-As-New</code> to cap history growth. Shorter retention for non-critical workflow types.</td>
+            <td>One execution per item &times; 100k items = 100k Action charges per run.</td>
+          </tr>
+          <tr>
+            <td><strong>Temporal Self-hosted</strong></td>
+            <td>Free (Apache 2.0) &mdash; you own ops</td>
+            <td>Your backing database (Cassandra/PostgreSQL) is the real cost. Right-size it early.</td>
+            <td>Paying for infrastructure you over-provisioned at the start.</td>
+          </tr>
+          <tr>
+            <td><strong>MongoDB Atlas</strong></td>
+            <td>Storage + compute + search units</td>
+            <td>Content-hash dedup (no re-embedding unchanged content). Index only the fields you query.</td>
+            <td>Voyage AI embedding calls on every pipeline run even when nothing changed.</td>
+          </tr>
+          <tr>
+            <td><strong>Keycard</strong></td>
+            <td>Per transaction (credential issue, validate, exchange, step-up)</td>
+            <td>Cache the <em>retrieval result</em> at the application layer for repeated/similar queries &mdash; this avoids the credential mint entirely, not just the database round-trip. Free tier: 5,000 tx/month. Paid: $500/mo for 100k tx.</td>
+            <td>Minting a new credential on every semantically identical agent query.</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ── PLATFORM REVIEW ───────────────────────────────────── -->
+    <section class="guide-section" id="section-review">
+      <h2>Platform Review</h2>
+      <p>Honest takes. Includes the things that were confirmed directly in a live Q&amp;A, not just inferred from documentation.</p>
+
+      <h3>Temporal</h3>
+      <div class="review-grid">
+        <div class="review-col">
+          <div class="review-col-label liked-label">✅ Liked</div>
+          <div class="review-items liked-items">
+            <div class="review-item"><div class="review-item-title">Genuinely different guarantee</div><div class="review-item-body">Not retry logic dressed up. Process death is survivable. Event history replay is the mechanism — it&rsquo;s real, not marketing.</div></div>
+            <div class="review-item"><div class="review-item-title">Self-hostable forever (Apache 2.0)</div><div class="review-item-body">Core is open-source. You can run it forever without a vendor relationship. Cloud managed tier is optional.</div></div>
+            <div class="review-item"><div class="review-item-title">First-class Python, Go, Java, TypeScript, .NET</div><div class="review-item-body">Java was one of the first SDKs and remains one of the most mature. Not an afterthought.</div></div>
+            <div class="review-item"><div class="review-item-title">Event history as a debugging tool</div><div class="review-item-body">Being able to inspect exactly what happened, in order, after a failure is genuinely useful for diagnosing production incidents.</div></div>
+          </div>
+        </div>
+        <div class="review-col">
+          <div class="review-col-label gotcha-label">⚠ Gotcha</div>
+          <div class="review-items gotcha-items">
+            <div class="review-item"><div class="review-item-title">Programming-model lock-in is real</div><div class="review-item-body">Adopting Temporal requires restructuring logic into workflows + activities. Migrating off means rewriting that structure. Mitigated by keeping activities thin, but not eliminated.</div></div>
+            <div class="review-item"><div class="review-item-title">Idempotency under retries is still your job</div><div class="review-item-body">Temporal gives you the durable record and the retry mechanism. Writing the check that makes retries safe is still on you.</div></div>
+            <div class="review-item"><div class="review-item-title">Event history ≠ compliance record</div><div class="review-item-body">The developer advocate was direct: no confident yes on this. It&rsquo;s an operational replay log. Use Signals + Queries for approval-gating if compliance is a hard requirement.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>MongoDB Atlas + Voyage AI</h3>
+      <div class="review-grid">
+        <div class="review-col">
+          <div class="review-col-label liked-label">✅ Liked</div>
+          <div class="review-items liked-items">
+            <div class="review-item"><div class="review-item-title">Unified storage eliminates sync lag</div><div class="review-item-body">Vector search and operational state in one place means what a pipeline writes is immediately readable by the agent, without a sync step that can fall behind.</div></div>
+            <div class="review-item"><div class="review-item-title">Hybrid vector + field filters in one query</div><div class="review-item-body">Filtering on approval status, tags, or metadata alongside semantic similarity without separate query passes.</div></div>
+            <div class="review-item"><div class="review-item-title">Auto-embeddings for content changes</div><div class="review-item-body">Field updates automatically trigger re-embedding. One less pipeline to write and maintain.</div></div>
+          </div>
+        </div>
+        <div class="review-col">
+          <div class="review-col-label gotcha-label">⚠ Gotcha</div>
+          <div class="review-items gotcha-items">
+            <div class="review-item"><div class="review-item-title">Can&rsquo;t swap embedding models in-place</div><div class="review-item-body">Different models produce incomparable vector spaces. Blue/green cutover is necessary and takes time to backfill. Plan for it before you hit scale.</div></div>
+            <div class="review-item"><div class="review-item-title">Atlas itself doesn&rsquo;t do AI</div><div class="review-item-body">The AI is Voyage AI generating the embeddings. Atlas is the storage and index. Worth being precise about this when evaluating or pitching the stack.</div></div>
+            <div class="review-item"><div class="review-item-title">Auto-embeddings vs blue/green are easily confused</div><div class="review-item-body">Solve adjacent but different problems. Check current docs to confirm which applies to your specific situation before building the pipeline.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Keycard</h3>
+      <div class="review-grid">
+        <div class="review-col">
+          <div class="review-col-label liked-label">✅ Liked</div>
+          <div class="review-items liked-items">
+            <div class="review-item"><div class="review-item-title">Purpose-built primitives for agents</div><div class="review-item-body">Task-scoped, ephemeral credentials that expire automatically. This is the right mental model for agentic access &mdash; not a human SSO session extended to a bot.</div></div>
+            <div class="review-item"><div class="review-item-title">MCP server as trust boundary</div><div class="review-item-body">The agent never holds credentials. The MCP server mediates access and is the thing that connects to the actual resource. More precise than "per-call token."</div></div>
+            <div class="review-item"><div class="review-item-title">Fail-closed revocation</div><div class="review-item-body">Revoking a grant mid-flight causes the next access() call to fail closed. Activity records the denial. Workflow can fall back gracefully rather than crash or silently succeed.</div></div>
+          </div>
+        </div>
+        <div class="review-col">
+          <div class="review-col-label gotcha-label">⚠ Gotcha</div>
+          <div class="review-items gotcha-items">
+            <div class="review-item"><div class="review-item-title">No behavioral anomaly detection</div><div class="review-item-body">Keycard enforces policy rules. It doesn&rsquo;t watch for anomalous behavior. Detecting misuse is on you to design via policy structure.</div></div>
+            <div class="review-item"><div class="review-item-title">Java: no SDK, no near-term roadmap</div><div class="review-item-body">Confirmed directly in Q&amp;A. Python, TypeScript, and Go are first-party. Java integration requires manual HTTP/OAuth plumbing. Not inferred &mdash; stated directly.</div></div>
+            <div class="review-item"><div class="review-item-title">Early-stage product</div><div class="review-item-body">The primitives are right. Production track record vs. Auth0/Okta is shorter. Evaluate accordingly if production stability is a hard requirement for your timeline.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LEARNINGS ─────────────────────────────────────────── -->
+    <section class="guide-section" id="section-learnings">
+      <h2>Real Learnings</h2>
+      <p>Not summaries of the documentation. Things that only came out in conversation, live Q&amp;A, and stress-testing the design assumptions.</p>
+
+      <div class="learning-item">
+        <div class="learning-num">01 — TEMPORAL</div>
+        <div class="learning-title">Retries are not automatically safe. You write the idempotency check.</div>
+        <div class="learning-body">Temporal gives you durable retry state and the event history to check against. It does not make your activities safe to retry by default. A naive retry on an activity that charges a credit card, sends an email, or writes to a downstream system could run twice. The fix is in your activity code &mdash; check whether the action was already completed in event history before re-executing.</div>
+        <div class="learning-quote">Temporal solves &ldquo;the state survived.&rdquo; You still solve &ldquo;the action is safe to repeat.&rdquo;</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">02 — TEMPORAL</div>
+        <div class="learning-title">&ldquo;Can event history serve as a compliance record?&rdquo; got an honest &ldquo;I don&rsquo;t know.&rdquo;</div>
+        <div class="learning-body">I asked this directly. Temporal&rsquo;s developer advocate didn&rsquo;t give a confident yes. They redirected to the actual primitives: Signals to pause a workflow until an external party approves or denies, and Queries to inspect what decisions were made. Event history is an operational replay log, not a compliance artifact &mdash; a real distinction if you&rsquo;re building under regulatory requirements.</div>
+        <div class="learning-quote">An honest &ldquo;I don&rsquo;t know&rdquo; told me more than a confident yes would have.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">03 — TEMPORAL</div>
+        <div class="learning-title">The lock-in is programming-model lock-in, not data lock-in. That&rsquo;s a real but different problem.</div>
+        <div class="learning-body">Adopting Temporal means restructuring business logic into workflows and activities with decorators. Migrating off means rewriting that structure. The core is Apache-2.0 licensed and fully self-hostable &mdash; no vendor controls your data, no cloud migration needed. But the code structure is Temporal-specific. Mitigate by keeping activities thin wrappers around plain functions, so only the orchestration layer is coupled.</div>
+        <div class="learning-quote">Self-hostable forever. Rewriting the structure to leave is still work.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">04 — MONGODB</div>
+        <div class="learning-title">Auto-embeddings and blue/green model migration solve different problems that are easy to confuse.</div>
+        <div class="learning-body">Auto-embeddings (re-embed when a document field changes) and blue/green model migration (swap to a new embedding model without downtime) are described in similar terms but address different failure modes. One is content sync under a stable model; the other is index migration under a model change. Picking the wrong one wastes either pipeline complexity or a disruptive cutover window.</div>
+        <div class="learning-quote">Check which problem you actually have before building the pipeline.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">05 — KEYCARD</div>
+        <div class="learning-title">The MCP server is the trust boundary, not the agent. That&rsquo;s a more precise mental model.</div>
+        <div class="learning-body">The initial intuition was that access control applies to the agent directly. The Q&A clarified it: the MCP server is the thing that actually connects to the database or API. Access is scoped to the server, which mediates what it exposes downstream. The agent never holds credentials. This changes where you put your policy enforcement &mdash; and where you do your auditing.</div>
+        <div class="learning-quote">Scope the server, not the agent. The server is the boundary you can actually enforce.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">06 — KEYCARD</div>
+        <div class="learning-title">No behavioral anomaly detection. That gap was confirmed directly, not inferred.</div>
+        <div class="learning-body">A direct audience question got a direct answer: Keycard doesn&rsquo;t detect misuse or anomalous agent behavior. It enforces policy rules deterministically. If an agent starts accessing resources in a pattern that looks wrong, Keycard doesn&rsquo;t flag it &mdash; that&rsquo;s on you to build via policy design, external monitoring, or application-layer logic.</div>
+        <div class="learning-quote">Access control and behavioral monitoring are different problems. One tool doesn&rsquo;t solve both.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">07 — ALL THREE TOOLS</div>
+        <div class="learning-title">These are 15&ndash;20 year old distributed systems and security concepts, applied to a new caller.</div>
+        <div class="learning-body">Idempotent retries, least-privilege access, event sourcing for debuggability &mdash; none of these are new ideas. What&rsquo;s changed is that autonomous, non-deterministic agents make skipping these fundamentals show up as a production incident rather than a theoretical risk. The tools here are good, purpose-built implementations of that discipline. The discipline itself, not any one SDK, is the thing worth internalizing.</div>
+        <div class="learning-quote">The concepts predate the tools by two decades. That&rsquo;s a feature, not a weakness.</div>
+      </div>
+    </section>
+
+    <!-- ── MOMENTS IN BETWEEN ────────────────────────────────── -->
+    <section class="guide-section" id="section-moments">
+      <h2>Moments In Between</h2>
+      <p>The small things that happened in the room that didn&rsquo;t make it into the official summaries.</p>
+
+      <div class="moment-grid">
+        <div class="moment-tile">
+          <div class="moment-tag">The honest answer</div>
+          <div class="moment-body">I asked Temporal&rsquo;s developer advocate whether event history could serve as a compliance record. <strong>She paused, and said &ldquo;I don&rsquo;t know the right answer for that, actually.&rdquo;</strong> No hedge, no redirect to the marketing pitch. That pause told me the boundary between &ldquo;operational audit trail&rdquo; and &ldquo;compliance evidence&rdquo; is genuinely unsettled. A confident yes would have been a red flag. The honest answer was the useful one.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tag">The precise correction</div>
+          <div class="moment-body">I had been thinking about Keycard as &ldquo;the agent mints a token per call.&rdquo; The Q&A corrected this: <strong>the MCP server is the trust boundary, not the agent.</strong> The agent never holds credentials. The server is the thing connecting to the actual resource. That one clarification changed where I&rsquo;d put policy enforcement, where I&rsquo;d instrument auditing, and how I&rsquo;d explain the architecture to anyone else. Small precision, large impact on the mental model.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tag">The Java gap, confirmed</div>
+          <div class="moment-body">I asked about Java support for Keycard. <strong>No SDK, no near-term roadmap.</strong> It wasn&rsquo;t evasive &mdash; it was direct. Python, TypeScript, Go are first-party. Java works via raw HTTP/OAuth, but you lose the decorators and typed clients. I appreciated the directness more than I would have appreciated a non-answer about &ldquo;future roadmap considerations.&rdquo; Knowing the gap is real means I can plan around it.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tag">The old idea in new clothes</div>
+          <div class="moment-body">Somewhere in the middle of the session I realized: <strong>every problem being solved here is a distributed systems or security problem from 2005.</strong> Idempotent retries, least-privilege access, event sourcing. What&rsquo;s new is that the caller is now non-deterministic and autonomous, so skipping these fundamentals costs you more when it fails. The tools are the implementations. The discipline is the thing that doesn&rsquo;t expire.</div>
+        </div>
+        <div class="moment-tile">
+          <div class="moment-tag">The design phase admission</div>
+          <div class="moment-body">I came in with an architecture I was still stress-testing, not a finished system. I left with <strong>three places where my assumptions were wrong</strong> (idempotency, the trust boundary, and what event history is actually good for). That&rsquo;s the best possible outcome for a design review &mdash; wrong assumptions surfaced before they became production incidents, not after.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── META-LESSON ───────────────────────────────────────── -->
+    <section class="guide-section" id="section-meta">
+      <h2>The Meta-Lesson</h2>
+
+      <div class="meta-banner">
+        <p>None of the individual problems here are new. <strong>Idempotent retries, least-privilege access, and event sourcing for debuggability are 15&ndash;20-year-old distributed systems and security concepts.</strong> What&rsquo;s changed is that autonomous, non-deterministic agents make skipping these fundamentals show up as a production incident instead of a theoretical risk. The tools reviewed here are good, purpose-built implementations of that discipline &mdash; but the discipline itself, not any one SDK, is the thing actually worth internalizing.</p>
+      </div>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Each layer owns exactly one concern</h4>
+            <p>Temporal owns time. MongoDB owns data. Keycard owns trust. When a layer starts doing another&rsquo;s job, you&rsquo;ve created coupling that&rsquo;s hard to spot in code review and shows up as a production incident.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>The guarantee matters more than the feature</h4>
+            <p>A retry decorator and Temporal both &ldquo;retry failed operations.&rdquo; The guarantees are categorically different. Understanding what guarantee a tool actually provides &mdash; not just what feature it advertises &mdash; is what lets you reason about failure modes before you hit them.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Stress-test the gaps, not just the happy path</h4>
+            <p>The three most useful things I learned came from asking about edge cases: compliance record use, Java support, behavioral anomaly detection. The honest answers to those questions &mdash; including the ones that were &ldquo;we don&rsquo;t do that&rdquo; &mdash; were more valuable than a demo of the happy path.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── GO DEEPER ─────────────────────────────────────────── -->
+    <section class="guide-section" id="section-deeper">
+      <h2>Go Deeper</h2>
+      <p>Links that came up in the session, plus where to start if any of the three tools is new to you.</p>
+
+      <ul class="go-deeper-list">
+        <li>
+          <a class="go-deeper-item" href="https://temporal.io/blog/introducing-temporal-developer-skill" target="_blank" rel="noopener">
+            <span class="go-dot go-dt"></span>
+            <div class="go-item-body">
+              <div class="go-item-org">Temporal &mdash; mentioned in the session</div>
+              <div class="go-item-title">Temporal Developer Skill (Public Preview)</div>
+              <div class="go-item-desc">Loads expert Temporal knowledge into your AI coding agent. Install: <code>/plugin marketplace add temporalio/agent-skills</code>. Covers determinism, retry, activity patterns, testing, and common pitfalls.</div>
+            </div>
+            <span class="go-item-arrow">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="go-deeper-item" href="https://docs.temporal.io/with-ai" target="_blank" rel="noopener">
+            <span class="go-dot go-dt"></span>
+            <div class="go-item-body">
+              <div class="go-item-org">Temporal</div>
+              <div class="go-item-title">Temporal AI Tools Hub — docs.temporal.io/with-ai</div>
+              <div class="go-item-desc">All AI coding tools for Temporal in one place, including the Skills MCP server and the community #topic-ai Slack channel.</div>
+            </div>
+            <span class="go-item-arrow">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="go-deeper-item" href="https://www.mongodb.com/docs/atlas/atlas-vector-search/" target="_blank" rel="noopener">
+            <span class="go-dot go-dm"></span>
+            <div class="go-item-body">
+              <div class="go-item-org">MongoDB Atlas</div>
+              <div class="go-item-title">Atlas Vector Search Docs</div>
+              <div class="go-item-desc">Hybrid search, auto-embeddings, and the model migration patterns covered in this post. Start here if the MongoDB layer is new to you.</div>
+            </div>
+            <span class="go-item-arrow">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="go-deeper-item" href="https://temporal.io/blog/introducing-temporal-developer-skill#github" target="_blank" rel="noopener">
+            <span class="go-dot go-dt"></span>
+            <div class="go-item-body">
+              <div class="go-item-org">Temporal — community</div>
+              <div class="go-item-title">GitHub: temporalio/skill-temporal-developer</div>
+              <div class="go-item-desc">Source for the Developer Skill. File issues, browse the content, or install manually if you&rsquo;re not using a marketplace.</div>
+            </div>
+            <span class="go-item-arrow">&rarr;</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── PEOPLE ─────────────────────────────────────────────── -->
+    <section class="guide-section" id="section-people">
+      <h2>People</h2>
+      <p>This writeup came out of a Builder After Hours session. Direct, unpolished answers to hard questions were the most useful part &mdash; especially when the answer was &ldquo;we haven&rsquo;t actually validated that.&rdquo;</p>
+
+      <div class="people-grid">
+        <div class="person-card">
+          <div class="person-org">Temporal</div>
+          <div class="person-name">Melissa Herrera</div>
+          <div class="person-role">Developer Advocate</div>
+          <div class="person-note">Direct answers including the honest &ldquo;I don&rsquo;t know&rdquo; on compliance records. That answer was more useful than a confident yes would have been.</div>
+        </div>
+        <div class="person-card">
+          <div class="person-org">MongoDB</div>
+          <div class="person-name">Nina Lopatina</div>
+          <div class="person-role">Developer Advocate</div>
+          <div class="person-note">Clarified the auto-embeddings vs. blue/green distinction and where Voyage AI actually fits in the stack. Precise on what Atlas does vs. what the embedding model does.</div>
+        </div>
+        <div class="person-card">
+          <div class="person-org">Keycard</div>
+          <div class="person-name">Matte Noble</div>
+          <div class="person-role">Developer Experience Lead</div>
+          <div class="person-note">Confirmed the Java SDK gap directly rather than deferring it to a vague roadmap. Clarified the MCP server as trust boundary, which was the most useful correction to my mental model.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <div class="callout callout-indigo">
+          <div class="callout-title">Still in the design phase &mdash; sharing as I go</div>
+          <p>This is a working writeup of architecture research, not a production postmortem. The design is still being validated. The learnings above came from stress-testing assumptions with the engineers who build this infrastructure &mdash; the most valuable kind of early feedback.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"TripRipple — Agent Memory","url":"/usecase/tripripple.html"},{"label":"Agentic Architecture Strategy","url":"/blog/agentic-architecture-strategy.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+/* ── Terminal animation ──────────────────────────────────────────── */
+(function() {
+  var lines = [
+    { text: '$ temporal workflow start --type IngestWorkflow --doc pdf_2026_q3', cls: 'cmd' },
+    { text: '↳ Workflow ID: ingest-abc123  started on worker-42', cls: 'info' },
+    { text: '↳ [001/100] chunk-001 → embed...  ✓', cls: 'ok' },
+    { text: '↳ [020/100] chunk-020 → embed...  ✓', cls: 'ok' },
+    { text: '↳ [040/100] chunk-040 → embed...  ✓', cls: 'ok' },
+    { text: '', cls: 'blank' },
+    { text: '⚠  Worker process terminated unexpectedly (OOMKilled)', cls: 'warn' },
+    { text: '↳ Temporal replaying event history from server...', cls: 'info' },
+    { text: '↳ Checkpoint restored: activity 40/100 complete', cls: 'info' },
+    { text: '↳ [041/100] chunk-041 → resuming (no re-embed)  ✓', cls: 'ok' },
+    { text: '↳ [100/100] chunk-100 → embed...  ✓', cls: 'ok' },
+    { text: '✓  Workflow complete. 100 chunks. 0 duplicates. 0 wasted API calls.', cls: 'ok' },
+    { text: '', cls: 'blank' },
+    { text: '$ keycard mint  read:metadata → mongodb://knowledge-collection', cls: 'cmd' },
+    { text: '↳ Credential issued. TTL: 300s. Scope: metadata-only.', cls: 'ok' },
+    { text: '↳ Agent query: vector search → 3 results returned', cls: 'info' },
+    { text: '↳ write:documents — ACCESS DENIED (not in grant)', cls: 'deny' },
+    { text: '↳ Credential expired. Nothing stored. Nothing leaked.', cls: 'info' },
+  ];
+
+  var clsMap = {
+    cmd: 't-cmd', ok: 't-ok', warn: 't-warn', info: 't-info', deny: 't-deny', blank: 't-blank'
+  };
+
+  var output = document.getElementById('terminal-output');
+  if (!output) return;
+
+  var lineDelay = 220;
+  var pauseAfter = { 5: 700, 11: 600, 13: 400 };
+  var cursor = document.createElement('span');
+  cursor.className = 't-cursor';
+
+  function renderAll() {
+    output.innerHTML = '';
+    lines.forEach(function(l, i) {
+      var span = document.createElement('span');
+      span.className = 't-line ' + (clsMap[l.cls] || 't-info');
+      span.textContent = l.text;
+      span.id = 'tl-' + i;
+      output.appendChild(span);
+    });
+    output.appendChild(cursor);
+  }
+
+  function revealLine(i) {
+    var el = document.getElementById('tl-' + i);
+    if (el) el.classList.add('visible');
+  }
+
+  function run() {
+    renderAll();
+    var delay = 400;
+    lines.forEach(function(_, i) {
+      var extra = pauseAfter[i - 1] || 0;
+      delay += lineDelay + extra;
+      (function(idx, d) {
+        setTimeout(function() { revealLine(idx); }, d);
+      })(i, delay);
+    });
+    // Restart after all lines shown
+    var total = delay + lineDelay + 2800;
+    setTimeout(function() { run(); }, total);
+  }
+
+  run();
+})();
+
+/* ── Code tab switcher ───────────────────────────────────────────── */
+function showCode(namespace, id, btn) {
+  // deactivate all tabs in this namespace
+  document.querySelectorAll('[onclick*="showCode(\'' + namespace + '\'"]').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  // hide all panels with this namespace prefix
+  document.querySelectorAll('[id^="' + namespace + '-"]').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  // activate selected
+  if (btn) btn.classList.add('active');
+  var panel = document.getElementById(namespace + '-' + id);
+  if (panel) panel.classList.add('active');
+}
+
+/* ── TOC scrollspy ───────────────────────────────────────────────── */
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        links.forEach(function(link) {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+
+  sections.forEach(function(s) { observer.observe(s); });
+})();
+</script>
+
+</body>
+</html>
