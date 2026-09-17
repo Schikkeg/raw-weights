@@ -22,7 +22,7 @@
         image: "./images/temporal-agentic-pipeline.png",
         type: "Blog",
         link: "https://rawweights.com/blog/temporal-agentic-pipeline.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_i-asked-an-engineer-whether-their-tool-could-activity-7506080697342869504-Us_o"
       },
       {
         title: "BuildBridge — Article to GitHub Repo in 30s",
