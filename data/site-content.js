@@ -16,6 +16,15 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Briefd — Personal Reply Agent",
+        excerpt: "A message arrives. Briefd searches your knowledge base, briefs you if it's a new topic, drafts a reply, and holds it for your approval before anything sends. Built solo for the TrueFoundry Agent Harness Hackathon 2026.",
+        date: "Sep 20, 2026",
+        image: "./images/briefd/briefd-linkedin.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/briefd.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_trueforge-truefoundry-hackathon-ugcPost-7507225972769837056-7_j7/"
+      },
+      {
         title: "Durable, Retrievable, and Trustworthy",
         excerpt: "What I learned architecting an agentic pipeline on Temporal, MongoDB Atlas, and Keycard — durability, retrieval, and identity, each owning exactly one layer.",
         date: "Sep 16, 2026",
