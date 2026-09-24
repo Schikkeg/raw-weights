@@ -16,6 +16,24 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "ClaimLens — 3-Agent Fact-Checker ",
+        excerpt: "A 3-agent pipeline that shows exactly where a standard AI echoes viral hoaxes. Claim Extractor, Grounder, Verifier. Built in Python and Streamlit after an AI Camp session on grounded agentic pipelines.",
+        date: "Sep 24, 2026",
+        image: "./images/claimlens/og.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/claimlens.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_a-research-team-audited-75-ai-generated-papers-share-7508810551267958786-ha3c/"
+      },
+      {
+        title: "AI Camp: Co-Scientist & Multi-Agent Architecture ",
+        excerpt: "Session notes from AI Camp — Shadab Hussain on Google's Co-Scientist, multi-agent pipelines, and the fluent prose fraud audit finding.",
+        date: "Sep 24, 2026",
+        image: "./images/og.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/aicamp-coscientist.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_a-research-team-audited-75-ai-generated-papers-share-7508810551267958786-ha3c/"
+      },
+      {
         title: "Briefd — Personal Reply Agent",
         excerpt: "A message arrives. Briefd searches your knowledge base, briefs you if it's a new topic, drafts a reply, and holds it for your approval before anything sends. Built solo for the TrueFoundry Agent Harness Hackathon 2026.",
         date: "Sep 20, 2026",
