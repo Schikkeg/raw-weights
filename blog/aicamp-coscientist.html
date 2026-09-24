@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Camp: Co-Scientist & Multi-Agent Architecture | RawWeights</title>
+  <meta name="description" content="Session notes from AI Camp — Shadab Hussain on Google's Co-Scientist, multi-agent pipelines, and the fluent prose fraud audit finding.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/blog/aicamp-coscientist.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/blog/aicamp-coscientist.html">
+  <meta property="og:title" content="AI Camp: Co-Scientist & Multi-Agent Architecture | RawWeights">
+  <meta property="og:description" content="How multi-agent AI eliminates coordination cost — and why 21% of AI-generated citations are phantom.">
+  <meta property="og:image" content="https://rawweights.com/images/aicamp/og.png">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Dark/light Tailwind overrides ─────────────── */
+    [data-theme="dark"] body           { background:#0f172a!important;color:#e2e8f0!important; }
+    [data-theme="dark"] .bg-white      { background:#1e293b!important; }
+    [data-theme="dark"] .bg-gray-50    { background:#0f172a!important; }
+    [data-theme="dark"] .text-gray-900,
+    [data-theme="dark"] .text-gray-800 { color:#f0f4ff!important; }
+    [data-theme="dark"] .text-gray-700,
+    [data-theme="dark"] .text-gray-600 { color:#cbd5e1!important; }
+    [data-theme="dark"] .text-gray-500 { color:#94a3b8!important; }
+    [data-theme="dark"] .border-gray-100,
+    [data-theme="dark"] .border-gray-200{ border-color:#334155!important; }
+    [data-theme="dark"] .shadow-sm     { box-shadow:0 1px 3px rgba(0,0,0,.4)!important; }
+    [data-theme="dark"] .bg-gray-900   { background:#080c18!important; }
+
+    /* ── Forced-dark diagram sections (both modes) ── */
+    .section-dark { background:#0f1828; border:1px solid rgba(255,255,255,.08); }
+    .section-dark h2 { color:#f0f4ff; }
+    .section-dark .sec-sub { color:#64748b; }
+
+    /* ── Era diagram ────────────────────────────────── */
+    .era-flow { display:grid; grid-template-columns:1fr 36px 1fr 36px 1fr; gap:0; align-items:center; margin:1.5rem 0; }
+    .era-box  { border-radius:12px; padding:1.1rem 1rem; text-align:center; }
+    .era-past { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); }
+    .era-now  { background:rgba(129,140,248,.12); border:2px solid rgba(129,140,248,.5); box-shadow:0 0 24px rgba(129,140,248,.15); }
+    .era-arrow{ text-align:center; font-size:1.3rem; color:rgba(255,255,255,.2); }
+    .era-num  { font-family:'JetBrains Mono',monospace; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:.3rem; }
+    .era-past .era-num { color:rgba(255,255,255,.3); }
+    .era-now  .era-num { color:#818cf8; }
+    .era-label{ font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:.92rem; margin-bottom:.3rem; }
+    .era-past .era-label { color:rgba(255,255,255,.5); }
+    .era-now  .era-label { color:#f0f4ff; }
+    .era-unit { font-size:.72rem; line-height:1.5; }
+    .era-past .era-unit { color:rgba(255,255,255,.3); }
+    .era-now  .era-unit { color:rgba(240,244,255,.65); }
+
+    /* ── Architecture pipeline ──────────────────────── */
+    .arch-wrap { margin:1.25rem 0; padding:1.5rem; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:14px; }
+    .arch-input { text-align:center; padding:.55rem 1rem; border:1px dashed rgba(255,255,255,.18); border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:.78rem; color:rgba(255,255,255,.45); margin-bottom:.4rem; }
+    .arch-down  { text-align:center; font-size:1.1rem; color:rgba(255,255,255,.2); padding:.15rem 0; }
+    .arch-supervisor { display:flex; align-items:center; gap:.85rem; padding:1rem 1.25rem; border-radius:10px; margin:.25rem 0; background:rgba(129,140,248,.1); border:1.5px solid rgba(129,140,248,.4); }
+    .arch-sup-icon { font-size:1.5rem; flex-shrink:0; }
+    .arch-sup-name { font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:.95rem; color:#818cf8; margin-bottom:.1rem; }
+    .arch-sup-desc { font-size:.75rem; color:rgba(129,140,248,.7); }
+    .arch-branch { display:grid; grid-template-columns:repeat(5,1fr); gap:.5rem; margin:.25rem 0; }
+    .arch-agent { border-radius:10px; padding:.85rem .7rem; text-align:center; cursor:default; transition:transform .15s; }
+    .arch-agent:hover { transform:translateY(-2px); }
+    .arch-agent-icon { font-size:1.3rem; margin-bottom:.35rem; }
+    .arch-agent-name { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.72rem; margin-bottom:.2rem; }
+    .arch-agent-desc { font-size:.64rem; line-height:1.5; }
+    .aa-g { background:rgba(74,222,128,.08);  border:1px solid rgba(74,222,128,.25); }
+    .aa-g .arch-agent-name { color:#4ade80; }
+    .aa-g .arch-agent-desc { color:rgba(74,222,128,.6); }
+    .aa-p { background:rgba(129,140,248,.08); border:1px solid rgba(129,140,248,.25); }
+    .aa-p .arch-agent-name { color:#818cf8; }
+    .aa-p .arch-agent-desc { color:rgba(129,140,248,.6); }
+    .aa-c { background:rgba(251,191,36,.07);  border:1px solid rgba(251,191,36,.22); }
+    .aa-c .arch-agent-name { color:#fbbf24; }
+    .aa-c .arch-agent-desc { color:rgba(251,191,36,.6); }
+    .aa-v { background:rgba(248,113,113,.07); border:1px solid rgba(248,113,113,.22); }
+    .aa-v .arch-agent-name { color:#f87171; }
+    .aa-v .arch-agent-desc { color:rgba(248,113,113,.6); }
+    .aa-h { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); }
+    .aa-h .arch-agent-name { color:rgba(255,255,255,.65); }
+    .aa-h .arch-agent-desc { color:rgba(255,255,255,.35); }
+    .arch-output { text-align:center; padding:.65rem 1rem; margin:.25rem 0; border-radius:8px; background:rgba(74,222,128,.08); border:1px solid rgba(74,222,128,.25); font-family:'Space Grotesk',sans-serif; font-size:.8rem; font-weight:700; color:#4ade80; }
+    .arch-rule  { margin-top:1rem; padding:.7rem 1rem; background:rgba(255,255,255,.03); border-left:3px solid rgba(129,140,248,.4); border-radius:0 6px 6px 0; font-size:.8rem; color:rgba(240,244,255,.5); font-style:italic; }
+
+    /* ── Finding / audit stats ──────────────────────── */
+    .finding-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.25rem 0; }
+    .finding-box  { border-radius:12px; padding:1.5rem; text-align:center; }
+    .fb-bad { background:rgba(248,113,113,.07); border:1.5px solid rgba(248,113,113,.3); }
+    .fb-good{ background:rgba(74,222,128,.07);  border:1.5px solid rgba(74,222,128,.28); }
+    .finding-val { font-family:'Space Grotesk',sans-serif; font-size:3rem; font-weight:900; line-height:1; margin-bottom:.4rem; }
+    .fb-bad  .finding-val { color:#f87171; }
+    .fb-good .finding-val { color:#4ade80; }
+    .finding-lbl  { font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5rem; }
+    .fb-bad  .finding-lbl { color:rgba(248,113,113,.7); }
+    .fb-good .finding-lbl { color:rgba(74,222,128,.7); }
+    .finding-desc { font-size:.78rem; line-height:1.55; }
+    .fb-bad  .finding-desc { color:rgba(248,113,113,.55); }
+    .fb-good .finding-desc { color:rgba(74,222,128,.55); }
+
+    /* ── Fraud comparison ───────────────────────────── */
+    .fraud-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.25rem 0; }
+    .fraud-box  { border-radius:10px; padding:1.1rem 1.25rem; }
+    .fraud-bad  { background:rgba(248,113,113,.06); border:1px solid rgba(248,113,113,.2); }
+    .fraud-real { background:rgba(74,222,128,.06);  border:1px solid rgba(74,222,128,.2); }
+    .fraud-tag  { font-family:'JetBrains Mono',monospace; font-size:.64rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5rem; }
+    .fraud-bad  .fraud-tag  { color:#f87171; }
+    .fraud-real .fraud-tag  { color:#4ade80; }
+    .fraud-text { font-size:.83rem; line-height:1.65; font-style:italic; }
+    .fraud-bad  .fraud-text { color:rgba(255,255,255,.5); }
+    .fraud-real .fraud-text { color:rgba(255,255,255,.5); }
+
+    /* ── Presenter card ─────────────────────────────── */
+    .presenter-strip { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:1.25rem; padding:1.1rem 1.25rem; border-radius:12px; background:rgba(129,140,248,.07); border:1px solid rgba(129,140,248,.22); margin:1.25rem 0; }
+    .presenter-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#818cf8,#4338ca); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:1.1rem; color:#fff; flex-shrink:0; }
+    .presenter-name { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.95rem; color:#f0f4ff; margin-bottom:.15rem; }
+    [data-theme="light"] .presenter-name { color:#1e293b; }
+    .presenter-role { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:#818cf8; }
+    .presenter-org  { font-size:.75rem; color:rgba(255,255,255,.4); }
+    .event-chips { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .event-chip { font-family:'JetBrains Mono',monospace; font-size:.65rem; padding:.2rem .6rem; border-radius:6px; font-weight:700; }
+    .ec-ind { background:rgba(129,140,248,.12); color:#818cf8; border:1px solid rgba(129,140,248,.25); }
+    .ec-grn { background:rgba(74,222,128,.1);  color:#4ade80; border:1px solid rgba(74,222,128,.22); }
+
+    /* ── Topics grid ────────────────────────────────── */
+    .topics-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; margin:1.25rem 0; }
+    .topic-card  { border-radius:10px; padding:.9rem 1rem; text-align:center; }
+    .topic-icon  { font-size:1.4rem; margin-bottom:.35rem; }
+    .topic-label { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.78rem; }
+    .tc-1 { background:rgba(129,140,248,.08); border:1px solid rgba(129,140,248,.2); }
+    .tc-1 .topic-label { color:#818cf8; }
+    .tc-2 { background:rgba(74,222,128,.07);  border:1px solid rgba(74,222,128,.18); }
+    .tc-2 .topic-label { color:#4ade80; }
+    .tc-3 { background:rgba(251,191,36,.07);  border:1px solid rgba(251,191,36,.18); }
+    .tc-3 .topic-label { color:#fbbf24; }
+    .tc-4 { background:rgba(248,113,113,.07); border:1px solid rgba(248,113,113,.18); }
+    .tc-4 .topic-label { color:#f87171; }
+    .tc-5 { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); }
+    .tc-5 .topic-label { color:rgba(255,255,255,.55); }
+    .tc-6 { background:rgba(129,140,248,.08); border:1px solid rgba(129,140,248,.2); }
+    .tc-6 .topic-label { color:#818cf8; }
+
+    /* ── Quote banner ───────────────────────────────── */
+    .quote-banner { background:linear-gradient(135deg,rgba(129,140,248,.1),rgba(74,222,128,.07)); border:1px solid rgba(129,140,248,.3); border-radius:12px; padding:1.4rem 1.75rem; margin:1.25rem 0; }
+    .quote-text   { font-size:1rem; font-style:italic; color:rgba(240,244,255,.75); line-height:1.7; margin:0; }
+    .quote-attr   { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:#818cf8; margin-top:.6rem; text-transform:uppercase; letter-spacing:.07em; }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media(max-width:768px){
+      .era-flow          { grid-template-columns:1fr; }
+      .era-arrow         { transform:rotate(90deg); }
+      .arch-branch       { grid-template-columns:repeat(3,1fr); }
+      .finding-grid      { grid-template-columns:1fr; }
+      .fraud-grid        { grid-template-columns:1fr; }
+      .topics-grid       { grid-template-columns:repeat(2,1fr); }
+      .presenter-strip   { grid-template-columns:auto 1fr; }
+      .presenter-org     { display:none; }
+    }
+    @media(max-width:480px){
+      .arch-branch       { grid-template-columns:repeat(2,1fr); }
+      .topics-grid       { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ──────────────────────────────────────────────────── -->
+<header class="bg-slate-900 text-white pt-24 pb-14 relative overflow-hidden border-b border-slate-800">
+  <div class="absolute inset-0 pointer-events-none"
+       style="background:radial-gradient(ellipse at 75% 0%,rgba(129,140,248,.22) 0%,transparent 55%),
+              radial-gradient(ellipse at 0% 100%,rgba(74,222,128,.1) 0%,transparent 55%);"></div>
+  <div class="max-w-3xl mx-auto px-6 relative z-10">
+    <div class="mb-5 flex flex-wrap gap-2">
+      <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 rounded-full px-3 py-1">
+        📝 Session Notes
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded-full px-3 py-1">
+        AI Camp · Google Cloud
+      </span>
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-extrabold leading-tight mb-4 tracking-tight" style="font-family:'Space Grotesk',sans-serif">
+      AI Co-Scientist &amp;<br><span style="color:#818cf8">Multi-Agent Architecture</span>
+    </h1>
+    <p class="text-slate-400 text-base max-w-xl leading-relaxed mb-5">
+      How agentic AI eliminates the coordination cost that buries research — and what happens when you audit what it actually produces.
+    </p>
+    <div class="flex items-center gap-4 text-sm text-slate-500 flex-wrap">
+      <span>Sep 23, 2026</span>
+      <span>·</span>
+      <span>By Sham HC</span>
+      <span>·</span>
+      <a href="https://www.youtube.com/watch?v=i2zy5gt5rLk" target="_blank" rel="noopener" style="color:#818cf8;font-weight:600;">▶ Watch Session Recording</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── Content ────────────────────────────────────────────────── -->
+<main class="flex-grow">
+  <div class="max-w-3xl mx-auto px-6 py-10 space-y-6">
+
+    <!-- ── WHO ─────────────────────────────────────────────────── -->
+    <section class="section-dark rounded-2xl p-7">
+      <h2 class="text-lg font-bold mb-4" style="font-family:'Space Grotesk',sans-serif">Who &amp; Where</h2>
+
+      <div class="presenter-strip">
+        <div class="presenter-avatar">SH</div>
+        <div>
+          <a href="https://shadabhussain.com/" target="_blank" rel="noopener" class="presenter-name" style="text-decoration:none;color:inherit;">Shadab Hussain ↗</a>
+          <div class="presenter-role">Presenter · Google Co-Scientist Architecture</div>
+        </div>
+        <div class="presenter-org text-right">
+          <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:.25rem;">Organised by</div>
+          <div class="event-chips justify-end">
+            <span class="event-chip ec-ind">AICamp</span>
+            <span class="event-chip ec-grn">Google Cloud</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WHAT WAS COVERED ─────────────────────────────────────── -->
+    <section class="section-dark rounded-2xl p-7">
+      <h2 class="text-lg font-bold mb-4" style="font-family:'Space Grotesk',sans-serif">What the session covered</h2>
+
+      <div class="topics-grid">
+        <div class="topic-card tc-1">
+          <div class="topic-icon">🤖</div>
+          <div class="topic-label">Agentic Workflows</div>
+        </div>
+        <div class="topic-card tc-2">
+          <div class="topic-icon">🔗</div>
+          <div class="topic-label">Multi-Agent Pipeline</div>
+        </div>
+        <div class="topic-card tc-3">
+          <div class="topic-icon">📚</div>
+          <div class="topic-label">Primary Source Grounding</div>
+        </div>
+        <div class="topic-card tc-4">
+          <div class="topic-icon">🔍</div>
+          <div class="topic-label">Fluent Prose Fraud</div>
+        </div>
+        <div class="topic-card tc-5">
+          <div class="topic-icon">🏛</div>
+          <div class="topic-label">Evidence &amp; Audit Trail</div>
+        </div>
+        <div class="topic-card tc-6">
+          <div class="topic-icon">👤</div>
+          <div class="topic-label">Human-in-the-Loop</div>
+        </div>
+      </div>
+
+      <p class="sec-sub text-sm leading-relaxed mt-1">
+        The talk focused on a live transition happening in enterprise AI — from tools that speed up single tasks to systems that own entire research workflows end-to-end, with grounded evidence and auditable outputs.
+      </p>
+    </section>
+
+    <!-- ── THE 3 ERAS ───────────────────────────────────────────── -->
+    <section class="section-dark rounded-2xl p-7">
+      <h2 class="text-lg font-bold mb-1" style="font-family:'Space Grotesk',sans-serif">The evolution of AI at work</h2>
+      <p class="sec-sub text-sm mb-4">Most organisations think they're in Era 3. They're in Era 2.</p>
+
+      <div class="era-flow">
+
+        <div class="era-box era-past">
+          <div class="era-num">Era 1</div>
+          <div class="era-label">Calculator</div>
+          <div class="era-unit">AI answers one question.<br>Humans run every step.</div>
+        </div>
+
+        <div class="era-arrow">→</div>
+
+        <div class="era-box era-past">
+          <div class="era-num">Era 2</div>
+          <div class="era-label">Copilot</div>
+          <div class="era-unit">AI writes one snippet.<br>Humans manage all handoffs.</div>
+        </div>
+
+        <div class="era-arrow">→</div>
+
+        <div class="era-box era-now">
+          <div class="era-num">Era 3 · Now</div>
+          <div class="era-label">Agentic Workflow</div>
+          <div class="era-unit">AI team owns the full loop.<br>Humans set goals &amp; approve.</div>
+        </div>
+
+      </div>
+
+      <div class="quote-banner" style="margin-top:1rem;">
+        <p class="quote-text">"The bottleneck in research isn't ideas or data. It's coordination cost — the time experts spend moving information between disconnected tools by hand."</p>
+        <div class="quote-attr">— <a href="https://shadabhussain.com/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:none;">Shadab Hussain</a>, AICamp 2026</div>
+      </div>
+    </section>
+
+    <!-- ── AGENT ARCHITECTURE ───────────────────────────────────── -->
+    <section class="section-dark rounded-2xl p-7">
+      <h2 class="text-lg font-bold mb-1" style="font-family:'Space Grotesk',sans-serif">The agent architecture</h2>
+      <p class="sec-sub text-sm mb-4">6 specialised roles under one Supervisor. Each agent owns one stage of the research workflow.</p>
+
+      <div class="arch-wrap">
+
+        <div class="arch-input">Research Goal / Question</div>
+        <div class="arch-down">↓</div>
+
+        <div class="arch-supervisor">
+          <div class="arch-sup-icon">🎯</div>
+          <div>
+            <div class="arch-sup-name">Supervisor — Orchestrator</div>
+            <div class="arch-sup-desc">Decomposes goals · Assigns agents · Allocates compute · Manages async task queues</div>
+          </div>
+        </div>
+        <div class="arch-down">↓ delegates to ↓</div>
+
+        <div class="arch-branch">
+          <div class="arch-agent aa-g">
+            <div class="arch-agent-icon">📚</div>
+            <div class="arch-agent-name">Grounder</div>
+            <div class="arch-agent-desc">Live papers via Semantic Scholar · Real-time citation graphs</div>
+          </div>
+          <div class="arch-agent aa-p">
+            <div class="arch-agent-icon">💡</div>
+            <div class="arch-agent-name">Generator</div>
+            <div class="arch-agent-desc">Parallel candidate solutions · Not a single chain of thought</div>
+          </div>
+          <div class="arch-agent aa-c">
+            <div class="arch-agent-icon">⚖️</div>
+            <div class="arch-agent-name">Critique &amp; Ranker</div>
+            <div class="arch-agent-desc">Pairwise comparisons · Safety · Novelty · Feasibility</div>
+          </div>
+          <div class="arch-agent aa-v">
+            <div class="arch-agent-icon">🔗</div>
+            <div class="arch-agent-name">Verifier</div>
+            <div class="arch-agent-desc">Claims bound to execution logs · Method-code alignment</div>
+          </div>
+          <div class="arch-agent aa-h">
+            <div class="arch-agent-icon">👤</div>
+            <div class="arch-agent-name">Human-in-Loop</div>
+            <div class="arch-agent-desc">Goal setting · Final approval · Key decision points</div>
+          </div>
+        </div>
+
+        <div class="arch-down">↓</div>
+        <div class="arch-output">✓ Grounded Research Output + Immutable Audit Trail</div>
+
+        <div class="arch-rule">"The audit trail is the product as much as the result is." — The layer most teams cut first is the one that survives enterprise audits.</div>
+      </div>
+    </section>
+
+    <!-- ── THE AUDIT FINDING ────────────────────────────────────── -->
+    <section class="section-dark rounded-2xl p-7">
+      <h2 class="text-lg font-bold mb-1" style="font-family:'Space Grotesk',sans-serif">The audit: 75 AI-generated papers</h2>
+      <p class="sec-sub text-sm mb-4">Same pipeline. Two approaches. Measured across 5 systems.</p>
+
+      <div class="finding-grid">
+        <div class="finding-box fb-bad">
+          <div class="finding-val">21%</div>
+          <div class="finding-lbl">Phantom Citations</div>
+          <div class="finding-desc">Baseline LLMs — single prompt, no grounding</div>
+        </div>
+        <div class="finding-box fb-good">
+          <div class="finding-val">0%</div>
+          <div class="finding-lbl">Phantom Citations</div>
+          <div class="finding-desc">Grounded agentic pipeline — live source binding</div>
+        </div>
+      </div>
+
+      <h3 class="font-bold mt-5 mb-3 text-sm uppercase tracking-wider" style="font-family:'JetBrains Mono',monospace;color:#f87171;">⚠ Fluent Prose Fraud — The Deeper Problem</h3>
+
+      <div class="fraud-grid">
+        <div class="fraud-box fraud-bad">
+          <div class="fraud-tag">What the AI wrote</div>
+          <div class="fraud-text">"The system employed a hybrid symbolic solver combining constraint propagation with stochastic gradient descent to achieve sub-linear convergence, validated across three independent benchmark datasets."</div>
+        </div>
+        <div class="fraud-box fraud-real">
+          <div class="fraud-tag">What the code actually did</div>
+          <div class="fraud-text">A deterministic script running a fixed grid search over three pre-specified parameter values. No symbolic solver. No stochastic component. One benchmark file, not three.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);border-left:3px solid #f87171;border-radius:0 8px 8px 0;padding:.85rem 1rem;margin-top:1rem;">
+        <p style="font-size:.82rem;color:rgba(248,113,113,.8);margin:0;line-height:1.6;">LLMs optimise for persuasive language. A human reader can't catch the discrepancy. The only defence: every claim must be checked against the execution log, not just trusted because the writing sounds expert.</p>
+      </div>
+    </section>
+
+    <!-- ── WHAT IT INSPIRED ─────────────────────────────────────── -->
+    <aside style="background:rgba(129,140,248,.06);border:1px solid rgba(129,140,248,.25);border-radius:16px;padding:1.5rem 1.75rem;">
+      <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#818cf8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">What this session inspired</p>
+      <p class="text-gray-700 text-sm leading-relaxed mb-4">The "fluent prose fraud" finding describes exactly what standard AI does with viral health claims. I built <strong>ClaimLens</strong> to show the difference between a single LLM echoing search results and a grounded multi-agent pipeline — side by side, same claim.</p>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="../usecase/claimlens.html" style="display:inline-block;background:#818cf8;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;padding:.55rem 1.1rem;border-radius:8px;text-decoration:none;">Read the ClaimLens build →</a>
+        <a href="https://www.youtube.com/watch?v=i2zy5gt5rLk" target="_blank" rel="noopener" style="display:inline-block;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.82rem;padding:.55rem 1.1rem;border-radius:8px;text-decoration:none;border:1px solid rgba(255,255,255,.15);">▶ Watch the session</a>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-linkedin-label="Read the discussion on LinkedIn"
+     data-related='[{"label":"ClaimLens — Viral Fact-Checker","url":"/blog//usecase/claimlens.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260613"></script>
+
+</body>
+</html>

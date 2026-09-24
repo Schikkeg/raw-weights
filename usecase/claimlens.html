@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClaimLens — 3-Agent Fact-Checker | RawWeights</title>
+  <meta name="description" content="A 3-agent pipeline that shows exactly where a standard AI echoes viral hoaxes. Claim Extractor, Grounder, Verifier. Built in Python and Streamlit after an AI Camp session on grounded agentic pipelines.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/claimlens.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/claimlens.html">
+  <meta property="og:title" content="ClaimLens — 3-Agent Fact-Checker">
+  <meta property="og:description" content="A 3-agent pipeline that shows exactly where a standard AI echoes viral hoaxes. Echo Index: 87% on the lemon water claim.">
+  <meta property="og:image" content="https://rawweights.com/images/claimlens/og.png">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero ───────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg, #071a0f 0%, #071530 50%, #0f0b28 100%);
+      padding: 4rem 2rem 3.5rem; position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; top: -15%; right: -5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(74,222,128,.14) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .guide-hero::after {
+      content: ''; position: absolute; bottom: -10%; left: -5%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(248,113,113,.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-split {
+      max-width: 1160px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .hero-split > * { min-width: 0; }
+    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
+    .guide-hero-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.25);
+      border-radius: 9999px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; color: #4ade80;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-family: var(--rw-font-display); margin-bottom: 1.25rem;
+    }
+    .pulse-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+    .guide-hero h1 {
+      font-family: var(--rw-font-display); font-weight: 800; color: #f0f4ff;
+      font-size: clamp(1.8rem, 3.5vw, 3rem); line-height: 1.08;
+      letter-spacing: -.03em; margin-bottom: 1rem;
+    }
+    .guide-hero h1 span { color: #4ade80; }
+    .hero-text p { font-size: 1rem; color: rgba(240,244,255,.7); margin: 0 0 1.5rem; line-height: 1.7; }
+    .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; }
+
+    /* ── Hero terminal — fixed height prevents CLS ── */
+    .hero-terminal-wrap {
+      border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(74,222,128,.2);
+      box-shadow: 0 0 60px rgba(74,222,128,.1), 0 24px 48px rgba(0,0,0,.4);
+      background: #050d0a;
+    }
+    .hero-terminal-bar {
+      background: #0d1a12; border-bottom: 1px solid rgba(74,222,128,.12);
+      padding: .55rem 1rem; display: flex; align-items: center; gap: .45rem;
+    }
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-red { background: #f87171; } .t-yellow { background: #fbbf24; } .t-green { background: #4ade80; }
+    .t-label { font-family: var(--rw-font-mono); font-size: .68rem; color: rgba(74,222,128,.55); margin-left: auto; }
+    .hero-terminal-body {
+      padding: 1.1rem 1.25rem;
+      height: 340px;       /* fixed — prevents CLS as animation types */
+      overflow: hidden;
+      position: relative;
+    }
+    /* fade bottom edge so clipped lines look intentional */
+    .hero-terminal-body::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 48px;
+      background: linear-gradient(transparent, #050d0a);
+      pointer-events: none; z-index: 1;
+    }
+    #hero-lines { font-family: var(--rw-font-mono); font-size: .72rem; line-height: 1.7; }
+    .tl { display: block; white-space: pre; overflow: hidden; }
+    .tl-cmd    { color: #94a3b8; }
+    .tl-input  { color: #e2e8f0; }
+    .tl-stage  { color: #818cf8; }
+    .tl-sub    { color: #64748b; }
+    .tl-echo   { color: #f87171; }
+    .tl-src    { color: #4ade80; }
+    .tl-divi   { color: #1e3a2a; }
+    .tl-fab    { color: #f87171; }
+    .tl-exag   { color: #fbbf24; }
+    .tl-verd   { color: #f0f4ff; font-weight: 700; }
+    .tl-rewrite{ color: #4ade80; }
+    .cursor { display: inline-block; width: 6px; height: .9em; background: #4ade80; margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: middle; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── Guide layout ───────────────────────────── */
+    .guide-layout { display: grid; grid-template-columns: 230px 1fr; gap: 2.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; align-items: start; }
+    .guide-layout > * { min-width: 0; }
+    .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family: var(--rw-font-display); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--rw-text-subtle); margin-bottom: .75rem; }
+    .guide-toc { list-style: none; display: flex; flex-direction: column; gap: .15rem; }
+    .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
+    .guide-toc a:hover, .guide-toc a.active { color: #4ade80; border-left-color: #4ade80; background: rgba(74,222,128,.06); }
+    .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
+
+    /* ── Sections ───────────────────────────────── */
+    .guide-section { margin-bottom: 3.5rem; }
+    .guide-section h2 { font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800; color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem; border-bottom: 2px solid rgba(74,222,128,.15); scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.5rem 0 .5rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
+    code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: #4ade80; }
+
+    /* ── Stat row ───────────────────────────────── */
+    .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: var(--rw-font-display); font-size: 1.65rem; font-weight: 800; color: #4ade80; line-height: 1; }
+    .stat-val-red { color: #f87171; }
+    .stat-val-ind { color: #818cf8; }
+    .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
+
+    /* ── Feature grid ───────────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+    .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
+    .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Architecture: two-approach ─────────────── */
+    .approach-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+    .approach-col { border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 1.25rem; background: var(--rw-card); }
+    .approach-header { font-family: var(--rw-font-display); font-size: .73rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: .35rem .75rem; border-radius: 6px; margin-bottom: 1.1rem; display: inline-block; }
+    .ah-a { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); color: #f87171; }
+    .ah-b { background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.2); color: #4ade80; }
+    .pipe-node { border-radius: 8px; padding: .6rem .9rem; font-size: .81rem; font-family: var(--rw-font-display); font-weight: 600; margin-bottom: .4rem; text-align: center; }
+    .pipe-node small { display: block; font-size: .7rem; font-weight: 400; opacity: .8; margin-top: .1rem; }
+    .pipe-arrow { text-align: center; color: rgba(255,255,255,.22); font-size: .85rem; margin: .15rem 0; }
+    .pn-input   { background: rgba(100,116,139,.1);  border: 1px solid rgba(100,116,139,.18); color: #94a3b8; }
+    .pn-search  { background: rgba(129,140,248,.08); border: 1px solid rgba(129,140,248,.18); color: #818cf8; }
+    .pn-llm     { background: rgba(248,113,113,.1);  border: 1px solid rgba(248,113,113,.2);  color: #f87171; }
+    .pn-echo    { background: rgba(248,113,113,.06); border: 1px dashed rgba(248,113,113,.3); color: #f87171; font-style: italic; }
+    .pn-extract { background: rgba(129,140,248,.1);  border: 1px solid rgba(129,140,248,.2);  color: #818cf8; }
+    .pn-ground  { background: rgba(74,222,128,.1);   border: 1px solid rgba(74,222,128,.2);   color: #4ade80; }
+    .pn-verify  { background: rgba(251,191,36,.1);   border: 1px solid rgba(251,191,36,.2);   color: #fbbf24; }
+    .pn-verdict { background: rgba(74,222,128,.1);   border: 2px solid rgba(74,222,128,.3);   color: #4ade80; font-weight: 700; }
+    .pn-note    { font-family: var(--rw-font-mono); font-size: .67rem; color: var(--rw-text-subtle); text-align: center; margin-top: .5rem; line-height: 1.55; }
+
+    /* ── Walkthrough gallery ─────────────────────── */
+    .walk-preset-bar, .walk-tab-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
+    .walk-preset, .walk-tab {
+      padding: .4rem 1rem; border-radius: 9999px; border: 1.5px solid var(--rw-border);
+      background: transparent; color: var(--rw-text-muted);
+      font-family: var(--rw-font-display); font-size: .8rem; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+    }
+    .walk-preset:hover, .walk-tab:hover { border-color: #4ade80; color: #4ade80; }
+    .walk-preset.active { background: #4ade80; border-color: #4ade80; color: #071a0f; }
+    .walk-tab.active { background: rgba(74,222,128,.1); border-color: #4ade80; color: #4ade80; }
+    .walk-img-wrap { border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; background: var(--rw-bg-subtle); margin: .75rem 0; }
+    .walk-img-wrap img { width: 100%; height: auto; display: block; }
+    .walk-caption { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; padding: .6rem .1rem; }
+    .walk-cap-claim { font-size: .83rem; color: var(--rw-text-muted); font-style: italic; flex: 1; min-width: 200px; }
+    .walk-cap-meta { display: flex; gap: .5rem; flex-shrink: 0; }
+    .walk-cap-tag { font-family: var(--rw-font-mono); font-size: .7rem; padding: .2rem .55rem; border-radius: 4px; }
+    .wct-fab  { background: rgba(248,113,113,.15); color: #f87171; border: 1px solid rgba(248,113,113,.25); }
+    .wct-exag { background: rgba(251,191,36,.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,.22); }
+    .wct-ok   { background: rgba(74,222,128,.12);  color: #4ade80; border: 1px solid rgba(74,222,128,.22); }
+    .wct-echo { background: var(--rw-bg-subtle); color: var(--rw-text-subtle); border: 1px solid var(--rw-border); }
+    .wct-tab  { background: rgba(129,140,248,.1);  color: #818cf8; border: 1px solid rgba(129,140,248,.2); }
+    /* home screenshot card */
+    .home-shot-wrap { border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.25rem 0; background: var(--rw-bg-subtle); }
+    .home-shot-wrap img { width: 100%; height: auto; display: block; }
+    .home-shot-caption { padding: .55rem 1rem; font-family: var(--rw-font-mono); font-size: .72rem; color: var(--rw-text-subtle); background: var(--rw-bg-subtle); border-top: 1px solid var(--rw-border); }
+
+    /* ── Step list ──────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .step-item { display: flex; gap: .9rem; align-items: flex-start; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: #4ade80; color: #071a0f; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
+    .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
+
+    /* ── Tables ─────────────────────────────────── */
+    .table-scroll { overflow-x: auto; }
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: .88rem; }
+    .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .78rem; text-align: left; padding: .7rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
+    .comparison-table td { padding: .65rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
+    .comparison-table tr:hover td { background: var(--rw-bg-alt); }
+
+    /* ── Code block ─────────────────────────────── */
+    .code-block { background: #050d0a; border: 1px solid rgba(74,222,128,.15); border-radius: var(--rw-r-md); padding: 1.25rem 1.5rem; font-family: var(--rw-font-mono); font-size: .81rem; line-height: 1.7; color: #94a3b8; margin: 1.25rem 0; overflow-x: auto; }
+    .code-block .cm { color: #334155; }
+    .code-block .kw { color: #818cf8; }
+    .code-block .st { color: #4ade80; }
+    .code-block .fn { color: #fbbf24; }
+
+    /* ── Verdict badges ──────────────────────────── */
+    .vbadge { display: inline-block; font-family: var(--rw-font-mono); font-size: .72rem; font-weight: 700; padding: .18rem .5rem; border-radius: 4px; margin-right: .3rem; }
+    .vb-fab  { background: rgba(248,113,113,.15); color: #f87171; border: 1px solid rgba(248,113,113,.25); }
+    .vb-exag { background: rgba(251,191,36,.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,.22); }
+    .vb-ok   { background: rgba(74,222,128,.12);  color: #4ade80; border: 1px solid rgba(74,222,128,.22); }
+
+    /* ── Callout ─────────────────────────────────── */
+    .callout { background: rgba(248,113,113,.05); border: 1px solid rgba(248,113,113,.18); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; margin: 1.25rem 0; }
+    .callout-label { font-family: var(--rw-font-mono); font-size: .67rem; color: #f87171; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .35rem; }
+    .callout-body { font-size: .85rem; color: var(--rw-text-muted); line-height: 1.65; }
+    .callout-body strong { color: var(--rw-text); }
+
+    /* ── Learning cards ──────────────────────────── */
+    .learning-item { margin-bottom: 1.5rem; padding: 1.1rem 1.25rem; border-left: 3px solid #4ade80; background: rgba(74,222,128,.04); border-radius: 0 var(--rw-r-md) var(--rw-r-md) 0; }
+    .learning-num { font-family: var(--rw-font-mono); font-size: .65rem; color: #4ade80; letter-spacing: .06em; margin-bottom: .25rem; }
+    .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .92rem; color: var(--rw-text); margin-bottom: .4rem; }
+    .learning-body { font-size: .83rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .5rem; }
+    .learning-quote { font-family: var(--rw-font-mono); font-size: .74rem; color: #4ade80; padding: .4rem .75rem; background: rgba(74,222,128,.07); border-radius: 4px; display: block; }
+
+    /* ── Moment grid ─────────────────────────────── */
+    .moment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .moment-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.1rem; }
+    .moment-emoji { font-size: 1.4rem; margin-bottom: .55rem; }
+    .moment-title { font-family: var(--rw-font-display); font-size: .87rem; font-weight: 700; color: var(--rw-text); margin-bottom: .3rem; }
+    .moment-body { font-size: .8rem; color: var(--rw-text-muted); line-height: 1.6; }
+
+    /* ── Platform review ─────────────────────────── */
+    .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+    .review-col { border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .review-liked  { background: rgba(74,222,128,.05);  border: 1px solid rgba(74,222,128,.15); }
+    .review-gotcha { background: rgba(248,113,113,.05); border: 1px solid rgba(248,113,113,.15); }
+    .review-header { font-family: var(--rw-font-display); font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .75rem; }
+    .review-liked  .review-header { color: #4ade80; }
+    .review-gotcha .review-header { color: #f87171; }
+    .review-item { display: flex; gap: .55rem; margin-bottom: .6rem; font-size: .82rem; color: var(--rw-text-muted); line-height: 1.55; }
+    .review-item strong { color: var(--rw-text); }
+
+    /* ── Team ────────────────────────────────────── */
+    .team-card { display: flex; gap: 1rem; align-items: flex-start; background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; margin: 1rem 0; }
+    .team-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #4ade80, #818cf8); display: flex; align-items: center; justify-content: center; font-family: var(--rw-font-display); font-weight: 800; font-size: 1rem; color: #07101f; flex-shrink: 0; }
+    .team-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .15rem; }
+    .team-role { font-family: var(--rw-font-mono); font-size: .72rem; color: #4ade80; margin-bottom: .4rem; }
+    .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.6; }
+
+    /* ── Inspiration box ─────────────────────────── */
+    .inspiration-box { border: 1px solid rgba(129,140,248,.25); border-radius: var(--rw-r-md); padding: 1.25rem 1.5rem; background: rgba(129,140,248,.04); margin: 1.25rem 0; }
+    .inspiration-label { font-family: var(--rw-font-mono); font-size: .67rem; color: #818cf8; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .4rem; }
+    .inspiration-body { font-size: .86rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .75rem; }
+
+    /* ── CTA box ─────────────────────────────────── */
+    .cta-box { background: var(--rw-card); border: 1px solid rgba(74,222,128,.2); border-radius: var(--rw-r-md); padding: 1.5rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin: 1.5rem 0; }
+    .cta-box h3 { font-family: var(--rw-font-display); font-size: 1rem; font-weight: 700; color: var(--rw-text); margin-bottom: .3rem; }
+    .cta-box p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
+    .cta-body { flex: 1; min-width: 180px; }
+    .cta-btns { display: flex; gap: .75rem; flex-wrap: wrap; }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 1024px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .guide-toc { flex-direction: row; flex-wrap: wrap; gap: .25rem; }
+      .guide-toc a { border-left: none; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; }
+      .guide-toc a:hover, .guide-toc a.active { border-bottom-color: #4ade80; border-left-color: transparent; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .approach-wrap { grid-template-columns: 1fr; }
+      .review-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .hero-split { grid-template-columns: 1fr; gap: 1.75rem; }
+      .guide-hero { padding: 2.5rem 1.25rem 2rem; }
+      .stat-row { flex-wrap: wrap; }
+      .stat-cell { flex: 1 1 calc(33.333% - 1px); border-right: 1px solid var(--rw-border); border-bottom: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(3n) { border-right: none; }
+      .stat-cell:nth-last-child(-n+3) { border-bottom: none; }
+    }
+    @media (max-width: 600px) {
+      .guide-layout { margin: 1.5rem auto; padding: 0 1rem; }
+      .stat-cell { flex: 1 1 50%; }
+      .stat-cell:nth-child(3n)  { border-right: 1px solid var(--rw-border); }
+      .stat-cell:nth-child(2n)  { border-right: none; }
+      .stat-cell:nth-last-child(-n+2) { border-bottom: none; }
+      .stat-cell:nth-last-child(-n+3) { border-bottom: 1px solid var(--rw-border); }
+      .feature-grid { grid-template-columns: 1fr; }
+      .moment-grid  { grid-template-columns: 1fr 1fr; }
+      .guide-section h2 { font-size: 1.25rem; }
+      .guide-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ──────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> Inspired by AI Camp &nbsp;&middot;&nbsp; Google Co-Scientist</span>
+      <h1>ClaimLens<br><span>3-Agent Fact-Checker</span></h1>
+      <p>Paste any viral headline. Three agents decompose it, hunt primary sources, and deliver a grounded verdict &mdash; while a single LLM reads the same search results with no grounding. The gap tells the story.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Python &middot; Streamlit</span>
+        <span class="hero-tag">Nebius AI &middot; Qwen3-235B</span>
+        <span class="hero-tag">DuckDuckGo</span>
+        <span class="hero-tag">OpenFDA API</span>
+        <span class="hero-tag">Wikipedia API</span>
+        <span class="hero-tag">MongoDB Atlas</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="https://claimlens-xh52zvqh5z3xrstpzcvyoo.streamlit.app/" target="_blank" rel="noopener" class="rw-btn rw-btn-primary">Try Live Demo &rarr;</a>
+        <a href="https://github.com/researchsite/claimlens" target="_blank" rel="noopener" class="rw-btn rw-btn-secondary">GitHub &rarr;</a>
+        <a href="#guide-content" class="rw-btn rw-btn-secondary">Build Story &darr;</a>
+      </div>
+    </div>
+
+    <div class="hero-terminal-wrap">
+      <div class="hero-terminal-bar">
+        <span class="t-dot t-red"></span>
+        <span class="t-dot t-yellow"></span>
+        <span class="t-dot t-green"></span>
+        <span class="t-label">claimlens &middot; live run</span>
+      </div>
+      <div class="hero-terminal-body">
+        <div id="hero-lines"></div>
+        <span class="cursor" id="hero-cursor"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Content ─────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-what">What It Does</a></li>
+      <li><a href="#section-demo">See It In Action</a></li>
+      <li><a href="#section-arch">Architecture</a></li>
+      <li><a href="#section-how">How It Works</a></li>
+      <li><a href="#section-components">Components</a></li>
+      <li><a href="#section-learnings">Real Learnings</a></li>
+      <li><a href="#section-moments">Moments</a></li>
+      <li><a href="#section-review">Platform Review</a></li>
+      <li><a href="#section-team">Built By</a></li>
+      <li><a href="#section-start">Get Started</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── WHAT IT DOES ─────────────────────────── -->
+    <section class="guide-section" id="section-what">
+      <h2>What It Does</h2>
+      <p>When viral health claims spread, the top 10 search results are often SEO blogs repeating each other. A standard AI reads those, writes a confident paragraph, and echoes the hoax &mdash; what the AI Camp session called &ldquo;fluent prose fraud.&rdquo; ClaimLens puts the standard AI and the 3-agent pipeline on the same screen so the gap is impossible to miss.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val">3</div><div class="stat-label">agents</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-ind">4</div><div class="stat-label">presets</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-red">87%</div><div class="stat-label">echo index<br>(lemon water)</div></div>
+        <div class="stat-cell"><div class="stat-val">4</div><div class="stat-label">UI tabs</div></div>
+      </div>
+
+      <h3>App Features</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">&#9878;&#65039;</div>
+          <h4>Dual Comparison</h4>
+          <p>Approach A (single LLM, no grounding) and Approach B (3-agent pipeline) side-by-side. Same claim, same search results &mdash; shows exactly where standard AI goes wrong.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">&#128218;</div>
+          <h4>Source Explorer</h4>
+          <p>Every DuckDuckGo result classified: <strong>PRIMARY SOURCE</strong> (.gov, .edu, PubMed, WHO, NASA) or <strong>SEO ECHO</strong> (blog, aggregator). The Echo Index bar shows the ratio visually.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">&#128269;</div>
+          <h4>Agent Trace</h4>
+          <p>Step-by-step execution log showing each agent &mdash; model name, input, output, and duration in milliseconds. Full transparency on why the verdict was reached.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">&#128451;&#65039;</div>
+          <h4>Audit History</h4>
+          <p>MongoDB Atlas stores every run. Each card shows claim, verdict badge, confidence %, Echo Index, and timestamp. &ldquo;Load in Comparison&rdquo; replays any past result.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">&#9889;</div>
+          <h4>4 Presets &amp; Model Selector</h4>
+          <p>Lemon Water, NASA Signal, Cash Ban, Leqembi &mdash; instant load from pre-computed cache, no API key required. Switch models: Qwen3-235B, Qwen3-30B, DeepSeek-V4-Flash.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">&#128202;</div>
+          <h4>Stack Status Panel</h4>
+          <p>Live status of all 5 components: Nebius AI, MongoDB Atlas, DuckDuckGo, Wikipedia, OpenFDA. Green dot = live. Grey = missing config. DuckDuckGo, Wikipedia, OpenFDA are always free and keyless.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Key design rule</div>
+        <div class="callout-body"><strong>Absent evidence is not the same as contradiction.</strong> The verifier only returns <span class="vbadge vb-fab">FABRICATED</span> when primary sources directly contradict a claim. If no evidence exists, the verdict is <span class="vbadge vb-exag">EXAGGERATED</span>. Direct contradiction required for Fabricated &mdash; this is the difference between a useful fact-checker and a false accusation machine.</div>
+      </div>
+    </section>
+
+    <!-- ── SEE IT IN ACTION ──────────────────────── -->
+    <section class="guide-section" id="section-demo">
+      <h2>See It In Action</h2>
+      <p>Select a preset claim, then switch between the four app tabs to see how ClaimLens handles each one. All screenshots are from the live Streamlit app.</p>
+
+      <div class="home-shot-wrap">
+        <img src="../images/claimlens/01_home.png" alt="ClaimLens home — sidebar with presets, 4 navigation tabs, Stack Status panel">
+        <div class="home-shot-caption">Home view &mdash; sidebar (claim input, presets, model selector, Stack Status) &middot; 4 tabs (Dual Comparison, Source Explorer, Agent Trace, Audit History)</div>
+      </div>
+
+      <div class="walk-preset-bar" id="walk-presets">
+        <button class="walk-preset active" data-preset="lemon" onclick="walkShow('lemon', null)">&#128308; Lemon Water</button>
+        <button class="walk-preset" data-preset="nasa" onclick="walkShow('nasa', null)">&#128308; NASA Signal</button>
+        <button class="walk-preset" data-preset="cash" onclick="walkShow('cash', null)">&#128308; Cash Ban</button>
+        <button class="walk-preset" data-preset="leqembi" onclick="walkShow('leqembi', null)">&#128994; Leqembi</button>
+      </div>
+
+      <div class="walk-tab-bar" id="walk-tabs">
+        <button class="walk-tab active" onclick="walkShow(null, 0)">Dual Comparison</button>
+        <button class="walk-tab" onclick="walkShow(null, 1)">Source Explorer</button>
+        <button class="walk-tab" onclick="walkShow(null, 2)">Agent Trace</button>
+        <button class="walk-tab" onclick="walkShow(null, 3)">Audit History</button>
+      </div>
+
+      <div class="walk-img-wrap">
+        <img id="walk-img"
+             src="../images/claimlens/02_lemon_water_tab1_comparison.png"
+             alt="Dual Comparison - Lemon Water claim">
+      </div>
+
+      <div class="walk-caption">
+        <span class="walk-cap-claim" id="walk-caption-claim">&ldquo;Harvard study proves hot lemon water cures diabetes in 30 days &mdash; doctors won&rsquo;t tell you this!&rdquo;</span>
+        <span class="walk-cap-meta">
+          <span class="walk-cap-tag wct-fab" id="walk-caption-verdict">&#128308; FABRICATED</span>
+          <span class="walk-cap-tag wct-echo" id="walk-caption-echo">87% echo index</span>
+          <span class="walk-cap-tag wct-tab"  id="walk-caption-tab">Dual Comparison</span>
+        </span>
+      </div>
+    </section>
+
+    <!-- ── ARCHITECTURE ─────────────────────────── -->
+    <section class="guide-section" id="section-arch">
+      <h2>Architecture</h2>
+      <p>Two approaches run on every claim. Same 10 search results feed both. Approach A shows what a standard AI returns. Approach B is the 3-agent grounded pipeline.</p>
+
+      <div class="approach-wrap">
+        <div class="approach-col">
+          <span class="approach-header ah-a">Approach A &mdash; Baseline</span>
+          <div class="pipe-node pn-input">Viral Headline</div>
+          <div class="pipe-arrow">&#8595;</div>
+          <div class="pipe-node pn-search">DuckDuckGo Search<small>top 10 results</small></div>
+          <div class="pipe-arrow">&#8595;</div>
+          <div class="pipe-node pn-llm">Single LLM Prompt<small>no source classification</small></div>
+          <div class="pipe-arrow">&#8595;</div>
+          <div class="pipe-node pn-echo">&ldquo;Harvard study confirms&hellip;&rdquo;<small>echo chamber output</small></div>
+          <div class="pn-note">reads SEO blogs as evidence &middot; no primary source check</div>
+        </div>
+        <div class="approach-col">
+          <span class="approach-header ah-b">Approach B &mdash; 3 Agents</span>
+          <div class="pipe-node pn-input">Viral Headline</div>
+          <div class="pipe-arrow">&#8595;</div>
+          <div class="pipe-node pn-extract">Claim Extractor (Qwen3-30B)<small>3&ndash;5 falsifiable sub-claims</small></div>
+          <div class="pipe-arrow">&#8595;</div>
+          <div class="pipe-node pn-ground">Grounder (Qwen3-235B)<small>.gov &middot; .edu &middot; PubMed &middot; FDA &middot; Wikipedia</small></div>
+          <div class="pipe-arrow">&#8595;</div>
+          <div class="pipe-node pn-verify">Verifier (Qwen3-235B)<small>claim &times; evidence &rarr; verdict</small></div>
+          <div class="pipe-arrow">&#8595;</div>
+          <div class="pipe-node pn-verdict">Verdict + Echo Index + Rewritten Claim</div>
+          <div class="pn-note">confidence 0&ndash;100 &middot; primary source citations &middot; MongoDB audit</div>
+        </div>
+      </div>
+
+      <h3>Test Presets</h3>
+      <div class="table-scroll"><table class="comparison-table">
+        <thead><tr><th>Claim</th><th>Verdict</th><th>Echo Index</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>&ldquo;Harvard study proves hot lemon water cures diabetes in 30 days&rdquo;</td>
+            <td><span class="vbadge vb-fab">FABRICATED</span></td><td>~90%</td>
+            <td>No Harvard study; NIH shows minor animal model effects only</td>
+          </tr>
+          <tr>
+            <td>&ldquo;NASA confirms alien radio signal detected from Mars&rdquo;</td>
+            <td><span class="vbadge vb-fab">FABRICATED</span></td><td>100%</td>
+            <td>No NASA press release; traces to an ESA simulation misrepresented in tabloids</td>
+          </tr>
+          <tr>
+            <td>&ldquo;US government passes law banning cash payments over $50&rdquo;</td>
+            <td><span class="vbadge vb-fab">FABRICATED</span></td><td>100%</td>
+            <td>Federal law (CASH Act) actually <em>requires</em> businesses to accept cash &mdash; exact opposite</td>
+          </tr>
+          <tr>
+            <td>&ldquo;FDA grants full approval for Leqembi as Alzheimer&rsquo;s treatment&rdquo;</td>
+            <td><span class="vbadge vb-ok">VERIFIED</span></td><td>~60%</td>
+            <td>FDA full approval Jul 2023; clinical trials confirmed by FDA.gov, alzheimers.gov, .edu sources</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ── HOW IT WORKS ──────────────────────────── -->
+    <section class="guide-section" id="section-how">
+      <h2>How It Works</h2>
+
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Claim input &amp; DuckDuckGo search</h4>
+            <p>User enters a headline or clicks a preset. <code>DDGS().text()</code> returns the top 10 results. These are passed unmodified to both Approach A and the 3-agent pipeline &mdash; same raw material, different handling. Preset results load from pre-computed cache for instant demo without an API key.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Claim Extractor (Qwen3-30B) decomposes the headline</h4>
+            <p><code>extract_claims(headline)</code> calls a small, fast model with a structured-output prompt. Returns a JSON list of 3&ndash;5 sub-claims, each independently verifiable. &ldquo;Harvard study cures diabetes in 30 days&rdquo; becomes: &ldquo;a Harvard study exists,&rdquo; &ldquo;lemon water reverses type 2 diabetes,&rdquo; &ldquo;effect confirmed in 30 days.&rdquo; Each sub-claim becomes a separate grounding target visible in the Agent Trace tab.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Grounder (Qwen3-235B) hunts primary sources</h4>
+            <p><code>find_primary_sources()</code> filters DuckDuckGo results by a domain whitelist (<code>.gov</code>, <code>.edu</code>, <code>pubmed</code>, <code>fda.gov</code>, <code>who.int</code>, <code>nasa.gov</code>, <code>wikipedia</code>), then expands with direct calls to the Wikipedia REST API and OpenFDA API. Every result is classified PRIMARY SOURCE or SEO ECHO. The Echo Index is the ratio of echoes in the original 10 &mdash; shown as a visual bar in the Dual Comparison and Source Explorer tabs.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Verifier (Qwen3-235B) checks claims against evidence</h4>
+            <p><code>verify_claim()</code> receives the original claim, all sub-claims, and the grounded sources. Conservative calibration: absent evidence &rarr; <span class="vbadge vb-exag">EXAGGERATED</span>; direct contradiction required for <span class="vbadge vb-fab">FABRICATED</span>. Outputs: verdict, confidence 0&ndash;100, key evidence bullets, primary source citations, and a rewritten headline that matches what the evidence actually says.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Approach A runs as baseline comparison</h4>
+            <p><code>stream_approach_a()</code> sends the original claim plus raw DuckDuckGo results to a single LLM with no grounding instructions. Response streams live via <code>st.write_stream()</code>. For the lemon water claim, Approach A produces a confident health summary citing &ldquo;a Harvard study&rdquo; &mdash; because that&rsquo;s what the top 9 SEO blogs say.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Audit trail stored in MongoDB (with session fallback)</h4>
+            <p>Every run is written to MongoDB Atlas: claim, sub-claims, all source classifications, verdict, confidence, reasoning, and rewritten headline. If no MongoDB URI is configured, the app falls back to Streamlit session state automatically. The pipeline always runs; the audit trail is optional and clearly separated from the core logic.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="code-block"><span class="cm"># orchestrator.py &mdash; full pipeline in one async call</span>
+<span class="kw">async def</span> <span class="fn">run_audit</span>(claim, search_results):
+    sub_claims = <span class="kw">await</span> extract_claims(claim)              <span class="cm"># Qwen3-30B  · step 2</span>
+    grounding  = <span class="kw">await</span> find_primary_sources(               <span class="cm"># Qwen3-235B · step 3</span>
+                       claim, sub_claims, search_results)
+    verdict    = <span class="kw">await</span> verify_claim(                        <span class="cm"># Qwen3-235B · step 4</span>
+                       claim, sub_claims, grounding)
+    echo_index = calculate_echo_index(search_results)           <span class="cm"># ratio of SEO echoes</span>
+    <span class="kw">return</span> {<span class="st">"verdict"</span>: verdict, <span class="st">"echo_index"</span>: echo_index,
+            <span class="st">"grounding"</span>: grounding, <span class="st">"sub_claims"</span>: sub_claims}</div>
+    </section>
+
+    <!-- ── COMPONENTS ───────────────────────────── -->
+    <section class="guide-section" id="section-components">
+      <h2>Components</h2>
+      <div class="table-scroll"><table class="comparison-table">
+        <thead><tr><th>File</th><th>Role</th><th>Key function</th></tr></thead>
+        <tbody>
+          <tr><td><code>agents/orchestrator.py</code></td><td>Pipeline coordinator</td><td><code>run_audit()</code> &mdash; calls all 3 agents in sequence, returns full result</td></tr>
+          <tr><td><code>agents/claim_extractor.py</code></td><td>Sub-claim decomposition</td><td><code>extract_claims(headline)</code> &rarr; JSON list via Qwen3-30B, structured output</td></tr>
+          <tr><td><code>agents/grounder.py</code></td><td>Primary source hunting</td><td><code>find_primary_sources()</code> &mdash; domain whitelist + Wikipedia REST + OpenFDA API</td></tr>
+          <tr><td><code>agents/verifier.py</code></td><td>Evidence-based verdict</td><td><code>verify_claim()</code> &rarr; verdict, confidence 0&ndash;100, rewritten_claim, reasoning</td></tr>
+          <tr><td><code>approach_a.py</code></td><td>Baseline LLM (no grounding)</td><td><code>stream_approach_a()</code> &rarr; streaming single-prompt response for comparison</td></tr>
+          <tr><td><code>utils/echo_index.py</code></td><td>Search space quality metric</td><td><code>calculate_echo_index(results)</code> &rarr; % not primary sources, 0&ndash;100</td></tr>
+          <tr><td><code>presets.py</code></td><td>4 pre-loaded test claims + cache</td><td>lemon_water &middot; nasa_signal &middot; cash_ban &middot; leqembi &mdash; instant load, no API key</td></tr>
+          <tr><td><code>app.py</code></td><td>Streamlit entry point</td><td>Sidebar, 4 tabs, streaming output, verdict card, source classifications, Stack Status</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ── REAL LEARNINGS ────────────────────────── -->
+    <section class="guide-section" id="section-learnings">
+      <h2>Real Learnings</h2>
+
+      <div class="learning-item">
+        <div class="learning-num">01</div>
+        <div class="learning-title">Fluent prose fraud is visible the moment you run the first test</div>
+        <div class="learning-body">Approach A returned a confident health article citing a Harvard study that doesn&rsquo;t exist. The model didn&rsquo;t lie &mdash; it summarised what the blogs said. They were all echoing the same unsourced claim. The pipeline makes the mechanism visible: 9 of 10 results were the same bad claim copied 9 times, and the AI read those as evidence.</div>
+        <div class="learning-quote">The pipeline didn&rsquo;t catch a lie. It showed where the lie came from.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">02</div>
+        <div class="learning-title">The Echo Index wasn&rsquo;t in the plan &mdash; it showed up in debugging</div>
+        <div class="learning-body">While wiring up the Grounder, I printed a source classification breakdown: 9 of 10 DuckDuckGo results for the lemon water claim were SEO blogs with no primary source links. That ratio turned out to be more informative than the verdict itself &mdash; a <em>pre-verdict signal</em> about whether the search space is already contaminated. An Echo Index of 100% means the AI can only read echoes, no matter how sophisticated its reasoning.</div>
+        <div class="learning-quote">The most useful metric was an accident from a debug print.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">03</div>
+        <div class="learning-title">Conservative verdict calibration is where the tool earns or loses trust</div>
+        <div class="learning-body">The first verifier called anything without primary evidence &ldquo;fabricated.&rdquo; That was wrong. Absence of evidence is not contradiction. The fix was one logic change: <code>absent &rarr; EXAGGERATED</code>, <code>contradiction &rarr; FABRICATED</code>. Without that distinction, the tool is a false accusation machine. The cash ban preset also revealed a subtler problem: the real law is the exact <em>opposite</em> of the claim. The verifier had to correctly identify &ldquo;inverted claims&rdquo; as Fabricated with high confidence.</div>
+        <div class="learning-quote">absent evidence &ne; fabrication &mdash; this rule is the entire verifier.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">04</div>
+        <div class="learning-title">Structured output between agents removes an entire class of bugs</div>
+        <div class="learning-body">Early versions let the Extractor return free-form text and tried to parse it downstream. The Grounder would fail silently when the format shifted. Switching to JSON-only structured output meant the pipeline either returned a valid list of sub-claims or raised an explicit error. No silent failures, no format negotiations at runtime.</div>
+        <div class="learning-quote">Structured output is the contract that makes the pipeline reliable.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">05</div>
+        <div class="learning-title">The verified case matters as much as the fabricated ones</div>
+        <div class="learning-body">The Leqembi preset (FDA-approved Alzheimer&rsquo;s drug) was added to test the other direction. If the verifier returns FABRICATED on a claim backed by FDA approval and peer-reviewed trials, the tool is worse than useless. Getting VERIFIED right &mdash; low echo index (~60%), three primary source confirmations &mdash; was as important as catching the hoaxes. The 60% echo on a real claim (vs 90&ndash;100% on hoaxes) is itself diagnostic.</div>
+        <div class="learning-quote">A fact-checker that only catches falsehoods is a bias machine.</div>
+      </div>
+
+      <div class="learning-item">
+        <div class="learning-num">06</div>
+        <div class="learning-title">DuckDuckGo rate limits quietly on consecutive runs</div>
+        <div class="learning-body">Running through all four presets quickly triggers DDGS rate limiting &mdash; the search returns fewer results with no error code. Invisible in single-run testing. Fix: 1-second sleep between consecutive search calls in demo mode. Rate-limited APIs that fail silently are a trap you only discover under load.</div>
+        <div class="learning-quote">Always test consecutive runs, not just single runs.</div>
+      </div>
+    </section>
+
+    <!-- ── MOMENTS ───────────────────────────────── -->
+    <section class="guide-section" id="section-moments">
+      <h2>Moments In Between</h2>
+
+      <div class="moment-grid">
+        <div class="moment-card">
+          <div class="moment-emoji">&#128027;</div>
+          <div class="moment-title">The accidental Echo Index</div>
+          <div class="moment-body">Added a debug print to see what the Grounder was classifying. Saw &ldquo;9/10 SEO&rdquo; for lemon water. Decided to surface it in the UI as a visual bar. It became the most-discussed element in every demo.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">&#128196;</div>
+          <div class="moment-title">Approach A wrote a Harvard study</div>
+          <div class="moment-body">First full test run. Approach A returned a confident paragraph citing &ldquo;a Harvard study.&rdquo; No such study exists. Approach B: &ldquo;No Harvard study found.&rdquo; That side-by-side was the moment the tool made sense to show to people.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">&#9878;&#65039;</div>
+          <div class="moment-title">Fabricated &rarr; Exaggerated</div>
+          <div class="moment-body">Changed two lines of verifier logic. The NASA preset started returning sensible verdicts. Realised the distinction between those two verdicts was the core product judgment, not an implementation detail.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">&#128451;&#65039;</div>
+          <div class="moment-title">MongoDB went down at 3am</div>
+          <div class="moment-body">Atlas free tier cold start during a late demo prep. Session memory fallback kicked in without any user-visible errors. Built the fallback as an afterthought. It saved the run.</div>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">&#9989;</div>
+          <div class="moment-title">Leqembi passed</div>
+          <div class="moment-body">When the FDA-approved drug returned VERIFIED with echo index ~60% and three primary source citations, the tool felt trustworthy for the first time &mdash; not just clever at catching hoaxes.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLATFORM REVIEW ──────────────────────── -->
+    <section class="guide-section" id="section-review">
+      <h2>Platform Review</h2>
+
+      <div class="review-grid">
+        <div class="review-col review-liked">
+          <div class="review-header">&#10003; Liked</div>
+          <div class="review-item"><span>&#10003;</span><span><strong>DDGS</strong> &mdash; no API key, no setup. <code>DDGS().text(query, max_results=10)</code> just works. Fastest path from claim to search results.</span></div>
+          <div class="review-item"><span>&#10003;</span><span><strong>Streamlit <code>st.write_stream()</code></strong> &mdash; one line for a live typing effect on Approach A output. Zero frontend code.</span></div>
+          <div class="review-item"><span>&#10003;</span><span><strong>OpenFDA API</strong> &mdash; free, no key, structured JSON for drug approvals. The Leqembi VERIFIED verdict needed it.</span></div>
+          <div class="review-item"><span>&#10003;</span><span><strong>Nebius AI OpenAI-compatible endpoint</strong> &mdash; swap Qwen3-235B in as a drop-in for the OpenAI client. Zero code change, large model, free tier.</span></div>
+          <div class="review-item"><span>&#10003;</span><span><strong>MongoDB Atlas free tier</strong> &mdash; JSON audit records require no schema. Zero-config for append-only storage; graceful offline fallback.</span></div>
+        </div>
+        <div class="review-col review-gotcha">
+          <div class="review-header">&#9888; Gotcha</div>
+          <div class="review-item"><span>&#9888;</span><span><strong>DDGS rate limiting</strong> &mdash; quiet failure, returns fewer results with no error code. Add a 1-second sleep between consecutive calls.</span></div>
+          <div class="review-item"><span>&#9888;</span><span><strong>Streamlit + async</strong> &mdash; mixing <code>st.write_stream()</code> with async agent calls needs careful session state management. The natural Streamlit pattern is synchronous.</span></div>
+          <div class="review-item"><span>&#9888;</span><span><strong>MongoDB Atlas cold start</strong> &mdash; free tier sleeps after inactivity. First demo request can take 10&ndash;15 seconds. Run a warm-up query before showing the app.</span></div>
+          <div class="review-item"><span>&#9888;</span><span><strong>Wikipedia API disambiguation</strong> &mdash; returns the most-viewed article for a keyword, not the most relevant for the medical context. Needs domain-specific query construction.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TEAM ──────────────────────────────────── -->
+    <section class="guide-section" id="section-team">
+      <h2>Built By</h2>
+
+      <div class="team-card">
+        <div class="team-avatar">SH</div>
+        <div>
+          <div class="team-name">Sham HC</div>
+          <div class="team-role">Architecture &middot; Pipeline &middot; Streamlit UI</div>
+          <div class="team-contrib">Designed the 3-agent pipeline after the AI Camp session on Google&rsquo;s Co-Scientist architecture. Built the Claim Extractor, Grounder, Verifier, Echo Index metric, 4-tab Streamlit UI, and side-by-side comparison. The Echo Index appeared during debugging and stayed because it was more useful than expected.</div>
+        </div>
+      </div>
+
+      <div class="inspiration-box">
+        <div class="inspiration-label">What sparked this</div>
+        <div class="inspiration-body">The pipeline design came directly from <a href="https://shadabhussain.com/" target="_blank" rel="noopener">Shadab Hussain&rsquo;s</a> session at AI Camp on Google&rsquo;s Co-Scientist multi-agent architecture &mdash; specifically the finding that grounded pipelines produce 0% phantom citations versus 21% for baseline LLMs. ClaimLens applies the same idea at smaller scale: a Grounder that refuses to trust SEO blogs, and a Verifier that checks claims against primary evidence rather than fluent prose.</div>
+        <a href="../blog/aicamp-coscientist.html" class="rw-btn rw-btn-secondary" style="font-size:.83rem;">Read the session notes &rarr;</a>
+      </div>
+    </section>
+
+    <!-- ── GET STARTED ───────────────────────────── -->
+    <section class="guide-section" id="section-start">
+      <h2>Get Started</h2>
+      <p>Try the live app with no setup &mdash; all 4 presets load from cache with no API key. Or clone the repo and run locally with your own Nebius AI key.</p>
+
+      <div class="cta-box">
+        <div class="cta-body">
+          <h3>Live Streamlit App</h3>
+          <p>4 presets, instant load, no API key required. Full pipeline runs with your own Nebius key.</p>
+        </div>
+        <div class="cta-btns">
+          <a href="https://claimlens-xh52zvqh5z3xrstpzcvyoo.streamlit.app/" target="_blank" rel="noopener" class="rw-btn rw-btn-primary">Try Live App &rarr;</a>
+          <a href="https://github.com/researchsite/claimlens" target="_blank" rel="noopener" class="rw-btn rw-btn-secondary">GitHub &rarr;</a>
+        </div>
+      </div>
+
+      <div class="code-block"><span class="cm"># Clone and install</span>
+git clone https://github.com/researchsite/claimlens
+pip install -r requirements.txt
+
+<span class="cm"># Configure — Nebius AI key for live runs; MongoDB optional</span>
+cp .env.example .env
+<span class="cm"># NEBIUS_API_KEY=...    (or any OpenAI-compatible endpoint)</span>
+<span class="cm"># MONGODB_URI=...       (optional; app uses session state if unset)</span>
+
+<span class="cm"># Run</span>
+streamlit run app.py</div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"AI Camp — Co-Scientist Session","url":"/blog/aicamp-coscientist.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260615"></script>
+
+<script>
+// ── Walkthrough gallery ───────────────────────────────────────────
+var walkData = {
+  lemon:   ['02_lemon_water_tab1_comparison','02_lemon_water_tab2_sources','02_lemon_water_tab3_trace','02_lemon_water_tab4_history'],
+  nasa:    ['03_nasa_signal_tab1_comparison','03_nasa_signal_tab2_sources','03_nasa_signal_tab3_trace','03_nasa_signal_tab4_history'],
+  cash:    ['04_cash_ban_tab1_comparison','04_cash_ban_tab2_sources','04_cash_ban_tab3_trace','04_cash_ban_tab4_history'],
+  leqembi: ['05_leqembi_tab1_comparison','05_leqembi_tab2_sources','05_leqembi_tab3_trace','05_leqembi_tab4_history']
+};
+var walkMeta = {
+  lemon:   {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'~90% echo',claim:'“Harvard study proves hot lemon water cures diabetes in 30 days”'},
+  nasa:    {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'100% echo',claim:'“NASA confirms alien radio signal detected from Mars”'},
+  cash:    {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'100% echo',claim:'“US government passes law banning cash payments over $50”'},
+  leqembi: {icon:'&#128994;',verdict:'VERIFIED REAL',cls:'wct-ok', echo:'~60% echo',claim:'“FDA grants full approval for Leqembi as Alzheimer’s treatment”'}
+};
+var walkTabLabels = ['Dual Comparison','Source Explorer','Agent Trace','Audit History'];
+var activePreset = 'lemon', activeTab = 0;
+
+function walkShow(preset, tab) {
+  if (preset !== null) activePreset = preset;
+  if (tab !== null)    activeTab    = tab;
+  document.querySelectorAll('.walk-preset').forEach(function(b){
+    b.classList.toggle('active', b.dataset.preset === activePreset);
+  });
+  document.querySelectorAll('.walk-tab').forEach(function(b,i){
+    b.classList.toggle('active', i === activeTab);
+  });
+  var fname = walkData[activePreset][activeTab];
+  var img = document.getElementById('walk-img');
+  img.src = '../images/claimlens/' + fname + '.png';
+  img.alt = walkTabLabels[activeTab] + ' — ' + walkMeta[activePreset].claim;
+  var m = walkMeta[activePreset];
+  document.getElementById('walk-caption-claim').textContent   = m.claim;
+  var vEl = document.getElementById('walk-caption-verdict');
+  vEl.innerHTML = m.icon + ' ' + m.verdict;
+  vEl.className = 'walk-cap-tag ' + m.cls;
+  document.getElementById('walk-caption-echo').textContent = m.echo;
+  document.getElementById('walk-caption-tab').textContent  = walkTabLabels[activeTab];
+}
+
+// ── Hero terminal animation ───────────────────────────────────────
+(function() {
+  var lines = [
+    {cls:'tl-cmd',    text:'$ claimlens verify'},
+    {cls:'tl-input',  text:'> "Hot lemon water cures diabetes in 3 days"'},
+    {cls:'tl-divi',   text:'────────────────────────────────'},
+    {cls:'tl-stage',  text:'[1/3] Claim Extractor  (Qwen3-30B)'},
+    {cls:'tl-sub',    text:'  ✓ "Harvard study exists"'},
+    {cls:'tl-sub',    text:'  ✓ "reverses type 2 diabetes"'},
+    {cls:'tl-sub',    text:'  ✓ "effect in 3 days"'},
+    {cls:'tl-stage',  text:'[2/3] Grounder  (Qwen3-235B)'},
+    {cls:'tl-echo',   text:'  DuckDuckGo: 9/10 = SEO blogs  echo=87%'},
+    {cls:'tl-src',    text:'  NIH: minor flavonoid effects (rat models)'},
+    {cls:'tl-echo',   text:'  .gov: 0 results for Harvard lemon study'},
+    {cls:'tl-stage',  text:'[3/3] Verifier  (Qwen3-235B)'},
+    {cls:'tl-fab',    text:'  sub-claim 1  → FABRICATED'},
+    {cls:'tl-exag',   text:'  sub-claim 2  → EXAGGERATED (rat only)'},
+    {cls:'tl-fab',    text:'  sub-claim 3  → FABRICATED'},
+    {cls:'tl-divi',   text:'────────────────────────────────'},
+    {cls:'tl-verd',   text:'VERDICT: FABRICATED  (conf: 94%)'},
+    {cls:'tl-rewrite',text:'  → "Flavonoids: minor effects in rat models;'},
+    {cls:'tl-rewrite',text:'     no human RCT supports cure claims"'},
+  ];
+  var container = document.getElementById('hero-lines');
+  var cursor    = document.getElementById('hero-cursor');
+  if (!container) return;
+  var lineIdx=0, charIdx=0, currentEl=null;
+  var LINE_DELAY=26, PAUSE=3200;
+  function nextChar() {
+    if (lineIdx >= lines.length) {
+      cursor.style.display = 'inline-block';
+      setTimeout(function(){container.innerHTML='';lineIdx=0;charIdx=0;currentEl=null;cursor.style.display='none';nextChar();}, PAUSE);
+      return;
+    }
+    var line = lines[lineIdx];
+    if (!currentEl) {
+      currentEl = document.createElement('span');
+      currentEl.className = 'tl ' + line.cls;
+      currentEl.textContent = '';
+      container.appendChild(currentEl);
+      cursor.style.display = 'none';
+    }
+    if (charIdx < line.text.length) {
+      currentEl.textContent += line.text[charIdx++];
+      setTimeout(nextChar, LINE_DELAY);
+    } else {
+      currentEl.textContent += '\n';
+      lineIdx++; charIdx=0; currentEl=null;
+      setTimeout(nextChar, (line.cls==='tl-divi'||line.cls==='tl-stage') ? 160 : 30);
+    }
+  }
+  setTimeout(nextChar, 600);
+})();
+
+// ── TOC scrollspy ─────────────────────────────────────────────────
+(function() {
+  var sections = document.querySelectorAll('.guide-section[id]');
+  var links    = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var id = e.target.id;
+        links.forEach(function(l){ l.classList.toggle('active', l.getAttribute('href')==='#'+id); });
+      }
+    });
+  }, {rootMargin: '-60px 0px -70% 0px'});
+  sections.forEach(function(s){ obs.observe(s); });
+})();
+</script>
+
+</body>
+</html>
