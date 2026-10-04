@@ -16,6 +16,15 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "TrustLens - AI Vendor Trust Scorer",
+        excerpt: "Know who you're buying from before you click Add to Cart. TrustLens scores every vendor by trustworthiness — verified claims, fake review detection, real purchase data — in seconds. Built at AI Commerce Gallery Hackathon 2026.",
+        date: "Oct 04, 2026",
+        image: "./images/trustlens/og.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/trustlens.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_a-research-team-audited-75-ai-generated-papers-share-7508810551267958786-ha3c/"
+      },
+      {
         title: "ClaimLens — 3-Agent Fact-Checker ",
         excerpt: "A 3-agent pipeline that shows exactly where a standard AI echoes viral hoaxes. Claim Extractor, Grounder, Verifier. Built in Python and Streamlit after an AI Camp session on grounded agentic pipelines.",
         date: "Sep 24, 2026",
