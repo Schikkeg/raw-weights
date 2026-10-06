@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Plumber Lab - Pipeline Security, Visualized ",
+        excerpt: "An interactive lab that teaches CI/CD pipeline security through hands-on experience. No prior knowledge needed.",
+        date: "Oct 06, 2026",
+        image: "./images/plumber-lab.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/plumber-lab.html",
+        linkedin: null
+      },
+      {
         title: "TrustLens - AI Vendor Trust Scorer",
         excerpt: "Know who you're buying from before you click Add to Cart. TrustLens scores every vendor by trustworthiness — verified claims, fake review detection, real purchase data — in seconds. Built at AI Commerce Gallery Hackathon 2026.",
         date: "Oct 04, 2026",
         image: "./images/trustlens/og.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/trustlens.html",
-        linkedin: "https://www.linkedin.com/posts/shamhc_a-research-team-audited-75-ai-generated-papers-share-7508810551267958786-ha3c/"
+        linkedin: "https://www.linkedin.com/posts/shamhc_trustlens-aicommercegallery-zoowork-share-7512658035341946882-TgzS/"
       },
       {
         title: "ClaimLens — 3-Agent Fact-Checker ",

