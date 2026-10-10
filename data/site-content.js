@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Security Twin - From IDOR to a CI Guard",
+        excerpt: "A visual build story of Security Twin: reproduce an IDOR in an isolated app copy, detect it in request data, repair it, prove the boundary, and guard against regression.",
+        date: "Oct 10, 2026",
+        image: "./images/securitytwin-linkedin.png",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/securitytwin.html",
+        linkedin: null
+      },
+      {
         title: "Plumber Lab - Pipeline Security, Visualized ",
         excerpt: "An interactive lab that teaches CI/CD pipeline security through hands-on experience. No prior knowledge needed.",
         date: "Oct 06, 2026",
         image: "./images/plumber-lab.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/plumber-lab.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_i-built-a-product-that-scores-whether-ai-share-7513252327412326400-Zvxd/"
       },
       {
         title: "TrustLens - AI Vendor Trust Scorer",
