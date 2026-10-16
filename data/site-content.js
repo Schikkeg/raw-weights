@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "AI Agent Observability — Why 200 OK Lies",
+        excerpt: "Traditional monitoring is blind to AI agent failures. Learn the telemetry standards, trace architectures, and interactive tools to actually see what your agent did.",
+        date: "Oct 16, 2026",
+        image: "./images/observe.png",
+        type: "Guide",
+        link: "https://rawweights.com/usecase/observability.html",
+        linkedin: null
+      },
+      {
         title: "Security Twin - From IDOR to a CI Guard",
         excerpt: "A visual build story of Security Twin: reproduce an IDOR in an isolated app copy, detect it in request data, repair it, prove the boundary, and guard against regression.",
         date: "Oct 10, 2026",
         image: "./images/securitytwin-linkedin.png",
         type: "Usecase",
         link: "https://rawweights.com/usecase/securitytwin.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_i-spent-a-sometime-today-building-an-ai-attacker-share-7514592153780686848-fKuS/"
       },
       {
         title: "Plumber Lab - Pipeline Security, Visualized ",

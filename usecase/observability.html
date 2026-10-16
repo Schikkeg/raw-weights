@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent Observability — Why 200 OK Lies | RawWeights</title>
+  <meta name="description" content="Traditional monitoring is blind to AI agent failures. Learn the telemetry standards, trace architectures, and interactive tools to actually see what your agent did.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/observability.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/observability.html">
+  <meta property="og:image" content="https://rawweights.com/images/observe.png">
+  <meta property="og:title" content="AI Agent Observability — Why 200 OK Lies | RawWeights">
+  <meta property="og:description" content="Your agent runs. Your dashboards stay green. It delivers wrong answers at HTTP 200 OK.">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    :root {
+      --obs-indigo: #818cf8;
+      --obs-indigo-dim: rgba(129,140,248,0.1);
+      --obs-indigo-bdr: rgba(129,140,248,0.25);
+      --obs-green: #4ade80;
+      --obs-green-dim: rgba(74,222,128,0.1);
+      --obs-yellow: #fbbf24;
+      --obs-yellow-dim: rgba(251,191,36,0.1);
+      --obs-red: #f87171;
+      --obs-red-dim: rgba(248,113,113,0.1);
+      --obs-teal: #22d3ee;
+    }
+    /* === Hero === */
+    .guide-hero {
+      background: linear-gradient(135deg,#07101f 0%,#0f0b28 50%,#071530 100%);
+      padding: 4rem 2rem 3rem; position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content:''; position:absolute; top:-10%; right:-5%; width:500px; height:500px;
+      background:radial-gradient(circle,rgba(129,140,248,.18) 0%,transparent 65%); pointer-events:none;
+    }
+    .guide-hero::after {
+      content:''; position:absolute; bottom:-10%; left:-5%; width:350px; height:350px;
+      background:radial-gradient(circle,rgba(34,211,238,.1) 0%,transparent 65%); pointer-events:none;
+    }
+    .hero-split {
+      max-width:1160px; margin:0 auto; position:relative;
+      display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center;
+    }
+    .hero-split > * { min-width:0; }
+    .hero-text { display:flex; flex-direction:column; align-items:flex-start; }
+    .guide-hero-label {
+      display:inline-flex; align-items:center; gap:.4rem;
+      background:rgba(129,140,248,.12); border:1px solid rgba(129,140,248,.3);
+      border-radius:9999px; padding:.3rem .9rem; font-size:.72rem; font-weight:700;
+      color:#818cf8; text-transform:uppercase; letter-spacing:.08em;
+      font-family:var(--rw-font-display); margin-bottom:1.25rem;
+    }
+    .pulse-dot { width:6px; height:6px; background:#818cf8; border-radius:50%; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
+    .guide-hero h1 {
+      font-family:var(--rw-font-display); font-size:clamp(1.8rem,3.5vw,3rem);
+      font-weight:800; color:#f0f4ff; line-height:1.08; letter-spacing:-.03em;
+      margin-bottom:1rem; text-align:left;
+    }
+    .guide-hero h1 span { color:#818cf8; }
+    .guide-hero p { font-size:1rem; color:rgba(240,244,255,.7); margin:0 0 1.5rem; line-height:1.7; text-align:left; }
+    .hero-tags { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.75rem; }
+    .hero-tag { font-size:.72rem; font-family:var(--rw-font-mono); color:rgba(240,244,255,.5); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:.2rem .6rem; }
+    /* Terminal */
+    .hero-terminal {
+      background:#030b14; border:1px solid rgba(129,140,248,.25); border-radius:12px;
+      overflow:hidden; box-shadow:0 0 60px rgba(129,140,248,.12),0 24px 48px rgba(0,0,0,.5);
+    }
+    .term-hdr {
+      display:flex; align-items:center; gap:.5rem; padding:.65rem 1rem;
+      background:rgba(255,255,255,.04); border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .term-dot { width:10px; height:10px; border-radius:50%; }
+    .term-dot-r { background:#f87171; } .term-dot-y { background:#fbbf24; } .term-dot-g { background:#4ade80; }
+    .term-lbl { margin:0 auto; font-family:var(--rw-font-mono); font-size:.68rem; color:rgba(255,255,255,.25); }
+    .term-body { padding:.9rem 1.1rem; font-family:var(--rw-font-mono); font-size:.75rem; line-height:1.9; min-height:210px; }
+    .t-line { opacity:0; transform:translateY(3px); transition:opacity .3s,transform .3s; display:flex; gap:.55rem; align-items:baseline; }
+    .t-line.vis { opacity:1; transform:none; }
+    .t-ts { color:rgba(255,255,255,.2); flex-shrink:0; font-size:.68rem; }
+    .t-lvl { flex-shrink:0; width:5ch; font-weight:700; font-size:.7rem; }
+    .t-ok  { color:#4ade80; } .t-warn { color:#fbbf24; } .t-err { color:#f87171; }
+    .t-ind { color:#818cf8; } .t-dim { color:rgba(255,255,255,.35); } .t-txt { color:rgba(240,244,255,.65); }
+    .t-cur { display:inline-block; width:7px; height:12px; background:#818cf8; animation:blink 1s step-end infinite; vertical-align:middle; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    /* Stat row */
+    .stat-row {
+      display:flex; border:1px solid rgba(129,140,248,.2); border-radius:var(--rw-r-md);
+      overflow:hidden; margin:2rem auto; max-width:1160px;
+    }
+    .stat-cell { flex:1; padding:1.1rem; text-align:center; border-right:1px solid rgba(129,140,248,.15); }
+    .stat-cell:last-child { border-right:none; }
+    .stat-val { font-family:var(--rw-font-display); font-size:1.65rem; font-weight:800; color:#818cf8; line-height:1; }
+    .sv-g { color:#4ade80; } .sv-r { color:#f87171; } .sv-y { color:#fbbf24; }
+    .stat-label { font-size:.73rem; color:rgba(240,244,255,.45); margin-top:.3rem; }
+    /* === Guide layout === */
+    .guide-layout {
+      display:grid; grid-template-columns:230px 1fr; gap:2.5rem;
+      max-width:1200px; margin:3rem auto; padding:0 1.5rem; align-items:start;
+    }
+    .guide-layout > * { min-width:0; }
+    .guide-sidebar { position:sticky; top:calc(var(--rw-nav-height) + 1.5rem); }
+    .guide-toc-label { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--rw-text-subtle); margin-bottom:.75rem; }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:.15rem; }
+    .guide-toc a { font-size:.83rem; color:var(--rw-text-muted); text-decoration:none; padding:.3rem .6rem; border-left:2px solid transparent; display:block; border-radius:0 4px 4px 0; transition:color .15s,border-color .15s,background .15s; }
+    .guide-toc a:hover,.guide-toc a.active { color:#818cf8; border-left-color:#818cf8; background:rgba(129,140,248,.08); }
+    .guide-toc .toc-h3 { padding-left:1rem; font-size:.78rem; }
+    /* === Sections === */
+    .guide-section { margin-bottom:3.5rem; }
+    .guide-section h2 {
+      font-family:var(--rw-font-display); font-size:1.5rem; font-weight:800;
+      color:var(--rw-text); margin-bottom:1rem; padding-bottom:.6rem;
+      border-bottom:2px solid rgba(129,140,248,.18);
+      scroll-margin-top:calc(var(--rw-nav-height) + 1rem);
+    }
+    .guide-section h3 { font-family:var(--rw-font-display); font-size:1.05rem; font-weight:700; color:var(--rw-text); margin:1.5rem 0 .5rem; scroll-margin-top:calc(var(--rw-nav-height) + 1rem); }
+    .guide-section p { font-size:.97rem; color:var(--rw-text-muted); line-height:1.75; margin-bottom:1rem; }
+    code { font-family:var(--rw-font-mono); font-size:.84em; background:var(--rw-bg-subtle); border:1px solid var(--rw-border); border-radius:4px; padding:.1em .35em; color:#818cf8; }
+    /* Feature cards */
+    .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
+    .feature-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.25rem; }
+    .fc-ind { border-left:3px solid #818cf8; } .fc-red { border-left:3px solid #f87171; } .fc-grn { border-left:3px solid #4ade80; } .fc-yel { border-left:3px solid #fbbf24; }
+    .feature-card-icon { font-size:1.5rem; margin-bottom:.5rem; }
+    .feature-card h4 { font-family:var(--rw-font-display); font-size:.9rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; }
+    .feature-card p { font-size:.82rem; color:var(--rw-text-muted); margin:0; }
+    /* Step list */
+    .step-list { list-style:none; display:flex; flex-direction:column; gap:1rem; margin:1.25rem 0; }
+    .step-item { display:flex; gap:.9rem; align-items:flex-start; }
+    .step-num { width:26px; height:26px; border-radius:50%; background:#818cf8; color:#fff; font-family:var(--rw-font-display); font-weight:800; font-size:.78rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-body h4 { font-family:var(--rw-font-display); font-weight:700; font-size:.9rem; color:var(--rw-text); margin-bottom:.2rem; }
+    .step-body p { font-size:.84rem; color:var(--rw-text-muted); margin:0; }
+    /* Table */
+    .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:1.5rem 0; }
+    .comparison-table { width:100%; border-collapse:collapse; font-size:.88rem; min-width:480px; }
+    .comparison-table th { background:var(--rw-bg-subtle); font-family:var(--rw-font-display); font-weight:700; font-size:.78rem; text-align:left; padding:.75rem 1rem; border-bottom:2px solid var(--rw-border); color:var(--rw-text); }
+    .comparison-table td { padding:.7rem 1rem; border-bottom:1px solid var(--rw-border); color:var(--rw-text-muted); vertical-align:top; }
+    .comparison-table tr:hover td { background:var(--rw-bg-alt); }
+    /* Callout */
+    .callout { background:rgba(129,140,248,.06); border:1px solid rgba(129,140,248,.2); border-left:3px solid #818cf8; border-radius:0 var(--rw-r-sm) var(--rw-r-sm) 0; padding:1rem 1.25rem; margin:1.25rem 0; }
+    .callout.warn { background:rgba(251,191,36,.06); border-color:rgba(251,191,36,.2); border-left-color:#fbbf24; }
+    .callout.danger { background:rgba(248,113,113,.06); border-color:rgba(248,113,113,.2); border-left-color:#f87171; }
+    .callout-label { font-family:var(--rw-font-mono); font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#818cf8; margin-bottom:.3rem; }
+    .callout.warn .callout-label { color:#fbbf24; } .callout.danger .callout-label { color:#f87171; }
+    .callout p { font-size:.88rem; color:var(--rw-text-muted); margin:0; line-height:1.65; }
+    /* Tags */
+    .tag { display:inline-block; font-family:var(--rw-font-mono); font-size:.72rem; padding:.1rem .45rem; border-radius:4px; margin-right:.3rem; }
+    .tag-ok { background:rgba(74,222,128,.12); color:#4ade80; border:1px solid rgba(74,222,128,.2); }
+    .tag-warn { background:rgba(251,191,36,.12); color:#fbbf24; border:1px solid rgba(251,191,36,.2); }
+    .tag-fail { background:rgba(248,113,113,.12); color:#f87171; border:1px solid rgba(248,113,113,.2); }
+    .tag-ind { background:rgba(129,140,248,.12); color:#818cf8; border:1px solid rgba(129,140,248,.2); }
+    /* ======= INTERACTIVE: Railway Simulator ======= */
+    .railway-sim { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); overflow:hidden; margin:1.5rem 0; }
+    .sim-hdr { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.25rem; border-bottom:1px solid var(--rw-border); flex-wrap:wrap; }
+    .sim-title { font-family:var(--rw-font-display); font-weight:700; font-size:.88rem; color:var(--rw-text); }
+    .sim-controls { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .sim-btn { padding:.38rem .85rem; border-radius:6px; border:1.5px solid var(--rw-border); background:transparent; color:var(--rw-text-muted); font-family:var(--rw-font-display); font-size:.78rem; font-weight:600; cursor:pointer; transition:all .15s; }
+    .sim-btn:hover { border-color:#818cf8; color:#818cf8; }
+    .sim-btn-primary { background:#818cf8; border-color:#818cf8; color:#fff; }
+    .sim-btn-primary:hover { background:#6366f1; border-color:#6366f1; color:#fff; }
+    .sim-btn-warn { background:rgba(251,191,36,.1); border-color:rgba(251,191,36,.3); color:#fbbf24; }
+    .sim-btn-warn:hover { background:rgba(251,191,36,.2); }
+    .sim-panels { display:grid; grid-template-columns:1fr 1fr; }
+    .sim-panel { border-right:1px solid var(--rw-border); }
+    .sim-panel:last-child { border-right:none; }
+    .sim-panel-label { padding:.45rem .85rem; font-family:var(--rw-font-mono); font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid var(--rw-border); }
+    .spl-static { color:#22d3ee; background:rgba(34,211,238,.05); }
+    .spl-agent  { color:#818cf8; background:rgba(129,140,248,.05); }
+    .sim-svg-wrap { padding:.75rem 1rem 0; }
+    .sim-status { padding:.5rem .85rem; border-top:1px solid var(--rw-border); display:flex; justify-content:space-between; align-items:center; min-height:32px; }
+    .sim-status-text { font-family:var(--rw-font-mono); font-size:.7rem; color:var(--rw-text-muted); }
+    .http-badge { font-family:var(--rw-font-mono); font-size:.7rem; font-weight:700; padding:.15rem .5rem; border-radius:4px; }
+    .hb-ok { background:rgba(74,222,128,.12); color:#4ade80; border:1px solid rgba(74,222,128,.2); }
+    .hb-err { background:rgba(248,113,113,.12); color:#f87171; border:1px solid rgba(248,113,113,.2); }
+    .hb-silent { background:rgba(251,191,36,.12); color:#fbbf24; border:1px solid rgba(251,191,36,.2); }
+    /* ======= INTERACTIVE: Compounding Error Calc ======= */
+    .error-calc { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.5rem; margin:1.5rem 0; }
+    .calc-row { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+    .slider-wrap label { display:block; font-family:var(--rw-font-display); font-size:.82rem; font-weight:700; color:var(--rw-text); margin-bottom:.4rem; }
+    .slider-line { display:flex; align-items:center; gap:.75rem; }
+    .slider-line input[type=range] {
+      flex:1; -webkit-appearance:none; height:4px; border-radius:2px;
+      background:var(--rw-border); outline:none; cursor:pointer;
+    }
+    .slider-line input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+      background:#818cf8; cursor:pointer; box-shadow:0 0 6px rgba(129,140,248,.4);
+    }
+    .slider-val { font-family:var(--rw-font-mono); font-size:.9rem; font-weight:700; color:#818cf8; min-width:5ch; text-align:right; }
+    .calc-results { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+    .calc-box { border:1px solid var(--rw-border); border-radius:8px; padding:1rem 1.25rem; text-align:center; }
+    .calc-big { font-family:var(--rw-font-display); font-size:2.2rem; font-weight:800; line-height:1; margin-bottom:.3rem; }
+    .calc-sub { font-size:.73rem; color:var(--rw-text-subtle); }
+    .calc-chart-wrap { border-top:1px solid var(--rw-border); padding-top:1rem; }
+    .calc-chart-label { font-family:var(--rw-font-mono); font-size:.68rem; color:var(--rw-text-subtle); margin-bottom:.6rem; text-transform:uppercase; letter-spacing:.05em; }
+    .calc-bars { display:flex; flex-direction:column; gap:.3rem; }
+    .calc-bar-row { display:flex; align-items:center; gap:.6rem; }
+    .calc-bar-step { font-family:var(--rw-font-mono); font-size:.65rem; color:var(--rw-text-subtle); width:4ch; flex-shrink:0; text-align:right; }
+    .calc-bar-track { flex:1; height:8px; background:var(--rw-bg-subtle); border-radius:4px; overflow:hidden; }
+    .calc-bar-fill { height:100%; border-radius:4px; transition:width .25s,background .25s; }
+    .calc-bar-pct { font-family:var(--rw-font-mono); font-size:.65rem; min-width:5ch; text-align:right; }
+    /* ======= INTERACTIVE: X-Ray Trace Inspector ======= */
+    .trace-inspector { background:#030b14; border:1px solid rgba(129,140,248,.22); border-radius:var(--rw-r-md); overflow:hidden; margin:1.5rem 0; }
+    .trace-toolbar { display:flex; align-items:center; gap:.6rem; padding:.7rem 1rem; border-bottom:1px solid rgba(255,255,255,.06); flex-wrap:wrap; background:rgba(255,255,255,.02); }
+    .trace-toolbar-lbl { font-family:var(--rw-font-mono); font-size:.65rem; color:rgba(255,255,255,.25); text-transform:uppercase; letter-spacing:.06em; margin-right:.25rem; }
+    .tf-btn { padding:.22rem .55rem; border-radius:4px; border:1px solid rgba(255,255,255,.1); background:transparent; color:rgba(255,255,255,.4); font-family:var(--rw-font-mono); font-size:.68rem; cursor:pointer; transition:all .12s; }
+    .tf-btn:hover { border-color:#818cf8; color:#818cf8; }
+    .tf-btn.active { background:rgba(129,140,248,.15); border-color:rgba(129,140,248,.3); color:#818cf8; }
+    .trace-body { padding:.75rem; font-family:var(--rw-font-mono); font-size:.76rem; }
+    .t-node { margin-bottom:.15rem; }
+    .t-node-hdr {
+      display:flex; align-items:center; gap:.55rem; padding:.38rem .5rem;
+      border-radius:5px; cursor:pointer; transition:background .12s;
+    }
+    .t-node-hdr:hover { background:rgba(255,255,255,.04); }
+    .t-exp { color:rgba(255,255,255,.25); width:1ch; flex-shrink:0; font-size:.68rem; transition:transform .15s; }
+    .t-exp.open { transform:rotate(0deg); }
+    .tk { padding:.08rem .38rem; border-radius:3px; font-size:.62rem; font-weight:700; letter-spacing:.04em; flex-shrink:0; }
+    .tk-root { background:rgba(129,140,248,.15); color:#818cf8; }
+    .tk-llm  { background:rgba(34,211,238,.12); color:#22d3ee; }
+    .tk-tool { background:rgba(74,222,128,.1); color:#4ade80; }
+    .tk-retr { background:rgba(251,191,36,.1); color:#fbbf24; }
+    .t-span-name { color:rgba(240,244,255,.7); flex:1; }
+    .t-dur { color:rgba(255,255,255,.25); font-size:.68rem; flex-shrink:0; }
+    .ts { padding:.08rem .4rem; border-radius:3px; font-size:.62rem; font-weight:700; flex-shrink:0; }
+    .ts-ok { background:rgba(74,222,128,.12); color:#4ade80; }
+    .ts-warn { background:rgba(251,191,36,.12); color:#fbbf24; }
+    .ts-silent { background:rgba(248,113,113,.12); color:#f87171; }
+    .t-children { padding-left:1.4rem; border-left:1px solid rgba(255,255,255,.06); margin-left:.85rem; }
+    .t-attrs { padding:.25rem .5rem .5rem 2rem; display:none; }
+    .t-attrs.open { display:block; }
+    .t-attr { display:flex; gap:.5rem; margin-bottom:.12rem; }
+    .ak { color:rgba(129,140,248,.7); }
+    .av { color:rgba(240,244,255,.55); }
+    .av-warn { color:#fbbf24; } .av-ok { color:#4ade80; } .av-err { color:#f87171; }
+    /* Architecture diagram */
+    .arch-diagram { background:#030b14; border:1px solid rgba(129,140,248,.2); border-radius:var(--rw-r-md); padding:1.25rem; margin:1.25rem 0; }
+    .arch-layer { border:1px solid; border-radius:6px; padding:.7rem 1rem; margin-bottom:.5rem; }
+    .al-4 { border-color:rgba(129,140,248,.3); background:rgba(129,140,248,.05); }
+    .al-3 { border-color:rgba(34,211,238,.25); background:rgba(34,211,238,.04); }
+    .al-2 { border-color:rgba(74,222,128,.2); background:rgba(74,222,128,.04); }
+    .al-1 { border-color:rgba(251,191,36,.2); background:rgba(251,191,36,.03); }
+    .al-title { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.45rem; }
+    .al-4 .al-title { color:#818cf8; } .al-3 .al-title { color:#22d3ee; } .al-2 .al-title { color:#4ade80; } .al-1 .al-title { color:#fbbf24; }
+    .al-chips { display:flex; gap:.4rem; flex-wrap:wrap; }
+    .al-chip { font-family:var(--rw-font-mono); font-size:.7rem; padding:.22rem .6rem; border-radius:4px; border:1px solid rgba(255,255,255,.1); color:rgba(240,244,255,.55); background:rgba(255,255,255,.04); }
+    .al-arrow { text-align:center; color:rgba(255,255,255,.2); padding:.1rem 0; font-size:.8rem; }
+    /* Opportunities */
+    .opp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
+    .opp-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.1rem; transition:border-color .15s,transform .15s; }
+    .opp-card:hover { border-color:rgba(129,140,248,.4); transform:translateY(-1px); }
+    .opp-num { font-family:var(--rw-font-mono); font-size:.62rem; color:rgba(129,140,248,.6); letter-spacing:.06em; margin-bottom:.3rem; }
+    .opp-title { font-family:var(--rw-font-display); font-size:.88rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; }
+    .opp-desc { font-size:.78rem; color:var(--rw-text-muted); line-height:1.55; }
+    /* Sampling */
+    .sampling-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.25rem 0; }
+    .sampling-panel { border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.1rem; }
+    .sp-head { border-top:2px solid #f87171; } .sp-tail { border-top:2px solid #4ade80; }
+    .sp-title { font-family:var(--rw-font-display); font-weight:700; font-size:.92rem; color:var(--rw-text); margin-bottom:.4rem; }
+    .sp-verdict { font-family:var(--rw-font-mono); font-size:.7rem; font-weight:700; padding:.18rem .5rem; border-radius:4px; margin-bottom:.7rem; display:inline-block; }
+    .sp-head .sp-verdict { background:rgba(248,113,113,.12); color:#f87171; border:1px solid rgba(248,113,113,.2); }
+    .sp-tail .sp-verdict { background:rgba(74,222,128,.12); color:#4ade80; border:1px solid rgba(74,222,128,.2); }
+    .sp-point { font-size:.82rem; color:var(--rw-text-muted); line-height:1.55; padding-left:.75rem; border-left:2px solid var(--rw-border); margin-bottom:.5rem; }
+    /* Responsive */
+    *,*::before,*::after { box-sizing:border-box; }
+    html,body { max-width:100%; overflow-x:hidden; }
+    * { word-break:break-word; overflow-wrap:break-word; }
+    img,video,svg { max-width:100%; display:block; }
+    .code-block { background:#030b14; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1rem 1.25rem; font-family:var(--rw-font-mono); font-size:.78rem; color:rgba(240,244,255,.65); overflow-x:auto; margin:1rem 0; line-height:1.75; white-space:pre-wrap; word-break:break-all; }
+    .ck { color:#818cf8; } .cv { color:#4ade80; } .cm { color:rgba(255,255,255,.3); } .cw { color:#fbbf24; }
+    @media(max-width:1024px){
+      .guide-layout { grid-template-columns:1fr; } .guide-sidebar { position:static; }
+      .guide-toc { flex-direction:row; flex-wrap:wrap; gap:.25rem; }
+      .guide-toc a { border-left:none; border-bottom:2px solid transparent; border-radius:4px 4px 0 0; }
+      .guide-toc a:hover,.guide-toc a.active { border-bottom-color:#818cf8; border-left-color:transparent; }
+      .feature-grid { grid-template-columns:repeat(2,1fr); }
+      .opp-grid { grid-template-columns:repeat(2,1fr); }
+      .calc-row { grid-template-columns:1fr; }
+    }
+    @media(max-width:768px){
+      .hero-split { grid-template-columns:1fr; gap:1.75rem; }
+      .guide-hero { padding:2.5rem 1.25rem 2rem; }
+      .stat-row { flex-wrap:wrap; }
+      .stat-cell { flex:1 1 50%; border-bottom:1px solid rgba(129,140,248,.15); }
+      .sampling-grid { grid-template-columns:1fr; }
+      .sim-panels { grid-template-columns:1fr; }
+      .sim-panel { border-right:none; border-bottom:1px solid var(--rw-border); }
+    }
+    @media(max-width:600px){
+      .guide-layout { margin:1.5rem auto; padding:0 1rem; }
+      .feature-grid { grid-template-columns:1fr; }
+      .opp-grid { grid-template-columns:1fr; }
+      .calc-results { grid-template-columns:1fr; }
+    }
+    /* ======= Full Architecture Diagram ======= */
+    .full-arch { margin:1.5rem 0; }
+    .fa-layer { border-radius:8px; padding:.8rem 1rem; margin-bottom:.4rem; }
+    .fa-layer-runtime { border:1px solid rgba(251,191,36,.25); background:rgba(251,191,36,.03); }
+    .fa-layer-collect { border:1px solid rgba(74,222,128,.25); background:rgba(74,222,128,.04); }
+    .fa-layer-storage { border:1px solid rgba(34,211,238,.22); background:rgba(34,211,238,.04); }
+    .fa-layer-analysis { border:1px solid rgba(129,140,248,.28); background:rgba(129,140,248,.05); }
+    .fa-layer-control  { border:1px solid rgba(248,113,113,.22); background:rgba(248,113,113,.04); }
+    .fa-layer-title { font-family:var(--rw-font-display); font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.55rem; }
+    .fa-layer-runtime .fa-layer-title { color:#fbbf24; }
+    .fa-layer-collect .fa-layer-title { color:#4ade80; }
+    .fa-layer-storage .fa-layer-title { color:#22d3ee; }
+    .fa-layer-analysis .fa-layer-title { color:#818cf8; }
+    .fa-layer-control  .fa-layer-title { color:#f87171; }
+    .fa-boxes { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .fa-box { border:1px solid rgba(255,255,255,.1); border-radius:6px; padding:.55rem .75rem; background:rgba(255,255,255,.04); font-family:var(--rw-font-mono); font-size:.7rem; color:rgba(240,244,255,.55); flex:1; min-width:130px; }
+    .fa-box strong { display:block; color:rgba(240,244,255,.82); font-family:var(--rw-font-display); font-size:.73rem; margin-bottom:.18rem; }
+    .fa-box-brain  { border-color:rgba(129,140,248,.35)!important; background:rgba(129,140,248,.08)!important; color:#818cf8!important; }
+    .fa-box-brain strong { color:#818cf8!important; }
+    .fa-box-dash   { border-color:rgba(129,140,248,.25)!important; }
+    .fa-box-trace  { border-color:rgba(34,211,238,.3)!important; }
+    .fa-box-log    { border-color:rgba(74,222,128,.25)!important; }
+    .fa-box-ts     { border-color:rgba(251,191,36,.25)!important; }
+    .fa-signal-row { display:flex; gap:.4rem; justify-content:center; flex-wrap:wrap; padding:.25rem 0; }
+    .fa-signal { font-family:var(--rw-font-mono); font-size:.65rem; padding:.18rem .5rem; border-radius:3px; }
+    .fa-sig-log  { background:rgba(74,222,128,.1); color:#4ade80; border:1px solid rgba(74,222,128,.2); }
+    .fa-sig-trace{ background:rgba(34,211,238,.1); color:#22d3ee; border:1px solid rgba(34,211,238,.2); }
+    .fa-sig-met  { background:rgba(251,191,36,.1); color:#fbbf24; border:1px solid rgba(251,191,36,.2); }
+    .fa-sig-mem  { background:rgba(129,140,248,.1); color:#818cf8; border:1px solid rgba(129,140,248,.2); }
+    .fa-arrow-dn { text-align:center; color:rgba(255,255,255,.2); font-size:.8rem; padding:.1rem 0; }
+    .fa-feedback { border:1px dashed rgba(248,113,113,.35); border-radius:8px; padding:.6rem 1rem; margin-top:.5rem; font-family:var(--rw-font-mono); font-size:.7rem; color:#f87171; text-align:center; background:rgba(248,113,113,.04); }
+    /* Span Link Example */
+    .span-link-demo { display:grid; grid-template-columns:1fr 52px 1fr; margin:1.25rem 0; background:#030b14; border:1px solid rgba(129,140,248,.2); border-radius:var(--rw-r-md); overflow:hidden; }
+    .sld-trace { padding:1rem; font-family:var(--rw-font-mono); font-size:.75rem; }
+    .sld-trace-a { border-right:1px solid rgba(255,255,255,.06); }
+    .sld-trace-b { border-left:1px solid rgba(255,255,255,.06); }
+    .sld-trace-hdr { font-size:.65rem; color:rgba(255,255,255,.3); margin-bottom:.7rem; padding-bottom:.45rem; border-bottom:1px solid rgba(255,255,255,.06); display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; }
+    .sld-node { display:flex; align-items:center; gap:.45rem; padding:.28rem .4rem; border-radius:4px; color:rgba(240,244,255,.65); }
+    .sld-children { padding-left:1.25rem; border-left:1px solid rgba(255,255,255,.06); margin-left:.6rem; }
+    .sld-delegate { background:rgba(129,140,248,.07); }
+    .sld-link-tag { font-size:.6rem; padding:.07rem .38rem; border-radius:3px; background:rgba(129,140,248,.15); color:#818cf8; border:1px solid rgba(129,140,248,.25); margin-left:auto; white-space:nowrap; }
+    .sld-connector { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.35rem; padding:.5rem 0; }
+    .sld-vline { flex:1; width:1px; background:rgba(129,140,248,.3); }
+    .sld-dot { width:8px; height:8px; border-radius:50%; background:#818cf8; flex-shrink:0; }
+    .sld-lbl { font-family:var(--rw-font-mono); font-size:.58rem; color:#818cf8; writing-mode:vertical-rl; transform:rotate(180deg); }
+    .sle-usecases { display:flex; flex-direction:column; gap:.55rem; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1rem 1.25rem; margin:.75rem 0; }
+    .sle-uc { font-size:.84rem; color:var(--rw-text-muted); display:flex; align-items:flex-start; gap:.55rem; line-height:1.55; }
+    .sle-uc strong { color:var(--rw-text); }
+    @media(max-width:768px){ .span-link-demo { grid-template-columns:1fr; } .sld-trace-a { border-right:none; border-bottom:1px solid rgba(255,255,255,.06); } .sld-connector { flex-direction:row; height:32px; } .sld-vline { flex:1; width:auto; height:1px; } .sld-lbl { writing-mode:horizontal-tb; transform:none; } }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── Hero ──────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-split">
+    <div class="hero-text">
+      <span class="guide-hero-label"><span class="pulse-dot"></span> Observability Guide</span>
+      <h1>Why <span>200 OK</span> is the most dangerous status code in AI</h1>
+      <p>Your agent runs. Your dashboards stay green. It hallucinates the answer, calls the wrong tool, and retrieves garbage context — all while returning HTTP 200 OK. Traditional monitoring is completely blind to this.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">OpenTelemetry</span>
+        <span class="hero-tag">OpenInference</span>
+        <span class="hero-tag">Distributed Tracing</span>
+        <span class="hero-tag">LangGraph</span>
+        <span class="hero-tag">Arize Phoenix</span>
+        <span class="hero-tag">ClickHouse</span>
+      </div>
+      <a href="#guide-content" class="rw-btn rw-btn-primary">Explore the guide ↓</a>
+    </div>
+    <div class="hero-terminal">
+      <div class="term-hdr">
+        <div class="term-dot term-dot-r"></div>
+        <div class="term-dot term-dot-y"></div>
+        <div class="term-dot term-dot-g"></div>
+        <span class="term-lbl">agent-trace-stream · live</span>
+      </div>
+      <div class="term-body" id="termBody">
+        <div class="t-line" id="tl0"><span class="t-ts">00:00.001</span><span class="t-lvl t-ind">SPAN</span><span class="t-txt">span.start  trace_id=4bf92f3  op=HTTP POST</span></div>
+        <div class="t-line" id="tl1"><span class="t-ts">00:00.003</span><span class="t-lvl t-ind">LLM</span><span class="t-txt">model=claude-sonnet-4-6  prompt_tokens=1240</span></div>
+        <div class="t-line" id="tl2"><span class="t-ts">00:00.218</span><span class="t-lvl t-ok">TOOL</span><span class="t-txt">flight_search_api  →  status=<span class="t-ok">200</span></span></div>
+        <div class="t-line" id="tl3"><span class="t-ts">00:00.441</span><span class="t-lvl t-warn">RETR</span><span class="t-txt">similarity=<span class="t-warn">0.41</span>  threshold=0.70  <span class="t-warn">← BELOW</span></span></div>
+        <div class="t-line" id="tl4"><span class="t-ts">00:00.442</span><span class="t-lvl t-warn">WARN</span><span class="t-txt">retrieval.threshold_breached=<span class="t-warn">true</span></span></div>
+        <div class="t-line" id="tl5"><span class="t-ts">00:00.621</span><span class="t-lvl t-ind">LLM</span><span class="t-txt">completion="Flights on May 1st to Tokyo..."</span></div>
+        <div class="t-line" id="tl6"><span class="t-ts">00:00.623</span><span class="t-lvl t-err">HTTP</span><span class="t-txt"><span class="t-ok">200 OK</span>  <span class="t-err">← SILENT FAILURE</span></span></div>
+        <div class="t-line" id="tl7"><span class="t-cur"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-cell"><div class="stat-val sv-r">40,000</div><div class="stat-label">bad outputs/day — illustrative math: 4% silent failure rate × 1M daily requests</div></div>
+    <div class="stat-cell"><div class="stat-val sv-y">~60%</div><div class="stat-label">end-to-end success rate — 10 steps at 95% each</div></div>
+    <div class="stat-cell"><div class="stat-val sv-g">4</div><div class="stat-label">telemetry layers needed to catch what HTTP status codes miss</div></div>
+    <div class="stat-cell"><div class="stat-val">9</div><div class="stat-label">unmet market opportunities in agent observability today</div></div>
+  </div>
+</div>
+
+<!-- ── Guide Content ────────────────────────────────────────── -->
+<div class="guide-layout" id="guide-content">
+  <aside class="guide-sidebar">
+    <div class="guide-toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#s-paradigm">The Paradigm Shift</a></li>
+      <li><a href="#s-railway" class="toc-h3">Railway Simulator</a></li>
+      <li><a href="#s-compounding">Compounding Errors</a></li>
+      <li><a href="#s-controlplane">4-Layer Control Plane</a></li>
+      <li><a href="#s-trace">X-Ray Trace Inspector</a></li>
+      <li><a href="#s-standards">Telemetry Standards</a></li>
+      <li><a href="#s-span-links" class="toc-h3">Span Links (multi-agent)</a></li>
+      <li><a href="#s-sampling">Sampling Strategies</a></li>
+      <li><a href="#s-opportunities">9 Directions to Explore</a></li>
+      <li><a href="#s-vendors">Vendor Landscape</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <!-- ── Section 1: Paradigm Shift ── -->
+    <section class="guide-section" id="s-paradigm">
+      <h2>The Paradigm Shift: Deterministic → Probabilistic</h2>
+      <p>Traditional software fails loudly. An unhandled exception throws a stack trace. A bad database query returns an error code. You know exactly what broke and where.</p>
+      <p>AI agents fail silently. The same prompt submitted twice can take completely different execution paths. A retrieval step returns garbage context. The model hallucinates. Your monitoring dashboard stays green the whole time.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card fc-grn">
+          <div class="feature-card-icon">🚦</div>
+          <h4>Traditional: Explicit Failures</h4>
+          <p>Exceptions, stack traces, HTTP 5xx errors. Every failure mode is loud and localized. Monitoring looks for known signatures.</p>
+        </div>
+        <div class="feature-card fc-red">
+          <div class="feature-card-icon">👻</div>
+          <h4>Agents: Silent Failures</h4>
+          <p>Wrong answers returned at 200 OK. Hallucinations, bad context, looping tool calls — all invisible to traditional metrics.</p>
+        </div>
+        <div class="feature-card fc-ind">
+          <div class="feature-card-icon">🔬</div>
+          <h4>What You Need Instead</h4>
+          <p>Runtime state reconstruction, causal trace linking, context quality verification, and probabilistic evaluation.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="comparison-table">
+          <thead><tr><th>Feature</th><th>Deterministic Monitoring</th><th>Probabilistic Observability</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Code Execution</strong></td><td>Static, pre-compiled logic; fixed control flows</td><td>Dynamic, model-generated logic; non-deterministic tool selection</td></tr>
+            <tr><td><strong>Failure Modes</strong></td><td>Explicit exceptions, stack traces, HTTP 5xx</td><td>Silent failures (200 OK), hallucinations, low-relevance retrieval</td></tr>
+            <tr><td><strong>State Complexity</strong></td><td>Bounded local memory, predictable request scope</td><td>Dynamic: multi-turn history, vector embeddings, transient scratchpads</td></tr>
+            <tr><td><strong>Root Cause</strong></td><td>Stack trace inspection, local reproduction</td><td>Causal trace tree reconstruction, context audit, token entropy analysis</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Section 2: Railway Simulator ── -->
+    <section class="guide-section" id="s-railway">
+      <h2>Railway Simulator: See the Difference</h2>
+      <p>Think of a static commuter railway vs. a dynamic agent network. The commuter train stops loudly when a rail breaks. The agent network silently routes to the wrong city — and every sensor along the route reports perfect health.</p>
+
+      <div class="railway-sim">
+        <div class="sim-hdr">
+          <span class="sim-title">Request Flow Simulator</span>
+          <div class="sim-controls">
+            <button class="sim-btn" onclick="resetSim()">Reset</button>
+            <button class="sim-btn sim-btn-primary" onclick="sendRequest(false)">Send Request</button>
+            <button class="sim-btn sim-btn-warn" onclick="sendRequest(true)">Introduce Failure</button>
+          </div>
+        </div>
+        <div class="sim-panels">
+          <!-- Static Railway -->
+          <div class="sim-panel">
+            <div class="sim-panel-label spl-static">Static Railway (Traditional Software)</div>
+            <div class="sim-svg-wrap">
+              <svg id="svgStatic" width="100%" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg">
+                <!-- Track -->
+                <line x1="48" y1="55" x2="272" y2="55" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+                <!-- Stations -->
+                <rect x="14" y="42" width="34" height="26" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" id="sA"/>
+                <text x="31" y="59" text-anchor="middle" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.55)">A</text>
+                <text x="31" y="78" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(255,255,255,0.3)">Origin</text>
+                <rect x="143" y="42" width="34" height="26" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" id="sB"/>
+                <text x="160" y="59" text-anchor="middle" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.55)">B</text>
+                <text x="160" y="78" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(255,255,255,0.3)">Midpoint</text>
+                <rect x="272" y="42" width="34" height="26" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" id="sC"/>
+                <text x="289" y="59" text-anchor="middle" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.55)">C</text>
+                <text x="289" y="78" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(255,255,255,0.3)">Dest</text>
+                <!-- Break marker (hidden by default) -->
+                <text id="breakMarker" x="155" y="38" text-anchor="middle" font-size="14" fill="#f87171" opacity="0">✕</text>
+                <!-- Train -->
+                <rect id="trainStatic" x="18" y="50" width="20" height="10" rx="2" fill="#22d3ee" opacity="0">
+                  <animate attributeName="opacity" values="0;1" dur="0.3s" begin="indefinite" id="trainStaticFade"/>
+                </rect>
+              </svg>
+            </div>
+            <div class="sim-status">
+              <span class="sim-status-text" id="statusTextStatic">Idle — click Send Request</span>
+              <span class="http-badge" id="httpBadgeStatic" style="display:none"></span>
+            </div>
+          </div>
+          <!-- Agent Network -->
+          <div class="sim-panel">
+            <div class="sim-panel-label spl-agent">Dynamic Agent Network (AI Agent)</div>
+            <div class="sim-svg-wrap">
+              <svg id="svgAgent" width="100%" viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg">
+                <!-- Tracks -->
+                <line x1="54" y1="65" x2="148" y2="65" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+                <line x1="172" y1="65" x2="220" y2="65" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+                <!-- Branches from switch -->
+                <line x1="220" y1="65" x2="272" y2="38" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" id="branchA-line"/>
+                <line x1="220" y1="65" x2="272" y2="95" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" id="branchB-line"/>
+                <!-- Nodes -->
+                <rect x="14" y="52" width="40" height="26" rx="4" fill="rgba(129,140,248,0.08)" stroke="rgba(129,140,248,0.3)" stroke-width="1.5"/>
+                <text x="34" y="69" text-anchor="middle" font-family="monospace" font-size="8" fill="#818cf8">INPUT</text>
+                <rect x="148" y="52" width="24" height="26" rx="4" fill="rgba(129,140,248,0.08)" stroke="rgba(129,140,248,0.3)" stroke-width="1.5" id="engineBox"/>
+                <text x="160" y="69" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#818cf8">LLM</text>
+                <!-- Switch -->
+                <circle cx="220" cy="65" r="8" fill="rgba(74,222,128,0.12)" stroke="#4ade80" stroke-width="1.5" id="switchDot"/>
+                <text x="220" y="58" text-anchor="middle" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,0.3)">SWITCH</text>
+                <!-- Destinations -->
+                <rect x="272" y="24" width="38" height="26" rx="4" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.25)" stroke-width="1.5" id="destA"/>
+                <text x="291" y="41" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#4ade80">CORRECT</text>
+                <rect x="272" y="82" width="38" height="26" rx="4" fill="rgba(248,113,113,0.08)" stroke="rgba(248,113,113,0.15)" stroke-width="1.5" id="destB"/>
+                <text x="291" y="99" text-anchor="middle" font-family="monospace" font-size="7.5" fill="rgba(248,113,113,0.5)" id="destBText">WRONG</text>
+                <!-- Train agent -->
+                <circle id="trainAgent" cx="34" cy="65" r="6" fill="#818cf8" opacity="0"/>
+                <!-- Wrong city label -->
+                <text id="wrongLabel" x="291" y="116" text-anchor="middle" font-family="monospace" font-size="6.5" fill="#fbbf24" opacity="0">← wrong city!</text>
+              </svg>
+            </div>
+            <div class="sim-status">
+              <span class="sim-status-text" id="statusTextAgent">Idle — click Send Request</span>
+              <span class="http-badge" id="httpBadgeAgent" style="display:none"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">Key Insight</div>
+        <p>The static railway fails <strong>loud and early</strong>. The agent network continues at full speed and only reveals its error when you check the final destination — which, in production, no one does automatically.</p>
+      </div>
+    </section>
+
+    <!-- ── Section 3: Compounding Errors ── -->
+    <section class="guide-section" id="s-compounding">
+      <h2>Compounding Error Calculator</h2>
+      <p>Agent failures don't add linearly — they compound. A 10-step workflow where each step succeeds 95% of the time doesn't give you 95% end-to-end success. It gives you 60%.</p>
+      <p>Adjust the sliders to see how quickly individual step accuracy translates into end-to-end collapse:</p>
+
+      <div class="error-calc">
+        <div class="calc-row">
+          <div class="slider-wrap">
+            <label>Number of Steps: <span id="stepsLabel">10</span></label>
+            <div class="slider-line">
+              <input type="range" id="stepsSlider" min="1" max="20" value="10" oninput="updateCalc()">
+              <span class="slider-val" id="stepsVal">10</span>
+            </div>
+          </div>
+          <div class="slider-wrap">
+            <label>Per-Step Accuracy: <span id="accuracyLabel">95%</span></label>
+            <div class="slider-line">
+              <input type="range" id="accuracySlider" min="50" max="999" value="950" oninput="updateCalc()">
+              <span class="slider-val" id="accuracyVal">95%</span>
+            </div>
+          </div>
+        </div>
+        <div class="calc-results">
+          <div class="calc-box">
+            <div class="calc-big" id="calcSuccessRate" style="color:#4ade80">59.9%</div>
+            <div class="calc-sub">End-to-end success probability</div>
+          </div>
+          <div class="calc-box">
+            <div class="calc-big" id="calcFailureRate" style="color:#f87171">40.1%</div>
+            <div class="calc-sub">Requests that will silently fail</div>
+          </div>
+        </div>
+        <div class="calc-chart-wrap">
+          <div class="calc-chart-label">Cumulative Success Rate per Step</div>
+          <div class="calc-bars" id="calcBars"></div>
+        </div>
+      </div>
+
+      <div class="callout danger">
+        <div class="callout-label">Thought Experiment</div>
+        <p>Work through the math: if a system handles 1,000,000 daily requests and 4% fail silently — plausible with a 25-step chain at 99.8% per step — that's <strong>40,000 wrong answers daily</strong>, all at HTTP 200 OK. Your real rate will depend on chain length and step reliability. The point is: this never appears in a standard monitoring dashboard.</p>
+      </div>
+    </section>
+
+    <!-- ── Section 4: Control Plane ── -->
+    <section class="guide-section" id="s-controlplane">
+      <h2>The 4-Layer Observability Control Plane</h2>
+      <p>A production-grade agent observability control plane intercepts, processes, stores, and analyzes telemetry across four strictly separated layers. Each layer has different storage engines, different query patterns, and different latency requirements.</p>
+
+      <div class="arch-diagram full-arch">
+        <!-- Layer 1: Runtime -->
+        <div class="fa-layer fa-layer-runtime">
+          <div class="fa-layer-title">Agent Runtime — four signal sources</div>
+          <div class="fa-boxes">
+            <div class="fa-box"><strong>App Logic</strong>what decisions / why they were made</div>
+            <div class="fa-box"><strong>LangGraph / Framework</strong>how steps executed &amp; chained</div>
+            <div class="fa-box"><strong>K8s / GPU Infra</strong>CPU · VRAM · queue depth</div>
+            <div class="fa-box fa-box-brain"><strong>Brain / Vector Memory</strong>reads + writes · similarity scores · state</div>
+          </div>
+        </div>
+        <div class="fa-arrow-dn">↓ emits four signal types ↓</div>
+        <div class="fa-signal-row">
+          <span class="fa-signal fa-sig-log">STRUCTURED LOGS</span>
+          <span class="fa-signal fa-sig-trace">TRACE SPANS (OpenInference)</span>
+          <span class="fa-signal fa-sig-met">METRICS — USE / RED</span>
+          <span class="fa-signal fa-sig-mem">MEMORY EVENTS</span>
+        </div>
+        <div class="fa-arrow-dn">↓</div>
+        <!-- Layer 2: Collection -->
+        <div class="fa-layer fa-layer-collect">
+          <div class="fa-layer-title">Collection — OpenTelemetry Collector</div>
+          <div class="fa-boxes">
+            <div class="fa-box"><strong>Signal Enrichment</strong>stamps trace_id, session_id, user_id on every log &amp; metric</div>
+            <div class="fa-box"><strong>Tail-Based Sampling</strong>buffers traces; retains anomalies, drops clean noise</div>
+            <div class="fa-box"><strong>PII Scrubbing</strong>masks prompt content &amp; user data at the collection boundary</div>
+          </div>
+        </div>
+        <div class="fa-arrow-dn">↓ routes to specialist storage backends ↓</div>
+        <!-- Layer 3: Storage -->
+        <div class="fa-layer fa-layer-storage">
+          <div class="fa-layer-title">Storage — four specialist backends</div>
+          <div class="fa-boxes">
+            <div class="fa-box fa-box-log"><strong>Log Store</strong>Elasticsearch / ClickHouse · full-text JSON · queryable by trace_id</div>
+            <div class="fa-box fa-box-trace"><strong>Trace DB</strong>Jaeger / Arize Phoenix · span hierarchies indexed by Trace ID</div>
+            <div class="fa-box fa-box-ts"><strong>Time-Series DB</strong>Prometheus · numerical USE + RED aggregations · alertable</div>
+            <div class="fa-box fa-box-brain"><strong>Memory Audit Log</strong>Mem0 / pgvector · drift scans · poisoning sweeps · state diffs</div>
+          </div>
+        </div>
+        <div class="fa-arrow-dn">↓ unified query layer enables cross-signal correlation ↓</div>
+        <!-- Layer 4: Analysis -->
+        <div class="fa-layer fa-layer-analysis">
+          <div class="fa-layer-title">Analysis — operator visibility</div>
+          <div class="fa-boxes">
+            <div class="fa-box fa-box-dash"><strong>Dashboards</strong>Grafana · Phoenix UI — click a latency spike → jump to trace → filter logs, all in one view</div>
+            <div class="fa-box"><strong>Anomaly Detection</strong>eval score drops · 10× token spikes · retrieval quality drift over time</div>
+            <div class="fa-box"><strong>Alert Engine</strong>PagerDuty / Slack · threshold breaches → on-call notification</div>
+          </div>
+        </div>
+        <div class="fa-arrow-dn">↓ anomaly signals trigger policy dispatch ↓</div>
+        <!-- Layer 5: Control Plane -->
+        <div class="fa-layer fa-layer-control">
+          <div class="fa-layer-title">Control Plane — closed-loop feedback (no redeployment needed)</div>
+          <div class="fa-boxes">
+            <div class="fa-box"><strong>Guardrail API</strong>NeMo / Llama Guard · tighten safety filters automatically when eval scores drop</div>
+            <div class="fa-box"><strong>RAG Threshold Tuner</strong>raise similarity floor · adjust top_k when retrieval quality drifts below baseline</div>
+            <div class="fa-box"><strong>Traffic Control</strong>circuit breakers · rate throttles · automatic fallback to secondary model provider</div>
+          </div>
+        </div>
+        <div class="fa-feedback">↑ policy updates flow back to Agent Runtime — the loop closes without a code deployment ↑</div>
+      </div>
+
+      <ul class="step-list">
+        <li class="step-item"><div class="step-num">1</div><div class="step-body"><h4>Layer 1 emits what and why</h4><p>The application layer emits domain signals about decisions made. The framework emits structural signals about how orchestration ran. The runtime emits hardware signals about resource constraints.</p></div></li>
+        <li class="step-item"><div class="step-num">2</div><div class="step-body"><h4>Layer 2 decouples and enriches</h4><p>The collection layer sits between the app and storage. It handles protocol translation, batching, signal enrichment, and — critically — tail-based sampling decisions.</p></div></li>
+        <li class="step-item"><div class="step-num">3</div><div class="step-body"><h4>Layer 3 stores by access pattern</h4><p>Metrics go to time-series databases optimized for numerical aggregation. Logs go to full-text search engines. Traces go to distributed trace storage indexed by Trace ID.</p></div></li>
+        <li class="step-item"><div class="step-num">4</div><div class="step-body"><h4>Layer 4 correlates across signals</h4><p>The key power: click a latency spike on a metrics dashboard, jump directly to the underlying trace, then filter logs by that exact Trace ID — without copy-pasting.</p></div></li>
+      </ul>
+    </section>
+
+    <!-- ── Section 5: X-Ray Trace Inspector ── -->
+    <section class="guide-section" id="s-trace">
+      <h2>X-Ray Trace Inspector</h2>
+      <p>This is what a real agent trace looks like. Click any span to expand its attributes. Notice how the HTTP 200 OK at the root level tells you nothing — you have to inspect the retrieval span to find the silent failure.</p>
+
+      <div class="trace-inspector">
+        <div class="trace-toolbar">
+          <span class="trace-toolbar-lbl">Filter:</span>
+          <button class="tf-btn active" onclick="filterTrace('all',this)">All</button>
+          <button class="tf-btn" onclick="filterTrace('warn',this)">Warnings</button>
+          <button class="tf-btn" onclick="filterTrace('llm',this)">LLM only</button>
+          <button class="tf-btn" onclick="filterTrace('tool',this)">Tools only</button>
+          <span style="margin-left:auto;font-family:var(--rw-font-mono);font-size:.65rem;color:rgba(255,255,255,.2)">trace_id: 4bf92f3577b3</span>
+        </div>
+        <div class="trace-body">
+          <!-- Root span -->
+          <div class="t-node" data-kind="root">
+            <div class="t-node-hdr" onclick="toggleNode(this)">
+              <span class="t-exp open">▼</span>
+              <span class="tk tk-root">ROOT</span>
+              <span class="t-span-name">HTTP POST /api/v1/investigate</span>
+              <span class="t-dur">2,340ms</span>
+              <span class="ts ts-ok">200 OK</span>
+            </div>
+            <div class="t-attrs open">
+              <div class="t-attr"><span class="ak">http.method:</span><span class="av">"POST"</span></div>
+              <div class="t-attr"><span class="ak">http.status_code:</span><span class="av av-ok">200</span></div>
+              <div class="t-attr"><span class="ak">net.peer.ip:</span><span class="av">"10.0.4.12"</span></div>
+            </div>
+            <div class="t-children">
+              <!-- LLM: query_classification -->
+              <div class="t-node" data-kind="llm">
+                <div class="t-node-hdr" onclick="toggleNode(this)">
+                  <span class="t-exp">▶</span>
+                  <span class="tk tk-llm">LLM</span>
+                  <span class="t-span-name">query_classification</span>
+                  <span class="t-dur">120ms</span>
+                  <span class="ts ts-ok">OK</span>
+                </div>
+                <div class="t-attrs">
+                  <div class="t-attr"><span class="ak">llm.model_name:</span><span class="av">"claude-sonnet-4-6"</span></div>
+                  <div class="t-attr"><span class="ak">llm.token_count.prompt:</span><span class="av">450</span></div>
+                  <div class="t-attr"><span class="ak">llm.token_count.completion:</span><span class="av">80</span></div>
+                  <div class="t-attr"><span class="ak">llm.output:</span><span class="av">"intent=flight_search, destination=TYO"</span></div>
+                </div>
+              </div>
+              <!-- TOOL: flight_search_api -->
+              <div class="t-node" data-kind="tool">
+                <div class="t-node-hdr" onclick="toggleNode(this)">
+                  <span class="t-exp open">▼</span>
+                  <span class="tk tk-tool">TOOL</span>
+                  <span class="t-span-name">flight_search_api</span>
+                  <span class="t-dur">2,100ms</span>
+                  <span class="ts ts-ok">200 OK</span>
+                </div>
+                <div class="t-attrs open">
+                  <div class="t-attr"><span class="ak">tool.name:</span><span class="av">"flight_search_api"</span></div>
+                  <div class="t-attr"><span class="ak">tool.parameters:</span><span class="av">{"destination":"TYO","departure_date":"2025-05-01"}</span></div>
+                  <div class="t-attr"><span class="ak">http.status_code:</span><span class="av av-ok">200</span></div>
+                  <div class="t-attr"><span class="ak">agent.retry_count:</span><span class="av av-warn">3</span></div>
+                </div>
+                <div class="t-children">
+                  <!-- RETRIEVAL: vector_search — the silent failure -->
+                  <div class="t-node" data-kind="retr warn">
+                    <div class="t-node-hdr" onclick="toggleNode(this)">
+                      <span class="t-exp open">▼</span>
+                      <span class="tk tk-retr">RETRIEVAL</span>
+                      <span class="t-span-name">vector_search</span>
+                      <span class="t-dur">340ms</span>
+                      <span class="ts ts-warn">⚠ LOW SCORE</span>
+                    </div>
+                    <div class="t-attrs open">
+                      <div class="t-attr"><span class="ak">retrieval.query_text:</span><span class="av">"flights to Tokyo May 1st"</span></div>
+                      <div class="t-attr"><span class="ak">retrieval.documents.0.score:</span><span class="av av-err">0.41</span></div>
+                      <div class="t-attr"><span class="ak">retrieval.documents.1.score:</span><span class="av av-err">0.38</span></div>
+                      <div class="t-attr"><span class="ak">retrieval.quality_threshold:</span><span class="av">0.70</span></div>
+                      <div class="t-attr"><span class="ak">retrieval.threshold_breached:</span><span class="av av-err">true</span></div>
+                      <div class="t-attr"><span class="ak">llm.context_length_utilization_pct:</span><span class="av av-warn">78.4%</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- LLM: response_generation — silent failure propagates here -->
+              <div class="t-node" data-kind="llm">
+                <div class="t-node-hdr" onclick="toggleNode(this)">
+                  <span class="t-exp">▶</span>
+                  <span class="tk tk-llm">LLM</span>
+                  <span class="t-span-name">response_generation</span>
+                  <span class="t-dur">180ms</span>
+                  <span class="ts ts-silent">⚠ SILENT FAIL</span>
+                </div>
+                <div class="t-attrs">
+                  <div class="t-attr"><span class="ak">llm.model_name:</span><span class="av">"claude-sonnet-4-6"</span></div>
+                  <div class="t-attr"><span class="ak">llm.token_count.prompt:</span><span class="av">1240</span></div>
+                  <div class="t-attr"><span class="ak">llm.token_count.completion:</span><span class="av">185</span></div>
+                  <div class="t-attr"><span class="ak">llm.output:</span><span class="av av-warn">"Flights available on May 1st to Tokyo..."</span></div>
+                  <div class="t-attr"><span class="ak">eval.factual_accuracy:</span><span class="av av-err">0.23</span></div>
+                  <div class="t-attr"><span class="ak">eval.groundedness:</span><span class="av av-err">0.18</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p>The retrieval step returned documents with similarity scores of 0.41 and 0.38 — both below the quality threshold of 0.70. The LLM generated a confident-sounding response using that garbage context. The HTTP status code reported 200 OK throughout.</p>
+    </section>
+
+    <!-- ── Section 6: Telemetry Standards ── -->
+    <section class="guide-section" id="s-standards">
+      <h2>Telemetry Standards: OTel vs OpenInference</h2>
+      <p>Standard OpenTelemetry was built for HTTP endpoints and database queries. It has no native primitives for prompt tokens, vector similarity scores, or reasoning steps. OpenInference extends OTel specifically for AI systems.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card fc-yel">
+          <div class="feature-card-icon">📡</div>
+          <h4>Standard OTel Span</h4>
+          <p>Captures: HTTP method, status code, URL, peer IP. <strong>Misses:</strong> token counts, model ID, prompt text, retrieval scores, retry logic.</p>
+        </div>
+        <div class="feature-card fc-ind">
+          <div class="feature-card-icon">🧬</div>
+          <h4>OpenInference Span</h4>
+          <p>Adds: <code>llm.model_name</code>, <code>llm.token_count.*</code>, <code>tool.parameters</code>, <code>retrieval.documents.*.score</code>, <code>agent.retry_count</code>.</p>
+        </div>
+        <div class="feature-card fc-grn">
+          <div class="feature-card-icon">🔗</div>
+          <h4>Trace Context Propagation</h4>
+          <p>W3C <code>traceparent</code> headers carry Trace ID + Span ID across service boundaries, sub-agents, and async calls — keeping the entire journey stitched together.</p>
+        </div>
+      </div>
+
+      <h3>The 7 Span Primitives You Need</h3>
+      <div class="table-scroll">
+        <table class="comparison-table">
+          <thead><tr><th>Primitive</th><th>What It Stores</th><th>Why It Matters for Agents</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tag-ind">Trace ID</span></td><td>128-bit global request identifier</td><td>Ties every sub-agent call, tool, and DB query to one user request</td></tr>
+            <tr><td><span class="tag tag-ind">Root Span</span></td><td>Full transaction from ingress to response</td><td>Your timer for end-to-end latency — the thing the user actually experiences</td></tr>
+            <tr><td><span class="tag tag-ind">Child Spans</span></td><td>Named sub-tasks nested inside parent</td><td>RAG retrieval, LLM inference, tool call — each gets its own measurable unit</td></tr>
+            <tr><td><span class="tag tag-ind">Span Attributes</span></td><td>Key-value metadata on each span</td><td>Where token counts, similarity scores, and model IDs live</td></tr>
+            <tr><td><span class="tag tag-warn">Span Events</span></td><td>Timestamped point-in-time markers</td><td>Rate limit hits, retry attempts, stream chunk arrivals</td></tr>
+            <tr><td><span class="tag tag-warn">Span Links</span></td><td>Causal references across separate trace contexts</td><td>Essential for async sub-agent delegation — unlike parent-child spans they cross trace ID boundaries</td></tr>
+            <tr><td><span class="tag tag-ind">Context Propagation</span></td><td>Serialized Trace ID in HTTP/gRPC headers</td><td>Prevents trace fragmentation when requests cross service boundaries</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="s-span-links">Span Links in Multi-Agent Systems</h3>
+      <p>Parent-child spans share the same Trace ID. Span Links are different — they reference spans in a <em>completely separate</em> trace context. This is what makes async sub-agent delegation traceable: the Research Agent starts its own trace, but its root span links back to the Orchestrator span that spawned it.</p>
+
+      <div class="span-link-demo">
+        <div class="sld-trace sld-trace-a">
+          <div class="sld-trace-hdr">
+            <span class="tk tk-root">TRACE A</span> Orchestrator Agent
+            <span style="font-family:var(--rw-font-mono);font-size:.62rem;color:rgba(255,255,255,.28)">trace_id: aaa-111</span>
+          </div>
+          <div class="sld-node">
+            <span style="color:rgba(255,255,255,.25);font-size:.68rem">▼</span>
+            <span class="tk tk-root">ROOT</span>
+            <span style="color:rgba(240,244,255,.65)">plan_travel_itinerary</span>
+          </div>
+          <div class="sld-children">
+            <div class="sld-node">
+              <span style="color:rgba(255,255,255,.25);font-size:.68rem">▼</span>
+              <span class="tk tk-llm">LLM</span>
+              <span style="color:rgba(240,244,255,.65)">decompose_task</span>
+            </div>
+            <div class="sld-children">
+              <div class="sld-node sld-delegate">
+                <span class="tk tk-tool">TOOL</span>
+                <span style="color:rgba(240,244,255,.65);flex:1">delegate_to_research_agent</span>
+                <span class="sld-link-tag">→ spawns Trace B</span>
+              </div>
+            </div>
+            <div class="sld-node">
+              <span style="color:rgba(255,255,255,.25);font-size:.68rem">▶</span>
+              <span class="tk tk-llm">LLM</span>
+              <span style="color:rgba(240,244,255,.55)">assemble_itinerary</span>
+              <span style="font-size:.62rem;color:rgba(255,255,255,.25);margin-left:auto">awaits Trace B result</span>
+            </div>
+          </div>
+        </div>
+        <div class="sld-connector">
+          <div class="sld-vline"></div>
+          <div class="sld-dot"></div>
+          <div class="sld-lbl">span_link</div>
+          <div class="sld-dot"></div>
+          <div class="sld-vline"></div>
+        </div>
+        <div class="sld-trace sld-trace-b">
+          <div class="sld-trace-hdr">
+            <span class="tk tk-retr">TRACE B</span> Research Agent
+            <span style="font-family:var(--rw-font-mono);font-size:.62rem;color:rgba(255,255,255,.28)">trace_id: bbb-222</span>
+          </div>
+          <div class="sld-node">
+            <span style="color:rgba(255,255,255,.25);font-size:.68rem">▼</span>
+            <span class="tk tk-root">ROOT</span>
+            <span style="color:rgba(240,244,255,.65);flex:1">research_task</span>
+            <span class="sld-link-tag">← linked to aaa-111</span>
+          </div>
+          <div class="sld-children">
+            <div class="sld-node">
+              <span class="tk tk-tool">TOOL</span>
+              <span style="color:rgba(240,244,255,.65)">web_search</span>
+            </div>
+            <div class="sld-node">
+              <span class="tk tk-retr">RETR</span>
+              <span style="color:rgba(240,244,255,.65)">vector_search</span>
+            </div>
+            <div class="sld-node">
+              <span class="tk tk-llm">LLM</span>
+              <span style="color:rgba(240,244,255,.65)">summarize_findings</span>
+            </div>
+          </div>
+          <div style="margin-top:.5rem;padding:.3rem .5rem;background:rgba(129,140,248,.07);border-radius:4px;font-size:.65rem;color:rgba(129,140,248,.7)">
+            span_link.trace_id: "aaa-111" · span_link.span_id: "spa-002"
+          </div>
+        </div>
+      </div>
+
+      <div class="sle-usecases">
+        <div class="sle-uc"><span class="tag tag-ind">1 Async delegation</span> <strong>Orchestrator → Research Agent</strong> — the research agent runs independently on its own trace. A span link lets you trace back from the research result to the exact orchestrator span that created the task.</div>
+        <div class="sle-uc"><span class="tag tag-warn">2 Background eval pipeline</span> <strong>Eval runs after main trace closes</strong> — the evaluator opens a new trace, but links to the original trace it scored. You can correlate eval results with the exact execution context that produced them.</div>
+        <div class="sle-uc"><span class="tag tag-ok">3 Multi-turn sessions</span> <strong>Cross-turn root cause</strong> — turn 7 references the constraint established in turn 2. Without span links, you'd need to search manually across sessions; with them, the causal chain is navigable in one click.</div>
+      </div>
+    </section>
+
+    <!-- ── Section 7: Sampling Strategies ── -->
+    <section class="guide-section" id="s-sampling">
+      <h2>Sampling Strategies: Head-Based vs Tail-Based</h2>
+      <p>Storing 100% of production traces is cost-prohibitive. But choosing what to keep is critical — the wrong approach discards exactly the failures you need.</p>
+
+      <div class="sampling-grid">
+        <div class="sampling-panel sp-head">
+          <div class="sp-title">Head-Based Sampling</div>
+          <div class="sp-verdict">Dangerous for agents</div>
+          <div class="sp-point">Decision made at request ingress — before execution starts.</div>
+          <div class="sp-point">Randomly drops 90% of requests. Low-frequency silent failures are discarded at the same rate as routine successes.</div>
+          <div class="sp-point">Cheap: no buffering required. But you'll never see the rare catastrophic hallucination that only happens 0.1% of the time.</div>
+        </div>
+        <div class="sampling-panel sp-tail">
+          <div class="sp-title">Tail-Based Sampling</div>
+          <div class="sp-verdict">Built for agents</div>
+          <div class="sp-point">Buffers the full trace locally. Decision made after request completes, using actual execution signals.</div>
+          <div class="sp-point">Retains traces where: retrieval score &lt; 0.70, tool retries &gt; 2, token usage &gt; 10× baseline, eval score dropped.</div>
+          <div class="sp-point">Moderate cost (memory buffer at collector). But you capture 100% of the complex anomalous traces that matter.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 8: 9 Opportunities ── -->
+    <section class="guide-section" id="s-opportunities">
+      <h2>9 Directions Worth Exploring</h2>
+      <p>Current observability platforms handle infrastructure metrics and distributed traces well. The nine areas below aren't necessarily missing from every product — some have partial solutions, others are emerging. Think of them as directions the field is still working through: good hackathon territory, or things to watch as products mature.</p>
+
+      <div class="opp-grid">
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #1</div>
+          <div class="opp-title">Code-Aware AST Analysis</div>
+          <div class="opp-desc">What if trace frames could link to the exact source code AST node — docstring, type annotation, git SHA — that caused a hallucination? The idea: pinpoint line 35 automatically, not after hours of debugging.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #2</div>
+          <div class="opp-title">ClickHouse Threat Hunting</div>
+          <div class="opp-desc">SQL window queries over trace streams to detect multi-session "slow-and-low" prompt injection — patterns that look harmless per-request but reveal intent across sessions. Most threat tools still work per-request.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #3</div>
+          <div class="opp-title">Long-Term Memory Auditability</div>
+          <div class="opp-desc">Agents with persistent memory can accumulate drift or deliberately poisoned entries over weeks. Automated sweep jobs that flag semantic outliers before they enter active context is still an open design problem.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #4</div>
+          <div class="opp-title">Environment State-Diffing</div>
+          <div class="opp-desc">A tool call returning 200 OK proves nothing about whether the mutation was correct. Pre/post state snapshots diffed against agent intent — and automated rollback — would close this verification gap.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #5</div>
+          <div class="opp-title">Auto-Discovery Topology Maps</div>
+          <div class="opp-desc">In LangGraph or CrewAI systems, sub-agent communication graphs form at runtime. Auto-rendering these without manual instrumentation — by hooking into framework event dispatchers — is technically feasible but not mainstream.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #6</div>
+          <div class="opp-title">Outcome-Centric Business KPIs</div>
+          <div class="opp-desc">Translating token costs and latency into "cost per completed claim = $0.22 vs. manual $14.50" requires linking trace context to business outcome schemas. Some platforms are starting to offer this; most don't yet.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #7</div>
+          <div class="opp-title">Closed-Loop Feedback Control</div>
+          <div class="opp-desc">The control plane diagram above shows the closed loop conceptually. Platforms like NeMo Guardrails support dynamic rule updates, but a fully automated signal-to-policy pipeline without human review is still emerging.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #8</div>
+          <div class="opp-title">Auto-Generated Issue Tickets</div>
+          <div class="opp-desc">Clustering failure traces by root cause and auto-opening a Jira story with impact stats, code pointers, and a suggested fix — this is a compelling hackathon project. LLM-assisted root cause grouping makes it plausible.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-num">EXPLORE #9</div>
+          <div class="opp-title">Observability-Driven Caching</div>
+          <div class="opp-desc">If your trace logs reveal that 30% of requests are semantically near-identical, you could auto-generate prompt caching rules. The observability data is already there — it just needs a recommendation engine on top.</div>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:1rem">
+        <div class="callout-label">Note on framing</div>
+        <p>These are drawn from research and architectural thinking, not from testing specific production systems. They're worth watching as the agent observability space matures — and several make strong hackathon starting points.</p>
+      </div>
+    </section>
+
+    <!-- ── Section 9: Vendor Landscape ── -->
+    <section class="guide-section" id="s-vendors">
+      <h2>Vendor Landscape</h2>
+      <p>Four distinct platform archetypes exist. The right choice depends on how much control you need vs. how much operational overhead you can absorb.</p>
+
+      <div class="table-scroll">
+        <table class="comparison-table">
+          <thead><tr><th>Archetype</th><th>Examples</th><th>Control</th><th>Agent-Native</th><th>Complexity</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Self-Managed</strong></td>
+              <td>OTel Collector + Prometheus + Jaeger</td>
+              <td><span class="tag tag-ok">Maximum</span></td>
+              <td><span class="tag tag-warn">Low — manual</span></td>
+              <td><span class="tag tag-fail">High</span></td>
+            </tr>
+            <tr>
+              <td><strong>Commercial Managed</strong></td>
+              <td>Datadog, Dynatrace, New Relic</td>
+              <td><span class="tag tag-warn">Moderate</span></td>
+              <td><span class="tag tag-warn">Moderate — LLM wrappers</span></td>
+              <td><span class="tag tag-ok">Low</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cloud-Native</strong></td>
+              <td>AWS CloudWatch, GCP Operations</td>
+              <td><span class="tag tag-warn">Moderate</span></td>
+              <td><span class="tag tag-fail">Low — infra only</span></td>
+              <td><span class="tag tag-ok">Low</span></td>
+            </tr>
+            <tr>
+              <td><strong>Purpose-Built AI</strong></td>
+              <td>Arize Phoenix, LangSmith, Braintrust</td>
+              <td><span class="tag tag-warn">Moderate</span></td>
+              <td><span class="tag tag-ok">Maximum — first-class</span></td>
+              <td><span class="tag tag-ok">Low–Medium</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Recommendation</div>
+        <p>Start with a purpose-built AI platform (Arize Phoenix or LangSmith) for rapid time-to-value on agent-specific observability. Layer in OTel-based infrastructure telemetry alongside it rather than choosing one or the other. <strong>Never use only a general-purpose APM tool for agent observability</strong> — you will be completely blind to the failures that matter most.</p>
+      </div>
+    </section>
+
+    <!-- Attribution -->
+    <div style="border-top:1px solid var(--rw-border);padding-top:1.5rem;margin-top:1rem;display:flex;align-items:flex-start;gap:.75rem;">
+      <span style="font-size:1.1rem;flex-shrink:0">🎓</span>
+      <p style="font-size:.82rem;color:var(--rw-text-subtle);line-height:1.65;margin:0">
+        Inspired by a session on <strong style="color:var(--rw-text-muted)">Observability for AI Agents</strong> by
+        <strong style="color:var(--rw-text-muted)">Elena Karrer</strong> from
+        <strong style="color:var(--rw-text-muted)">MongoDB</strong>.
+        The architecture synthesis, interactive tools, extended thinking, and 9 directions to explore are the author's own research and learning built on top of that foundation.
+      </p>
+    </div>
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-related='[{"label":"TripRipple — Agent Memory","url":"/usecase/tripripple.html"}]'
+></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+// ── Hero terminal animation ──────────────────────────────────
+(function() {
+  const lines = document.querySelectorAll('#termBody .t-line');
+  let i = 0;
+  function showNext() {
+    if (i < lines.length) {
+      lines[i].classList.add('vis');
+      i++;
+      setTimeout(showNext, i < lines.length - 1 ? 380 : 0);
+    } else {
+      setTimeout(() => {
+        lines.forEach(l => l.classList.remove('vis'));
+        i = 0;
+        setTimeout(showNext, 600);
+      }, 3200);
+    }
+  }
+  setTimeout(showNext, 500);
+})();
+
+// ── Railway Simulator ────────────────────────────────────────
+let simRunning = false;
+
+function resetSim() {
+  simRunning = false;
+  // Static
+  const ts = document.getElementById('trainStatic');
+  ts.setAttribute('x', '18'); ts.setAttribute('opacity', '0');
+  document.getElementById('breakMarker').setAttribute('opacity', '0');
+  const sA = document.getElementById('sA'), sB = document.getElementById('sB'), sC = document.getElementById('sC');
+  [sA,sB,sC].forEach(el => { el.setAttribute('stroke','rgba(255,255,255,0.25)'); el.setAttribute('fill','rgba(255,255,255,0.05)'); });
+  setStatus('static', 'Idle — click Send Request', null);
+  // Agent
+  const ta = document.getElementById('trainAgent');
+  ta.setAttribute('cx','34'); ta.setAttribute('cy','65'); ta.setAttribute('opacity','0');
+  document.getElementById('switchDot').setAttribute('stroke','#4ade80');
+  document.getElementById('switchDot').setAttribute('fill','rgba(74,222,128,0.12)');
+  document.getElementById('wrongLabel').setAttribute('opacity','0');
+  document.getElementById('destB').setAttribute('stroke','rgba(248,113,113,0.15)');
+  document.getElementById('destBText').setAttribute('fill','rgba(248,113,113,0.5)');
+  setStatus('agent', 'Idle — click Send Request', null);
+}
+
+function setStatus(panel, text, badge) {
+  document.getElementById('statusText'+panel.charAt(0).toUpperCase()+panel.slice(1)).textContent = text;
+  const b = document.getElementById('httpBadge'+panel.charAt(0).toUpperCase()+panel.slice(1));
+  if (badge) {
+    b.style.display = 'inline-block';
+    b.textContent = badge.text;
+    b.className = 'http-badge ' + badge.cls;
+  } else {
+    b.style.display = 'none';
+  }
+}
+
+function animateEl(el, attr, from, to, duration, delay, callback) {
+  const start = performance.now() + delay;
+  function frame(now) {
+    if (now < start) { requestAnimationFrame(frame); return; }
+    const t = Math.min((now - start) / duration, 1);
+    const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    el.setAttribute(attr, from + (to - from) * ease);
+    if (t < 1) requestAnimationFrame(frame);
+    else if (callback) callback();
+  }
+  requestAnimationFrame(frame);
+}
+
+function sendRequest(hasFailure) {
+  if (simRunning) return;
+  resetSim();
+  simRunning = true;
+  runStaticSim(hasFailure);
+  runAgentSim(hasFailure);
+}
+
+function runStaticSim(hasFailure) {
+  const train = document.getElementById('trainStatic');
+  const breakM = document.getElementById('breakMarker');
+  const sA = document.getElementById('sA'), sB = document.getElementById('sB'), sC = document.getElementById('sC');
+
+  train.setAttribute('opacity', '1');
+  setStatus('Static', 'Departing Station A...', null);
+  sA.setAttribute('stroke','#4ade80'); sA.setAttribute('fill','rgba(74,222,128,0.1)');
+
+  // Move A→B
+  animateEl(train, 'x', 18, 148, 900, 0, () => {
+    sB.setAttribute('stroke', hasFailure ? '#f87171' : '#4ade80');
+    sB.setAttribute('fill', hasFailure ? 'rgba(248,113,113,0.1)' : 'rgba(74,222,128,0.1)');
+    if (hasFailure) {
+      breakM.setAttribute('opacity','1');
+      train.setAttribute('opacity','0.3');
+      setStatus('Static', 'Track break at Station B — halted', {text:'500 ERROR', cls:'hb-err'});
+      simRunning = false;
+    } else {
+      setStatus('Static', 'Passing Station B...', null);
+      animateEl(train, 'x', 148, 278, 900, 200, () => {
+        sC.setAttribute('stroke','#4ade80'); sC.setAttribute('fill','rgba(74,222,128,0.1)');
+        setStatus('Static', 'Arrived at Station C', {text:'200 OK', cls:'hb-ok'});
+        simRunning = false;
+      });
+    }
+  });
+}
+
+function runAgentSim(hasFailure) {
+  const train = document.getElementById('trainAgent');
+  const sw = document.getElementById('switchDot');
+  const wl = document.getElementById('wrongLabel');
+
+  train.setAttribute('opacity','1');
+  setStatus('Agent', 'Query received — routing...', null);
+
+  // Move Input→Engine (cx: 34→160)
+  animateEl(train, 'cx', 34, 160, 700, 0, () => {
+    setStatus('Agent', 'LLM evaluating context...', null);
+    // Engine→Switch (cx: 160→220)
+    animateEl(train, 'cx', 160, 220, 600, 200, () => {
+      if (hasFailure) {
+        // Bad switch
+        sw.setAttribute('stroke','#f87171');
+        sw.setAttribute('fill','rgba(248,113,113,0.2)');
+        // Move to wrong destination (cx: 220→291, cy: 65→95)
+        setStatus('Agent', 'Context ambiguous — switch misrouted', null);
+        animateEl(train, 'cx', 220, 291, 700, 0, () => {});
+        animateEl(train, 'cy', 65, 95, 700, 0, () => {
+          document.getElementById('destB').setAttribute('stroke','#fbbf24');
+          document.getElementById('destBText').setAttribute('fill','#fbbf24');
+          wl.setAttribute('opacity','1');
+          setStatus('Agent', 'Arrived — wrong destination', {text:'200 OK ← SILENT', cls:'hb-silent'});
+          simRunning = false;
+        });
+      } else {
+        // Good switch
+        animateEl(train, 'cx', 220, 291, 700, 0, () => {});
+        animateEl(train, 'cy', 65, 37, 700, 0, () => {
+          document.getElementById('destA').setAttribute('stroke','#4ade80');
+          document.getElementById('destA').setAttribute('fill','rgba(74,222,128,0.12)');
+          setStatus('Agent', 'Arrived at correct destination', {text:'200 OK', cls:'hb-ok'});
+          simRunning = false;
+        });
+      }
+    });
+  });
+}
+
+// ── Compounding Error Calculator ─────────────────────────────
+function updateCalc() {
+  const steps = parseInt(document.getElementById('stepsSlider').value);
+  const acc = parseInt(document.getElementById('accuracySlider').value) / 1000;
+  document.getElementById('stepsVal').textContent = steps;
+  document.getElementById('accuracyVal').textContent = (acc * 100).toFixed(1) + '%';
+  document.getElementById('stepsLabel').textContent = steps;
+  document.getElementById('accuracyLabel').textContent = (acc * 100).toFixed(1) + '%';
+
+  let prob = 1.0;
+  const bars = document.getElementById('calcBars');
+  bars.innerHTML = '';
+
+  for (let i = 1; i <= steps; i++) {
+    prob *= acc;
+    const pct = Math.round(prob * 1000) / 10;
+    const color = pct > 80 ? '#4ade80' : pct > 50 ? '#fbbf24' : '#f87171';
+    const row = document.createElement('div');
+    row.className = 'calc-bar-row';
+    row.innerHTML = `<span class="calc-bar-step">S${i}</span><div class="calc-bar-track"><div class="calc-bar-fill" style="width:${pct}%;background:${color}"></div></div><span class="calc-bar-pct" style="color:${color}">${pct.toFixed(1)}%</span>`;
+    bars.appendChild(row);
+  }
+
+  const finalPct = (prob * 100).toFixed(1);
+  const failPct = (100 - prob * 100).toFixed(1);
+  const sr = document.getElementById('calcSuccessRate');
+  const fr = document.getElementById('calcFailureRate');
+  sr.textContent = finalPct + '%';
+  fr.textContent = failPct + '%';
+  const c = prob > 0.8 ? '#4ade80' : prob > 0.5 ? '#fbbf24' : '#f87171';
+  sr.style.color = c;
+  fr.style.color = prob < 0.5 ? '#f87171' : prob < 0.8 ? '#fbbf24' : '#4ade80';
+}
+updateCalc();
+
+// ── Trace Inspector: node toggle ─────────────────────────────
+function toggleNode(hdr) {
+  const exp = hdr.querySelector('.t-exp');
+  const node = hdr.closest('.t-node');
+  const children = node.querySelector('.t-children');
+  const attrs = node.querySelector('.t-attrs');
+  const isOpen = exp.textContent.trim() === '▼';
+
+  if (isOpen) {
+    exp.textContent = '▶';
+    if (children) children.style.display = 'none';
+    if (attrs) attrs.classList.remove('open');
+  } else {
+    exp.textContent = '▼';
+    if (children) children.style.display = '';
+    if (attrs) attrs.classList.add('open');
+  }
+}
+
+function filterTrace(kind, btn) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const nodes = document.querySelectorAll('.t-node');
+  nodes.forEach(n => {
+    const k = n.dataset.kind || '';
+    if (kind === 'all') { n.style.display = ''; return; }
+    if (kind === 'warn') { n.style.display = k.includes('warn') || k.includes('root') ? '' : 'none'; return; }
+    n.style.display = k.includes(kind) || k.includes('root') ? '' : 'none';
+  });
+}
+
+// ── Scrollspy ────────────────────────────────────────────────
+(function() {
+  const sections = document.querySelectorAll('.guide-section[id]');
+  const links = document.querySelectorAll('.guide-toc a');
+  if (!sections.length || !links.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin:'-60px 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+})();
+</script>
+</body>
+</html>
