@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debrief — Conference Memory & Networking Intelligence | RawWeights</title>
+  <meta name="description" content="We built Debrief at the same conference where we had the problem. A mobile-first graph-powered app that remembers every person, session, and idea from your conference day. Built at Patch the Conference Hackathon 2024 with FalkorDB, Bright Data, and Qodo.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/debrief.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/debrief.html">
+  <meta property="og:title" content="Debrief — Conference Memory & Networking Intelligence">
+  <meta property="og:description" content="26 PRs. 119 tests. 14 people. Built at the conference where we needed it.">
+  <meta property="og:image" content="https://rawweights.com/images/debrief/debrief-og.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://rawweights.com/images/debrief/debrief-og.jpeg">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    /* ── Hero ─────────────────────────────────────────────────────── */
+    .guide-hero {
+      background: linear-gradient(135deg,#07101f 0%,#0f0b28 55%,#071530 100%);
+      padding: 4.5rem 1.5rem 4rem; position: relative; overflow: hidden;
+    }
+    .guide-hero::before { content:''; position:absolute; top:-20%; right:-5%; width:500px; height:500px; background:radial-gradient(circle,rgba(129,140,248,.18) 0%,transparent 65%); pointer-events:none; }
+    .guide-hero::after  { content:''; position:absolute; bottom:-10%; left:-5%; width:360px; height:360px; background:radial-gradient(circle,rgba(74,222,128,.10) 0%,transparent 65%); pointer-events:none; }
+    .hero-inner { max-width:1200px; margin:0 auto; position:relative; display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center; }
+    .hero-inner > * { min-width:0; }
+    .hero-text { display:flex; flex-direction:column; align-items:flex-start; }
+    .hero-label { display:inline-flex; align-items:center; gap:.4rem; background:rgba(129,140,248,.12); border:1px solid rgba(129,140,248,.3); border-radius:9999px; padding:.3rem .9rem; font-size:.72rem; font-weight:700; color:#818cf8; text-transform:uppercase; letter-spacing:.08em; font-family:var(--rw-font-display); margin-bottom:1.25rem; }
+    .pulse-dot { width:6px; height:6px; background:#818cf8; border-radius:50%; animation:pulse 2s infinite; }
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+    .guide-hero h1 { font-family:var(--rw-font-display); font-size:clamp(1.8rem,3.5vw,3rem); font-weight:800; color:#f0f4ff; line-height:1.08; letter-spacing:-.03em; margin-bottom:1rem; }
+    .guide-hero h1 span { color:#818cf8; }
+    .hero-lead { font-size:1rem; color:rgba(240,244,255,.7); margin:0 0 1.5rem; line-height:1.75; }
+    .hero-tags { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.75rem; }
+    .hero-tag { font-size:.72rem; font-family:var(--rw-font-mono); color:rgba(240,244,255,.5); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:.2rem .65rem; }
+    .hero-btns { display:flex; gap:.75rem; flex-wrap:wrap; }
+
+    /* Hero phone group */
+    .hero-phones { display:flex; gap:1rem; align-items:flex-end; justify-content:center; position:relative; }
+    .hero-phone { border-radius:24px; border:2px solid rgba(255,255,255,.12); background:#000; overflow:hidden; box-shadow:0 0 0 5px rgba(0,0,0,.35),0 24px 60px rgba(0,0,0,.55); flex-shrink:0; }
+    .hero-phone img { display:block; width:100%; height:auto; }
+    .hero-phone-main { width:140px; }
+    .hero-phone-side { width:110px; opacity:.7; transform:translateY(12px); }
+
+    /* ── Layout ───────────────────────────────────────────────────── */
+    .guide-layout { display:grid; grid-template-columns:220px 1fr; gap:2.5rem; max-width:1200px; margin:3rem auto; padding:0 1.5rem; align-items:start; }
+    .guide-layout > * { min-width:0; }
+    .guide-sidebar { position:sticky; top:calc(var(--rw-nav-height,60px) + 1.5rem); }
+    .toc-label { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--rw-text-subtle); margin-bottom:.75rem; }
+    .guide-toc { list-style:none; display:flex; flex-direction:column; gap:.15rem; }
+    .guide-toc a { font-size:.83rem; color:var(--rw-text-muted); text-decoration:none; padding:.3rem .6rem; border-left:2px solid transparent; display:block; border-radius:0 4px 4px 0; transition:color .15s,border-color .15s,background .15s; }
+    .guide-toc a:hover,.guide-toc a.active { color:var(--rw-orange); border-left-color:var(--rw-orange); background:var(--rw-orange-light); }
+    .guide-toc .sub { padding-left:1rem; font-size:.78rem; }
+
+    /* ── Sections ─────────────────────────────────────────────────── */
+    .guide-section { margin-bottom:4rem; }
+    .guide-section h2 { font-family:var(--rw-font-display); font-size:1.5rem; font-weight:800; color:var(--rw-text); margin-bottom:1rem; padding-bottom:.6rem; border-bottom:2px solid var(--rw-orange-light); scroll-margin-top:calc(var(--rw-nav-height,60px) + 1rem); }
+    .guide-section h3 { font-family:var(--rw-font-display); font-size:1.05rem; font-weight:700; color:var(--rw-text); margin:1.5rem 0 .5rem; scroll-margin-top:calc(var(--rw-nav-height,60px) + 1rem); }
+    .guide-section p { font-size:.97rem; color:var(--rw-text-muted); line-height:1.75; margin-bottom:1rem; }
+    code { font-family:var(--rw-font-mono); font-size:.84em; background:var(--rw-bg-subtle); border:1px solid var(--rw-border); border-radius:4px; padding:.1em .35em; color:#818cf8; }
+
+    /* ── Stat row ─────────────────────────────────────────────────── */
+    .stat-row { display:flex; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); overflow:hidden; margin:1.5rem 0; }
+    .stat-cell { flex:1; padding:1.1rem; text-align:center; border-right:1px solid var(--rw-border); }
+    .stat-cell:last-child { border-right:none; }
+    .stat-val { font-family:var(--rw-font-display); font-size:1.65rem; font-weight:800; line-height:1; }
+    .c-orange { color:var(--rw-orange); }
+    .c-indigo { color:#818cf8; }
+    .c-green  { color:#4ade80; }
+    .c-amber  { color:#fbbf24; }
+    .c-pink   { color:#f472b6; }
+    .stat-label { font-size:.73rem; color:var(--rw-text-subtle); margin-top:.3rem; }
+
+    /* ── Feature grid ─────────────────────────────────────────────── */
+    .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
+    .feature-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.2rem; }
+    .feature-icon { font-size:1.4rem; margin-bottom:.5rem; }
+    .feature-card h4 { font-family:var(--rw-font-display); font-size:.88rem; font-weight:700; color:var(--rw-text); margin-bottom:.3rem; }
+    .feature-card p { font-size:.8rem; color:var(--rw-text-muted); margin:0; line-height:1.55; }
+
+    /* ── Phone mockup ─────────────────────────────────────────────── */
+    .phone-frame {
+      border-radius:26px; border:2px solid rgba(255,255,255,.12);
+      background:#000; overflow:hidden;
+      box-shadow:0 0 0 5px rgba(0,0,0,.3),0 20px 50px rgba(0,0,0,.45);
+      position:relative;
+    }
+    .phone-frame::before {
+      content:''; position:absolute; top:9px; left:50%; transform:translateX(-50%);
+      width:60px; height:4px; background:rgba(255,255,255,.12); border-radius:4px; z-index:2;
+    }
+    .phone-frame img { display:block; width:100%; height:auto; }
+    .phone-cap { text-align:center; margin-top:.75rem; }
+    .phone-cap strong { display:block; font-family:var(--rw-font-display); font-size:.85rem; font-weight:700; color:var(--rw-text); margin-bottom:.2rem; }
+    .phone-cap span { font-size:.77rem; color:var(--rw-text-muted); }
+
+    /* Screenshot gallery (4-up) */
+    .screens-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; margin:1.75rem 0; align-items:end; }
+    /* Screenshot gallery (2-up) */
+    .screens-2up { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin:1.75rem 0; align-items:end; }
+
+    /* ── Phase table (before/during/after) ───────────────────────── */
+    .phase-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
+    .phase-card { border-radius:var(--rw-r-md); overflow:hidden; }
+    .phase-head { padding:.65rem 1rem; font-family:var(--rw-font-display); font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; }
+    .phase-head.before  { background:rgba(129,140,248,.15); color:#818cf8; }
+    .phase-head.during  { background:rgba(74,222,128,.12);  color:#4ade80; }
+    .phase-head.after   { background:rgba(251,191,36,.12);  color:#fbbf24; }
+    .phase-body { background:var(--rw-card); border:1px solid var(--rw-border); border-top:none; padding:.9rem 1rem; }
+    .phase-body ul { list-style:none; display:flex; flex-direction:column; gap:.4rem; }
+    .phase-body li { font-size:.8rem; color:var(--rw-text-muted); padding-left:1.1em; position:relative; line-height:1.5; }
+    .phase-body li::before { content:'→'; position:absolute; left:0; color:var(--rw-text-subtle); }
+
+    /* ── Architecture / Schema ────────────────────────────────────── */
+    .arch-diagram { background:#050c1a; border:1px solid rgba(129,140,248,.18); border-radius:10px; padding:1.75rem; margin:1.5rem 0; font-family:var(--rw-font-mono); font-size:.82rem; overflow-x:auto; }
+    .arch-layer { margin-bottom:1.1rem; }
+    .arch-layer-label { font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:#818cf8; margin-bottom:.5rem; }
+    .arch-boxes { display:flex; gap:.75rem; flex-wrap:wrap; }
+    .arch-box { padding:.5rem 1rem; border-radius:6px; font-size:.78rem; border:1px solid rgba(129,140,248,.25); background:#0a1228; color:rgba(224,231,255,.8); }
+    .arch-box.green  { border-color:rgba(74,222,128,.35); color:#4ade80; background:#071a0f; }
+    .arch-box.amber  { border-color:rgba(251,191,36,.35); color:#fbbf24; background:#1a1400; }
+    .arch-box.indigo { border-color:rgba(129,140,248,.5);  color:#c7d2fe; background:#0a0e28; font-weight:600; }
+    .arch-arrow { color:rgba(129,140,248,.35); margin:.4rem 0; text-align:center; font-size:.9rem; }
+    .schema-row { display:flex; align-items:baseline; gap:.5rem; margin-bottom:.55rem; font-family:var(--rw-font-mono); font-size:.82rem; flex-wrap:wrap; }
+    .sn { color:#c7d2fe; font-weight:600; }
+    .sr { color:#4ade80; }
+    .sc { color:rgba(224,231,255,.35); }
+
+    /* ── How it works steps ───────────────────────────────────────── */
+    .step-list { list-style:none; display:flex; flex-direction:column; gap:1.25rem; margin:1.5rem 0; }
+    .step-item { display:flex; gap:1rem; align-items:flex-start; }
+    .step-num { width:28px; height:28px; border-radius:50%; background:var(--rw-orange); color:#fff; font-family:var(--rw-font-display); font-weight:800; font-size:.8rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-body h4 { font-family:var(--rw-font-display); font-weight:700; font-size:.93rem; color:var(--rw-text); margin-bottom:.2rem; }
+    .step-body p { font-size:.84rem; color:var(--rw-text-muted); margin:0; line-height:1.6; }
+
+    /* ── Build timeline ───────────────────────────────────────────── */
+    .timeline { position:relative; margin:1.5rem 0; padding-left:1.75rem; }
+    .timeline::before { content:''; position:absolute; left:.6rem; top:0; bottom:0; width:2px; background:var(--rw-border); }
+    .tl-item { position:relative; margin-bottom:1.1rem; }
+    .tl-dot { position:absolute; left:-1.75rem; top:.25rem; width:10px; height:10px; border-radius:50%; border:2px solid #818cf8; background:var(--rw-bg); }
+    .tl-dot.green  { border-color:#4ade80; }
+    .tl-dot.amber  { border-color:#fbbf24; }
+    .tl-dot.pink   { border-color:#f472b6; }
+    .tl-badge { display:inline-block; font-family:var(--rw-font-mono); font-size:.68rem; font-weight:700; background:rgba(129,140,248,.1); border:1px solid rgba(129,140,248,.25); color:#818cf8; border-radius:4px; padding:.1rem .45rem; margin-bottom:.25rem; }
+    .tl-badge.green  { background:rgba(74,222,128,.1); border-color:rgba(74,222,128,.25); color:#4ade80; }
+    .tl-badge.amber  { background:rgba(251,191,36,.1); border-color:rgba(251,191,36,.25); color:#fbbf24; }
+    .tl-badge.pink   { background:rgba(244,114,182,.1); border-color:rgba(244,114,182,.25); color:#f472b6; }
+    .tl-title { font-family:var(--rw-font-display); font-size:.88rem; font-weight:700; color:var(--rw-text); margin-bottom:.15rem; }
+    .tl-desc { font-size:.8rem; color:var(--rw-text-muted); line-height:1.55; }
+
+    /* ── File table ───────────────────────────────────────────────── */
+    .file-table { width:100%; border-collapse:collapse; margin:1.25rem 0; font-size:.88rem; }
+    .file-table th { background:var(--rw-bg-subtle); font-family:var(--rw-font-display); font-weight:700; font-size:.75rem; text-align:left; padding:.6rem .9rem; border-bottom:2px solid var(--rw-border); color:var(--rw-text); }
+    .file-table td { padding:.6rem .9rem; border-bottom:1px solid var(--rw-border); color:var(--rw-text-muted); vertical-align:top; }
+    .file-table td:first-child { color:#818cf8; font-family:var(--rw-font-mono); font-size:.8rem; white-space:nowrap; }
+    .file-table tr:hover td { background:var(--rw-bg-alt); }
+
+    /* ── Learning cards ───────────────────────────────────────────── */
+    .learning-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.25rem 0; }
+    .learning-card { background:var(--rw-card); border:1px solid var(--rw-border); border-left:3px solid #818cf8; border-radius:var(--rw-r-md); padding:1.1rem; }
+    .learning-num { font-size:.68rem; font-family:var(--rw-font-mono); color:#818cf8; font-weight:700; margin-bottom:.25rem; }
+    .learning-card h4 { font-family:var(--rw-font-display); font-size:.85rem; font-weight:700; color:var(--rw-text); margin-bottom:.4rem; }
+    .learning-card p { font-size:.8rem; color:var(--rw-text-muted); margin:0; line-height:1.55; }
+
+    /* ── Moment tiles ─────────────────────────────────────────────── */
+    .moment-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.25rem 0; }
+    .moment-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.1rem; }
+    .moment-emoji { font-size:1.6rem; margin-bottom:.5rem; }
+    .moment-card h4 { font-family:var(--rw-font-display); font-size:.85rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; }
+    .moment-card p { font-size:.8rem; color:var(--rw-text-muted); margin:0; line-height:1.55; }
+
+    /* ── Platform review (redesigned) ────────────────────────────── */
+    .platform-card {
+      border-radius:12px; overflow:hidden;
+      border:1px solid var(--rw-border);
+      margin-bottom:1.5rem;
+    }
+    .platform-header {
+      display:flex; align-items:center; gap:1rem;
+      padding:1.1rem 1.4rem;
+      border-bottom:1px solid var(--rw-border);
+    }
+    .platform-icon {
+      width:42px; height:42px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.25rem; flex-shrink:0;
+    }
+    .platform-icon.falkordb { background:rgba(129,140,248,.15); }
+    .platform-icon.brightdata { background:rgba(74,222,128,.12); }
+    .platform-icon.qodo { background:rgba(251,191,36,.12); }
+    .platform-name-row { flex:1; }
+    .platform-name { font-family:var(--rw-font-display); font-size:1rem; font-weight:800; color:var(--rw-text); }
+    .platform-tagline { font-size:.8rem; color:var(--rw-text-muted); margin-top:.1rem; }
+    .usage-bar-wrap { display:flex; flex-direction:column; align-items:flex-end; gap:.2rem; }
+    .usage-bar-label { font-size:.68rem; font-family:var(--rw-font-mono); color:var(--rw-text-subtle); text-transform:uppercase; letter-spacing:.06em; }
+    .usage-bar { height:6px; border-radius:3px; width:80px; background:var(--rw-border); overflow:hidden; }
+    .usage-bar-fill { height:100%; border-radius:3px; }
+    .fill-indigo { background:linear-gradient(90deg,#6366f1,#818cf8); }
+    .fill-green  { background:linear-gradient(90deg,#22c55e,#4ade80); }
+    .fill-amber  { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+
+    .platform-body { display:grid; grid-template-columns:1fr 1fr; }
+    .review-col { padding:1.25rem 1.4rem; }
+    .review-col:first-child { border-right:1px solid var(--rw-border); }
+    .review-col-header { display:flex; align-items:center; gap:.4rem; margin-bottom:.9rem; }
+    .review-col-icon { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; }
+    .icon-liked  { background:rgba(74,222,128,.15); color:#4ade80; }
+    .icon-gotcha { background:rgba(251,191,36,.15); color:#fbbf24; }
+    .review-col-label { font-family:var(--rw-font-display); font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+    .label-liked  { color:#4ade80; }
+    .label-gotcha { color:#fbbf24; }
+    .review-items { display:flex; flex-direction:column; gap:.65rem; }
+    .review-item { display:flex; gap:.55rem; align-items:flex-start; }
+    .ri-icon { flex-shrink:0; margin-top:.12rem; font-size:.8rem; }
+    .ri-text { font-size:.82rem; color:var(--rw-text-muted); line-height:1.5; }
+    .platform-verdict {
+      padding:.75rem 1.4rem; border-top:1px solid var(--rw-border);
+      background:var(--rw-bg-subtle);
+      font-size:.82rem; color:var(--rw-text-muted); font-style:italic;
+      display:flex; gap:.5rem; align-items:baseline;
+    }
+    .verdict-label { font-family:var(--rw-font-display); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--rw-text-subtle); white-space:nowrap; }
+
+    /* ── Team cards ───────────────────────────────────────────────── */
+    .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
+    .team-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.25rem; text-align:center; transition:border-color .2s; }
+    .team-card:hover { border-color:rgba(129,140,248,.4); }
+    .team-card a { text-decoration:none; color:inherit; display:block; }
+    .team-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto .75rem; overflow:hidden; border:2px solid rgba(129,140,248,.25); }
+    .team-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+    .team-card h4 { font-family:var(--rw-font-display); font-size:.9rem; font-weight:700; color:var(--rw-text); margin-bottom:.2rem; }
+    .team-card p { font-size:.78rem; color:var(--rw-text-muted); margin:0; }
+
+    /* ── Terminal (hero) ──────────────────────────────────────────── */
+    .hero-terminal { border-radius:12px; overflow:hidden; border:1px solid rgba(129,140,248,.22); box-shadow:0 0 60px rgba(129,140,248,.08),0 24px 48px rgba(0,0,0,.4); background:#050c1a; }
+    .term-bar { background:#0d1425; padding:.55rem 1rem; display:flex; align-items:center; gap:.45rem; border-bottom:1px solid rgba(255,255,255,.06); }
+    .term-dot { width:10px; height:10px; border-radius:50%; }
+    .term-body { padding:1rem 1.25rem 1.35rem; font-family:var(--rw-font-mono); font-size:.79rem; line-height:1.7; min-height:220px; }
+    .term-line .cmd { color:#4ade80; }
+    .term-line .out { color:#818cf8; }
+    .term-line .hi  { color:#fbbf24; }
+    .term-line .dim { color:rgba(224,231,255,.25); }
+    .term-cursor { display:inline-block; width:7px; height:1em; background:#4ade80; vertical-align:middle; animation:blink 1s step-end infinite; margin-left:2px; }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+    /* ── Callout box ──────────────────────────────────────────────── */
+    .callout { background:rgba(129,140,248,.07); border:1px solid rgba(129,140,248,.2); border-left:3px solid #818cf8; border-radius:8px; padding:1rem 1.2rem; margin:1.25rem 0; }
+    .callout p { font-size:.88rem; color:var(--rw-text-muted); margin:0; line-height:1.65; }
+    .callout strong { color:var(--rw-text); }
+
+    /* Responsive */
+    @media(max-width:1024px){
+      .guide-layout{grid-template-columns:1fr} .guide-sidebar{position:static}
+      .hero-inner{grid-template-columns:1fr} .hero-phones{display:none}
+      .feature-grid,.phase-grid{grid-template-columns:repeat(2,1fr)}
+      .screens-grid{grid-template-columns:repeat(2,1fr)}
+      .team-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:640px){
+      .feature-grid,.phase-grid,.learning-grid,.moment-grid,.screens-grid,.screens-2up,.platform-body{grid-template-columns:1fr}
+      .review-col:first-child{border-right:none;border-bottom:1px solid var(--rw-border)}
+      .stat-row{flex-wrap:wrap} .stat-cell{min-width:50%;border-bottom:1px solid var(--rw-border)}
+      .team-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- ── HERO ──────────────────────────────────────────────────────── -->
+<div class="guide-hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <span class="hero-label"><span class="pulse-dot"></span>&nbsp; Hackathon Build · Oct 2024</span>
+      <h1>Conference <span>Memory</span><br>That Doesn't Expire</h1>
+      <p class="hero-lead">You go to a conference. Two days later you can't remember who mattered or why.<br>So we patched our own problem — at the same conference where we had it.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Next.js 16</span>
+        <span class="hero-tag">TypeScript</span>
+        <span class="hero-tag">FalkorDB</span>
+        <span class="hero-tag">Bright Data</span>
+        <span class="hero-tag">Qodo</span>
+        <span class="hero-tag">gpt-4o-mini</span>
+        <span class="hero-tag">Tailwind 4</span>
+        <span class="hero-tag">Playwright</span>
+      </div>
+      <div class="hero-btns">
+        <a href="https://github.com/researchsite/debrief" class="rw-btn rw-btn-primary" target="_blank">GitHub →</a>
+        <a href="#section-screens" class="rw-btn rw-btn-secondary">See it live ↓</a>
+      </div>
+    </div>
+
+    <!-- Animated import terminal -->
+    <div class="hero-terminal">
+      <div class="term-bar">
+        <span class="term-dot" style="background:#ff5f57"></span>
+        <span class="term-dot" style="background:#febc2e"></span>
+        <span class="term-dot" style="background:#28c840"></span>
+        <span style="margin-left:.5rem;font-family:var(--rw-font-mono);font-size:.72rem;color:rgba(224,231,255,.3)">debrief — event import</span>
+      </div>
+      <div id="term-out" class="term-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTENT ────────────────────────────────────────────────────── -->
+<div class="guide-layout">
+  <aside class="guide-sidebar">
+    <div class="toc-label">Contents</div>
+    <ul class="guide-toc">
+      <li><a href="#section-what">What It Does</a></li>
+      <li><a href="#section-screens">App Screens</a></li>
+      <li><a href="#section-arch">Architecture</a></li>
+      <li><a href="#section-schema" class="sub">Graph Schema</a></li>
+      <li><a href="#section-how">How It Works</a></li>
+      <li><a href="#section-timeline">Build Timeline</a></li>
+      <li><a href="#section-files">Components</a></li>
+      <li><a href="#section-learnings">Learnings</a></li>
+      <li><a href="#section-moments">Moments</a></li>
+      <li><a href="#section-platforms">Platform Review</a></li>
+      <li><a href="#section-team">Team</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- WHAT IT DOES -->
+    <section class="guide-section" id="section-what">
+      <h2>What It Does</h2>
+      <p>Debrief is the networking layer you build once and run at every conference. The data in the app the day after the hackathon was from the hackathon itself — real people, real conversations, real ideas. We ate our own food and found the gaps in real time.</p>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-val c-orange">26</div><div class="stat-label">PRs raised</div></div>
+        <div class="stat-cell"><div class="stat-val c-indigo">119</div><div class="stat-label">tests</div></div>
+        <div class="stat-cell"><div class="stat-val c-green">14</div><div class="stat-label">people tracked</div></div>
+        <div class="stat-cell"><div class="stat-val c-amber">30s</div><div class="stat-label">event import</div></div>
+        <div class="stat-cell"><div class="stat-val c-orange">2,307</div><div class="stat-label">graph nodes</div></div>
+        <div class="stat-cell"><div class="stat-val c-pink">&lt;$2</div><div class="stat-label">API spend</div></div>
+      </div>
+
+      <div class="phase-grid">
+        <div class="phase-card">
+          <div class="phase-head before">⚡ Before the event</div>
+          <div class="phase-body"><ul>
+            <li>Paste the event URL</li>
+            <li>Bright Data fetches all speakers</li>
+            <li>Graph scores who to meet and why</li>
+            <li>Ranked meet plan with AI openers in 30 seconds</li>
+          </ul></div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-head during">📸 During the event</div>
+          <div class="phase-body"><ul>
+            <li>Snap a slide photo → session identified</li>
+            <li>Notes linked to person + session + idea</li>
+            <li>Add anyone via LinkedIn URL or QR</li>
+            <li>Live schedule refresh if organiser changes it</li>
+          </ul></div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-head after">🧠 After the event</div>
+          <div class="phase-body"><ul>
+            <li>Full day timeline — sessions, people, ideas</li>
+            <li>Faces to Remember with avatar grid</li>
+            <li>AI follow-up drafts from your actual notes</li>
+            <li>Everything queryable via Cypher forever</li>
+          </ul></div>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🕸️</div>
+          <h4>Graph Path Explainability</h4>
+          <p>Every recommendation shows the path: Me → CONNECTED → Alex → WORKS_AT → Stripe. You see exactly why someone was ranked.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔌</div>
+          <h4>Mock Mode — Zero API Keys</h4>
+          <p><code>USE_MOCK_DATA=true</code> returns fixture JSON on every route. Full demo without FalkorDB, OpenAI, or Bright Data credentials.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👥</div>
+          <h4>Shared Graph State</h4>
+          <p>All teammates point to one FalkorDB Cloud instance. One person adds a speaker — everyone's meet plan updates immediately.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📂</div>
+          <h4>Import Anything</h4>
+          <p>Slide photos, coupons, business cards, QR codes, Zoom VTT transcripts. All classified and saved to the right graph node.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h4>Idempotent Schedule Refresh</h4>
+          <p>The event URL is stored. One tap re-fetches the live page and MERGEs new sessions — no duplicates, no data loss.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤫</div>
+          <h4>Your Notes Stay Yours</h4>
+          <p><code>HAS_NOTE</code> is always CREATE, never overwritten. AI context lives in a separate <code>Context</code> node. Your words and the AI's words never mix.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- APP SCREENS -->
+    <section class="guide-section" id="section-screens">
+      <h2>App Screens</h2>
+      <p>Mobile-first at 390px. Every page loads against real data from the hackathon day.</p>
+
+      <div class="screens-grid">
+        <div>
+          <div class="phone-frame"><img src="../images/debrief/today.png" alt="Today timeline" loading="lazy"></div>
+          <div class="phone-cap"><strong>Today — Timeline</strong><span>Sessions, people, ideas in order. Floating + button opens Add Person or Add Talk.</span></div>
+        </div>
+        <div>
+          <div class="phone-frame"><img src="../images/debrief/recap.png" alt="Recap page" loading="lazy"></div>
+          <div class="phone-cap"><strong>Recap — Full Day</strong><span>Stat chips + Faces to Remember grid. Tap a face → note + follow-up draft.</span></div>
+        </div>
+        <div>
+          <div class="phone-frame"><img src="../images/debrief/event.png" alt="Event 3D view" loading="lazy"></div>
+          <div class="phone-cap"><strong>Event — 3D Theater</strong><span>Event name on the projector. Dial spins to show sessions. Classic View shows the ranked meet plan.</span></div>
+        </div>
+        <div>
+          <div class="phone-frame"><img src="../images/debrief/add-person.png" alt="Add Person" loading="lazy"></div>
+          <div class="phone-cap"><strong>Add Person</strong><span>LinkedIn URL or QR scan. Note + hiring toggle. Background research fires without await.</span></div>
+        </div>
+      </div>
+
+      <div class="screens-2up" style="margin-top:1.5rem">
+        <div>
+          <div class="phone-frame"><img src="../images/debrief/add-talk.png" alt="Add Talk" loading="lazy"></div>
+          <div class="phone-cap"><strong>Add Talk — Slide Match</strong><span>Optional slide photo auto-fills session title. Notes linked to session + person in graph.</span></div>
+        </div>
+        <div>
+          <div class="phone-frame"><img src="../images/debrief/setup.png" alt="Setup" loading="lazy"></div>
+          <div class="phone-cap"><strong>Setup — First Run</strong><span>LinkedIn archive import, intent picker (star one primary), event date. Writes Me node to FalkorDB.</span></div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p><strong>All screenshots use real hackathon data</strong> — the graph running live on GCP FalkorDB with 2,307 nodes and 2,677 relationships from the actual Patch the Conference Hackathon day. Nothing is mocked up or fabricated for the screenshots.</p>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section class="guide-section" id="section-arch">
+      <h2>Architecture</h2>
+      <p>Three layers: a mobile-first Next.js frontend, external enrichment services, and FalkorDB as the memory and computation engine. The graph is not just storage — it's where all recommendations, paths, and scores are computed.</p>
+
+      <div class="arch-diagram">
+        <div class="arch-layer">
+          <div class="arch-layer-label">User</div>
+          <div class="arch-boxes"><div class="arch-box" style="flex:1;text-align:center">Mobile Browser (390px) · Next.js 16 App Router · TypeScript · Tailwind 4 · shadcn/ui</div></div>
+        </div>
+        <div class="arch-arrow">↕ HTTP / fetch</div>
+        <div class="arch-layer">
+          <div class="arch-layer-label">App — API Routes</div>
+          <div class="arch-boxes">
+            <div class="arch-box">/event/plan</div>
+            <div class="arch-box">/today</div>
+            <div class="arch-box">/recap</div>
+            <div class="arch-box">/person</div>
+            <div class="arch-box">/research</div>
+            <div class="arch-box">/followup</div>
+            <div class="arch-box">/import</div>
+            <div class="arch-box">/setup</div>
+          </div>
+        </div>
+        <div class="arch-arrow">↕ calls</div>
+        <div class="arch-layer">
+          <div class="arch-layer-label">External Services</div>
+          <div class="arch-boxes">
+            <div class="arch-box green">Bright Data<br><small style="opacity:.7">Web Unlocker · SERP · LinkedIn Datasets</small></div>
+            <div class="arch-box amber">OpenAI gpt-4o-mini<br><small style="opacity:.7">text + vision · event · slide · openers</small></div>
+            <div class="arch-box" style="opacity:.6">Qodo<br><small>26 PRs reviewed</small></div>
+          </div>
+        </div>
+        <div class="arch-arrow">↕ read / write via falkordb SDK</div>
+        <div class="arch-layer">
+          <div class="arch-layer-label">Data Layer</div>
+          <div class="arch-boxes"><div class="arch-box indigo" style="flex:1;text-align:center">FalkorDB Cloud (GCP us-central1) · graph: <code style="background:transparent;border:none;color:#818cf8">debrief</code> · 2,307 nodes · 2,677 relationships · Cypher queries · allShortestPaths</div></div>
+        </div>
+      </div>
+
+      <h3 id="section-schema">Graph Schema</h3>
+      <p>The schema is the product. Every relationship is a first-class citizen. When the app says "meet this person", the reason IS a graph path — not a heuristic, not a score in a row.</p>
+
+      <div class="arch-diagram">
+        <div class="schema-row"><span class="sn">(Me)</span><span class="sc">-[</span><span class="sr">:HAS_INTENT {primary:true}</span><span class="sc">]-&gt;</span><span class="sn">(Intent)</span><span class="sc" style="margin-left:1rem">// networking / hiring / learning / fundraising</span></div>
+        <div class="schema-row"><span class="sn">(Me)</span><span class="sc">-[</span><span class="sr">:ATTENDED</span><span class="sc">]-&gt;</span><span class="sn">(Event)</span><span class="sc">-[</span><span class="sr">:HAS_SESSION</span><span class="sc">]-&gt;</span><span class="sn">(Session)</span></div>
+        <div class="schema-row"><span class="sn">(Me)</span><span class="sc">-[</span><span class="sr">:MET</span><span class="sc">]-&gt;</span><span class="sn">(Person)</span></div>
+        <div class="schema-row"><span class="sn">(Me)</span><span class="sc">-[</span><span class="sr">:CONNECTED</span><span class="sc">]-&gt;</span><span class="sn">(Person)</span><span class="sc" style="margin-left:1rem">// from LinkedIn Connections.csv</span></div>
+        <div class="schema-row"><span class="sn">(Me)</span><span class="sc">-[</span><span class="sr">:SAW</span><span class="sc">]-&gt;</span><span class="sn">(Session)</span></div>
+        <div class="schema-row"><span class="sn">(Me)</span><span class="sc">-[</span><span class="sr">:PLANS_TO_MEET {score, opener}</span><span class="sc">]-&gt;</span><span class="sn">(Person)</span></div>
+        <div class="schema-row"><span class="sn">(Person)</span><span class="sc">-[</span><span class="sr">:WORKS_AT</span><span class="sc">]-&gt;</span><span class="sn">(Company)</span></div>
+        <div class="schema-row"><span class="sn">(Person)</span><span class="sc">-[</span><span class="sr">:HAS_NOTE</span><span class="sc">]-&gt;</span><span class="sn">(Note)</span><span class="sc" style="margin-left:1rem">// your words — always CREATE, never overwritten</span></div>
+        <div class="schema-row"><span class="sn">(Person)</span><span class="sc">-[</span><span class="sr">:HAS_CONTEXT</span><span class="sc">]-&gt;</span><span class="sn">(Context)</span><span class="sc" style="margin-left:1rem">// AI research — separate label, separate code path</span></div>
+        <div class="schema-row"><span class="sn">(Session)</span><span class="sc">-[</span><span class="sr">:SPARKED</span><span class="sc">]-&gt;</span><span class="sn">(Idea)</span></div>
+        <div class="schema-row" style="margin-top:.75rem;border-top:1px solid rgba(255,255,255,.06);padding-top:.75rem">
+          <span class="sc">// 3-hop warm intro: Me → my connection → shared company ← speaker</span>
+        </div>
+        <div class="schema-row"><span class="sn">(Me)</span><span class="sc">-[</span><span class="sr">:CONNECTED</span><span class="sc">]-&gt;</span><span class="sn">(bridge)</span><span class="sc">-[</span><span class="sr">:WORKS_AT</span><span class="sc">]-&gt;</span><span class="sn">(co)</span><span class="sc">&lt;-[</span><span class="sr">:WORKS_AT</span><span class="sc">]-</span><span class="sn">(speaker)</span></div>
+      </div>
+
+      <p>All node labels: <code>Me</code> <code>Person</code> <code>Company</code> <code>School</code> <code>Skill</code> <code>Topic</code> <code>Session</code> <code>Idea</code> <code>Note</code> <code>Context</code> <code>Event</code> <code>Intent</code> <code>Role</code> <code>FollowUp</code> <code>Coupon</code> <code>Asset</code> <code>Transcript</code> <code>Conversation</code></p>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="guide-section" id="section-how">
+      <h2>How It Works</h2>
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Setup — import your LinkedIn archive</h4>
+            <p>Upload <code>Profile.csv</code>, <code>Positions.csv</code>, <code>Education.csv</code>, <code>Skills.csv</code>. Set your intent (star one primary). Writes a <code>Me</code> node — the anchor for every graph path.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Event import — 30-second pipeline</h4>
+            <p>URL → Bright Data Web Unlocker renders JS-heavy page → OpenAI extracts sessions + speakers → Bright Data SERP finds LinkedIn URLs → Bright Data LinkedIn Datasets enriches all profiles. One URL, full intel.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Meet Plan — 5-signal Cypher scoring</h4>
+            <p>Shared employer <strong>+3</strong>, shared school <strong>+2</strong>, intent fit <strong>+3</strong>, direct LinkedIn connection <strong>+5</strong>, warm intro via shared company <strong>+4</strong>. All five signals in one OPTIONAL MATCH query. OpenAI generates a conversation opener per person from their shared context.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Slide match — photo to session in seconds</h4>
+            <p>Snap any slide. OpenAI vision extracts keywords and fragments. FalkorDB scores keywords against every <code>Session</code> title and abstract. Top 5 matches returned — tap to confirm, write notes, saved to graph linked to session + person.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Add person — fire-and-forget enrichment</h4>
+            <p>POST <code>/api/person</code> saves immediately and returns. <code>fetch('/api/research').catch(()=&gt;{})</code> fires without await. Polls <code>Context.fetched_at</code> — skips if under 7 days old. Person-save is instant; context card appears in the background.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Today timeline — one UNION query</h4>
+            <p><code>MATCH (me)-[:SAW]-&gt;(s:Session)</code> UNION <code>MATCH (me)-[:MET]-&gt;(p:Person)</code> UNION <code>MATCH (s)-[:SPARKED]-&gt;(i:Idea)</code> — unified by timestamp, sorted chronologically. The whole day in one call.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h4>Recap follow-ups — from your words, not their bio</h4>
+            <p>OpenAI drafts follow-up messages from the <code>HAS_NOTE</code> text you wrote — not from the <code>HAS_CONTEXT</code> AI research. The user's note is the input; the bio is never mixed in. Your trust in the output depends on the distinction.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- BUILD TIMELINE -->
+    <section class="guide-section" id="section-timeline">
+      <h2>Build Timeline</h2>
+      <p>One day. Ten milestones. Three people. All PRs reviewed by Qodo as they shipped.</p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-badge">M0 · 00:00</div>
+          <div class="tl-title">Foundations</div>
+          <div class="tl-desc">FalkorDB client, lib helpers, Next.js app shell, vitest setup, <code>serverExternalPackages</code> for BigInt, gitignore, .env.example.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-badge">M1 · 01:30</div>
+          <div class="tl-title">Setup + My Profile</div>
+          <div class="tl-desc">Intent picker, LinkedIn archive import (Profile / Positions / Education / Skills CSVs), Me node write. Qodo caught intent primary flag bug on first PR review.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-badge">M2 · 02:45</div>
+          <div class="tl-title">Connections Import</div>
+          <div class="tl-desc">LinkedIn Connections.csv batched upload, CONNECTED edges, idempotent. Custom <code>parseLinkedInCsv()</code> to skip the "Notes:" preamble line LinkedIn adds.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot green"></div>
+          <div class="tl-badge green">M3 · 04:00</div>
+          <div class="tl-title">Add Person</div>
+          <div class="tl-desc">LinkedIn URL enrichment, common-ground badges (shared company / school / skill), fire-and-forget research, manual fallback. Bright Data mock mode validated.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot green"></div>
+          <div class="tl-badge green">M4 · 05:30</div>
+          <div class="tl-title">Auto Research</div>
+          <div class="tl-desc">SERP + OpenAI context bullets, 7-day freshness gate on Context.fetched_at, person page split view (My Note vs Researched). Fire-and-forget pattern locked in.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot amber"></div>
+          <div class="tl-badge amber">M5 · 06:45</div>
+          <div class="tl-title">Import Anything + Wallet</div>
+          <div class="tl-desc">Classify slide / coupon / card / QR / transcript. ZXing WASM for QR. Coupon list with copy button. pdf-parse added to <code>serverExternalPackages</code>.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot green"></div>
+          <div class="tl-badge green">M6 · 08:00</div>
+          <div class="tl-title">Event Import + Meet Plan</div>
+          <div class="tl-desc">Full pipeline: Bright Data Web Unlocker → OpenAI extract → SERP → LinkedIn Datasets → 5-signal Cypher scoring → opener generation. 30-second end-to-end.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-badge">M7 · 09:30</div>
+          <div class="tl-title">Transcript Import</div>
+          <div class="tl-desc">VTT parse, 90-second gap split, minimum-chunk merge pass (45s threshold), review screen before anything saves. Conversation graph written on confirm.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot pink"></div>
+          <div class="tl-badge pink">M8 · 11:00</div>
+          <div class="tl-title">Talk Notes + Today Timeline</div>
+          <div class="tl-desc">Slide photo → OpenAI vision → session match. SAW / SPARKED / Idea graph nodes. Live today timeline with UNION query. react-force-graph-2d wrapped with <code>ssr:false</code>.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot pink"></div>
+          <div class="tl-badge pink">M9 · 13:00</div>
+          <div class="tl-title">Recap + Why?</div>
+          <div class="tl-desc">Counts, intent cards, ideas by topic, follow-up drafts, force-graph path visualization. All 119 tests green. Demo at the event it was built for at 5:30 PM.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPONENTS -->
+    <section class="guide-section" id="section-files">
+      <h2>Components</h2>
+      <table class="file-table">
+        <thead><tr><th>File</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>lib/graph.ts</td><td>FalkorDB client — new handle per request, avoids "ERR invalid graph version" on hot reload. Typed <code>q()</code> wrapper enforces <code>{ params }</code> syntax.</td></tr>
+          <tr><td>lib/graph-reads.ts</td><td>All read queries: recap counts, today timeline UNION, meet plan scoring, person detail, idea list, path queries.</td></tr>
+          <tr><td>lib/graph-writes.ts</td><td>All write helpers: writePerson, writeSession, writeNote (always CREATE), writeIdea, writeFollowUp, writeConversation.</td></tr>
+          <tr><td>lib/brightdata.ts</td><td>Web Unlocker fetch, SERP search, LinkedIn Datasets async poll (202 + snapshot_id). Reads fixture files when <code>BRIGHTDATA_MOCK=true</code>.</td></tr>
+          <tr><td>lib/event-extract.ts</td><td>Full event import pipeline: fetch → strip HTML → OpenAI extract → SERP lookup → profile enrich → write to graph.</td></tr>
+          <tr><td>lib/classify.ts</td><td>Document classifier: detects image/PDF/QR/URL using OpenAI vision and ZXing WASM. Returns a typed result with extracted data.</td></tr>
+          <tr><td>lib/vtt-splitter.ts</td><td>Split Zoom .vtt transcripts on 90-second silence gaps. Merge pass absorbs chunks shorter than 45 seconds into their nearest neighbour.</td></tr>
+          <tr><td>lib/research.ts</td><td>Background enrichment: SERP company news + OpenAI context bullets. Freshness gate on <code>Context.fetched_at</code> (7-day TTL).</td></tr>
+          <tr><td>app/today/</td><td>Timeline: UNION query of SAW sessions, MET people, SPARKED ideas — sorted by timestamp. Floating + button.</td></tr>
+          <tr><td>app/recap/</td><td>Counts, Faces to Remember grid, ideas by topic, AI-drafted follow-up cards per person.</td></tr>
+          <tr><td>app/event/</td><td>3D theater view + Classic view. Event import form. Meet Plan: ranked speakers with score, reasons, opener text.</td></tr>
+          <tr><td>app/add-talk/</td><td>Slide photo → OpenAI vision → session match → confirm → note form → saves to graph.</td></tr>
+          <tr><td>app/why/</td><td>Force graph (react-force-graph-2d, <code>ssr:false</code>) rendering <code>allShortestPaths</code> between Me and any person.</td></tr>
+          <tr><td>fixtures/mock/</td><td>Full fixture JSON for every API route — fictional personas, no real personal data committed.</td></tr>
+          <tr><td>scripts/record-demo.mjs</td><td>Playwright script: navigates all key pages with realistic timing, records at 390×844, converts to MP4 via ffmpeg.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- LEARNINGS -->
+    <section class="guide-section" id="section-learnings">
+      <h2>Real Learnings</h2>
+      <p>Not best-practice advice. Things that actually surprised us, slowed us down, or saved us during a one-day build.</p>
+      <div class="learning-grid">
+        <div class="learning-card">
+          <div class="learning-num">01</div>
+          <h4>Flags that vary per user belong on the edge, not the node</h4>
+          <p><code>primary:true</code> on an <code>Intent</code> node breaks the moment user 2 sets a different primary. Put it on <code>HAS_INTENT</code>. Qodo caught this on PR #2 before it shipped.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-num">02</div>
+          <h4>MERGE root nodes at the top of every write helper</h4>
+          <p><code>MATCH (me:Me)</code> returns 0 rows silently if the node doesn't exist. Always start with <code>MERGE (me:Me {linkedin_url:$url})</code> — downstream MATCHes are then guaranteed.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-num">03</div>
+          <h4>FalkorDB SDK: <code>{ params }</code> not bare object</h4>
+          <p><code>graph.query(cypher, { params })</code> works. <code>graph.query(cypher, params)</code> throws a silent "Missing parameters" error. No stack trace. Wrap once in <code>lib/graph.ts</code>.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-num">04</div>
+          <h4>Notes must be immutable. AI context is a separate node</h4>
+          <p><code>HAS_NOTE</code> is always CREATE. The <code>Context</code> node is written by a separate code path. Users trust what they wrote — they'd be unsettled if AI research overwrote their words silently.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-num">05</div>
+          <h4>Fire-and-forget + freshness gate = snappy UX</h4>
+          <p>POST /api/person saves and returns instantly. Research fires without await. A <code>fetched_at</code> timestamp on <code>Context</code> prevents redundant OpenAI calls within 7 days.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-num">06</div>
+          <h4>react-force-graph-2d must use <code>ssr:false</code></h4>
+          <p>It calls <code>window</code> at module load time. Any SSR path crashes. Wrap in a component with <code>dynamic(...,{ssr:false})</code> and never import the raw package elsewhere.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-num">07</div>
+          <h4>Mock mode is a first-class design requirement</h4>
+          <p>Build it from day one. <code>BRIGHTDATA_MOCK=true</code> and <code>USE_MOCK_DATA=true</code> let you build all 10 milestones without keys, run CI, and demo if Wi-Fi fails. One env-var to go live.</p>
+        </div>
+        <div class="learning-card">
+          <div class="learning-num">08</div>
+          <h4><code>fileParallelism:false</code> is mandatory for graph tests</h4>
+          <p>Concurrent test files corrupt each other's FalkorDB state. Set it in <code>vitest.config.ts</code>. Slower but deterministic. 119 tests, 0 spurious failures.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOMENTS -->
+    <section class="guide-section" id="section-moments">
+      <h2>Moments In Between</h2>
+      <div class="moment-grid">
+        <div class="moment-card">
+          <div class="moment-emoji">💥</div>
+          <h4>325 wrong HAS_NOTE links</h4>
+          <p>A 5-minute window repair linked everyone's notes to everyone nearby at the same time. One person who only talked about agent-to-agent AI got linked to 7 unrelated conversations. Deleted 325 relationships, re-imported from CSV.</p>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">🔇</div>
+          <h4>The silent params bug — an hour gone</h4>
+          <p><code>graph.query(cypher, params)</code> vs <code>graph.query(cypher, { params })</code>. Both return no error. One writes nothing. Found it by counting nodes after each write. Now it's one wrapper function and it never happens again.</p>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">🐳</div>
+          <h4>Local Docker exit under rapid queries</h4>
+          <p>Running diagnostic scripts back-to-back sent too many sequential queries. Docker container exited silently. <code>docker restart falkordb</code> in 3 seconds. The GCP instance was more resilient — which is a strong argument for the cloud product.</p>
+        </div>
+        <div class="moment-card">
+          <div class="moment-emoji">💡</div>
+          <h4>"Pathetic ideas" — and they were right</h4>
+          <p>The first AI-generated ideas were generic summaries. Feedback was blunt. Deleted all 12. Re-created 10 specific ones: agent-to-agent communication, One Dollar Computer for a kid's robotics project, AgentGlass, Spawnpoint — one per actual conversation. Ideas from notes, not from AI summaries.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLATFORM REVIEW -->
+    <section class="guide-section" id="section-platforms">
+      <h2>Platform Review</h2>
+      <p>Honest take — used live, under time pressure, with real data, at the event itself.</p>
+
+      <!-- FalkorDB -->
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-icon falkordb">🕸️</div>
+          <div class="platform-name-row">
+            <div class="platform-name">FalkorDB</div>
+            <div class="platform-tagline">Graph DB — relationships as first-class citizens</div>
+          </div>
+          <div class="usage-bar-wrap">
+            <div class="usage-bar-label">Core to product</div>
+            <div class="usage-bar"><div class="usage-bar-fill fill-indigo" style="width:95%"></div></div>
+          </div>
+        </div>
+        <div class="platform-body">
+          <div class="review-col">
+            <div class="review-col-header">
+              <div class="review-col-icon icon-liked">✓</div>
+              <div class="review-col-label label-liked">What worked</div>
+            </div>
+            <div class="review-items">
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Graph model fits conference networking perfectly — relationships ARE the data, not a foreign key afterthought</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Cypher reads like a sentence: <code>(me)-[:CONNECTED]-&gt;(bridge)-[:WORKS_AT]-&gt;(co)</code> — self-documenting queries</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Docker setup is one command. FalkorDB Browser on port 3000 is excellent for live graph exploration during demos</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text"><code>allShortestPaths()</code> makes every recommendation explainable — the path IS the reason</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">GCP Cloud instance stable all day. Shared across all teammates in real time with zero configuration</span></div>
+            </div>
+          </div>
+          <div class="review-col">
+            <div class="review-col-header">
+              <div class="review-col-icon icon-gotcha">⚠</div>
+              <div class="review-col-label label-gotcha">Watch out for</div>
+            </div>
+            <div class="review-items">
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text"><code>shortestPath()</code> fails in the Node.js SDK with a confusing error. Always use <code>allShortestPaths()</code> — cost an hour</span></div>
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text"><code>RETURN path</code> doesn't deserialize in the SDK. Use <code>nodes(path)</code> and <code>relationships(path)</code> explicitly</span></div>
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text">No TypeScript types for path results — you're casting to <code>unknown</code>. A typed path type would help a lot</span></div>
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text">Hot reload triggers "ERR invalid graph version". Had to remove graph handle caching entirely — one handle per request</span></div>
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text"><code>graph.query(cypher, { params })</code> not <code>graph.query(cypher, params)</code> — silent failure, nothing in the docs highlights this</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="platform-verdict">
+          <span class="verdict-label">Verdict —</span>
+          The right tool for this problem. A relational DB would need recursive CTEs and three self-joins for what Cypher expresses in one sentence. The SDK needs polish but the graph model is correct.
+        </div>
+      </div>
+
+      <!-- Bright Data -->
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-icon brightdata">📡</div>
+          <div class="platform-name-row">
+            <div class="platform-name">Bright Data</div>
+            <div class="platform-tagline">Three APIs solving three genuinely hard web data problems</div>
+          </div>
+          <div class="usage-bar-wrap">
+            <div class="usage-bar-label">Event pipeline</div>
+            <div class="usage-bar"><div class="usage-bar-fill fill-green" style="width:88%"></div></div>
+          </div>
+        </div>
+        <div class="platform-body">
+          <div class="review-col">
+            <div class="review-col-header">
+              <div class="review-col-icon icon-liked">✓</div>
+              <div class="review-col-label label-liked">What worked</div>
+            </div>
+            <div class="review-items">
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">SERP API returns structured <code>organic[]</code> JSON — no HTML parsing, no regex. Just array access</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Web Unlocker handles JS-heavy conference pages transparently — same interface as a plain fetch, but it just works</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">LinkedIn Datasets API handles all anti-bot protection. What would take months to build reliably is a single POST</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Mock mode with fixture files: zero API spend during development, full integration test coverage, demo-safe if Wi-Fi fails</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Zone-based architecture is clean: one API key, different zones per use case (unlocker / SERP / datasets)</span></div>
+            </div>
+          </div>
+          <div class="review-col">
+            <div class="review-col-header">
+              <div class="review-col-icon icon-gotcha">⚠</div>
+              <div class="review-col-label label-gotcha">Watch out for</div>
+            </div>
+            <div class="review-items">
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text">LinkedIn Scraper is async (202 + <code>snapshot_id</code> polling) but the sync response shape isn't documented — first call looks like a bug</span></div>
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text">Zone names (<code>serp_api1</code>) are easy to mistype. "Zone not found" error doesn't list your active zones — friction during setup</span></div>
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text"><code>format:"raw"</code> silently returns an empty body instead of erroring. Had to discover <code>format:"json"</code> wraps the body correctly</span></div>
+              <div class="review-item"><span class="ri-icon">⚠️</span><span class="ri-text">No real-time cost visibility during the hackathon. A running spend counter or webhook would reduce anxiety significantly</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="platform-verdict">
+          <span class="verdict-label">Verdict —</span>
+          2–3 hours of manual Googling before a 30-speaker event becomes 30 seconds. That's the ROI in one sentence. The API roughness is real but the capability is irreplaceable for this use case.
+        </div>
+      </div>
+
+      <!-- Qodo -->
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-icon qodo">🔍</div>
+          <div class="platform-name-row">
+            <div class="platform-name">Qodo</div>
+            <div class="platform-tagline">AI PR review — 26 PRs, across one hackathon day</div>
+          </div>
+          <div class="usage-bar-wrap">
+            <div class="usage-bar-label">PR review</div>
+            <div class="usage-bar"><div class="usage-bar-fill fill-amber" style="width:80%"></div></div>
+          </div>
+        </div>
+        <div class="platform-body">
+          <div class="review-col">
+            <div class="review-col-header">
+              <div class="review-col-icon icon-liked">✓</div>
+              <div class="review-col-label label-liked">What worked</div>
+            </div>
+            <div class="review-items">
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Caught the intent primary flag bug on PR #2 — before it ever merged. Exactly the kind of subtle data-model error a rushed review misses</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">Caught MERGE-before-MATCH ordering — would have caused silent 0-row writes on nearly every write helper</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">26 PRs reviewed throughout the day with consistent, actionable feedback — not just style comments</span></div>
+              <div class="review-item"><span class="ri-icon">✅</span><span class="ri-text">No noise. Suggestions were specific enough to act on immediately without second-guessing</span></div>
+            </div>
+          </div>
+          <div class="review-col">
+            <div class="review-col-header">
+              <div class="review-col-icon icon-gotcha">⚠</div>
+              <div class="review-col-label label-gotcha">Room to improve</div>
+            </div>
+            <div class="review-items">
+              <div class="review-item"><span class="ri-icon">💬</span><span class="ri-text">Some suggestions assumed patterns from the broader web that didn't match the FalkorDB SDK's specific quirks — harder to distinguish general advice from project-specific correctness</span></div>
+              <div class="review-item"><span class="ri-icon">💬</span><span class="ri-text">No awareness of <code>graph.query({ params })</code> vs bare params — the most expensive bug of the day wasn't caught by review; it required runtime debugging</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="platform-verdict">
+          <span class="verdict-label">Verdict —</span>
+          Worth having on every PR. The two catches on day 1 alone saved more time than the tool took to set up. An extra reviewer that never gets tired, never rushes, never skips the edge cases.
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="guide-section" id="section-team">
+      <h2>Team</h2>
+      <p>Built at Patch the Conference Hackathon, San Francisco, October 2024. Three people. One day. The conference was both the context and the subject.</p>
+      <div class="team-grid">
+        <div class="team-card">
+          <a href="https://www.linkedin.com/in/shamhc/" target="_blank" rel="noopener">
+            <div class="team-avatar"><img src="https://media.licdn.com/dms/image/v2/D5603AQHP2JmxLyO6ww/profile-displayphoto-shrink_100_100/B56Z7t1Xv0HYAI-/0/1782106652716?e=1794441600&v=beta&t=RHgIgE_wrY4uyJBfltQO_Q8GGjhvnkW-7dk_z55uGrQ" alt="Sham Hassanchi" loading="lazy"></div>
+            <h4>Sham Hassanchi</h4>
+            <p>Graph schema · API routes · Event import pipeline · Meet plan scoring</p>
+          </a>
+        </div>
+        <div class="team-card">
+          <a href="https://www.linkedin.com/in/madhu-koseka/" target="_blank" rel="noopener">
+            <div class="team-avatar"><img src="https://media.licdn.com/dms/image/v2/D5635AQE0dBtiqBz_Xw/profile-framedphoto-shrink_100_100/B56aEMdBtGIMAc-/0/1791210298536?e=1793678400&v=beta&t=R-cSVquGqlZYPfEdMgXwm-5Fpz8hvaGeczzvd9Klj2o" alt="Madhu Koseke" loading="lazy"></div>
+            <h4>Madhu Koseke</h4>
+            <p>Data platform architecture · Backend reliability · The rigour behind the build</p>
+          </a>
+        </div>
+        <div class="team-card">
+          <a href="https://www.linkedin.com/in/madhughnea-adabala/" target="_blank" rel="noopener">
+            <div class="team-avatar"><img src="https://media.licdn.com/dms/image/v2/D4E03AQGrushCp9OcAQ/profile-displayphoto-crop_800_800/B4EZv5SL5zHoAI-/0/1769413853213?e=1794441600&v=beta&t=6wP_39ZeLF3uKNfrIXeRGalUzMwdb6Rj-PrPLCkQIkM" alt="Madhughnea Adabala" loading="lazy"></div>
+            <h4>Madhughnea Adabala</h4>
+            <p>UX design · Mobile frontend · Backend support · Made it feel right to use</p>
+          </a>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;padding:1rem 1.25rem;background:var(--rw-card);border:1px solid var(--rw-border);border-radius:var(--rw-r-md);font-size:.85rem;color:var(--rw-text-muted);line-height:1.8">
+        Powered by <strong style="color:var(--rw-text)">FalkorDB</strong> · <strong style="color:var(--rw-text)">Bright Data</strong> · <strong style="color:var(--rw-text)">Qodo</strong> · <strong style="color:var(--rw-text)">OpenAI</strong> · <strong style="color:var(--rw-text)">Patch the Conference</strong>
+        &ensp;·&ensp; <a href="https://github.com/researchsite/debrief" style="color:#818cf8" target="_blank">GitHub →</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/in/shamhc/"
+     data-related='[{"label":"Debrief — 9 Hours, 1 Graph, 14 People Remembered","url":"/usecase/debrief-film.html"},{"label":"TripRipple — Agent Memory Copilot","url":"/usecase/tripripple.html"}]'></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+/* ── Terminal animation ─────────────────────────────────────────── */
+(function(){
+  const lines=[
+    {d:0,   t:'$ debrief import --url "patch-the-conf.com/schedule"',c:'cmd'},
+    {d:700, t:'→ Bright Data Web Unlocker: fetching rendered page…',c:'out'},
+    {d:1600,t:'→ OpenAI: 8 sessions · 12 speakers extracted',c:'out'},
+    {d:2400,t:'→ Bright Data SERP: LinkedIn URLs found for 11/12',c:'out'},
+    {d:3100,t:'→ Bright Data Datasets: 11 profiles enriched',c:'out'},
+    {d:3900,t:'→ FalkorDB: 5-signal scoring complete',c:'out'},
+    {d:4600,t:'',c:'dim'},
+    {d:4600,t:'  ✓ Meet Plan ready in 28 seconds',c:'hi'},
+    {d:5200,t:'  #1 Lizz Zhang (FalkorDB)        score 14  +conn +intent',c:'out'},
+    {d:5700,t:'  #2 Kasey Johnson (Bright Data) score 12  +intent +hiring',c:'out'},
+    {d:6200,t:'  #3 Kunal Kushwaha (multi-agent)   score 10  +intent',c:'out'},
+    {d:7000,t:'',c:'dim'},
+    {d:7000,t:'$ # … 8 hours later …',c:'dim'},
+    {d:7700,t:'$ debrief recap',c:'cmd'},
+    {d:8300,t:'  14 people  ·  10 sessions  ·  10 ideas',c:'hi'},
+    {d:8900,t:'  graph: 2,307 nodes  ·  2,677 relationships',c:'out'},
+    {d:9400,t:'  14 follow-up drafts generated from your notes',c:'out'},
+  ];
+  const el=document.getElementById('term-out');
+  if(!el)return;
+  function run(){
+    el.innerHTML='';
+    let prev=0;
+    lines.forEach(({d,t,c},i)=>{
+      setTimeout(()=>{
+        const div=document.createElement('div');
+        div.className='term-line';
+        const safe=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        if(c==='cmd') div.innerHTML=`<span class="cmd">${safe}</span>`;
+        else if(c==='hi') div.innerHTML=`<span class="hi">${safe}</span>`;
+        else if(c==='dim') div.innerHTML=`<span class="dim">${safe||'&nbsp;'}</span>`;
+        else div.innerHTML=`<span class="out">${safe}</span>`;
+        el.appendChild(div);
+        el.scrollTop=el.scrollHeight;
+        if(i===lines.length-1) setTimeout(run,4000);
+      }, d);
+    });
+  }
+  run();
+})();
+
+/* ── Scrollspy ──────────────────────────────────────────────────── */
+(function(){
+  const secs=document.querySelectorAll('.guide-section[id]');
+  const links=document.querySelectorAll('.guide-toc a');
+  if(!secs.length||!links.length)return;
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        const id=e.target.id;
+        links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+id));
+      }
+    });
+  },{rootMargin:'-60px 0px -70% 0px'});
+  secs.forEach(s=>obs.observe(s));
+})();
+</script>
+
+<!-- terminal output element (inside hero terminal — injected by JS) -->
+<script>
+// Move terminal output element inside the hero
+(function(){
+  const hero=document.querySelector('.guide-hero');
+  if(!hero) return;
+  const rightCol=hero.querySelector('.hero-phones');
+  if(!rightCol) return;
+  // Insert terminal above phones or replace if phones hidden
+  const term=document.createElement('div');
+  term.className='hero-terminal';
+  term.style.marginBottom='1.25rem';
+  term.innerHTML=`
+    <div class="term-bar">
+      <div class="term-dot" style="background:#ff5f57"></div>
+      <div class="term-dot" style="background:#febc2e"></div>
+      <div class="term-dot" style="background:#28c840"></div>
+      <span style="margin-left:.5rem;font-family:var(--rw-font-mono);font-size:.68rem;color:rgba(255,255,255,.3)">debrief — event import</span>
+    </div>
+    <div class="term-body" id="term-out"></div>`;
+
+  // Insert as first child of hero-inner
+  const inner=hero.querySelector('.hero-inner');
+  if(inner){
+    // Replace phones column with terminal+phones stacked
+    const phonesEl=inner.querySelector('.hero-phones');
+    if(phonesEl){
+      const wrap=document.createElement('div');
+      wrap.style.cssText='display:flex;flex-direction:column;gap:1.25rem;min-width:0';
+      phonesEl.parentNode.insertBefore(wrap,phonesEl);
+      wrap.appendChild(term);
+      wrap.appendChild(phonesEl);
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

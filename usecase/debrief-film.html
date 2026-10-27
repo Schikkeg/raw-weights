@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debrief — 9 Hours, 1 Graph, 14 People Remembered · RawWeights</title>
+  <meta name="description" content="We built a conference networking app at the same hackathon where we needed it. FalkorDB, Bright Data, Qodo — here's exactly what happened, hour by hour.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/debrief-film.html">
+  <meta property="og:title" content="Debrief — 9 Hours, 1 Graph, 14 People Remembered">
+  <meta property="og:description" content="We built a conference networking app at the same hackathon where we needed it. 26 PRs. 119 tests. Built with FalkorDB, Bright Data, and Qodo.">
+  <meta property="og:image" content="https://rawweights.com/images/debrief/debrief-film-og.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://rawweights.com/images/debrief/debrief-film-og.jpeg">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+
+    /* ── Film variables ──────────────────────────────────────────── */
+    :root {
+      --c-falkordb:    #818cf8;
+      --c-brightdata:  #4ade80;
+      --c-qodo:        #fbbf24;
+      --c-wemakedevs:  #f472b6;
+      --film-bg:       #04080f;
+      --film-surface:  #080d1a;
+      --film-border:   rgba(255,255,255,.08);
+      --film-text:     #eef2ff;
+      --film-muted:    rgba(238,242,255,.55);
+    }
+
+    /* ── Reset / base ────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--film-bg); color: var(--film-text); font-family: var(--rw-font-body); }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Reveal animations ───────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal-fast { opacity: 0; transition: opacity .4s ease; }
+    .reveal-fast.in { opacity: 1; }
+
+    /* ── Scene structure ─────────────────────────────────────────── */
+    .scene { position: relative; padding: 0; overflow: hidden; }
+    .scene-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    .scene-label {
+      font-family: var(--rw-font-mono); font-size: .65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .15em; color: rgba(238,242,255,.28);
+      margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem;
+    }
+    .scene-label::after { content: ''; flex: 1; height: 1px; background: var(--film-border); }
+
+    /* ── Fixed progress reel ─────────────────────────────────────── */
+    .film-reel {
+      position: fixed; right: 1.25rem; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: .45rem; z-index: 100;
+    }
+    .reel-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,.18); cursor: pointer;
+      transition: background .3s, transform .3s;
+    }
+    .reel-dot.active { background: var(--film-text); transform: scale(1.5); }
+    @media(max-width:640px){ .film-reel { display: none; } }
+
+    /* ── Cold open elements ──────────────────────────────────────── */
+    .cold-open-stamp {
+      font-family: var(--rw-font-mono); font-size: .75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .15em;
+      color: var(--c-falkordb); margin-bottom: 1.75rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .cold-open-stamp::before {
+      content: '●'; animation: pulse 2s infinite; font-size: .55rem;
+    }
+    .cold-numbers {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 0;
+      background: var(--film-surface); border: 1px solid var(--film-border);
+      border-radius: 10px; overflow: hidden; margin: 2rem 0;
+    }
+    .cn-item { padding: 1.25rem 1.5rem; text-align: center; flex: 1; min-width: 90px; }
+    .cn-sep { width: 1px; background: var(--film-border); align-self: stretch; flex-shrink: 0; }
+    .cn-val {
+      font-family: var(--rw-font-display); font-size: clamp(1.6rem,3vw,2.4rem);
+      font-weight: 900; letter-spacing: -.03em; color: var(--c-falkordb); line-height: 1;
+      margin-bottom: .3rem;
+    }
+    .cn-label { font-family: var(--rw-font-mono); font-size: .65rem; color: var(--film-muted); }
+    .rewind-bar {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 2.5rem 0 2rem;
+    }
+    .rewind-line { flex: 1; height: 1px; background: rgba(129,140,248,.25); }
+    .rewind-label {
+      font-family: var(--rw-font-mono); font-size: .72rem; font-weight: 700;
+      color: var(--c-falkordb); letter-spacing: .12em; text-transform: uppercase;
+      white-space: nowrap;
+    }
+    /* Problem split */
+    .problem-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 2rem; }
+    .problem-col { border-radius: 10px; overflow: hidden; border: 1px solid var(--film-border); }
+    .problem-col-head {
+      padding: .65rem 1.1rem; font-family: var(--rw-font-display); font-size: .78rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    }
+    .problem-col.bad  .problem-col-head { background: rgba(244,63,94,.1);  color: #fb7185; }
+    .problem-col.good .problem-col-head { background: rgba(74,222,128,.08); color: var(--c-brightdata); }
+    .problem-list { list-style: none; padding: 1rem 1.1rem; background: var(--film-surface); display: flex; flex-direction: column; gap: .65rem; }
+    .problem-list li { font-size: .83rem; color: var(--film-muted); padding-left: 1.1em; position: relative; line-height: 1.55; }
+    .problem-col.bad  .problem-list li::before { content: '✕'; position: absolute; left: 0; color: #fb7185; font-size: .7rem; top: .1em; }
+    .problem-col.good .problem-list li::before { content: '✓'; position: absolute; left: 0; color: var(--c-brightdata); font-size: .8rem; }
+    @media(max-width:640px) {
+      .problem-split { grid-template-columns: 1fr; }
+      .cold-numbers { flex-direction: column; }
+      .cn-sep { width: 100%; height: 1px; }
+    }
+
+    /* ── SCENE 01: TITLE ─────────────────────────────────────────── */
+    #s1 {
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+      background: var(--film-bg);
+      padding: 6rem 1.5rem 4rem;
+    }
+    .title-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: 1px solid rgba(129,140,248,.35); border-radius: 4px;
+      padding: .3rem .8rem; font-family: var(--rw-font-mono); font-size: .7rem;
+      color: var(--c-falkordb); letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+    .film-h1 {
+      font-family: var(--rw-font-display); font-weight: 900;
+      font-size: clamp(2.8rem, 8vw, 6.5rem); line-height: .95;
+      letter-spacing: -.04em; text-transform: uppercase; color: var(--film-text);
+      margin-bottom: 2rem;
+    }
+    .film-h1 .hi { color: var(--c-falkordb); }
+    .film-lead {
+      font-size: clamp(.95rem, 2vw, 1.15rem); color: var(--film-muted);
+      max-width: 560px; line-height: 1.75; margin-bottom: 2.5rem;
+    }
+    .scroll-cue {
+      display: flex; flex-direction: column; align-items: flex-start; gap: .35rem;
+      font-family: var(--rw-font-mono); font-size: .68rem; color: rgba(238,242,255,.3);
+      letter-spacing: .1em; text-transform: uppercase;
+    }
+    .scroll-line { width: 32px; height: 1px; background: rgba(238,242,255,.2); animation: scrollpulse 2s infinite; }
+    @keyframes scrollpulse{ 0%,100%{opacity:.2}50%{opacity:.8} }
+
+    /* Sponsor strip */
+    .sponsor-strip {
+      margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--film-border);
+      display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center;
+    }
+    .sponsor-strip-label { font-family: var(--rw-font-mono); font-size: .65rem; color: rgba(238,242,255,.3); letter-spacing: .1em; text-transform: uppercase; margin-right: .5rem; }
+    .sponsor-pill {
+      font-family: var(--rw-font-mono); font-size: .72rem; font-weight: 700;
+      padding: .25rem .75rem; border-radius: 4px; border: 1px solid;
+    }
+    .sp-falkordb    { color: var(--c-falkordb);    border-color: rgba(129,140,248,.3); background: rgba(129,140,248,.08); }
+    .sp-brightdata  { color: var(--c-brightdata);  border-color: rgba(74,222,128,.3);  background: rgba(74,222,128,.08); }
+    .sp-qodo        { color: var(--c-qodo);        border-color: rgba(251,191,36,.3);  background: rgba(251,191,36,.08); }
+    .sp-wemakedevs  { color: var(--c-wemakedevs);  border-color: rgba(244,114,182,.3); background: rgba(244,114,182,.08); }
+
+    /* ── SCENE 02: NUMBERS ───────────────────────────────────────── */
+    #s2 { padding: 6rem 0; background: var(--film-surface); }
+    .numbers-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; border: 1px solid var(--film-border); border-radius: 12px; overflow: hidden;
+    }
+    .num-cell {
+      padding: 2.5rem 1.5rem; text-align: center;
+      border-right: 1px solid var(--film-border);
+      position: relative;
+    }
+    .num-cell:last-child { border-right: none; }
+    .num-cell::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .num-cell.c1::before { background: var(--c-falkordb); }
+    .num-cell.c2::before { background: var(--c-brightdata); }
+    .num-cell.c3::before { background: var(--c-qodo); }
+    .num-cell.c4::before { background: var(--c-wemakedevs); }
+    .num-cell.c5::before { background: var(--c-wemakedevs); }
+    .num-cell.c6::before { background: var(--c-falkordb); }
+    .big-num {
+      font-family: var(--rw-font-display); font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900; line-height: 1; letter-spacing: -.03em; margin-bottom: .4rem;
+    }
+    .big-num.c1 { color: var(--c-falkordb); }
+    .big-num.c2 { color: var(--c-brightdata); }
+    .big-num.c3 { color: var(--c-qodo); }
+    .big-num.c4 { color: var(--c-wemakedevs); }
+    .big-num.c5 { color: var(--c-wemakedevs); }
+    .big-num.c6 { color: var(--c-falkordb); }
+    .num-label { font-size: .78rem; color: var(--film-muted); line-height: 1.4; font-family: var(--rw-font-mono); }
+
+    /* ── SCENE 03: THE CAST ──────────────────────────────────────── */
+    #s3 { padding: 6rem 0; background: var(--film-bg); }
+    .cast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; margin-top: 2.5rem; }
+    .cast-card {
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--film-border);
+      transition: transform .2s, border-color .2s;
+    }
+    .cast-card:hover { transform: translateY(-4px); }
+    .cast-card.falkordb:hover    { border-color: var(--c-falkordb); }
+    .cast-card.brightdata:hover  { border-color: var(--c-brightdata); }
+    .cast-card.qodo:hover        { border-color: var(--c-qodo); }
+
+    .cast-card.wemakedevs:hover  { border-color: var(--c-wemakedevs); }
+    .cast-head { padding: 1.5rem 1rem 1rem; text-align: center; }
+    .cast-icon { font-size: 2rem; margin-bottom: .75rem; }
+    .cast-role-tag {
+      font-family: var(--rw-font-mono); font-size: .6rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .1em; padding: .2rem .5rem;
+      border-radius: 3px; display: inline-block; margin-bottom: .6rem;
+    }
+    .falkordb    .cast-role-tag { background: rgba(129,140,248,.15); color: var(--c-falkordb); }
+    .brightdata  .cast-role-tag { background: rgba(74,222,128,.12);  color: var(--c-brightdata); }
+    .qodo        .cast-role-tag { background: rgba(251,191,36,.12);  color: var(--c-qodo); }
+    .wemakedevs  .cast-role-tag { background: rgba(244,114,182,.12); color: var(--c-wemakedevs); }
+    .cast-name { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 800; color: var(--film-text); margin-bottom: .2rem; }
+    .cast-alias { font-size: .7rem; color: var(--film-muted); font-style: italic; }
+    .cast-body { padding: .9rem 1rem 1rem; border-top: 1px solid var(--film-border); background: rgba(0,0,0,.25); }
+    .cast-stat { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--film-muted); line-height: 1.8; }
+    .cast-stat strong { color: var(--film-text); }
+
+    /* ── SCENE 04: PIPELINE INFOGRAPHIC ─────────────────────────── */
+    #s4 { padding: 6rem 0; background: var(--film-surface); }
+    .pipeline-wrap { margin-top: 3rem; position: relative; }
+    .pipeline-row { display: flex; align-items: stretch; gap: 0; }
+    .pipe-step {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; position: relative; padding: 0 .5rem;
+    }
+    .pipe-node {
+      border-radius: 10px; padding: 1rem .9rem; width: 100%; text-align: center;
+      border: 1px solid var(--film-border); background: var(--film-bg);
+      position: relative; z-index: 2;
+    }
+    .pipe-node-icon { font-size: 1.4rem; margin-bottom: .4rem; }
+    .pipe-node-tool {
+      font-family: var(--rw-font-mono); font-size: .62rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: .3rem;
+      padding: .1rem .4rem; border-radius: 3px; display: inline-block;
+    }
+    .pipe-node-label { font-family: var(--rw-font-display); font-size: .82rem; font-weight: 700; color: var(--film-text); margin-bottom: .2rem; }
+    .pipe-node-sub { font-size: .7rem; color: var(--film-muted); line-height: 1.4; }
+    .pipe-arrow {
+      width: 100%; display: flex; align-items: center; justify-content: center;
+      color: rgba(238,242,255,.2); font-size: 1.1rem;
+      position: absolute; top: 50%; left: calc(100% - .5rem); transform: translateY(-50%);
+      z-index: 3; font-family: var(--rw-font-mono);
+    }
+    .pipe-time {
+      margin-top: .75rem; font-family: var(--rw-font-mono); font-size: .68rem;
+      color: var(--film-muted); text-align: center;
+    }
+    .pipe-time strong { color: var(--c-brightdata); }
+    /* animated flow dots */
+    .pipe-connector {
+      position: absolute; top: 50%; left: 100%; transform: translateY(-50%);
+      width: 2rem; display: flex; align-items: center; z-index: 3;
+    }
+    .pipe-connector-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(74,222,128,.4), rgba(74,222,128,.1));
+    }
+    .pipe-connector-arrow { color: rgba(74,222,128,.5); font-size: .75rem; }
+    /* pipeline outcome */
+    .pipeline-outcome {
+      margin-top: 2.5rem; display: flex; align-items: center; gap: 1.5rem;
+      padding: 1.25rem 1.5rem; background: rgba(74,222,128,.05);
+      border: 1px solid rgba(74,222,128,.2); border-radius: 10px;
+    }
+    .outcome-icon { font-size: 2rem; flex-shrink: 0; }
+    .outcome-text { font-size: .9rem; color: var(--film-muted); line-height: 1.65; }
+    .outcome-text strong { color: var(--film-text); }
+
+    /* ── SCENE 05: THE GRAPH ─────────────────────────────────────── */
+    #s5 { padding: 6rem 0; background: var(--film-bg); }
+    .graph-visual {
+      margin-top: 2.5rem; position: relative;
+      height: 340px; border-radius: 12px;
+      background: #030710; border: 1px solid rgba(129,140,248,.15);
+      overflow: hidden;
+    }
+    .gv-node {
+      position: absolute; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--rw-font-display); font-weight: 800; font-size: .7rem;
+      text-align: center; line-height: 1.2; cursor: default;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .gv-node:hover { transform: scale(1.15); }
+    .gv-node.me       { width: 70px; height: 70px; background: rgba(129,140,248,.25); border: 2px solid var(--c-falkordb); color: var(--c-falkordb); box-shadow: 0 0 20px rgba(129,140,248,.3); }
+    .gv-node.person   { width: 50px; height: 50px; background: rgba(74,222,128,.12);  border: 1px solid var(--c-brightdata); color: var(--c-brightdata); }
+    .gv-node.session  { width: 48px; height: 48px; background: rgba(251,191,36,.1);   border: 1px solid var(--c-qodo); color: var(--c-qodo); }
+    .gv-node.idea     { width: 42px; height: 42px; background: rgba(244,114,182,.1);  border: 1px solid var(--c-wemakedevs); color: var(--c-wemakedevs); }
+    .gv-node.company  { width: 44px; height: 44px; background: rgba(96,165,250,.1);   border: 1px solid #60a5fa; color: #60a5fa; }
+    .gv-edge { position: absolute; pointer-events: none; }
+    .gv-edge line { stroke: rgba(255,255,255,.07); stroke-width: 1; }
+    .gv-edge.highlight line { stroke: rgba(129,140,248,.3); stroke-width: 1.5; stroke-dasharray: 4 3; animation: dash 3s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -50; } }
+    .gv-edge-label { font-family: var(--rw-font-mono); font-size: .55rem; color: rgba(238,242,255,.25); position: absolute; text-transform: uppercase; letter-spacing: .05em; }
+    .graph-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; margin-top: 1.25rem; }
+    .gl-item { display: flex; align-items: center; gap: .4rem; font-size: .74rem; color: var(--film-muted); }
+    .gl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .graph-insight {
+      margin-top: 1.5rem; padding: 1rem 1.25rem;
+      background: rgba(129,140,248,.06); border: 1px solid rgba(129,140,248,.18);
+      border-left: 3px solid var(--c-falkordb); border-radius: 8px;
+      font-size: .88rem; color: var(--film-muted); line-height: 1.7;
+    }
+    .graph-insight strong { color: var(--film-text); }
+
+    /* ── Graph slide deck ────────────────────────────────────────── */
+    .graph-deck { background:#030710; border:1px solid rgba(129,140,248,.15); border-radius:12px; overflow:hidden; margin-top:2rem; }
+    .graph-slide-nav { display:flex; border-bottom:1px solid rgba(255,255,255,.06); overflow-x:auto; scrollbar-width:none; }
+    .graph-slide-nav::-webkit-scrollbar { display:none; }
+    .gsn-btn {
+      flex-shrink:0; padding:.65rem 1.1rem; background:none; border:none; cursor:pointer;
+      font-family:var(--rw-font-mono); font-size:.71rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:.08em; color:rgba(238,242,255,.35);
+      border-bottom:2px solid transparent; transition:color .2s,border-color .2s;
+    }
+    .gsn-btn:hover { color:rgba(238,242,255,.65); }
+    .gsn-btn.active { color:var(--c-falkordb); border-bottom-color:var(--c-falkordb); }
+    /* Smooth slide transitions: all slides stack in the same grid cell */
+    .graph-slides-wrap { display:grid; }
+    .graph-slide {
+      grid-area:1/1; opacity:0; pointer-events:none;
+      transition:opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1);
+      transform:translateX(12px);
+    }
+    .graph-slide.active {
+      opacity:1; pointer-events:auto; transform:translateX(0);
+    }
+    .gslide-visual {
+      position:relative; height:300px; overflow:hidden;
+      transition: opacity .45s ease;
+    }
+    .gslide-caption {
+      padding:1.25rem 1.4rem; border-top:1px solid rgba(255,255,255,.06);
+    }
+    .gsc-label { font-family:var(--rw-font-mono); font-size:.62rem; color:rgba(238,242,255,.3); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.3rem; }
+    .gsc-title { font-family:var(--rw-font-display); font-size:1rem; font-weight:800; color:var(--film-text); margin-bottom:.4rem; }
+    .gsc-text { font-size:.82rem; color:var(--film-muted); line-height:1.65; }
+    .gsc-text code { background:rgba(255,255,255,.07); padding:.1rem .35rem; border-radius:3px; font-size:.82em; color:var(--c-falkordb); }
+    .graph-progress-wrap { height:3px; background:rgba(255,255,255,.06); }
+    .graph-progress-bar { height:100%; background:var(--c-falkordb); width:0%; transition:width linear; }
+
+    /* ── Phone carousel ──────────────────────────────────────────── */
+    .phone-carousel { display:flex; gap:3rem; align-items:center; margin-top:2rem; }
+    .phone-carousel-main { flex-shrink:0; }
+    .pc-frame {
+      width:200px; border-radius:28px; background:#000;
+      border:2px solid rgba(255,255,255,.12);
+      box-shadow:0 0 0 6px rgba(0,0,0,.4), 0 24px 60px rgba(0,0,0,.6);
+      overflow:hidden; position:relative;
+    }
+    .pc-frame::before {
+      content:''; position:absolute; top:9px; left:50%; transform:translateX(-50%);
+      width:50px; height:4px; background:rgba(255,255,255,.1); border-radius:4px; z-index:4;
+    }
+    .pc-screen { position:relative; overflow:hidden; }
+    .pc-screen-img {
+      display:block; width:100%; height:auto;
+      position:relative; z-index:1;
+      transition:opacity .35s ease, transform .35s ease;
+    }
+    .pc-screen-img.exit-up   { opacity:0; transform:translateY(-8%); }
+    .pc-screen-img.enter-up  { opacity:0; transform:translateY(8%); }
+    /* Progress bar inside phone bottom */
+    .pc-progress { height:2px; background:rgba(255,255,255,.08); position:relative; z-index:3; }
+    .pc-progress-fill { height:100%; background:var(--c-brightdata); width:0%; }
+    /* Meta panel */
+    .phone-carousel-meta { flex:1; min-width:0; }
+    .pcm-time { font-family:var(--rw-font-mono); font-size:.72rem; font-weight:700; color:var(--c-falkordb); letter-spacing:.12em; margin-bottom:.5rem; }
+    .pcm-name { font-family:var(--rw-font-display); font-size:1.5rem; font-weight:900; color:var(--film-text); letter-spacing:-.02em; margin-bottom:.5rem; transition:opacity .3s; }
+    .pcm-desc { font-size:.9rem; color:var(--film-muted); line-height:1.7; max-width:400px; margin-bottom:1.25rem; transition:opacity .3s; }
+    .pcm-dots { display:flex; gap:.5rem; }
+    .pcm-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); cursor:pointer; transition:background .2s,transform .2s; }
+    .pcm-dot.active { background:var(--c-brightdata); transform:scale(1.3); }
+    @media(max-width:700px) {
+      .phone-carousel { flex-direction:column; align-items:flex-start; }
+      .pc-frame { width:160px; }
+    }
+
+    /* ── SCENE 06: BUILD TIMELINE ────────────────────────────────── */
+    #s6 { padding: 6rem 0; background: var(--film-surface); }
+    .build-clock {
+      margin: 2rem 0; display: grid; grid-template-columns: repeat(2,1fr); gap: 1px;
+      background: var(--film-border); border-radius: 10px; overflow: hidden;
+    }
+    .clock-cell {
+      background: var(--film-bg); padding: 1.1rem 1.25rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .clock-time {
+      font-family: var(--rw-font-mono); font-size: .78rem; font-weight: 700;
+      color: var(--film-muted); white-space: nowrap; flex-shrink: 0; padding-top: .15rem;
+      min-width: 52px;
+    }
+    .clock-content { flex: 1; min-width: 0; }
+    .clock-title { font-family: var(--rw-font-display); font-size: .88rem; font-weight: 700; color: var(--film-text); margin-bottom: .2rem; }
+    .clock-desc { font-size: .78rem; color: var(--film-muted); line-height: 1.55; }
+    .clock-tool { display: inline-flex; align-items: center; gap: .3rem; margin-top: .35rem; }
+    .clock-pip { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .clock-tool-name { font-family: var(--rw-font-mono); font-size: .63rem; color: var(--film-muted); }
+    .pr-bar-wrap { margin-top: 2rem; }
+    .pr-bar-label { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--film-muted); margin-bottom: .6rem; letter-spacing: .08em; }
+    .pr-bars { display: flex; gap: 3px; align-items: flex-end; height: 60px; }
+    .pr-bar {
+      flex: 1; border-radius: 2px 2px 0 0; min-height: 8px;
+      transition: height .5s ease; position: relative;
+    }
+    .pr-bar:hover::after {
+      content: attr(data-label); position: absolute; bottom: calc(100% + 4px); left: 50%;
+      transform: translateX(-50%); background: #111; border: 1px solid var(--film-border);
+      border-radius: 4px; padding: .15rem .4rem;
+      font-family: var(--rw-font-mono); font-size: .6rem; color: var(--film-text);
+      white-space: nowrap; z-index: 10;
+    }
+
+    /* ── SCENE 07: PLOT TWISTS ───────────────────────────────────── */
+    #s7 { padding: 6rem 0; background: var(--film-bg); }
+    .twist-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2.5rem; }
+    .twist-card {
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--film-border); background: var(--film-surface);
+    }
+    .twist-head {
+      padding: .8rem 1.1rem; border-bottom: 1px solid var(--film-border);
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .twist-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(244,114,182,.15); border: 1px solid rgba(244,114,182,.35);
+      color: var(--c-wemakedevs); font-family: var(--rw-font-mono); font-size: .7rem;
+      font-weight: 700; display: flex; align-items: center; justify-content: center;
+    }
+    .twist-title { font-family: var(--rw-font-display); font-size: .88rem; font-weight: 700; color: var(--film-text); }
+    .twist-body { padding: 1rem 1.1rem; }
+    .twist-p { font-size: .8rem; color: var(--film-muted); line-height: 1.65; }
+    .twist-fix {
+      margin-top: .75rem; padding: .6rem .85rem;
+      background: rgba(74,222,128,.06); border-left: 2px solid var(--c-brightdata);
+      border-radius: 0 4px 4px 0;
+    }
+    .twist-fix p { font-size: .77rem; color: var(--film-muted); margin: 0; }
+    .twist-fix strong { color: var(--c-brightdata); }
+
+    /* ── SCENE 08: THE APP ───────────────────────────────────────── */
+    #s8 { padding: 6rem 0; background: var(--film-surface); }
+    .filmstrip {
+      display: flex; gap: 1.5rem; overflow-x: auto; padding: 1.5rem 0 1rem;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.12) transparent;
+    }
+    .filmstrip::-webkit-scrollbar { height: 4px; }
+    .filmstrip::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 2px; }
+    .film-phone-wrap { flex-shrink: 0; width: 150px; }
+    .film-phone {
+      border-radius: 22px; border: 2px solid rgba(255,255,255,.1);
+      overflow: hidden; background: #000;
+      box-shadow: 0 0 0 4px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.6);
+      position: relative;
+    }
+    .film-phone::before {
+      content: ''; position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+      width: 40px; height: 3px; background: rgba(255,255,255,.1); border-radius: 3px; z-index: 2;
+    }
+    .film-phone img { display: block; width: 100%; height: auto; }
+    .film-phone-cap {
+      margin-top: .6rem; text-align: center;
+      font-family: var(--rw-font-mono); font-size: .65rem; color: var(--film-muted);
+      line-height: 1.4;
+    }
+    .film-phone-cap strong { color: var(--film-text); font-family: var(--rw-font-display); font-size: .78rem; display: block; margin-bottom: .15rem; }
+
+    /* ── SCENE 09: PLATFORM SCORES ───────────────────────────────── */
+    #s9 { padding: 6rem 0; background: var(--film-bg); }
+    .verdict-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2.5rem; }
+    .verdict-card {
+      border-radius: 10px; overflow: hidden; border: 1px solid var(--film-border);
+      display: flex; flex-direction: column;
+    }
+    .verdict-top { padding: 1.25rem 1.1rem 1rem; }
+    .verdict-icon { font-size: 1.5rem; margin-bottom: .65rem; }
+    .verdict-name { font-family: var(--rw-font-display); font-size: 1rem; font-weight: 800; color: var(--film-text); margin-bottom: .25rem; }
+    .verdict-role { font-size: .75rem; color: var(--film-muted); margin-bottom: 1rem; }
+    /* score meter */
+    .score-track { height: 6px; background: rgba(255,255,255,.08); border-radius: 3px; margin-bottom: .35rem; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 3px; }
+    .score-label-row { display: flex; justify-content: space-between; font-family: var(--rw-font-mono); font-size: .62rem; color: var(--film-muted); margin-bottom: .75rem; }
+    /* wins/gotchas */
+    .verdict-items { padding: 1rem 1.1rem; border-top: 1px solid var(--film-border); flex: 1; }
+    .vi { display: flex; gap: .4rem; margin-bottom: .5rem; align-items: flex-start; }
+    .vi-icon { font-size: .75rem; flex-shrink: 0; margin-top: .1rem; }
+    .vi-text { font-size: .77rem; color: var(--film-muted); line-height: 1.5; }
+    /* verdict tag */
+    .verdict-tag-row { padding: .75rem 1.1rem; border-top: 1px solid var(--film-border); background: rgba(0,0,0,.25); }
+    .verdict-quote { font-size: .8rem; color: var(--film-muted); font-style: italic; line-height: 1.55; }
+
+    /* ── SCENE 10: CREDITS ───────────────────────────────────────── */
+    #s10 {
+      padding: 7rem 0 5rem; background: var(--film-surface);
+      text-align: center;
+    }
+    .credits-title { font-family: var(--rw-font-display); font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; letter-spacing: -.03em; color: var(--film-text); margin-bottom: 1rem; }
+    .credits-sub { font-size: 1rem; color: var(--film-muted); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.75; }
+    .credits-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3.5rem; }
+    .credits-divider { width: 60px; height: 1px; background: var(--film-border); margin: 0 auto 2.5rem; }
+    .team-row { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .team-chip { display: flex; align-items: center; gap: .6rem; padding: .6rem 1rem; border: 1px solid var(--film-border); border-radius: 8px; }
+    .team-av { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid var(--film-border); }
+    .team-info-name { font-family: var(--rw-font-display); font-size: .83rem; font-weight: 700; color: var(--film-text); }
+    .team-info-role { font-size: .72rem; color: var(--film-muted); }
+    .credits-sponsors { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Section headings ────────────────────────────────────────── */
+    .scene-h2 {
+      font-family: var(--rw-font-display); font-weight: 900;
+      font-size: clamp(1.75rem, 4vw, 2.75rem); line-height: 1;
+      letter-spacing: -.03em; text-transform: uppercase; color: var(--film-text);
+      margin-bottom: .75rem;
+    }
+    .scene-h2 span { color: var(--c-falkordb); }
+    .scene-sub { font-size: .95rem; color: var(--film-muted); max-width: 560px; line-height: 1.7; margin-bottom: .5rem; }
+
+    /* ── Graph "up next" indicator ──────────────────────────────── */
+    .graph-upnext {
+      display:flex; align-items:center; gap:.5rem; padding:.55rem 1.4rem;
+      border-top:1px solid rgba(255,255,255,.04); background:rgba(0,0,0,.2);
+      font-family:var(--rw-font-mono); font-size:.63rem; color:rgba(238,242,255,.28);
+    }
+    .gun-arrow { color:rgba(129,140,248,.5); }
+    .gun-title { color:rgba(238,242,255,.5); font-weight:600; transition:opacity .4s; }
+
+    /* ── WeMakeDevs gallery ──────────────────────────────────────── */
+    .submissions-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:.75rem; margin-top:2rem;
+    }
+    .sub-card {
+      border-radius:8px; border:1px solid var(--film-border);
+      background:var(--film-surface); padding:.9rem 1rem;
+      transition:border-color .2s;
+    }
+    .sub-card:hover { border-color:rgba(129,140,248,.3); }
+    .sub-name { font-family:var(--rw-font-display); font-size:.85rem; font-weight:700; color:var(--film-text); margin-bottom:.2rem; line-height:1.3; }
+    .sub-builder { font-size:.72rem; color:var(--film-muted); margin-bottom:.5rem; }
+    .sub-tracks { display:flex; gap:.3rem; flex-wrap:wrap; margin-bottom:.55rem; }
+    .sub-track { font-size:.58rem; font-family:var(--rw-font-mono); padding:.1rem .4rem; border-radius:3px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+    .st-f { background:rgba(129,140,248,.1); color:var(--c-falkordb); }
+    .st-b { background:rgba(74,222,128,.1); color:var(--c-brightdata); }
+    .st-q { background:rgba(251,191,36,.1); color:var(--c-qodo); }
+    .sub-links { display:flex; gap:.5rem; }
+    .sub-link { font-size:.68rem; color:rgba(238,242,255,.35); text-decoration:none; border:1px solid var(--film-border); border-radius:4px; padding:.15rem .5rem; transition:color .15s,border-color .15s; font-family:var(--rw-font-mono); }
+    .sub-link:hover { color:var(--film-text); border-color:rgba(129,140,248,.4); }
+    .sub-count-note { margin-top:1.25rem; text-align:center; font-size:.8rem; color:var(--film-muted); }
+    .sub-count-note a { color:var(--c-falkordb); }
+    @media(max-width:900px) { .submissions-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:600px) { .submissions-grid { grid-template-columns:1fr; } }
+
+    /* ── Score bar animation ─────────────────────────────────────── */
+    .score-fill { height:100%; border-radius:3px; width:0%; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+    .score-fill.animated { opacity: 1; }
+    .score-num-anim { transition:opacity .3s; }
+
+    /* ── Team photo ──────────────────────────────────────────────── */
+    .team-av img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .team-chip a { text-decoration:none; display:flex; align-items:center; gap:.6rem; }
+    .team-chip a:hover .team-info-name { color:var(--c-falkordb); }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media(max-width:900px) {
+      .cast-grid { grid-template-columns: repeat(2,1fr); }
+      .numbers-grid { grid-template-columns: repeat(2,1fr); }
+      .numbers-grid .num-cell:nth-child(2) { border-right: none; }
+      .verdict-grid { grid-template-columns: 1fr; }
+      .twist-grid { grid-template-columns: 1fr !important; }
+      .twist-card { width:100%; }
+      .build-clock { grid-template-columns: 1fr; }
+      .cold-numbers { flex-wrap:wrap; }
+      .cn-item { min-width:calc(50% - 1px); }
+    }
+    @media(max-width:640px) {
+      .cast-grid { grid-template-columns: repeat(2,1fr); }
+      .numbers-grid { grid-template-columns: repeat(2,1fr); }
+      .pipeline-row { flex-direction: column; gap: 1.25rem; }
+      .pipe-connector { display: none; }
+      .twist-grid { grid-template-columns: 1fr !important; }
+      .problem-split { grid-template-columns: 1fr; }
+      .cold-numbers { flex-direction:column; }
+      .cn-sep { width:100%; height:1px; }
+      .gslide-visual { height:220px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20260615"></script>
+
+<!-- Fixed reel progress -->
+<nav class="film-reel" id="filmReel">
+  <div class="reel-dot active" data-s="s1"></div>
+  <div class="reel-dot" data-s="s2"></div>
+  <div class="reel-dot" data-s="s3"></div>
+  <div class="reel-dot" data-s="s4"></div>
+  <div class="reel-dot" data-s="s5"></div>
+  <div class="reel-dot" data-s="s6"></div>
+  <div class="reel-dot" data-s="s7"></div>
+  <div class="reel-dot" data-s="s8"></div>
+  <div class="reel-dot" data-s="s9"></div>
+  <div class="reel-dot" data-s="s10"></div>
+  <div class="reel-dot" data-s="s11"></div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 01 · COLD OPEN — THE RESULT
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s1" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;background:var(--film-bg);padding:5rem 1.5rem 4rem">
+  <div class="scene-inner" style="max-width:1100px">
+    <div class="cold-open-stamp reveal">5:30 PM &nbsp;·&nbsp; October 24, 2024 &nbsp;·&nbsp; San Francisco</div>
+    <h1 class="film-h1 reveal" style="transition-delay:.1s">
+      THE DEMO<br>JUST <span class="hi">RAN.</span>
+    </h1>
+    <p class="film-lead reveal" style="transition-delay:.2s;max-width:640px">
+      14 meaningful conversations logged. 10 sessions attended. 10 ideas captured. 2,307 nodes in a FalkorDB graph —
+      all from the same conference happening <em>right outside this room.</em> There were 200+ people in that building.
+      We talked to 14 of them deeply enough to remember why it mattered. Every one of those 14 is in the graph. Forever.
+    </p>
+
+    <!-- Success numbers — animated on enter -->
+    <div class="cold-numbers reveal" style="transition-delay:.3s">
+      <div class="cn-item">
+        <div class="cn-val" data-count="2307">0</div>
+        <div class="cn-label">FalkorDB nodes</div>
+      </div>
+      <div class="cn-sep"></div>
+      <div class="cn-item">
+        <div class="cn-val" data-count="2677">0</div>
+        <div class="cn-label">graph relationships</div>
+      </div>
+      <div class="cn-sep"></div>
+      <div class="cn-item">
+        <div class="cn-val" data-count="14">0</div>
+        <div class="cn-label">deep conversations<br>logged in graph</div>
+      </div>
+      <div class="cn-sep"></div>
+      <div class="cn-item">
+        <div class="cn-val" style="color:var(--c-brightdata)">30s</div>
+        <div class="cn-label">URL → meet plan</div>
+      </div>
+      <div class="cn-sep"></div>
+      <div class="cn-item">
+        <div class="cn-val" data-count="119">0</div>
+        <div class="cn-label">tests green</div>
+      </div>
+      <div class="cn-sep"></div>
+      <div class="cn-item">
+        <div class="cn-val" style="color:var(--c-qodo)">FREE</div>
+        <div class="cn-label">sponsor credits<br>hackathon day</div>
+      </div>
+    </div>
+
+    <!-- Rewind marker -->
+    <div class="rewind-bar reveal" style="transition-delay:.45s">
+      <div class="rewind-line"></div>
+      <div class="rewind-label">↺ &nbsp; 9 HOURS EARLIER</div>
+      <div class="rewind-line"></div>
+    </div>
+
+    <div class="sponsor-strip reveal" style="transition-delay:.55s">
+      <span class="sponsor-strip-label">Built with</span>
+      <span class="sponsor-pill sp-falkordb">FalkorDB</span>
+      <span class="sponsor-pill sp-brightdata">Bright Data</span>
+      <span class="sponsor-pill sp-qodo">Qodo</span>
+            <span class="sponsor-pill sp-wemakedevs">WeMakeDevs</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 02 · FLASHBACK — THE PROBLEM
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s2" style="padding:5rem 0;background:var(--film-surface)">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 02 — The Problem</div>
+    <h2 class="scene-h2 reveal">9:00 AM.<br><span>WE HAD THE PROBLEM</span><br>WE WERE ABOUT<br>TO SOLVE.</h2>
+    <div class="problem-split reveal" style="transition-delay:.12s">
+      <div class="problem-col bad">
+        <div class="problem-col-head">Every conference, every time</div>
+        <ul class="problem-list">
+          <li>200 people in the building. You had deep conversations with 14. You remember 4 of their names a week later.</li>
+          <li>Notes scattered across 3 apps, 2 voice memos, and 1 napkin.</li>
+          <li>LinkedIn searches that take 3 hours before the event even starts.</li>
+          <li>Follow-up emails written from memory — wrong details, wrong tone.</li>
+          <li>Ideas that sparked in a session, gone by the commute home.</li>
+        </ul>
+      </div>
+      <div class="problem-col good">
+        <div class="problem-col-head">What we decided to build by 9:01 AM</div>
+        <ul class="problem-list">
+          <li>One graph that remembers everyone, every session, every idea.</li>
+          <li>30-second event import — URL to ranked meet plan.</li>
+          <li>Notes linked to people + sessions in the graph, immutable.</li>
+          <li>AI follow-up drafts from <em>your</em> notes, not their bio.</li>
+          <li>Every idea traceable to the talk that sparked it. Forever.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="scroll-cue reveal" style="transition-delay:.22s;margin-top:2.5rem">
+      <span>Watch it get built</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 03 · THE CAST
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s3" style="padding: 6rem 0; background: var(--film-bg);">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 03 — The Cast</div>
+    <h2 class="scene-h2 reveal">THE TOOLS<br><span>IN THE STORY</span></h2>
+    <p class="scene-sub reveal" style="transition-delay:.08s">Every tool played a specific role. Here's who did what, when it mattered most.</p>
+    <div class="cast-grid reveal" style="transition-delay:.15s">
+
+      <div class="cast-card falkordb">
+        <div class="cast-head" style="background: rgba(129,140,248,.04)">
+          <div class="cast-icon">🕸️</div>
+          <div class="cast-role-tag">The Memory</div>
+          <div class="cast-name">FalkorDB</div>
+          <div class="cast-alias">graph database</div>
+        </div>
+        <div class="cast-body">
+          <div class="cast-stat">Nodes: <strong>2,307</strong><br>Rels: <strong>2,677</strong><br>Critical scene: <strong>Meet Plan scoring</strong><br>Signature: <strong>allShortestPaths()</strong></div>
+        </div>
+      </div>
+
+      <div class="cast-card brightdata">
+        <div class="cast-head" style="background: rgba(74,222,128,.04)">
+          <div class="cast-icon">📡</div>
+          <div class="cast-role-tag">The Intel</div>
+          <div class="cast-name">Bright Data</div>
+          <div class="cast-alias">web intelligence</div>
+        </div>
+        <div class="cast-body">
+          <div class="cast-stat">Profiles: <strong>11 enriched</strong><br>Tools: <strong>3 APIs used</strong><br>Critical scene: <strong>Event import</strong><br>Signature: <strong>30s pipeline</strong></div>
+        </div>
+      </div>
+
+      <div class="cast-card qodo">
+        <div class="cast-head" style="background: rgba(251,191,36,.04)">
+          <div class="cast-icon">🔍</div>
+          <div class="cast-role-tag">The Auditor</div>
+          <div class="cast-name">Qodo</div>
+          <div class="cast-alias">AI code review</div>
+        </div>
+        <div class="cast-body">
+          <div class="cast-stat">PRs reviewed: <strong>26</strong><br>Bugs caught: <strong>2 critical</strong><br>Critical scene: <strong>PR #2 intent flag</strong><br>Signature: <strong>never tired</strong></div>
+        </div>
+      </div>
+
+      <div class="cast-card wemakedevs">
+        <div class="cast-head" style="background: rgba(244,114,182,.04)">
+          <div class="cast-icon">🌐</div>
+          <div class="cast-role-tag">The Stage</div>
+          <div class="cast-name">WeMakeDevs</div>
+          <div class="cast-alias">community · host</div>
+        </div>
+        <div class="cast-body">
+          <div class="cast-stat">Role: <strong>Hackathon host</strong><br>Community: <strong>builders + makers</strong><br>Critical scene: <strong>The problem itself</strong><br>Signature: <strong>the reason we built</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 04 · THE PIPELINE
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s4" style="padding: 6rem 0; background: var(--film-surface);">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 04 — The Pipeline</div>
+    <h2 class="scene-h2 reveal">FROM URL TO<br><span>RANKED MEET PLAN</span><br>IN 30 SECONDS</h2>
+    <p class="scene-sub reveal" style="transition-delay:.08s">Paste one URL. This is everything that happens before you finish reading this sentence.</p>
+
+    <div class="pipeline-wrap reveal" style="transition-delay:.15s">
+      <div class="pipeline-row">
+
+        <div class="pipe-step">
+          <div class="pipe-node">
+            <div class="pipe-node-icon">🔗</div>
+            <div class="pipe-node-tool" style="background:rgba(238,242,255,.07);color:rgba(238,242,255,.5)">Input</div>
+            <div class="pipe-node-label">Event URL</div>
+            <div class="pipe-node-sub">Conference schedule page — JS-rendered, behind anti-bot</div>
+          </div>
+          <div class="pipe-time">you paste it</div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
+
+        <div class="pipe-step">
+          <div class="pipe-node">
+            <div class="pipe-node-icon">📡</div>
+            <div class="pipe-node-tool sp-brightdata" style="background:rgba(74,222,128,.1);border:none">Bright Data</div>
+            <div class="pipe-node-label">Web Unlocker</div>
+            <div class="pipe-node-sub">Renders JS, bypasses protection, returns clean HTML</div>
+          </div>
+          <div class="pipe-time"><strong>~3s</strong></div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
+
+        <div class="pipe-step">
+          <div class="pipe-node">
+            <div class="pipe-node-icon">🤖</div>
+            <div class="pipe-node-tool" style="background:rgba(238,242,255,.07);color:rgba(238,242,255,.5)">OpenAI</div>
+            <div class="pipe-node-label">gpt-4o-mini</div>
+            <div class="pipe-node-sub">Extracts sessions, speaker names, abstracts, topics</div>
+          </div>
+          <div class="pipe-time"><strong>~5s</strong> · 8 sessions · 12 speakers</div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
+
+        <div class="pipe-step">
+          <div class="pipe-node">
+            <div class="pipe-node-icon">🔎</div>
+            <div class="pipe-node-tool sp-brightdata" style="background:rgba(74,222,128,.1);border:none">Bright Data</div>
+            <div class="pipe-node-label">SERP API</div>
+            <div class="pipe-node-sub">Structured JSON — finds LinkedIn URLs for each speaker</div>
+          </div>
+          <div class="pipe-time"><strong>~8s</strong> · 11 of 12 found</div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
+
+        <div class="pipe-step">
+          <div class="pipe-node">
+            <div class="pipe-node-icon">👤</div>
+            <div class="pipe-node-tool sp-brightdata" style="background:rgba(74,222,128,.1);border:none">Bright Data</div>
+            <div class="pipe-node-label">LinkedIn Datasets</div>
+            <div class="pipe-node-sub">Full profile enrichment — async 202 + snapshot polling</div>
+          </div>
+          <div class="pipe-time"><strong>~10s</strong> · 11 profiles</div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
+
+        <div class="pipe-step">
+          <div class="pipe-node" style="border-color:rgba(129,140,248,.3)">
+            <div class="pipe-node-icon">🕸️</div>
+            <div class="pipe-node-tool sp-falkordb" style="background:rgba(129,140,248,.1);border:none">FalkorDB</div>
+            <div class="pipe-node-label">5-Signal Score</div>
+            <div class="pipe-node-sub">Shared employer, school, intent fit, connection, warm intro</div>
+          </div>
+          <div class="pipe-time"><strong>~1s</strong> · PLANS_TO_MEET</div>
+        </div>
+
+      </div>
+
+      <div class="pipeline-outcome">
+        <div class="outcome-icon">⚡</div>
+        <div class="outcome-text">
+          <strong>Result: ranked meet plan in under 30 seconds.</strong> Before Bright Data, this was 2–3 hours of manual LinkedIn searching per event. With three Bright Data products working in sequence, it's one URL and a coffee.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 05 · THE GRAPH
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s5" style="padding: 6rem 0; background: var(--film-bg);">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 05 — The Graph</div>
+    <h2 class="scene-h2 reveal">THE RECOMMENDATION<br>IS THE <span>PATH</span></h2>
+    <p class="scene-sub reveal" style="transition-delay:.08s">Most apps say "you should meet X" and give you a score. Debrief shows you the graph path that IS the reason.</p>
+
+    <!-- Graph slide deck -->
+    <div class="graph-deck reveal" style="transition-delay:.15s" id="graphDeck">
+
+      <!-- Slide nav -->
+      <div class="graph-slide-nav">
+        <button class="gsn-btn active" data-slide="0">Who to meet?</button>
+        <button class="gsn-btn" data-slide="1">Warm intro path</button>
+        <button class="gsn-btn" data-slide="2">Ideas from the day</button>
+        <button class="gsn-btn" data-slide="3">Full network</button>
+      </div>
+
+      <!-- Slide container -->
+      <div class="graph-slides-wrap" id="graphSlides">
+
+        <!-- SLIDE 0: WHO TO MEET -->
+        <div class="graph-slide active" id="gslide-0">
+          <div class="gslide-visual">
+            <svg viewBox="0 0 860 300" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:0;left:0;width:100%;height:100%">
+              <line x1="430" y1="150" x2="180" y2="60"  stroke="rgba(129,140,248,.15)" stroke-width="1"/>
+              <line x1="430" y1="150" x2="680" y2="60"  stroke="rgba(129,140,248,.15)" stroke-width="1"/>
+              <line x1="430" y1="150" x2="130" y2="200" stroke="rgba(129,140,248,.1)"  stroke-width="1"/>
+              <line x1="430" y1="150" x2="700" y2="220" stroke="rgba(129,140,248,.1)"  stroke-width="1"/>
+              <!-- highlighted: top ranked person -->
+              <line x1="430" y1="150" x2="680" y2="60" stroke="rgba(74,222,128,.7)" stroke-width="2.5" stroke-dasharray="6,3"><animate attributeName="stroke-dashoffset" from="0" to="-40" dur="1.8s" repeatCount="indefinite"/></line>
+              <text x="525" y="90" fill="rgba(74,222,128,.6)" font-size="9" font-family="monospace">PLANS_TO_MEET</text>
+              <text x="525" y="102" fill="rgba(74,222,128,.5)" font-size="8" font-family="monospace">score:14 · opener:✓</text>
+              <text x="270" y="90" fill="rgba(129,140,248,.35)" font-size="8" font-family="monospace">CONNECTED</text>
+              <text x="240" y="185" fill="rgba(129,140,248,.25)" font-size="8" font-family="monospace">MET</text>
+              <text x="555" y="195" fill="rgba(129,140,248,.25)" font-size="8" font-family="monospace">MET</text>
+            </svg>
+            <div class="gv-node me"     style="left:430px;top:150px;transform:translate(-50%,-50%)">Me</div>
+            <div class="gv-node person" style="left:680px;top:60px;transform:translate(-50%,-50%);border-color:var(--c-brightdata);box-shadow:0 0 16px rgba(74,222,128,.35)">S.C.<div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.55rem;white-space:nowrap;color:var(--c-brightdata);font-family:monospace">#1 · 14pts</div></div>
+            <div class="gv-node person" style="left:180px;top:60px;transform:translate(-50%,-50%)">J.M.</div>
+            <div class="gv-node person" style="left:130px;top:200px;transform:translate(-50%,-50%)">C.T.</div>
+            <div class="gv-node person" style="left:700px;top:220px;transform:translate(-50%,-50%)">E.G.</div>
+          </div>
+          <div class="gslide-caption">
+            <div class="gsc-label">QUERY: WHO SHOULD I MEET?</div>
+            <div class="gsc-title">5-signal Cypher scoring</div>
+            <div class="gsc-text">Shared employer +3 · shared school +2 · intent fit +3 · direct connection +5 · warm intro +4. All five signals in one <code>OPTIONAL MATCH</code>. Lizz Zhang scores 14 — highest of any speaker. OpenAI generates a personalised opener from the shared graph context.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 1: WARM INTRO -->
+        <div class="graph-slide" id="gslide-1">
+          <div class="gslide-visual">
+            <svg viewBox="0 0 860 300" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:0;left:0;width:100%;height:100%">
+              <line x1="430" y1="150" x2="210" y2="60" stroke="rgba(129,140,248,.15)" stroke-width="1"/>
+              <line x1="210" y1="60"  x2="90"  y2="150" stroke="rgba(129,140,248,.15)" stroke-width="1"/>
+              <line x1="680" y1="60"  x2="90"  y2="150" stroke="rgba(129,140,248,.15)" stroke-width="1"/>
+              <!-- highlighted warm intro path -->
+              <line x1="430" y1="150" x2="210" y2="60"  stroke="rgba(129,140,248,.75)" stroke-width="2.5" stroke-dasharray="6,3"><animate attributeName="stroke-dashoffset" from="0" to="-40" dur="1.6s" repeatCount="indefinite"/></line>
+              <line x1="210" y1="60"  x2="90"  y2="150" stroke="rgba(96,165,250,.7)"   stroke-width="2.5" stroke-dasharray="6,3"><animate attributeName="stroke-dashoffset" from="0" to="-40" dur="1.6s" repeatCount="indefinite"/></line>
+              <line x1="680" y1="60"  x2="90"  y2="150" stroke="rgba(74,222,128,.65)"  stroke-width="2.5" stroke-dasharray="6,3"><animate attributeName="stroke-dashoffset" from="0" to="-40" dur="1.6s" repeatCount="indefinite"/></line>
+              <text x="285"  y="85"  fill="rgba(129,140,248,.6)" font-size="9" font-family="monospace">CONNECTED</text>
+              <text x="100"  y="100" fill="rgba(96,165,250,.55)"  font-size="9" font-family="monospace">WORKS_AT</text>
+              <text x="310"  y="130" fill="rgba(74,222,128,.55)"  font-size="9" font-family="monospace">WORKS_AT</text>
+            </svg>
+            <div class="gv-node me"      style="left:430px;top:150px;transform:translate(-50%,-50%)">Me</div>
+            <div class="gv-node person"  style="left:210px;top:60px;transform:translate(-50%,-50%);border-color:var(--c-falkordb)">J.M.<div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:.55rem;white-space:nowrap;color:var(--c-falkordb);font-family:monospace">bridge</div></div>
+            <div class="gv-node company" style="left:90px;top:150px;transform:translate(-50%,-50%);box-shadow:0 0 16px rgba(96,165,250,.35)">BD</div>
+            <div class="gv-node person"  style="left:680px;top:60px;transform:translate(-50%,-50%);border-color:var(--c-brightdata)">S.C.</div>
+          </div>
+          <div class="gslide-caption">
+            <div class="gsc-label">QUERY: HOW ARE WE CONNECTED?</div>
+            <div class="gsc-title">allShortestPaths — 3 hops</div>
+            <div class="gsc-text">Me → [CONNECTED] → Jordan → [WORKS_AT] → Bright Data ← [WORKS_AT] ← Sam. Jordan is the bridge. Debrief found this path in one <code>allShortestPaths()</code> call — and showed it to us in the "Why?" view. The recommendation IS the path, not a score hiding one.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: IDEAS -->
+        <div class="graph-slide" id="gslide-2">
+          <div class="gslide-visual">
+            <svg viewBox="0 0 860 300" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:0;left:0;width:100%;height:100%">
+              <line x1="430" y1="150" x2="280" y2="60"  stroke="rgba(251,191,36,.2)" stroke-width="1"/>
+              <line x1="430" y1="150" x2="600" y2="60"  stroke="rgba(251,191,36,.2)" stroke-width="1"/>
+              <!-- SAW → sessions highlighted -->
+              <line x1="430" y1="150" x2="280" y2="60"  stroke="rgba(251,191,36,.65)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2s" repeatCount="indefinite"/></line>
+              <line x1="430" y1="150" x2="600" y2="60"  stroke="rgba(251,191,36,.55)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2s" repeatCount="indefinite"/></line>
+              <!-- sessions → ideas highlighted -->
+              <line x1="280" y1="60"  x2="130" y2="220" stroke="rgba(244,114,182,.7)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2.2s" repeatCount="indefinite"/></line>
+              <line x1="280" y1="60"  x2="300" y2="240" stroke="rgba(244,114,182,.6)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2.2s" repeatCount="indefinite"/></line>
+              <line x1="600" y1="60"  x2="560" y2="240" stroke="rgba(244,114,182,.65)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2.2s" repeatCount="indefinite"/></line>
+              <line x1="600" y1="60"  x2="740" y2="220" stroke="rgba(244,114,182,.55)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2.2s" repeatCount="indefinite"/></line>
+              <text x="320" y="120" fill="rgba(251,191,36,.55)" font-size="9" font-family="monospace">SAW</text>
+              <text x="540" y="120" fill="rgba(251,191,36,.55)" font-size="9" font-family="monospace">SAW</text>
+              <text x="168" y="145" fill="rgba(244,114,182,.55)" font-size="9" font-family="monospace">SPARKED</text>
+              <text x="594" y="158" fill="rgba(244,114,182,.55)" font-size="9" font-family="monospace">SPARKED</text>
+            </svg>
+            <div class="gv-node me"      style="left:430px;top:150px;transform:translate(-50%,-50%)">Me</div>
+            <div class="gv-node session" style="left:280px;top:60px;transform:translate(-50%,-50%)">Talk A</div>
+            <div class="gv-node session" style="left:600px;top:60px;transform:translate(-50%,-50%)">Talk B</div>
+            <div class="gv-node idea"    style="left:130px;top:220px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:300px;top:240px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:560px;top:240px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:740px;top:220px;transform:translate(-50%,-50%)">💡</div>
+          </div>
+          <div class="gslide-caption">
+            <div class="gsc-label">QUERY: WHAT SPARKED IDEAS TODAY?</div>
+            <div class="gsc-title">SAW → Session → SPARKED → Idea</div>
+            <div class="gsc-text">10 ideas from one day. Each linked to the session that sparked it via a <code>SPARKED</code> edge. "Agent-to-agent communication" traces back to the multi-agent talk. "One Dollar Computer" to the maker session. 6 months from now, you'll still know where each idea was born.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: FULL NETWORK -->
+        <div class="graph-slide" id="gslide-3">
+          <div class="gslide-visual">
+            <svg viewBox="0 0 860 300" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:0;left:0;width:100%;height:100%">
+              <line x1="430" y1="150" x2="200" y2="55"  stroke="rgba(74,222,128,.3)"  stroke-width="1.5"/>
+              <line x1="430" y1="150" x2="660" y2="55"  stroke="rgba(74,222,128,.3)"  stroke-width="1.5"/>
+              <line x1="430" y1="150" x2="100" y2="150" stroke="rgba(74,222,128,.25)" stroke-width="1.5"/>
+              <line x1="430" y1="150" x2="760" y2="150" stroke="rgba(74,222,128,.25)" stroke-width="1.5"/>
+              <line x1="430" y1="150" x2="200" y2="250" stroke="rgba(74,222,128,.2)"  stroke-width="1"/>
+              <line x1="430" y1="150" x2="660" y2="250" stroke="rgba(74,222,128,.2)"  stroke-width="1"/>
+              <line x1="430" y1="150" x2="330" y2="55"  stroke="rgba(129,140,248,.25)" stroke-width="1"/>
+              <line x1="430" y1="150" x2="540" y2="55"  stroke="rgba(129,140,248,.25)" stroke-width="1"/>
+              <line x1="430" y1="150" x2="330" y2="250" stroke="rgba(251,191,36,.2)"  stroke-width="1"/>
+              <line x1="430" y1="150" x2="540" y2="250" stroke="rgba(251,191,36,.2)"  stroke-width="1"/>
+              <line x1="200" y1="55"  x2="100" y2="150" stroke="rgba(96,165,250,.25)" stroke-width="1"/>
+              <line x1="660" y1="55"  x2="760" y2="150" stroke="rgba(96,165,250,.25)" stroke-width="1"/>
+              <line x1="330" y1="55"  x2="200" y2="250" stroke="rgba(244,114,182,.2)" stroke-width="1"/>
+            </svg>
+            <div class="gv-node me"      style="left:430px;top:150px;transform:translate(-50%,-50%);box-shadow:0 0 24px rgba(129,140,248,.4)">Me</div>
+            <div class="gv-node person"  style="left:200px;top:55px;transform:translate(-50%,-50%)">J.M.</div>
+            <div class="gv-node person"  style="left:660px;top:55px;transform:translate(-50%,-50%)">S.C.</div>
+            <div class="gv-node person"  style="left:100px;top:150px;transform:translate(-50%,-50%)">C.T.</div>
+            <div class="gv-node person"  style="left:760px;top:150px;transform:translate(-50%,-50%)">E.G.</div>
+            <div class="gv-node person"  style="left:200px;top:250px;transform:translate(-50%,-50%)">M.R.</div>
+            <div class="gv-node person"  style="left:660px;top:250px;transform:translate(-50%,-50%)">A.P.</div>
+            <div class="gv-node session" style="left:330px;top:55px;transform:translate(-50%,-50%)">Talk</div>
+            <div class="gv-node session" style="left:540px;top:55px;transform:translate(-50%,-50%)">Talk</div>
+            <div class="gv-node idea"    style="left:330px;top:250px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:540px;top:250px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node company" style="left:660px;top:150px;transform:translate(-50%,-50%)" style="display:none">FDB</div>
+          </div>
+          <div class="gslide-caption">
+            <div class="gsc-label">THE FULL PICTURE</div>
+            <div class="gsc-title">14 deep conversations · 10 sessions · 10 ideas — one graph</div>
+            <div class="gsc-text">Every node is queryable. Six months later: "Show me everyone I met at Patch 2024 who works in AI infrastructure." One Cypher query — instant. The graph doesn't expire. This is what a relational database with foreign keys can't easily give you: a first-class relationship as the answer.</div>
+          </div>
+        </div>
+
+      </div><!-- /graph-slides-wrap -->
+
+      <!-- Auto-advance progress bar -->
+      <div class="graph-progress-wrap">
+        <div class="graph-progress-bar" id="graphProgressBar"></div>
+      </div>
+
+      <!-- Up next indicator -->
+      <div class="graph-upnext">
+        <span class="gun-arrow">↑</span>
+        <span style="letter-spacing:.08em">UP NEXT</span>
+        <span class="gun-arrow">·</span>
+        <span class="gun-title" id="graphNextTitle">Warm intro path</span>
+      </div>
+
+    </div><!-- /graph-deck -->
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 06 · BUILD CLOCK
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s6" style="padding: 6rem 0; background: var(--film-surface);">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 06 — Hour by Hour</div>
+    <h2 class="scene-h2 reveal">9 HOURS.<br><span>10 MILESTONES.</span></h2>
+    <div class="build-clock reveal" style="transition-delay:.12s">
+      <div class="clock-cell">
+        <div class="clock-time">00:00</div>
+        <div class="clock-content">
+          <div class="clock-title">Foundations</div>
+          <div class="clock-desc">FalkorDB client, lib wrappers, Next.js app shell, vitest, gitignore, .env.example</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">FalkorDB SDK wired up</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">01:30</div>
+        <div class="clock-content">
+          <div class="clock-title">Setup + Me Node</div>
+          <div class="clock-desc">Intent picker, LinkedIn archive import, Me node write. Qodo caught intent flag bug — primary flag on node, not edge.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-qodo)"></div><div class="clock-tool-name">Qodo PR #2 — first save</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">02:45</div>
+        <div class="clock-content">
+          <div class="clock-title">Connections Import</div>
+          <div class="clock-desc">Connections.csv → CONNECTED edges. Custom parser skips LinkedIn's "Notes:" preamble. Idempotent MERGE.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">MERGE on linkedin_url</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">04:00</div>
+        <div class="clock-content">
+          <div class="clock-title">Add Person + Research</div>
+          <div class="clock-desc">LinkedIn enrichment, fire-and-forget research, 7-day freshness gate. Bright Data SERP returns structured JSON — no HTML parsing needed.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-brightdata)"></div><div class="clock-tool-name">Bright Data SERP active</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">05:30</div>
+        <div class="clock-content">
+          <div class="clock-title">Import Anything + Wallet</div>
+          <div class="clock-desc">Classify slide / coupon / QR / transcript. ZXing WASM for QR codes. Coupon list with copy button.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-wemakedevs)"></div><div class="clock-tool-name">OpenAI vision classifier</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">06:45</div>
+        <div class="clock-content">
+          <div class="clock-title">Event Import + Meet Plan</div>
+          <div class="clock-desc">Full 30-second pipeline live. Web Unlocker → extract → SERP → LinkedIn Datasets → Cypher score → opener.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-brightdata)"></div><div class="clock-tool-name">All 3 Bright Data products</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">08:00</div>
+        <div class="clock-content">
+          <div class="clock-title">Transcript Import</div>
+          <div class="clock-desc">VTT parse, 90-second gap split, 45-second merge pass. Review screen before save. Conversation graph written on confirm.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">Conversation nodes → FalkorDB</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">09:30</div>
+        <div class="clock-content">
+          <div class="clock-title">Talk Notes + Today</div>
+          <div class="clock-desc">Slide photo → OpenAI vision → session match. SAW / SPARKED edges. UNION timeline query.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">UNION query — one call for full day</div></div>
+        </div>
+      </div>
+      <div class="clock-cell">
+        <div class="clock-time">11:00</div>
+        <div class="clock-content">
+          <div class="clock-title">Recap + Why?</div>
+          <div class="clock-desc">Counts, faces, ideas by topic, follow-up drafts, force-graph visualization. 119 tests green.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">allShortestPaths — the explainability layer</div></div>
+        </div>
+      </div>
+      <div class="clock-cell" style="background: rgba(129,140,248,.04); border: 1px solid rgba(129,140,248,.15); margin: 1px;">
+        <div class="clock-time" style="color:var(--c-falkordb)">17:30</div>
+        <div class="clock-content">
+          <div class="clock-title" style="color:var(--c-falkordb)">Live Demo</div>
+          <div class="clock-desc">Demoed Debrief at Patch the Conference — the event it was built for. The graph had data from the actual day.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">14 real people · 2,307 nodes</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 26 PR bars -->
+    <div class="pr-bar-wrap reveal" style="transition-delay:.2s">
+      <div class="pr-bar-label">26 PULL REQUESTS — each bar is one PR, color = category</div>
+      <div class="pr-bars" id="prBars">
+        <!-- generated by JS below -->
+      </div>
+      <div style="display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:.65rem">
+        <div style="display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--film-muted)"><div style="width:10px;height:10px;background:rgba(129,140,248,.7);border-radius:2px"></div>FalkorDB / Graph</div>
+        <div style="display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--film-muted)"><div style="width:10px;height:10px;background:rgba(74,222,128,.7);border-radius:2px"></div>Bright Data / Enrichment</div>
+        <div style="display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--film-muted)"><div style="width:10px;height:10px;background:rgba(251,191,36,.7);border-radius:2px"></div>UI / Features</div>
+        <div style="display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--film-muted)"><div style="width:10px;height:10px;background:rgba(244,114,182,.7);border-radius:2px"></div>Tests / Infra</div>
+        <div style="display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--film-muted)"><div style="width:10px;height:10px;background:rgba(244,114,182,.4);border-radius:2px;border:1px dashed rgba(244,114,182,.6)"></div>Qodo caught bug</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 07 · PLOT TWISTS
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s7" style="padding: 6rem 0; background: var(--film-bg);">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 07 — The Plot Twists</div>
+    <h2 class="scene-h2 reveal">THINGS WENT<br>WRONG. GOOD.</h2>
+    <p class="scene-sub reveal" style="transition-delay:.08s">Every bug that hit us under pressure is a lesson we won't forget. These three were the most expensive.</p>
+    <div class="twist-grid reveal" style="transition-delay:.15s">
+
+      <div class="twist-card">
+        <div class="twist-head">
+          <div class="twist-num">01</div>
+          <div class="twist-title">325 wrong HAS_NOTE links</div>
+        </div>
+        <div class="twist-body">
+          <p class="twist-p">A 5-minute window linked everyone's notes to everyone nearby at the same timestamp. One person who only talked about multi-agent AI got linked to 7 unrelated conversations. The graph had 325 bad relationships before we caught it.</p>
+          <div class="twist-fix"><p>Fix: deleted 325 edges by timestamp range, re-imported from CSV. Added a person reference check before every HAS_NOTE write. <strong>Lesson: always include entity ID in edge creation, never just a timestamp.</strong></p></div>
+        </div>
+      </div>
+
+      <div class="twist-card">
+        <div class="twist-head">
+          <div class="twist-num">02</div>
+          <div class="twist-title">The silent params bug — 1 hour gone</div>
+        </div>
+        <div class="twist-body">
+          <p class="twist-p"><code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">graph.query(cypher, params)</code> vs <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">graph.query(cypher, {&thinsp;params&thinsp;})</code>. Both return without error. One writes nothing to the graph. No stack trace. No warning. Just 0 nodes created.</p>
+          <div class="twist-fix"><p>Found it by counting nodes after each write. Wrapped in one <code style="font-size:.82em">lib/graph.ts q()</code> function. <strong>Lesson: one SDK call site, no exceptions.</strong></p></div>
+        </div>
+      </div>
+
+      <div class="twist-card">
+        <div class="twist-head">
+          <div class="twist-num">03</div>
+          <div class="twist-title">Qodo PR #2 — intent flag on the wrong thing</div>
+        </div>
+        <div class="twist-body">
+          <p class="twist-p"><code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">primary: true</code> was on the <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">Intent</code> node, not the <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">HAS_INTENT</code> edge. Works fine for one user. Breaks the moment a second user sets a different primary — they'd overwrite each other's node property. Caught before it ever merged.</p>
+          <div class="twist-fix"><p><strong>Qodo flagged this on the second PR of the day.</strong> Moved the flag to the relationship. Lesson: flags that vary per-user belong on the edge, not the shared node.</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 08 · THE APP
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s8" style="padding: 6rem 0; background: var(--film-surface);">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 08 — The App</div>
+    <h2 class="scene-h2 reveal">THE CONFERENCE.<br><span>SCREEN BY SCREEN.</span></h2>
+    <p class="scene-sub reveal" style="transition-delay:.08s">A day at Patch the Conference, seen through the app that was built for it — while it was happening.</p>
+
+    <div class="phone-carousel reveal" style="transition-delay:.15s">
+      <!-- Phone frame -->
+      <div class="phone-carousel-main">
+        <div class="pc-frame">
+          <div class="pc-screen">
+            <img src="../images/debrief/setup.png" alt="App screen" class="pc-screen-img" id="pcImg" loading="eager">
+          </div>
+          <div class="pc-progress"><div class="pc-progress-fill" id="pcProgressFill"></div></div>
+        </div>
+      </div>
+      <!-- Meta panel -->
+      <div class="phone-carousel-meta">
+        <div class="pcm-time" id="pcmTime">7:00 AM</div>
+        <div class="pcm-name" id="pcmName">Setup</div>
+        <div class="pcm-desc" id="pcmDesc">Before the conference — import your LinkedIn archive, set your primary intent, write your Me node into FalkorDB. Takes 60 seconds. The graph is ready.</div>
+        <div class="pcm-dots" id="pcmDots"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 09 · THE VERDICT
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s9" style="padding: 6rem 0; background: var(--film-bg);">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 09 — The Verdict</div>
+    <h2 class="scene-h2 reveal">HOW EACH TOOL<br><span>HELD UP</span></h2>
+    <p class="scene-sub reveal" style="transition-delay:.08s">Under time pressure, with real data, at the event we were building for.</p>
+    <div class="verdict-grid reveal" style="transition-delay:.15s">
+
+      <div class="verdict-card" style="border-color:rgba(129,140,248,.2)">
+        <div class="verdict-top">
+          <div class="verdict-icon">🕸️</div>
+          <div class="verdict-name">FalkorDB</div>
+          <div class="verdict-role">Graph DB — The Memory</div>
+          <div class="score-track"><div class="score-fill" data-width="95" style="background:linear-gradient(90deg,#6366f1,#818cf8)"></div></div>
+          <div class="score-label-row"><span>Fit for this problem</span><span class="score-num" data-score="9.5" style="color:var(--c-falkordb)">0.0 / 10</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">Cypher makes every recommendation self-documenting — the path IS the reason</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">Docker + Cloud seamless; GCP instance shared across team all day with zero config</span></div>
+          <div class="vi"><span class="vi-icon">⚠️</span><span class="vi-text"><code style="font-size:.82em">shortestPath()</code> fails in SDK; use <code style="font-size:.82em">allShortestPaths()</code>. Cost an hour.</span></div>
+        </div>
+        <div class="verdict-tag-row">
+          <div class="verdict-quote">"A relational DB would need recursive CTEs and three self-joins for what Cypher expresses in one sentence."</div>
+        </div>
+      </div>
+
+      <div class="verdict-card" style="border-color:rgba(74,222,128,.2)">
+        <div class="verdict-top">
+          <div class="verdict-icon">📡</div>
+          <div class="verdict-name">Bright Data</div>
+          <div class="verdict-role">Web Intelligence — The Intel</div>
+          <div class="score-track"><div class="score-fill" data-width="88" style="background:linear-gradient(90deg,#22c55e,#4ade80)"></div></div>
+          <div class="score-label-row"><span>ROI for conference use case</span><span class="score-num" data-score="8.8" style="color:var(--c-brightdata)">0.0 / 10</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">3 hours of manual research → 30 seconds. That's the only metric that matters.</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">SERP API returns structured JSON — no HTML scraping, no regex, just array access</span></div>
+          <div class="vi"><span class="vi-icon">⚠️</span><span class="vi-text">LinkedIn Datasets is async (202 + polling) — not obvious from docs, confused us initially</span></div>
+        </div>
+        <div class="verdict-tag-row">
+          <div class="verdict-quote">"2–3 hours of manual Googling before a 30-speaker event becomes 30 seconds. One URL and a coffee."</div>
+        </div>
+      </div>
+
+      <div class="verdict-card" style="border-color:rgba(251,191,36,.2)">
+        <div class="verdict-top">
+          <div class="verdict-icon">🔍</div>
+          <div class="verdict-name">Qodo</div>
+          <div class="verdict-role">AI Code Review — The Auditor</div>
+          <div class="score-track"><div class="score-fill" data-width="80" style="background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+          <div class="score-label-row"><span>Value for hackathon pace</span><span class="score-num" data-score="8.0" style="color:var(--c-qodo)">0.0 / 10</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">Caught the intent flag schema bug on PR #2 before it ever merged — saved hours</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">26 PRs, consistent feedback, never rushed — the extra reviewer who never skips</span></div>
+          <div class="vi"><span class="vi-icon">⚠️</span><span class="vi-text">Didn't know the FalkorDB SDK's <code style="font-size:.82em">{ params }</code> quirk — some SDK-specific bugs slipped through</span></div>
+        </div>
+        <div class="verdict-tag-row">
+          <div class="verdict-quote">"The two catches on day 1 alone saved more time than the tool took to set up."</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 10 · BUILT ALONGSIDE
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s10" style="padding:6rem 0;background:var(--film-surface)">
+  <div class="scene-inner">
+    <div class="scene-label">Scene 10 — The Field</div>
+    <h2 class="scene-h2 reveal">57 TEAMS.<br><span>ONE PROBLEM.</span></h2>
+    <p class="scene-sub reveal" style="transition-delay:.08s">
+      Debrief wasn't alone. Here's some of what was built alongside it at Patch the Conference Hackathon —
+      a room full of people trying to solve the same conference experience problem, from completely different angles.
+    </p>
+
+    <div class="submissions-grid reveal" style="transition-delay:.15s">
+
+      <div class="sub-card">
+        <div class="sub-name">Paraverse</div>
+        <div class="sub-builder">Joshua Levy</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://github.com/jlevy/paraverse" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">ConferenceOS — explainable shortlisting</div>
+        <div class="sub-builder">L-G G</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://github.com/liviaguo/patchconference-conferenceOS" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Spo8ted</div>
+        <div class="sub-builder">Bikram B</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://bikrambrar.com/spo8ted" class="sub-link" target="_blank">Live →</a><a href="https://github.com/Bikz/spo8ted" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Serendipity — conference matchmaking</div>
+        <div class="sub-builder">Serendipity team</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
+        <div class="sub-links"><a href="https://williaminla.github.io/serendipity-ptc/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/williaminla/serendipity-ptc" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">NetCues</div>
+        <div class="sub-builder">Sphoenix X</div>
+        <div class="sub-tracks"><span class="sub-track st-f">FalkorDB</span></div>
+        <div class="sub-links"><a href="https://netcue.vercel.app/demo" class="sub-link" target="_blank">Live →</a><a href="https://github.com/SphoenixAI/NetCues" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Backstage</div>
+        <div class="sub-builder">Hatem Elsisi</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://backstage-live.fly.dev/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/elsisiem/backstage" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">AfterTalk</div>
+        <div class="sub-builder">Rohan A</div>
+        <div class="sub-tracks"><span class="sub-track st-f">FalkorDB</span></div>
+        <div class="sub-links"><a href="https://aftertalk.wysdm.ai/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/rvabraham/aftertalk" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Coco — AI Conference Buddy</div>
+        <div class="sub-builder">Bhavani Kalisetty</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://coco-companion-web.vercel.app/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/bhavanikalisetty/coco" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">ezcon</div>
+        <div class="sub-builder">Katie Leong</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://ezcon-six.vercel.app/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/heykatie/ezcon" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Audience Atlas</div>
+        <div class="sub-builder">Aymen AZOUI</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://github.com/azouiaymen/audience-atlas" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Inference Badge</div>
+        <div class="sub-builder">Pri Krishiyer · Sriram R Iyer</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
+        <div class="sub-links"><a href="https://github.com/sriramr-repo/inference-badge" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">conferge</div>
+        <div class="sub-builder">Mannan Shukla</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
+        <div class="sub-links"><a href="https://conferge-fx6pnv.spwt.app/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/spicyx9/PatchConferenceHack" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">patchwork</div>
+        <div class="sub-builder">Hayk Sargsyan</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
+        <div class="sub-links"><a href="https://github.com/haaaaaaaaaayk/patchwork-github-universe-2026" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Meaningful</div>
+        <div class="sub-builder">Yahya Alhinai</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
+        <div class="sub-links"><a href="https://github.com/yhinai/meaningful" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">stratcom</div>
+        <div class="sub-builder">Chris McKenzie</div>
+        <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
+        <div class="sub-links"><a href="https://9ol.es/stratcon-video" class="sub-link" target="_blank">Live →</a><a href="https://github.com/kristopolous/stratcon" class="sub-link" target="_blank">GitHub →</a></div>
+      </div>
+
+    </div><!-- /submissions-grid -->
+
+    <div class="sub-count-note reveal" style="transition-delay:.2s">
+      15 of 57 submissions shown ·
+      <a href="https://www.wemakedevs.org/hackathons/ptc/projects/all" target="_blank">See all 57 on WeMakeDevs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 11 · CREDITS
+════════════════════════════════════════════════════════════════ -->
+<section class="scene" id="s10">
+  <div class="scene-inner" style="text-align:center">
+    <div class="scene-label" style="justify-content:center;margin-bottom:2rem">Scene 10 — Credits</div>
+    <div class="credits-title reveal">OPEN SOURCE.<br>SHIP IT.</div>
+    <p class="credits-sub reveal" style="transition-delay:.08s">Debrief is open source. If you go to conferences and forget people, this is for you. One URL, 30 seconds, never forget a face again.</p>
+    <div class="credits-btns reveal" style="transition-delay:.15s">
+      <a href="https://github.com/researchsite/debrief" class="rw-btn rw-btn-primary" target="_blank">GitHub →</a>
+      <a href="debrief.html" class="rw-btn rw-btn-secondary">Full blog post →</a>
+    </div>
+    <div class="credits-divider"></div>
+    <div class="team-row reveal" style="transition-delay:.2s">
+      <div class="team-chip">
+        <a href="https://www.linkedin.com/in/shamhc/" target="_blank" rel="noopener">
+          <div class="team-av"><img src="https://media.licdn.com/dms/image/v2/D5603AQHP2JmxLyO6ww/profile-displayphoto-shrink_100_100/B56Z7t1Xv0HYAI-/0/1782106652716?e=1794441600&v=beta&t=RHgIgE_wrY4uyJBfltQO_Q8GGjhvnkW-7dk_z55uGrQ" alt="Sham" loading="lazy"></div>
+          <div><div class="team-info-name">Sham Hassanchi</div><div class="team-info-role">Graph · API · Pipeline</div></div>
+        </a>
+      </div>
+      <div class="team-chip">
+        <a href="https://www.linkedin.com/in/madhu-koseka/" target="_blank" rel="noopener">
+          <div class="team-av"><img src="https://media.licdn.com/dms/image/v2/D5635AQE0dBtiqBz_Xw/profile-framedphoto-shrink_100_100/B56aEMdBtGIMAc-/0/1791210298536?e=1793678400&v=beta&t=R-cSVquGqlZYPfEdMgXwm-5Fpz8hvaGeczzvd9Klj2o" alt="Madhu Koseka" loading="lazy"></div>
+          <div><div class="team-info-name">Madhu Koseka</div><div class="team-info-role">Data Platform · Backend</div></div>
+        </a>
+      </div>
+      <div class="team-chip">
+        <a href="https://www.linkedin.com/in/madhughnea-adabala/" target="_blank" rel="noopener">
+          <div class="team-av"><img src="https://media.licdn.com/dms/image/v2/D4E03AQGrushCp9OcAQ/profile-displayphoto-crop_800_800/B4EZv5SL5zHoAI-/0/1769413853213?e=1794441600&v=beta&t=6wP_39ZeLF3uKNfrIXeRGalUzMwdb6Rj-PrPLCkQIkM" alt="Madhughnea Adabala" loading="lazy"></div>
+          <div><div class="team-info-name">Madhughnea Adabala</div><div class="team-info-role">UX · Mobile · Frontend</div></div>
+        </a>
+      </div>
+    </div>
+    <div class="credits-sponsors reveal" style="transition-delay:.25s">
+      <span class="sponsor-pill sp-falkordb">#FalkorDB</span>
+      <span class="sponsor-pill sp-brightdata">#BrightData</span>
+      <span class="sponsor-pill sp-qodo">#Qodo</span>
+            <span class="sponsor-pill sp-wemakedevs">#WeMakeDevs</span>
+    </div>
+    <div style="margin-top:1.5rem;font-family:var(--rw-font-mono);font-size:.68rem;color:rgba(238,242,255,.2)">
+      Patch the Conference Hackathon · San Francisco · October 2024
+    </div>
+  </div>
+</section>
+
+<div id="rw-footer"
+     data-linkedin="https://www.linkedin.com/in/shamhc/"
+     data-related='[{"label":"Debrief — Full Technical Deep Dive","url":"/usecase/debrief.html"}]'></div>
+<script src="../includes/rw-footer.js?v=20260612"></script>
+
+<script>
+/* ── Reveal on scroll (re-triggers each time) ───────────────────── */
+(function(){
+  const els = document.querySelectorAll('.reveal, .reveal-fast');
+  if(!els.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => e.target.classList.toggle('in', e.isIntersecting));
+  }, { threshold: 0.12 });
+  els.forEach(el => obs.observe(el));
+})();
+
+/* ── Animated counters (re-triggers each time) ──────────────────── */
+(function(){
+  const nums = document.querySelectorAll('[data-count]');
+  const running = new WeakMap();
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const el = e.target;
+      if(!e.isIntersecting) { running.set(el, false); return; }
+      const target = parseInt(el.dataset.count, 10);
+      running.set(el, true);
+      let start = null;
+      const dur = Math.min(1800, 800 + target / 5);
+      function step(ts) {
+        if(!running.get(el)) return;
+        if(!start) start = ts;
+        const p = Math.min((ts - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(ease * target).toLocaleString();
+        if(p < 1) requestAnimationFrame(step);
+        else el.textContent = target.toLocaleString();
+      }
+      requestAnimationFrame(step);
+    });
+  }, { threshold: 0.3 });
+  nums.forEach(n => obs.observe(n));
+})();
+
+/* ── Score bars + score numbers (Scene 9, re-triggers) ─────────── */
+(function(){
+  const grid = document.querySelector('.verdict-grid');
+  if(!grid) return;
+  const obs = new IntersectionObserver(entries => {
+    if(!entries[0].isIntersecting) {
+      // Reset bars and numbers when leaving so they animate again on re-entry
+      grid.querySelectorAll('.score-fill').forEach(f => { f.style.transition='none'; f.style.width='0%'; });
+      grid.querySelectorAll('.score-num').forEach(n => { n.textContent = '0.0 / 10'; });
+      return;
+    }
+    // Animate bars
+    grid.querySelectorAll('.score-fill').forEach(f => {
+      const w = f.dataset.width;
+      setTimeout(() => { f.style.transition='width 1.2s cubic-bezier(.4,0,.2,1)'; f.style.width = w + '%'; }, 150);
+    });
+    // Animate score numbers (decimal count-up)
+    grid.querySelectorAll('.score-num').forEach(n => {
+      const target = parseFloat(n.dataset.score);
+      let start = null;
+      const dur = 1200;
+      function step(ts) {
+        if(!start) start = ts;
+        const p = Math.min((ts - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        n.textContent = (ease * target).toFixed(1) + ' / 10';
+        if(p < 1) requestAnimationFrame(step);
+        else n.textContent = target.toFixed(1) + ' / 10';
+      }
+      setTimeout(() => requestAnimationFrame(step), 150);
+    });
+  }, { threshold: 0.25 });
+  obs.observe(grid);
+})();
+
+/* ── PR bars ────────────────────────────────────────────────────── */
+(function(){
+  const wrap = document.getElementById('prBars');
+  if(!wrap) return;
+  const prs = [
+    {c:'rgba(129,140,248,.7)',h:52,l:'FalkorDB client setup'},
+    {c:'rgba(244,114,182,.5)',h:38,l:'Intent flag — Qodo caught schema bug',dashed:true},
+    {c:'rgba(129,140,248,.6)',h:45,l:'Me node + Setup page'},
+    {c:'rgba(129,140,248,.5)',h:40,l:'Connections import'},
+    {c:'rgba(74,222,128,.6)', h:55,l:'Add Person — Bright Data SERP'},
+    {c:'rgba(74,222,128,.5)', h:42,l:'Fire-and-forget research'},
+    {c:'rgba(251,191,36,.6)', h:48,l:'Add Person UI'},
+    {c:'rgba(74,222,128,.7)', h:58,l:'LinkedIn Datasets enrichment'},
+    {c:'rgba(251,191,36,.5)', h:44,l:'Common-ground badges'},
+    {c:'rgba(244,114,182,.4)',h:36,l:'Tests — fire-and-forget'},
+    {c:'rgba(251,191,36,.7)', h:52,l:'Import anything — classifier'},
+    {c:'rgba(251,191,36,.5)', h:40,l:'Coupon wallet'},
+    {c:'rgba(244,114,182,.5)',h:38,l:'ZXing QR WASM'},
+    {c:'rgba(129,140,248,.7)',h:60,l:'Event import pipeline'},
+    {c:'rgba(74,222,128,.8)', h:60,l:'Bright Data Web Unlocker'},
+    {c:'rgba(74,222,128,.7)', h:55,l:'LinkedIn Datasets async poll'},
+    {c:'rgba(129,140,248,.8)',h:60,l:'5-signal Cypher scoring'},
+    {c:'rgba(129,140,248,.6)',h:48,l:'Opener generation'},
+    {c:'rgba(251,191,36,.6)', h:50,l:'VTT transcript import'},
+    {c:'rgba(244,114,182,.4)',h:35,l:'Transcript tests'},
+    {c:'rgba(129,140,248,.7)',h:56,l:'Talk notes + slide match'},
+    {c:'rgba(129,140,248,.6)',h:50,l:'Today timeline UNION query'},
+    {c:'rgba(251,191,36,.7)', h:54,l:'Recap — counts + faces'},
+    {c:'rgba(129,140,248,.8)',h:58,l:'Follow-up draft generation'},
+    {c:'rgba(129,140,248,.7)',h:56,l:'Why? force-graph visualization'},
+    {c:'rgba(244,114,182,.6)',h:45,l:'All 119 tests green'},
+  ];
+  prs.forEach((pr, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'pr-bar';
+    bar.style.cssText = `background:${pr.c};height:0`;
+    if(pr.dashed) bar.style.outline = `1px dashed rgba(244,114,182,.5)`;
+    bar.setAttribute('data-label', `PR #${i+1}: ${pr.l}`);
+    wrap.appendChild(bar);
+    const obs = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting) {
+        setTimeout(() => { bar.style.transition='height .4s ease'; bar.style.height=pr.h+'px'; }, i*45);
+      } else {
+        bar.style.transition='none'; bar.style.height='0px';
+      }
+    }, { threshold: 0.1 });
+    obs.observe(bar);
+  });
+})();
+
+/* ── Reel progress ──────────────────────────────────────────────── */
+(function(){
+  const scenes = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
+  const dots = document.querySelectorAll('.reel-dot');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        const id = e.target.id;
+        dots.forEach(d => d.classList.toggle('active', d.dataset.s === id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -40% 0px' });
+  scenes.forEach(id => { const el = document.getElementById(id); if(el) obs.observe(el); });
+  dots.forEach(d => {
+    d.addEventListener('click', () => {
+      const el = document.getElementById(d.dataset.s);
+      if(el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+    d.style.cursor = 'pointer';
+  });
+})();
+
+/* ── Graph slide deck (re-triggers on re-entry) ─────────────────── */
+(function(){
+  const deck = document.getElementById('graphDeck');
+  if(!deck) return;
+  const slides  = deck.querySelectorAll('.graph-slide');
+  const btns    = deck.querySelectorAll('.gsn-btn');
+  const bar     = document.getElementById('graphProgressBar');
+  const nextLbl = document.getElementById('graphNextTitle');
+  const DURATION = 5000;
+  let current = 0, timer = null;
+
+  const titles = Array.from(btns).map(b => b.textContent.trim());
+
+  function updateNextLabel(cur) {
+    if(!nextLbl) return;
+    const nextIdx = (cur + 1) % slides.length;
+    nextLbl.style.opacity = '0';
+    setTimeout(() => {
+      nextLbl.textContent = titles[nextIdx];
+      nextLbl.style.opacity = '1';
+    }, 200);
+  }
+
+  function goTo(idx, skipBar) {
+    slides[current].classList.remove('active');
+    btns[current].classList.remove('active');
+    current = (idx + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    btns[current].classList.add('active');
+    updateNextLabel(current);
+    if(bar && !skipBar) {
+      bar.style.transition = 'none'; bar.style.width = '0%';
+      requestAnimationFrame(() => {
+        bar.style.transition = `width ${DURATION}ms linear`;
+        bar.style.width = '100%';
+      });
+    }
+  }
+
+  function startAuto() {
+    clearInterval(timer);
+    timer = setInterval(() => goTo(current + 1), DURATION);
+  }
+
+  function stopAuto() { clearInterval(timer); timer = null; }
+
+  btns.forEach((btn, i) => {
+    btn.addEventListener('click', () => { goTo(i); startAuto(); });
+  });
+
+  // Re-start from slide 0 every time deck enters viewport
+  const obs = new IntersectionObserver(entries => {
+    if(entries[0].isIntersecting) {
+      goTo(0);
+      startAuto();
+    } else {
+      stopAuto();
+    }
+  }, { threshold: 0.3 });
+  obs.observe(deck);
+})();
+
+/* ── Phone carousel ─────────────────────────────────────────────── */
+(function(){
+  const img   = document.getElementById('pcImg');
+  const time  = document.getElementById('pcmTime');
+  const name  = document.getElementById('pcmName');
+  const desc  = document.getElementById('pcmDesc');
+  const dots  = document.getElementById('pcmDots');
+  const fill  = document.getElementById('pcProgressFill');
+  if(!img) return;
+
+  const screens = [
+    { src:'setup',      time:'7:00 AM',  name:'Setup',       desc:'Import your LinkedIn archive, pick your intent, create your Me node. The FalkorDB graph is ready before you leave home.' },
+    { src:'event',      time:'9:00 AM',  name:'Event Import', desc:'Paste the conference URL. Bright Data fetches the page, OpenAI extracts 12 speakers, SERP finds their LinkedIn profiles, Datasets enriches them — 30 seconds.' },
+    { src:'add-person', time:'10:30 AM', name:'First Person', desc:'Met Lizz Zhang. LinkedIn URL → research fires in the background. By the time you sit down for coffee, his AI context card is ready.' },
+    { src:'add-talk',   time:'11:15 AM', name:'Add Talk',     desc:'Walked into a multi-agent talk mid-session. Snapped the slide. OpenAI matched it to the session in the graph. Notes linked instantly.' },
+    { src:'today',      time:'2:00 PM',  name:'Today',        desc:'Timeline filling up. Sessions, people, ideas — all in chronological order. Every entry is a graph node. Every connection is an edge.' },
+    { src:'wallet',     time:'3:30 PM',  name:'Wallet',       desc:'Scanned a FalkorDB sponsor coupon. ZXing WASM decoded the QR. Saved to the graph as a Coupon node with a copy button.' },
+    { src:'recap',      time:'5:30 PM',  name:'Recap',        desc:'End of day. 14 people. 10 sessions. 10 ideas. Follow-up drafts written from your notes — not their bio. Faces to Remember grid.' },
+    { src:'projects',   time:'Next day', name:'Projects',     desc:'Ideas are still here. Each one linked to the talk that sparked it. Queryable. Searchable. The graph doesn\'t expire after the event.' },
+  ];
+
+  const INTERVAL = 3500;
+  let cur = 0, timer = null, started = false;
+
+  // Build dots
+  screens.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'pcm-dot' + (i===0?' active':'');
+    d.addEventListener('click', () => { goTo(i); resetTimer(); });
+    dots.appendChild(d);
+  });
+
+  function updateMeta(i) {
+    time.textContent = screens[i].time;
+    name.style.opacity = '0';
+    desc.style.opacity = '0';
+    setTimeout(() => {
+      name.textContent = screens[i].name;
+      desc.textContent = screens[i].desc;
+      name.style.opacity = '1';
+      desc.style.opacity = '1';
+    }, 180);
+    dots.querySelectorAll('.pcm-dot').forEach((d,j) => d.classList.toggle('active', j===i));
+  }
+
+  function goTo(idx) {
+    const prev = cur;
+    cur = (idx + screens.length) % screens.length;
+    img.classList.add('exit-up');
+    setTimeout(() => {
+      img.src = `../images/debrief/${screens[cur].src}.png`;
+      img.classList.remove('exit-up');
+      img.classList.add('enter-up');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.classList.remove('enter-up');
+        img.style.opacity = '1';
+        img.style.transform = '';
+      }));
+    }, 220);
+    updateMeta(cur);
+    // progress bar
+    if(fill) {
+      fill.style.transition = 'none'; fill.style.width = '0%';
+      requestAnimationFrame(() => {
+        fill.style.transition = `width ${INTERVAL}ms linear`;
+        fill.style.width = '100%';
+      });
+    }
+  }
+
+  function resetTimer() { clearInterval(timer); timer = setInterval(() => goTo(cur+1), INTERVAL); }
+
+  // Restart from screen 0 every time section enters viewport
+  const section = document.getElementById('s8');
+  if(section) {
+    const obs = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting) {
+        cur = 0;
+        img.src = `../images/debrief/${screens[0].src}.png`;
+        img.style.opacity = '1'; img.style.transform = '';
+        updateMeta(0);
+        if(fill) { fill.style.transition='none'; fill.style.width='0%';
+          requestAnimationFrame(() => { fill.style.transition=`width ${INTERVAL}ms linear`; fill.style.width='100%'; }); }
+        resetTimer();
+      } else {
+        clearInterval(timer);
+      }
+    }, { threshold: 0.4 });
+    obs.observe(section);
+  }
+})();
+</script>
+
+</body>
+</html>

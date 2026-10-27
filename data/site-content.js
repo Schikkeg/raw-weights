@@ -16,13 +16,31 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Debrief — Conference Memory & Networking Intelligence ",
+        excerpt: "We built Debrief at the same conference where we had the problem. A mobile-first graph-powered app that remembers every person, session, and idea from your conference day. Built at Patch the Conference Hackathon 2024 with FalkorDB, Bright Data, and Qodo.",
+        date: "Oct 30, 2026",
+        image: "./images/debrief/debrief-og.jpeg",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/debrief.html",
+        linkedin: null
+      },
+      {
+        title: "Debrief — 9 Hours, 1 Graph, 14 People Remembered ",
+        excerpt: "We built a conference networking app at the same hackathon where we needed it. FalkorDB, Bright Data, Qodo — here's exactly what happened, hour by hour",
+        date: "Oct 26, 2026",
+        image: "./images/debrief/debrief-film-og.jpeg",
+        type: "Blog",
+        link: "https://rawweights.com/usecase/debrief-film.html",
+        linkedin: "https://www.linkedin.com/posts/shamhc_patchtheconference-hackathon-falkordb-ugcPost-7520499707618439171-vCJW/"
+      },
+      {
         title: "AI Agent Observability — Why 200 OK Lies",
         excerpt: "Traditional monitoring is blind to AI agent failures. Learn the telemetry standards, trace architectures, and interactive tools to actually see what your agent did.",
         date: "Oct 16, 2026",
         image: "./images/observe.png",
         type: "Guide",
         link: "https://rawweights.com/usecase/observability.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_aiagents-observability-mongodb-share-7516937469087580161-8ZkR/"
       },
       {
         title: "Security Twin - From IDOR to a CI Guard",
