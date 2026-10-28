@@ -166,6 +166,57 @@
     .sp-qodo        { color: var(--c-qodo);        border-color: rgba(251,191,36,.3);  background: rgba(251,191,36,.08); }
     .sp-wemakedevs  { color: var(--c-wemakedevs);  border-color: rgba(244,114,182,.3); background: rgba(244,114,182,.08); }
 
+    /* ── Scene 01 two-column hero layout ────────────────────────── */
+    .s1-hero { display: grid; grid-template-columns: 1fr 400px; gap: 3.5rem; align-items: center; margin-bottom: 3rem; }
+    @media(max-width:1024px) { .s1-hero { grid-template-columns: 1fr; gap: 2rem; } }
+
+    /* ── Scene 01 video card ─────────────────────────────────────── */
+    .film-video-card {
+      position: relative; border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(129,140,248,.18); cursor: pointer; background: #000;
+      box-shadow: 0 0 80px rgba(129,140,248,.07), 0 24px 60px rgba(0,0,0,.6);
+      aspect-ratio: 16/9;
+    }
+    .film-video-thumb { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .55; transition: opacity .3s; }
+    .film-video-card:hover .film-video-thumb { opacity: .78; }
+    .film-play-btn {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 68px; height: 68px; border-radius: 50%;
+      background: rgba(129,140,248,.15); border: 2px solid rgba(129,140,248,.5);
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px); transition: background .2s, transform .2s;
+    }
+    .film-video-card:hover .film-play-btn { background: rgba(129,140,248,.28); transform: translate(-50%,-50%) scale(1.09); }
+    .film-play-icon {
+      width: 0; height: 0; border-style: solid;
+      border-width: 11px 0 11px 22px; border-color: transparent transparent transparent #818cf8;
+      margin-left: 5px;
+    }
+    .film-video-meta {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: .7rem 1.1rem;
+      background: linear-gradient(to top, rgba(4,8,15,.85) 0%, transparent 100%);
+      display: flex; justify-content: space-between; align-items: flex-end;
+      font-family: var(--rw-font-mono); font-size: .67rem;
+    }
+    .film-video-meta-title { color: rgba(238,242,255,.75); letter-spacing: .05em; text-transform: uppercase; }
+    .film-video-meta-credit { color: rgba(129,140,248,.7); }
+
+    /* ── Video modal ─────────────────────────────────────────────── */
+    dialog.video-modal {
+      position: fixed; inset: 0; z-index: 9999; border: none; padding: 1.5rem; margin: 0;
+      width: 100%; max-width: 100%; height: 100%; background: rgba(0,0,0,.9);
+      display: none; align-items: center; justify-content: center;
+    }
+    dialog.video-modal[open] { display: flex; }
+    .video-modal-inner { position: relative; width: 100%; max-width: 960px; animation: modalIn .2s ease; }
+    @keyframes modalIn { from{transform:scale(.93);opacity:0} to{transform:scale(1);opacity:1} }
+    dialog.video-modal video { width: 100%; border-radius: 10px; display: block; max-height: 90vh; background: #000; }
+    .video-modal-close {
+      position: absolute; top: -2.5rem; right: 0; background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,.55); font-size: 1.5rem; padding: .25rem .5rem; line-height: 1; transition: color .15s;
+    }
+    .video-modal-close:hover { color: #fff; }
+
     /* ── SCENE 02: NUMBERS ───────────────────────────────────────── */
     #s2 { padding: 6rem 0; background: var(--film-surface); }
     .numbers-grid {
@@ -628,15 +679,31 @@
 ════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s1" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;background:var(--film-bg);padding:5rem 1.5rem 4rem">
   <div class="scene-inner" style="max-width:1100px">
-    <div class="cold-open-stamp reveal">5:30 PM &nbsp;·&nbsp; October 24, 2024 &nbsp;·&nbsp; San Francisco</div>
-    <h1 class="film-h1 reveal" style="transition-delay:.1s">
-      THE DEMO<br>JUST <span class="hi">RAN.</span>
-    </h1>
-    <p class="film-lead reveal" style="transition-delay:.2s;max-width:640px">
-      14 meaningful conversations logged. 10 sessions attended. 10 ideas captured. 2,307 nodes in a FalkorDB graph —
-      all from the same conference happening <em>right outside this room.</em> There were 200+ people in that building.
-      We talked to 14 of them deeply enough to remember why it mattered. Every one of those 14 is in the graph. Forever.
-    </p>
+
+    <!-- Two-column hero: text left, video right -->
+    <div class="s1-hero">
+      <div class="s1-left">
+        <div class="cold-open-stamp reveal">5:30 PM &nbsp;·&nbsp; October 24, 2024 &nbsp;·&nbsp; San Francisco</div>
+        <h1 class="film-h1 reveal" style="transition-delay:.1s">
+          THE DEMO<br>JUST <span class="hi">RAN.</span>
+        </h1>
+        <p class="film-lead reveal" style="transition-delay:.2s">
+          14 meaningful conversations logged. 10 sessions attended. 10 ideas captured. 2,307 nodes in a FalkorDB graph —
+          all from the same conference happening <em>right outside this room.</em> There were 200+ people in that building.
+          We talked to 14 of them deeply enough to remember why it mattered. Every one of those 14 is in the graph. Forever.
+        </p>
+      </div>
+      <div class="s1-right reveal" style="transition-delay:.2s">
+        <div class="film-video-card" onclick="openVideoModal()">
+          <img class="film-video-thumb" src="../images/debrief/recap.png" alt="Debrief — Same Day">
+          <div class="film-play-btn"><div class="film-play-icon"></div></div>
+          <div class="film-video-meta">
+            <span class="film-video-meta-title">▶ &nbsp; Same Day &nbsp;·&nbsp; 1 min 45 sec</span>
+            <span class="film-video-meta-credit">Made with AdaL</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Success numbers — animated on enter -->
     <div class="cold-numbers reveal" style="transition-delay:.3s">
@@ -683,7 +750,7 @@
       <span class="sponsor-pill sp-falkordb">FalkorDB</span>
       <span class="sponsor-pill sp-brightdata">Bright Data</span>
       <span class="sponsor-pill sp-qodo">Qodo</span>
-            <span class="sponsor-pill sp-wemakedevs">WeMakeDevs</span>
+      <span class="sponsor-pill sp-wemakedevs">WeMakeDevs</span>
     </div>
   </div>
 </section>
@@ -1441,7 +1508,7 @@
       <div class="team-chip">
         <a href="https://www.linkedin.com/in/shamhc/" target="_blank" rel="noopener">
           <div class="team-av"><img src="https://media.licdn.com/dms/image/v2/D5603AQHP2JmxLyO6ww/profile-displayphoto-shrink_100_100/B56Z7t1Xv0HYAI-/0/1782106652716?e=1794441600&v=beta&t=RHgIgE_wrY4uyJBfltQO_Q8GGjhvnkW-7dk_z55uGrQ" alt="Sham" loading="lazy"></div>
-          <div><div class="team-info-name">Sham Hassanchi</div><div class="team-info-role">Graph · API · Pipeline</div></div>
+          <div><div class="team-info-name">Sham Hassan Chikkegowda</div><div class="team-info-role">Graph · API · Pipeline</div></div>
         </a>
       </div>
       <div class="team-chip">
@@ -1772,6 +1839,37 @@
     obs.observe(section);
   }
 })();
+</script>
+
+<!-- Video modal -->
+<dialog class="video-modal" id="videoModal" onclick="if(event.target===this)closeVideoModal()">
+  <div class="video-modal-inner">
+    <button class="video-modal-close" onclick="closeVideoModal()" aria-label="Close video">✕</button>
+    <video controls preload="none"></video>
+  </div>
+</dialog>
+
+<script>
+function openVideoModal() {
+  var dlg = document.getElementById('videoModal');
+  var vid = dlg.querySelector('video');
+  vid.src = window.innerWidth < 768
+    ? '../images/videos/same-day-9x16.mp4'
+    : '../images/videos/same-day-16x9.mp4';
+  dlg.showModal();
+  vid.play().catch(function(){});
+}
+function closeVideoModal() {
+  var dlg = document.getElementById('videoModal');
+  var vid = dlg.querySelector('video');
+  vid.pause();
+  vid.src = '';
+  dlg.close();
+}
+document.getElementById('videoModal').addEventListener('cancel', function() {
+  var vid = document.getElementById('videoModal').querySelector('video');
+  vid.pause(); vid.src = '';
+});
 </script>
 
 </body>

@@ -249,6 +249,48 @@
     .term-cursor { display:inline-block; width:7px; height:1em; background:#4ade80; vertical-align:middle; animation:blink 1s step-end infinite; margin-left:2px; }
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
+    /* ── Hero video card ──────────────────────────────────────────── */
+    .hero-video-card {
+      position:relative; border-radius:12px; overflow:hidden;
+      border:1px solid rgba(129,140,248,.22); cursor:pointer; background:#000;
+      box-shadow:0 0 60px rgba(129,140,248,.08),0 24px 48px rgba(0,0,0,.4);
+      aspect-ratio:16/9;
+    }
+    .hero-video-thumb { display:block; width:100%; height:100%; object-fit:cover; opacity:.6; transition:opacity .25s; }
+    .hero-video-card:hover .hero-video-thumb { opacity:.82; }
+    .hero-play-btn {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:64px; height:64px; border-radius:50%;
+      background:rgba(255,255,255,.13); border:2px solid rgba(255,255,255,.5);
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter:blur(6px); transition:background .2s,transform .2s;
+    }
+    .hero-video-card:hover .hero-play-btn { background:rgba(255,255,255,.22); transform:translate(-50%,-50%) scale(1.09); }
+    .hero-play-icon { width:0; height:0; border-style:solid; border-width:11px 0 11px 22px; border-color:transparent transparent transparent #fff; margin-left:5px; }
+    .hero-video-label {
+      position:absolute; bottom:0; left:0; right:0; padding:.6rem 1rem;
+      background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 100%);
+      display:flex; justify-content:space-between; align-items:flex-end;
+      font-family:var(--rw-font-mono); font-size:.67rem; color:rgba(255,255,255,.6);
+    }
+    .hero-watch-btn { display:none; }
+
+    /* ── Video modal ───────────────────────────────────────────────── */
+    dialog.video-modal {
+      position:fixed; inset:0; z-index:9999; border:none; padding:1.5rem; margin:0;
+      width:100%; max-width:100%; height:100%; background:rgba(0,0,0,.88);
+      display:none; align-items:center; justify-content:center;
+    }
+    dialog.video-modal[open] { display:flex; }
+    .video-modal-inner { position:relative; width:100%; max-width:960px; animation:modalIn .2s ease; }
+    @keyframes modalIn{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+    dialog.video-modal video { width:100%; border-radius:10px; display:block; max-height:90vh; background:#000; }
+    .video-modal-close {
+      position:absolute; top:-2.5rem; right:0; background:none; border:none; cursor:pointer;
+      color:rgba(255,255,255,.6); font-size:1.5rem; padding:.25rem .5rem; line-height:1; transition:color .15s;
+    }
+    .video-modal-close:hover { color:#fff; }
+
     /* ── Callout box ──────────────────────────────────────────────── */
     .callout { background:rgba(129,140,248,.07); border:1px solid rgba(129,140,248,.2); border-left:3px solid #818cf8; border-radius:8px; padding:1rem 1.2rem; margin:1.25rem 0; }
     .callout p { font-size:.88rem; color:var(--rw-text-muted); margin:0; line-height:1.65; }
@@ -258,6 +300,7 @@
     @media(max-width:1024px){
       .guide-layout{grid-template-columns:1fr} .guide-sidebar{position:static}
       .hero-inner{grid-template-columns:1fr} .hero-phones{display:none}
+      .hero-video-card{display:none} .hero-watch-btn{display:inline-flex}
       .feature-grid,.phase-grid{grid-template-columns:repeat(2,1fr)}
       .screens-grid{grid-template-columns:repeat(2,1fr)}
       .team-grid{grid-template-columns:repeat(2,1fr)}
@@ -295,18 +338,18 @@
       <div class="hero-btns">
         <a href="https://github.com/researchsite/debrief" class="rw-btn rw-btn-primary" target="_blank">GitHub →</a>
         <a href="#section-screens" class="rw-btn rw-btn-secondary">See it live ↓</a>
+        <button class="rw-btn rw-btn-secondary hero-watch-btn" onclick="openVideoModal()">▶ Watch</button>
       </div>
     </div>
 
-    <!-- Animated import terminal -->
-    <div class="hero-terminal">
-      <div class="term-bar">
-        <span class="term-dot" style="background:#ff5f57"></span>
-        <span class="term-dot" style="background:#febc2e"></span>
-        <span class="term-dot" style="background:#28c840"></span>
-        <span style="margin-left:.5rem;font-family:var(--rw-font-mono);font-size:.72rem;color:rgba(224,231,255,.3)">debrief — event import</span>
+    <!-- Hero video card — opens modal on click -->
+    <div class="hero-video-card" onclick="openVideoModal()">
+      <img class="hero-video-thumb" src="../images/debrief/recap.png" alt="Debrief build story">
+      <div class="hero-play-btn"><div class="hero-play-icon"></div></div>
+      <div class="hero-video-label">
+        <span>▶ Watch the build story</span>
+        <span>Made with AdaL</span>
       </div>
-      <div id="term-out" class="term-body"></div>
     </div>
   </div>
 </div>
@@ -887,8 +930,8 @@
       <div class="team-grid">
         <div class="team-card">
           <a href="https://www.linkedin.com/in/shamhc/" target="_blank" rel="noopener">
-            <div class="team-avatar"><img src="https://media.licdn.com/dms/image/v2/D5603AQHP2JmxLyO6ww/profile-displayphoto-shrink_100_100/B56Z7t1Xv0HYAI-/0/1782106652716?e=1794441600&v=beta&t=RHgIgE_wrY4uyJBfltQO_Q8GGjhvnkW-7dk_z55uGrQ" alt="Sham Hassanchi" loading="lazy"></div>
-            <h4>Sham Hassanchi</h4>
+            <div class="team-avatar"><img src="https://media.licdn.com/dms/image/v2/D5603AQHP2JmxLyO6ww/profile-displayphoto-shrink_100_100/B56Z7t1Xv0HYAI-/0/1782106652716?e=1794441600&v=beta&t=RHgIgE_wrY4uyJBfltQO_Q8GGjhvnkW-7dk_z55uGrQ" alt="Sham Hassan Chikkegowda" loading="lazy"></div>
+            <h4>Sham Hassan Chikkegowda</h4>
             <p>Graph schema · API routes · Event import pipeline · Meet plan scoring</p>
           </a>
         </div>
@@ -983,41 +1026,35 @@
 })();
 </script>
 
-<!-- terminal output element (inside hero terminal — injected by JS) -->
-<script>
-// Move terminal output element inside the hero
-(function(){
-  const hero=document.querySelector('.guide-hero');
-  if(!hero) return;
-  const rightCol=hero.querySelector('.hero-phones');
-  if(!rightCol) return;
-  // Insert terminal above phones or replace if phones hidden
-  const term=document.createElement('div');
-  term.className='hero-terminal';
-  term.style.marginBottom='1.25rem';
-  term.innerHTML=`
-    <div class="term-bar">
-      <div class="term-dot" style="background:#ff5f57"></div>
-      <div class="term-dot" style="background:#febc2e"></div>
-      <div class="term-dot" style="background:#28c840"></div>
-      <span style="margin-left:.5rem;font-family:var(--rw-font-mono);font-size:.68rem;color:rgba(255,255,255,.3)">debrief — event import</span>
-    </div>
-    <div class="term-body" id="term-out"></div>`;
+<!-- Video modal -->
+<dialog class="video-modal" id="videoModal" onclick="if(event.target===this)closeVideoModal()">
+  <div class="video-modal-inner">
+    <button class="video-modal-close" onclick="closeVideoModal()" aria-label="Close video">✕</button>
+    <video controls preload="none"></video>
+  </div>
+</dialog>
 
-  // Insert as first child of hero-inner
-  const inner=hero.querySelector('.hero-inner');
-  if(inner){
-    // Replace phones column with terminal+phones stacked
-    const phonesEl=inner.querySelector('.hero-phones');
-    if(phonesEl){
-      const wrap=document.createElement('div');
-      wrap.style.cssText='display:flex;flex-direction:column;gap:1.25rem;min-width:0';
-      phonesEl.parentNode.insertBefore(wrap,phonesEl);
-      wrap.appendChild(term);
-      wrap.appendChild(phonesEl);
-    }
-  }
-})();
+<script>
+function openVideoModal() {
+  const dlg = document.getElementById('videoModal');
+  const vid = dlg.querySelector('video');
+  vid.src = window.innerWidth < 768
+    ? '../images/videos/same-day-9x16.mp4'
+    : '../images/videos/same-day-16x9.mp4';
+  dlg.showModal();
+  vid.play().catch(function(){});
+}
+function closeVideoModal() {
+  const dlg = document.getElementById('videoModal');
+  const vid = dlg.querySelector('video');
+  vid.pause();
+  vid.src = '';
+  dlg.close();
+}
+document.getElementById('videoModal').addEventListener('cancel', function() {
+  const vid = document.getElementById('videoModal').querySelector('video');
+  vid.pause(); vid.src = '';
+});
 </script>
 
 </body>
