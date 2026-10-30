@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AG2 Beta — Interactive Framework Reference | RawWeights</title>
-  <meta name="description" content="10 core AG2 Beta concepts mapped interactively — agents, middleware, multi-agent networks, cost control, and LiveAgent voice. Click to explore, try live on the playground.">
+  <title>AG2 Beta � Interactive Framework Reference | RawWeights</title>
+  <meta name="description" content="10 core AG2 Beta concepts mapped interactively � agents, middleware, multi-agent networks, cost control, and LiveAgent voice. Click to explore, try live on the playground.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/guide/ag2-quickref.html">
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://rawweights.com/images/ag2.png">
   <meta property="og:url" content="https://rawweights.com/guide/ag2-quickref.html">
-  <meta property="og:title" content="AG2 Beta — Interactive Framework Reference | RawWeights">
+  <meta property="og:title" content="AG2 Beta � Interactive Framework Reference | RawWeights">
   <meta property="og:description" content="10 AG2 Beta concepts mapped interactively. Click any card, explore the detail, try live on the playground.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -25,7 +25,7 @@
       --pg-glo2: rgba(234,179,8,0.22);
     }
 
-    /* ── Hero ─────────────────────────────────────────────── */
+    /* -- Hero ----------------------------------------------- */
     .hero {
       background:linear-gradient(135deg,#0c0a00 0%,#14100a 55%,#0a0c10 100%);
       padding:4rem 1.5rem 3rem; text-align:center; position:relative; overflow:hidden;
@@ -102,7 +102,7 @@
     .pg-cta:hover .pg-cta-btn { background:#fde047; }
     .hero-note { font-size:0.72rem; color:rgba(254,252,232,0.28); font-family:var(--rw-font-display); }
 
-    /* ── Stats strip ──────────────────────────────────────── */
+    /* -- Stats strip ---------------------------------------- */
     .stats-strip {
       display:flex; align-items:center; justify-content:center;
       flex-wrap:wrap; gap:0;
@@ -119,10 +119,10 @@
     }
     .stat-sep { color:var(--rw-border); }
 
-    /* ── Wrap ─────────────────────────────────────────────── */
+    /* -- Wrap ----------------------------------------------- */
     .wrap { max-width:1100px; margin:0 auto; padding:2.5rem 1.5rem 3rem; }
 
-    /* ── Section header ───────────────────────────────────── */
+    /* -- Section header ------------------------------------- */
     .sec-head {
       display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;
     }
@@ -133,7 +133,7 @@
     }
     .sec-head-line { flex:1; height:1px; background:var(--rw-border); }
 
-    /* ── Map area — desktop side-by-side ──────────────────── */
+    /* -- Map area � desktop side-by-side -------------------- */
     .map-area {
       display:grid; grid-template-columns:1fr;
       gap:1rem; margin-bottom:2.5rem; align-items:start;
@@ -201,7 +201,7 @@
       font-family:var(--rw-font-display); margin-top:0.35rem; text-align:center;
     }
 
-    /* ── Detail panel ─────────────────────────────────────── */
+    /* -- Detail panel --------------------------------------- */
     .detail-panel {
       background:var(--rw-card); border:1.5px solid var(--rw-border);
       border-radius:12px; overflow:hidden;
@@ -260,7 +260,7 @@
       font-size:0.8rem; color:var(--rw-text-muted); line-height:1.45;
     }
     .dp-bullets li::before {
-      content:'→'; color:var(--pg); flex-shrink:0;
+      content:'?'; color:var(--pg); flex-shrink:0;
       font-size:0.72rem; margin-top:0.08rem;
       font-family:var(--rw-font-display); font-weight:800;
     }
@@ -286,7 +286,7 @@
     }
     .dp-try:hover { color:var(--pg-h); }
 
-    /* ── Framework ────────────────────────────────────────── */
+    /* -- Framework ------------------------------------------ */
     .fw-row {
       display:grid; grid-template-columns:repeat(3,1fr);
       gap:0.65rem; margin-bottom:2.5rem;
@@ -309,7 +309,7 @@
     .fw-tag.cr { background:rgba(16,185,129,0.1); color:#059669; }
     .fw-take { font-size:0.78rem; color:var(--rw-text-muted); line-height:1.5; }
 
-    /* ── FAQ ──────────────────────────────────────────────── */
+    /* -- FAQ ------------------------------------------------ */
     .faq-filters {
       display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:1rem;
     }
@@ -356,7 +356,7 @@
     }
     .faq-item.open .faq-a { max-height:220px; padding:0 0.9rem 0.85rem; }
 
-    /* ── Closing CTA ──────────────────────────────────────── */
+    /* -- Closing CTA ---------------------------------------- */
     .closing-cta {
       background:linear-gradient(135deg,rgba(234,179,8,0.08) 0%,rgba(234,179,8,0.03) 100%);
       border:1px solid rgba(234,179,8,0.22); border-radius:16px;
@@ -370,7 +370,7 @@
       font-size:0.83rem; color:var(--rw-text-muted); margin-bottom:1rem; line-height:1.6;
     }
 
-    /* ── Light mode ───────────────────────────────────────── */
+    /* -- Light mode ----------------------------------------- */
     [data-theme="light"] .hero { background:linear-gradient(135deg,#fffbeb 0%,#fefce8 55%,#f0f9ff 100%); }
     [data-theme="light"] .hero h1  { color:#1c1202; }
     [data-theme="light"] .hero-sub { color:rgba(28,18,2,0.5); }
@@ -398,7 +398,7 @@
     [data-theme="light"] .faq-pill.active,
     [data-theme="light"] .faq-pill:hover { color:#fff; }
 
-    /* ── Responsive ───────────────────────────────────────── */
+    /* -- Responsive ----------------------------------------- */
     @media (max-width:640px) { .fw-row { grid-template-columns:1fr; } }
     @media (max-width:380px) { .map-grid { grid-template-columns:1fr; } }
   </style>
@@ -406,51 +406,51 @@
 <body>
 
 <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- ══ HERO ═══════════════════════════════════════════════════════ -->
+<!-- -- HERO ------------------------------------------------------- -->
 <div class="hero">
   <div class="hero-inner">
-    <span class="hero-eyebrow">⚡ AG2 · Agentic Framework Reference</span>
-    <p class="hero-byline">Open-source framework by <strong>Vasily Radostev</strong> &amp; team · AG2 (AutoGen 2.0) · <a href="https://github.com/ag2ai/ag2" target="_blank" rel="noopener" style="color:inherit;">ag2ai/ag2 on GitHub</a></p>
+    <span class="hero-eyebrow">? AG2 � Agentic Framework Reference</span>
+    <p class="hero-byline">Open-source framework by <strong>Vasily Radostev</strong> &amp; team � AG2 (AutoGen 2.0) � <a href="https://github.com/ag2ai/ag2" target="_blank" rel="noopener" style="color:inherit;">ag2ai/ag2 on GitHub</a></p>
     <h1>AG2 Framework, <em>Mapped</em></h1>
-    <p class="hero-sub">10 core concepts. Click any card to explore. All of them run live on the playground — free, no account needed.</p>
-    <p style="font-size:0.78rem;color:rgba(203,213,225,0.45);margin-top:1rem;">✦ Inspired by GenAcademy · My Field Notes · built from public AG2 documentation and playground</p>
+    <p class="hero-sub">10 core concepts. Click any card to explore. All of them run live on the playground � free, no account needed.</p>
+    <p style="font-size:0.78rem;color:rgba(203,213,225,0.45);margin-top:1rem;">? Inspired by GenAcademy � My Field Notes � built from public AG2 documentation and playground</p>
 
     <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="pg-cta">
-      <span class="pg-cta-label">✦ Try it live — no install, no key</span>
+      <span class="pg-cta-label">? Try it live � no install, no key</span>
       <span class="pg-cta-title">AG2 Playground</span>
       <span class="pg-cta-url">playground.ag2.ai</span>
-      <span class="pg-cta-btn">Open Playground →</span>
+      <span class="pg-cta-btn">Open Playground ?</span>
     </a>
-    <div class="hero-note">Use the Beta column only — Classic and Beta share a UI but differ architecturally</div>
+    <div class="hero-note">Use the Beta column only � Classic and Beta share a UI but differ architecturally</div>
   </div>
 </div>
 
-<!-- ══ STATS STRIP ════════════════════════════════════════════════ -->
+<!-- -- STATS STRIP ------------------------------------------------ -->
 <div class="stats-strip">
   <span class="stat-item"><em>6</em>&nbsp;Coding Parts</span>
-  <span class="stat-sep">·</span>
+  <span class="stat-sep">�</span>
   <span class="stat-item"><em>3</em>&nbsp;Production Topics</span>
-  <span class="stat-sep">·</span>
+  <span class="stat-sep">�</span>
   <span class="stat-item"><em>1</em>&nbsp;Voice Mode</span>
-  <span class="stat-sep">·</span>
-  <span class="stat-item"><em>20×</em>&nbsp;Max Cost Savings</span>
-  <span class="stat-sep">·</span>
+  <span class="stat-sep">�</span>
+  <span class="stat-item"><em>20�</em>&nbsp;Max Cost Savings</span>
+  <span class="stat-sep">�</span>
   <span class="stat-item">Async-first, community fork</span>
 </div>
 
-<!-- ══ CONTENT ════════════════════════════════════════════════════ -->
+<!-- -- CONTENT ---------------------------------------------------- -->
 <div class="wrap">
 
-  <!-- ── Personal opening note ──────────────────────────── -->
+  <!-- -- Personal opening note ---------------------------- -->
   <div style="background:rgba(234,179,8,0.07);border:1px solid rgba(234,179,8,0.2);border-left:3px solid #eab308;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:2rem;">
     <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;color:#fbbf24;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
-    <p style="margin:0 0 0.6rem;color:#cbd5e1;font-size:0.9rem;">A GenAcademy session on AG2 introduced me to the framework. I walked in expecting broad strokes — what I got was depth: every concept backed by live playground demos and real production trade-offs. I went into the GitHub repo, official docs, and the playground afterward to build this reference.</p>
-    <p style="margin:0;color:#94a3b8;font-size:0.875rem;">Three things that stuck: multi-turn isn't magic, it's recursion on a response object. Middleware and assembly policies look similar but do fundamentally different things — one mutates history, the other only filters what the model sees. And the $2,000 data destruction incident is a reminder that agents do exactly what they're told — the approval gate has to come from you, not the model.</p>
+    <p style="margin:0 0 0.6rem;color:#cbd5e1;font-size:0.9rem;">A GenAcademy session on AG2 introduced me to the framework. I walked in expecting broad strokes � what I got was depth: every concept backed by live playground demos and real production trade-offs. I went into the GitHub repo, official docs, and the playground afterward to build this reference.</p>
+    <p style="margin:0;color:#94a3b8;font-size:0.875rem;">Three things that stuck: multi-turn isn't magic, it's recursion on a response object. Middleware and assembly policies look similar but do fundamentally different things � one mutates history, the other only filters what the model sees. And the $2,000 data destruction incident is a reminder that agents do exactly what they're told � the approval gate has to come from you, not the model.</p>
   </div>
 
-  <!-- ── Concept Map ─────────────────────────────────────── -->
+  <!-- -- Concept Map --------------------------------------- -->
   <div class="sec-head">
     <h2>Concept Map</h2>
     <div class="sec-head-line"></div>
@@ -486,37 +486,37 @@
           <div class="node-title">Networks of Agents</div>
         </div>
         <div class="map-node beyond" onclick="showDetail(6)">
-          <div class="node-num">Ship · Quality</div>
+          <div class="node-num">Ship � Quality</div>
           <div class="node-title">Evaluation</div>
         </div>
         <div class="map-node beyond" onclick="showDetail(7)">
-          <div class="node-num">Ship · Scale</div>
+          <div class="node-num">Ship � Scale</div>
           <div class="node-title">Cost &amp; Distribution</div>
         </div>
         <div class="map-node beyond" onclick="showDetail(8)">
-          <div class="node-num">Ship · Safety</div>
+          <div class="node-num">Ship � Safety</div>
           <div class="node-title">Human in the Loop</div>
         </div>
       </div>
 
       <!-- LiveAgent bonus card -->
       <div class="la-card" onclick="showDetail(9)">
-        <div class="la-icon">🎙️</div>
+        <div class="la-icon">???</div>
         <div class="la-body">
-          <div class="la-tag">Extension · Voice</div>
+          <div class="la-tag">Extension � Voice</div>
           <div class="la-name">LiveAgent</div>
-          <div class="la-meta">Full-duplex · &lt;500ms · Barge-in · Audio-to-audio</div>
+          <div class="la-meta">Full-duplex � &lt;500ms � Barge-in � Audio-to-audio</div>
         </div>
-        <div class="la-arrow">→</div>
+        <div class="la-arrow">?</div>
       </div>
 
-      <div class="map-hint">solid border = build &amp; control layer · dashed = production readiness · click to explore</div>
+      <div class="map-hint">solid border = build &amp; control layer � dashed = production readiness � click to explore</div>
     </div>
 
     <!-- Right: detail panel (sticky on desktop) -->
     <div class="detail-panel" id="detail-panel">
       <div class="dp-placeholder" id="dp-placeholder">
-        <div class="dp-placeholder-icon">←</div>
+        <div class="dp-placeholder-icon">?</div>
         <div class="dp-placeholder-text">Select any concept<br>to see details</div>
       </div>
       <div class="dp-content" id="dp-content">
@@ -531,14 +531,14 @@
         <div class="dp-insight" id="dp-insight"></div>
         <div class="dp-footer">
           <div class="dp-unlock">Unlocks: <strong id="dp-unlock"></strong></div>
-          <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="dp-try">Try on Playground →</a>
+          <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="dp-try">Try on Playground ?</a>
         </div>
       </div>
     </div>
 
   </div><!-- /map-area -->
 
-  <!-- ── Framework at a Glance ────────────────────────────── -->
+  <!-- -- Framework at a Glance ------------------------------ -->
   <div class="sec-head">
     <h2>Framework at a Glance</h2>
     <div class="sec-head-line"></div>
@@ -548,7 +548,7 @@
     <div class="fw-card">
       <div class="fw-name">AG2 Beta</div>
       <span class="fw-tag ag">Enterprise multi-agent</span>
-      <div class="fw-take">Async-first, Hub orchestration, identity via Passport, 4 typed channel patterns. Higher setup — higher ceiling. Community fork of AutoGen.</div>
+      <div class="fw-take">Async-first, Hub orchestration, identity via Passport, 4 typed channel patterns. Higher setup � higher ceiling. Community fork of AutoGen.</div>
     </div>
     <div class="fw-card">
       <div class="fw-name">LangGraph</div>
@@ -562,7 +562,7 @@
     </div>
   </div>
 
-  <!-- ── FAQ ──────────────────────────────────────────────── -->
+  <!-- -- FAQ ------------------------------------------------ -->
   <div class="sec-head">
     <h2>From the Q&amp;A</h2>
     <div class="sec-head-line"></div>
@@ -580,29 +580,29 @@
     <div class="faq-list">
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
-          Is chaining — ask() then another ask() on the reply — supported?
-          <span class="faq-chev">▾</span>
+          Is chaining � ask() then another ask() on the reply � supported?
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Yes. The reply object is itself askable — that is the multi-turn pattern. Context is retained automatically across the chain.</div>
+        <div class="faq-a">Yes. The reply object is itself askable � that is the multi-turn pattern. Context is retained automatically across the chain.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           Is the playground free? Account required?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Free, no account. AG2 powers the LLM. Use only the Beta column — Classic and Beta look similar but differ architecturally enough to cause confusion.</div>
+        <div class="faq-a">Free, no account. AG2 powers the LLM. Use only the Beta column � Classic and Beta look similar but differ architecturally enough to cause confusion.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           How do I teach my coding assistant AG2 Beta patterns?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Run <code>npx skills add ag2ai/ag2-skills</code>. This installs AG2 Beta knowledge into Claude, Cursor, and others — so the assistant reaches for Beta APIs instead of hallucinating Classic patterns.</div>
+        <div class="faq-a">Run <code>npx skills add ag2ai/ag2-skills</code>. This installs AG2 Beta knowledge into Claude, Cursor, and others � so the assistant reaches for Beta APIs instead of hallucinating Classic patterns.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           What's the relationship between AG2 Beta and classic AutoGen?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
         <div class="faq-a">AutoGen (2023, Microsoft Research) was forked by the community into AG2 (2024). AG2 Beta is a from-scratch async rewrite under <code>autogen.beta</code>. Classic patterns (ConversableAgent, group/sequential chat) are replaced entirely. Vasily's advice: focus only on Beta going forward.</div>
       </div>
@@ -614,31 +614,31 @@
     <div class="faq-list">
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
-          Hub vs A2A — what's the difference?
-          <span class="faq-chev">▾</span>
+          Hub vs A2A � what's the difference?
+          <span class="faq-chev">?</span>
         </div>
         <div class="faq-a">Hub = in-org orchestration (audit log, Passport identity, 4 typed channels). A2A = Google's cross-org, cross-framework standard. AG2 supports both. Hub internally; A2A when connecting to agents from other frameworks or companies.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           Is there an identity or trust system for agent networks?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Partially. Passport verifies identity and prevents unauthorized connections. Audit logs record who sent what. Fine-grained inter-agent trust (what agent A may share with B) is still evolving — no framework has fully solved it.</div>
+        <div class="faq-a">Partially. Passport verifies identity and prevents unauthorized connections. Audit logs record who sent what. Fine-grained inter-agent trust (what agent A may share with B) is still evolving � no framework has fully solved it.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
-          Middleware vs assembly policies — what's the difference?
-          <span class="faq-chev">▾</span>
+          Middleware vs assembly policies � what's the difference?
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Middleware changes what <em>happens</em> — HistoryLimiter permanently deletes. Assembly policies change what the model <em>sees</em> — the full event log is preserved, only the assembled context window changes. Same layer, different intent.</div>
+        <div class="faq-a">Middleware changes what <em>happens</em> � HistoryLimiter permanently deletes. Assembly policies change what the model <em>sees</em> � the full event log is preserved, only the assembled context window changes. Same layer, different intent.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           What are the 4 channel types in the Hub?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Consulting: one Q, one A, auto-closes. Conversation: free-form pair. Discussion: round-robin N agents. Workflow: declarative TransitionGraph with conditions and targets — most used in enterprise.</div>
+        <div class="faq-a">Consulting: one Q, one A, auto-closes. Conversation: free-form pair. Discussion: round-robin N agents. Workflow: declarative TransitionGraph with conditions and targets � most used in enterprise.</div>
       </div>
     </div>
   </div>
@@ -649,61 +649,61 @@
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           Can I A/B test agent configurations?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Yes — use your existing A/B framework. Treat the agent as a standard service component and route users to different middleware stacks, prompts, or models the same way you would any backend variant.</div>
+        <div class="faq-a">Yes � use your existing A/B framework. Treat the agent as a standard service component and route users to different middleware stacks, prompts, or models the same way you would any backend variant.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           How do token budgets control cost?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">At ~90% of budget, pass the remaining count back and prompt the agent to wrap up. Forces a coherent final answer instead of a silent cutoff. Cheap models can run 20× cheaper — a workflow of cheap calls often matches expensive smart-loop quality.</div>
+        <div class="faq-a">At ~90% of budget, pass the remaining count back and prompt the agent to wrap up. Forces a coherent final answer instead of a silent cutoff. Cheap models can run 20� cheaper � a workflow of cheap calls often matches expensive smart-loop quality.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           What's the right permission model for production agents?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">Read-only: let it run, control spend. Anything that writes, deletes, sends, or charges: require human approval. Vasily Radostev documented a real incident where his own agent destroyed $2,000 of data — no approval gate, full permissions. It did exactly what it was told. The lesson is not hypothetical.</div>
+        <div class="faq-a">Read-only: let it run, control spend. Anything that writes, deletes, sends, or charges: require human approval. Vasily Radostev documented a real incident where his own agent destroyed $2,000 of data � no approval gate, full permissions. It did exactly what it was told. The lesson is not hypothetical.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">
           How does agent-as-judge evaluation work?
-          <span class="faq-chev">▾</span>
+          <span class="faq-chev">?</span>
         </div>
-        <div class="faq-a">A separate agent scores outputs against defined criteria (conciseness, source quality, topic coverage). Calibrate the judge against real user feedback first — even 100 satisfied/unsatisfied sessions is enough to align it. Then run it at thousands of interactions automatically.</div>
+        <div class="faq-a">A separate agent scores outputs against defined criteria (conciseness, source quality, topic coverage). Calibrate the judge against real user feedback first � even 100 satisfied/unsatisfied sessions is enough to align it. Then run it at thousands of interactions automatically.</div>
       </div>
     </div>
   </div>
 
-  <!-- ── Closing CTA ───────────────────────────────────────── -->
+  <!-- -- Closing CTA ----------------------------------------- -->
   <div class="closing-cta">
     <h3>Every concept in this reference runs live</h3>
-    <p>The playground has interactive examples for all 10 topics — no install, no account, no API key. Use the Beta column.</p>
-    <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="rw-btn rw-btn-primary">Open playground.ag2.ai →</a>
+    <p>The playground has interactive examples for all 10 topics � no install, no account, no API key. Use the Beta column.</p>
+    <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="rw-btn rw-btn-primary">Open playground.ag2.ai ?</a>
   </div>
 
 </div><!-- /wrap -->
 
-<!-- ──────────────────────────────── ATTRIBUTION -->
+<!-- -------------------------------- ATTRIBUTION -->
 <div class="max-w-7xl mx-auto px-6 py-8 border-t border-slate-800">
     <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">Sources &amp; Attribution</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-4xl mb-5 text-xs">
         <a href="https://github.com/ag2ai/ag2" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-lg p-3 hover:border-yellow-700/50 transition-all">
             <p class="text-yellow-300 font-semibold">AG2 GitHub Repository</p>
-            <p class="text-slate-500 mt-0.5">ag2ai/ag2 — official open-source framework</p>
+            <p class="text-slate-500 mt-0.5">ag2ai/ag2 � official open-source framework</p>
         </a>
         <a href="https://playground.ag2.ai" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-lg p-3 hover:border-yellow-700/50 transition-all">
             <p class="text-yellow-300 font-semibold">AG2 Playground</p>
-            <p class="text-slate-500 mt-0.5">playground.ag2.ai — all 10 concepts run live here</p>
+            <p class="text-slate-500 mt-0.5">playground.ag2.ai � all 10 concepts run live here</p>
         </a>
         <a href="https://docs.ag2.ai" target="_blank" rel="noopener" class="bg-slate-800/40 border border-slate-700 rounded-lg p-3 hover:border-yellow-700/50 transition-all">
             <p class="text-yellow-300 font-semibold">AG2 Documentation</p>
-            <p class="text-slate-500 mt-0.5">docs.ag2.ai — public framework documentation</p>
+            <p class="text-slate-500 mt-0.5">docs.ag2.ai � public framework documentation</p>
         </a>
     </div>
-    <p class="text-slate-600 text-xs leading-relaxed max-w-3xl">A GenAcademy session introduced me to AG2 and sparked this deep-dive. From there I went into the GitHub repo, official docs, and the playground to build this interactive reference. My workflow: session points me at a topic → I explore the public sources → I build to understand. The synthesis and interactive elements are my own work.</p>
+    <p class="text-slate-600 text-xs leading-relaxed max-w-3xl">A GenAcademy session introduced me to AG2 and sparked this deep-dive. From there I went into the GitHub repo, official docs, and the playground to build this interactive reference. My workflow: session points me at a topic ? I explore the public sources ? I build to understand. The synthesis and interactive elements are my own work.</p>
 </div>
 
 <div id="rw-footer"
@@ -715,82 +715,82 @@
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-/* ── Node data ─────────────────────────────────────────────── */
+/* -- Node data ----------------------------------------------- */
 const NODES = [
   {
-    icon:'🧠', sub:'Build · Foundations', heading:'Agents & Tools',
+    icon:'??', sub:'Build � Foundations', heading:'Agents & Tools',
     bullets:[
       'Agent = name + system prompt + model config',
-      'ask() returns a reply — the reply is itself re-askable (multi-turn)',
-      'Tools: @tool decorator · AG2 built-ins (web/code/memory) · any MCP server',
+      'ask() returns a reply � the reply is itself re-askable (multi-turn)',
+      'Tools: @tool decorator � AG2 built-ins (web/code/memory) � any MCP server',
     ],
-    insight:'<strong>15–20 model configs supported.</strong> Switching OpenAI → Anthropic → Google is a one-line swap. Agent logic is unchanged.',
+    insight:'<strong>15�20 model configs supported.</strong> Switching OpenAI ? Anthropic ? Google is a one-line swap. Agent logic is unchanged.',
     unlock:'Working agent in ~10 lines',
   },
   {
-    icon:'⚡', sub:'Build · Delegation', heading:'Sub-agent Delegation',
+    icon:'?', sub:'Build � Delegation', heading:'Sub-agent Delegation',
     bullets:[
       'run_subtask() fans out sequentially or in parallel',
-      'run_subtasks(parallel=True) — rate limits, not the framework, are your ceiling',
+      'run_subtasks(parallel=True) � rate limits, not the framework, are your ceiling',
       'Agent.as_tool() wraps a whole specialist as a named callable for the coordinator',
     ],
-    insight:'<strong>No Hub needed.</strong> This is recursion, not a network — useful to decompose complex tasks before you need the full channel machinery in Network · Hub.',
+    insight:'<strong>No Hub needed.</strong> This is recursion, not a network � useful to decompose complex tasks before you need the full channel machinery in Network � Hub.',
     unlock:'Task decomposition without a Hub',
   },
   {
-    icon:'🔧', sub:'Control · Hooks', heading:'Middleware',
+    icon:'??', sub:'Control � Hooks', heading:'Middleware',
     bullets:[
-      '4 hooks: on_turn · on_llm_call · on_tool_execution · on_human_input',
-      'Stack layers in any order — entry top→down, unwind in reverse',
-      'Built-ins: LoggingMiddleware · RetryMiddleware(max_retries) · HistoryLimiter(max_events)',
+      '4 hooks: on_turn � on_llm_call � on_tool_execution � on_human_input',
+      'Stack layers in any order � entry top?down, unwind in reverse',
+      'Built-ins: LoggingMiddleware � RetryMiddleware(max_retries) � HistoryLimiter(max_events)',
     ],
-    insight:'<strong>HistoryLimiter permanently deletes.</strong> It does NOT hide history — it removes it from the log. If you need filtering without deletion, use assembly policies (Control · Context) instead.',
+    insight:'<strong>HistoryLimiter permanently deletes.</strong> It does NOT hide history � it removes it from the log. If you need filtering without deletion, use assembly policies (Control � Context) instead.',
     unlock:'Cross-cutting concerns without touching agent logic',
   },
   {
-    icon:'👁️', sub:'Control · Context', heading:'Input Control',
+    icon:'???', sub:'Control � Context', heading:'Input Control',
     bullets:[
-      'Assembly policies filter what the model SEES — the full event log is always preserved',
-      'SlidingWindowPolicy(max_events=N) · TokenBudgetPolicy · WorkingMemoryPolicy',
-      'WorkingMemoryPolicy = curated view across runs → enables autonomous self-improvement',
+      'Assembly policies filter what the model SEES � the full event log is always preserved',
+      'SlidingWindowPolicy(max_events=N) � TokenBudgetPolicy � WorkingMemoryPolicy',
+      'WorkingMemoryPolicy = curated view across runs ? enables autonomous self-improvement',
     ],
-    insight:'<strong>In the playground:</strong> with a 6-event window and 3-word memory test, the agent forgot the first word — still in the log, just not assembled into context. Middleware mutates; policies filter.',
+    insight:'<strong>In the playground:</strong> with a 6-event window and 3-word memory test, the agent forgot the first word � still in the log, just not assembled into context. Middleware mutates; policies filter.',
     unlock:'Context control without destroying history',
   },
   {
-    icon:'📋', sub:'Control · Output', heading:'Structured Output',
+    icon:'??', sub:'Control � Output', heading:'Structured Output',
     bullets:[
-      'Define a Pydantic BaseModel → model returns a validated typed object',
-      'reply.body = raw text · await reply.content() = typed instance',
+      'Define a Pydantic BaseModel ? model returns a validated typed object',
+      'reply.body = raw text � await reply.content() = typed instance',
       'response_schema= set on Agent (all replies) or per individual ask() call',
     ],
     insight:'<strong>Chain typed agents.</strong> One agent takes a typed input, returns a typed output. The next picks up without parsing. No glue code between stages.',
     unlock:'Typed pipelines with no string parsing',
   },
   {
-    icon:'🕸️', sub:'Network · Hub & A2A', heading:'Networks of Agents',
+    icon:'???', sub:'Network � Hub & A2A', heading:'Networks of Agents',
     bullets:[
       'Hub = registry + post office + audit log in one',
       'Agents register with a Passport (identity) to receive an AgentClient',
-      '4 channel types: Consulting · Conversation · Discussion · Workflow (TransitionGraph)',
+      '4 channel types: Consulting � Conversation � Discussion � Workflow (TransitionGraph)',
     ],
     insight:'<strong>Hub = in-org. A2A = cross-org.</strong> AG2 supports both. Mix Google ADK, Agno, and AG2 agents via A2A with no custom adapters. TransitionGraph is the most-used pattern in enterprise deployments.',
     unlock:'Multi-agent systems with identity and audit trails',
   },
   {
-    icon:'📊', sub:'Ship · Quality', heading:'Evaluation',
+    icon:'??', sub:'Ship � Quality', heading:'Evaluation',
     bullets:[
-      'Telemetry middleware → every trace in a store; see what ran, not what you intended',
+      'Telemetry middleware ? every trace in a store; see what ran, not what you intended',
       'Agent-as-judge: second agent scores outputs against your defined criteria',
       'Calibrate judge against real user sessions before running at scale',
     ],
-    insight:'<strong>100 sessions can represent all interactions</strong> when used to align the judge. Once calibrated, it scores thousands of runs automatically. Score on conciseness, source quality, topic coverage — whatever matters.',
+    insight:'<strong>100 sessions can represent all interactions</strong> when used to align the judge. Once calibrated, it scores thousands of runs automatically. Score on conciseness, source quality, topic coverage � whatever matters.',
     unlock:'Scalable quality beyond pass/fail tests',
   },
   {
-    icon:'💰', sub:'Ship · Scale', heading:'Cost & Distribution',
+    icon:'??', sub:'Ship � Scale', heading:'Cost & Distribution',
     bullets:[
-      'Cheap models can cost 20× less than flagship — measure before optimizing',
+      'Cheap models can cost 20� less than flagship � measure before optimizing',
       'TokenBudgetPolicy: at 90% usage, signal the agent to wrap up with remaining budget',
       'A2A protocol: span agents across processes, machines, or organizations',
     ],
@@ -798,33 +798,33 @@ const NODES = [
     unlock:'Predictable spend and cross-framework scale',
   },
   {
-    icon:'🧑‍✈️', sub:'Ship · Safety', heading:'Human in the Loop',
+    icon:'?????', sub:'Ship � Safety', heading:'Human in the Loop',
     bullets:[
       'Thinking steps = prompt the agent to narrate reasoning before acting',
       'Approval gates = pause before any write, delete, send, or charge action',
-      'Rule: read-only → let it run · destructive → require explicit sign-off',
+      'Rule: read-only ? let it run � destructive ? require explicit sign-off',
     ],
-    insight:'<strong>Vasily Radostev documented a real incident where his own agent destroyed $2,000 of data.</strong> No approval gate, full permissions. It did exactly what it was told — thoroughly. The lesson is not hypothetical.',
+    insight:'<strong>Vasily Radostev documented a real incident where his own agent destroyed $2,000 of data.</strong> No approval gate, full permissions. It did exactly what it was told � thoroughly. The lesson is not hypothetical.',
     unlock:'Safe production deployment',
   },
   {
-    icon:'🎙️', sub:'Extension · Voice', heading:'LiveAgent',
+    icon:'???', sub:'Extension � Voice', heading:'LiveAgent',
     bullets:[
-      'Full-duplex voice — agent speaks while you talk; barge-in is supported',
+      'Full-duplex voice � agent speaks while you talk; barge-in is supported',
       'Sub-500ms latency via OpenAI real-time API; audio-to-audio, no transcript loop',
-      'Separate primitive from Agent — handles interruption logic the standard loop cannot',
+      'Separate primitive from Agent � handles interruption logic the standard loop cannot',
     ],
-    insight:'<strong>LiveAgent is NOT a wrapper around ask().</strong> It\'s a distinct primitive purpose-built for real-time voice — documented in the AG2 playground with a pirate voice demo that illustrates barge-in and real-time latency.',
+    insight:'<strong>LiveAgent is NOT a wrapper around ask().</strong> It\'s a distinct primitive purpose-built for real-time voice � documented in the AG2 playground with a pirate voice demo that illustrates barge-in and real-time latency.',
     unlock:'Real-time voice apps without custom audio scaffolding',
   },
 ];
 
-/* ── State ──────────────────────────────────────────────────── */
+/* -- State ---------------------------------------------------- */
 let activeIdx = -1;
 const allNodes = () => document.querySelectorAll('.map-node, .la-card');
 const isDesktop = () => window.innerWidth >= 768;
 
-/* ── Show detail ────────────────────────────────────────────── */
+/* -- Show detail ---------------------------------------------- */
 function showDetail(idx) {
   const panel       = document.getElementById('detail-panel');
   const placeholder = document.getElementById('dp-placeholder');
@@ -863,7 +863,7 @@ function showDetail(idx) {
   }
 }
 
-/* ── FAQ ────────────────────────────────────────────────────── */
+/* -- FAQ ------------------------------------------------------ */
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
   const wasOpen = item.classList.contains('open');

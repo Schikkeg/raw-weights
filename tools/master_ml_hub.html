@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -40,7 +40,7 @@
             color: var(--text-main); margin: 0; padding-top: 80px; min-height: 100vh; display: flex; flex-direction: column; 
         }
 
-        /* rw-nav font isolation — prevent Plus Jakarta Sans from bleeding into nav/footer */
+        /* rw-nav font isolation � prevent Plus Jakarta Sans from bleeding into nav/footer */
         .rw-header, .rw-footer { font-family: 'Inter', 'Space Grotesk', sans-serif !important; }
         .rw-header *, .rw-footer * { font-family: inherit; }
 
@@ -165,7 +165,7 @@
             svg { max-height: 250px; }
         }
 
-        /* ── Dark mode overrides ── */
+        /* -- Dark mode overrides -- */
         [data-theme="dark"] body { background: var(--rw-bg, #0a0f1e); color: var(--rw-text, #e2e8f0); }
         [data-theme="dark"] #searchInput { background: #1e293b; border-color: #334155; color: #e2e8f0; }
         [data-theme="dark"] #searchInput::placeholder { color: #475569; }
@@ -196,7 +196,7 @@
 <script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_ml_hub',
-  description: 'Returns an overview of the ML Master Hub — available topics, interactive visualizers, and how to navigate to a specific ML concept.',
+  description: 'Returns an overview of the ML Master Hub � available topics, interactive visualizers, and how to navigate to a specific ML concept.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3, .section-title, [data-section]'))
@@ -216,7 +216,7 @@ window.RW_PAGE_TOOLS = [{
 }];
 </script>
 <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
 <header>
     <h1>AI & Machine Learning Master Hub</h1>
@@ -229,7 +229,7 @@ window.RW_PAGE_TOOLS = [{
 <div class="gallery" id="cardGallery"></div>
 
 <div class="data-section" id="data-table-section">
-    <h3 style="margin-top: 0; color: var(--primary); font-size: 1.8rem; font-weight: 800;">📊 Global Dataset Matrix</h3>
+    <h3 style="margin-top: 0; color: var(--primary); font-size: 1.8rem; font-weight: 800;">?? Global Dataset Matrix</h3>
     <p>Edit these values. You can inject this data directly into the Loss Graph or the Dynamic Architecture playgrounds.</p>
     <div class="table-responsive">
         <table id="dataset-table">
@@ -254,15 +254,15 @@ window.RW_PAGE_TOOLS = [{
             <div class="footer-row" id="carouselControls" style="display: none; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
                 <span style="font-size: 0.85rem; font-weight: 800; color: var(--primary); letter-spacing: 1px;">MODULE DEEP DIVE:</span>
                 <div>
-                    <button class="btn-nav" id="prevSlide" onclick="moveSlide(-1)">← Prev Subtopic</button>
+                    <button class="btn-nav" id="prevSlide" onclick="moveSlide(-1)">? Prev Subtopic</button>
                     <span id="slideInfo" style="margin: 0 20px; font-weight: 800; font-size: 1rem; color: var(--text-main);"></span>
-                    <button class="btn-nav" id="nextSlide" onclick="moveSlide(1)">Next Subtopic →</button>
+                    <button class="btn-nav" id="nextSlide" onclick="moveSlide(1)">Next Subtopic ?</button>
                 </div>
             </div>
             <div class="footer-row">
-                <button class="btn-nav btn-main" onclick="moveTopic(-1)" id="prevTopic">← Previous Topic</button>
+                <button class="btn-nav btn-main" onclick="moveTopic(-1)" id="prevTopic">? Previous Topic</button>
                 <button class="btn-nav btn-close" onclick="closeModal()">Close Hub</button>
-                <button class="btn-nav btn-main" onclick="moveTopic(1)" id="nextTopic">Next Topic →</button>
+                <button class="btn-nav btn-main" onclick="moveTopic(1)" id="nextTopic">Next Topic ?</button>
             </div>
         </div>
     </div>
@@ -375,13 +375,13 @@ window.RW_PAGE_TOOLS = [{
                 subtopics: [
                     { h: "Pattern Discovery", p: "In unsupervised learning, data has no associated labels. The algorithm must find interesting clusters or structure alone. Applications include Google News clustering and market segmentation.<br/><br/>Clustering: Group Similar data points together<br/>Anomaly Detection:Find unusal data points<br/>Dimensionality Reduction:Compress data using Fewer numbers" },
                     { h: "Clustering: User Behavior Segments", p: "In web log analysis, clustering groups similar users together based on their clickstream patterns. Just like market segmentation, this allows you to automatically discover distinct categories of learners or customers, such as those primarily seeking knowledge versus those developing a career, without needing manual labels."},	
-    				{ h: "Anomaly Detection: Security & Fraud", p: "This technique is used to detect unusual events in your logs, which is critical for fraud detection and system security. An algorithm can flag unusual patterns—like a sudden surge in failed login attempts or irregular API calls—identifying potential signs of a cyberattack or fraudulent transaction." },
+    				{ h: "Anomaly Detection: Security & Fraud", p: "This technique is used to detect unusual events in your logs, which is critical for fraud detection and system security. An algorithm can flag unusual patterns�like a sudden surge in failed login attempts or irregular API calls�identifying potential signs of a cyberattack or fraudulent transaction." },
     				{ h: "Dimensionality Reduction: Log Compression", p: "Web logs often contain dozens of features per entry (IP, browser, screen resolution, etc.). Dimensionality reduction almost magically compresses this big dataset into a much smaller one while losing as little information as possible, making it significantly more efficient to process and visualize user sessions." }
                 ]
             },
             {
                 title: "4. Linear Regression", tag: "Models", summary: "Predicting continuous values with straight lines.",
-                subtopics: [{ h: "The Mathematical Model", p: "Linear regression fits a straight line to data. As you get familiar with this, many concepts will apply to more advanced models. <div class='model-explanation'> <h2 style='color:var(--primary); margin-bottom: 20px;'>The Mathematical Intuition</h2> <ul style='line-height: 1.8; color: #475569;'> <li><strong>Evaluating Performance:</strong> The cost function acts as a measurement tool that evaluates how well the model is performing. By quantifying how far off predictions are from the actual values, it allows us to systematically improve the system.</li> <li><strong>Defining Model Parameters:</strong> The variables w and b are the <strong>parameters</strong> of your model—variables you adjust during training to improve fit. In technical discussions, these are often referred to as <strong>coefficients</strong> or <strong>weights</strong>.</li> <li><strong>Generating the Fit:</strong> Each unique choice for these parameters results in a different function, f(x). Visually, this generates a different line on the graph, allowing the model to adapt to the specific shape of your data.</li> <li><strong>The Goal of Learning:</strong> The ultimate objective is to find the specific combination of $w$ and $b$ that results in the <strong>smallest possible value</strong> for the cost function. This ensures the resulting line fits the training data as accurately as possible.</li> </ul> </div>", formula: "f_{w,b}(x) = wx + b" }]
+                subtopics: [{ h: "The Mathematical Model", p: "Linear regression fits a straight line to data. As you get familiar with this, many concepts will apply to more advanced models. <div class='model-explanation'> <h2 style='color:var(--primary); margin-bottom: 20px;'>The Mathematical Intuition</h2> <ul style='line-height: 1.8; color: #475569;'> <li><strong>Evaluating Performance:</strong> The cost function acts as a measurement tool that evaluates how well the model is performing. By quantifying how far off predictions are from the actual values, it allows us to systematically improve the system.</li> <li><strong>Defining Model Parameters:</strong> The variables w and b are the <strong>parameters</strong> of your model�variables you adjust during training to improve fit. In technical discussions, these are often referred to as <strong>coefficients</strong> or <strong>weights</strong>.</li> <li><strong>Generating the Fit:</strong> Each unique choice for these parameters results in a different function, f(x). Visually, this generates a different line on the graph, allowing the model to adapt to the specific shape of your data.</li> <li><strong>The Goal of Learning:</strong> The ultimate objective is to find the specific combination of $w$ and $b$ that results in the <strong>smallest possible value</strong> for the cost function. This ensures the resulting line fits the training data as accurately as possible.</li> </ul> </div>", formula: "f_{w,b}(x) = wx + b" }]
             },
             {
                 title: "5. The Perceptron", tag: "Neural Networks", summary: "The foundation of deep learning architecture.",
@@ -410,14 +410,14 @@ window.RW_PAGE_TOOLS = [{
                 title: "8. Gradient Descent", tag: "Optimizer", summary: "The iterative engine for parameter optimization.",
                 subtopics: [
                     { h: "Downhill Search", p: "Gradient descent systematically updates parameters w and b to minimize cost J until convergence. Update both parameters simultaneously.", formula: "w = w - \\alpha \\frac{\\partial}{\\partial w} J(w,b)", img: "https://miro.medium.com/v2/resize:fit:4800/format:webp/1*09kq2L23D9XM_9Xtr8gc8Q.png"},
-                    { h: "The Learning Rate (α)", p: "The choice of α is critical for optimization. If α is too small, gradient descent will work but may be painfully slow. However, if α is too large, gradient descent can overshoot the minimum, fail to converge, and may even diverge—meaning the cost function increases with every step.", img: "https://cdn-images-1.medium.com/v2/resize:fit:1440/1*psrbPeuzmH1PNUif-Isw9g.jpeg" },
+                    { h: "The Learning Rate (a)", p: "The choice of a is critical for optimization. If a is too small, gradient descent will work but may be painfully slow. However, if a is too large, gradient descent can overshoot the minimum, fail to converge, and may even diverge�meaning the cost function increases with every step.", img: "https://cdn-images-1.medium.com/v2/resize:fit:1440/1*psrbPeuzmH1PNUif-Isw9g.jpeg" },
     				{ h: "Local vs. Global Minimum", p: "For complex models, the cost surface may have many local minima (pits). However, for Linear Regression with a squared error cost function, the surface is always a convex 'bowl' shape. This guarantees that gradient descent will always find the single Global Minimum rather than getting stuck in a local one.", formula: "w = w - \\alpha \\frac{\\partial}{\\partial w} J(w,b)"},
                     { h: "Modern Optimizers", p: "While standard gradient descent is foundational, modern training uses advanced optimizers to speed up convergence.<br/><br/><ul><li><strong>SGD (Stochastic Gradient Descent):</strong> Uses mini-batches of data for fast, slightly noisy steps.</li><li><strong>Adam:</strong> Automatically adapts the learning rate per weight. The industry standard. <br><span class='code-box' style='display:inline-block; padding: 2px 5px; margin: 5px 0;'>tf.keras.optimizers.Adam(learning_rate=0.001)</span></li><li><strong>Adagrad:</strong> Scales learning rate based on historical gradients (good for sparse data).</li><li><strong>RMSProp:</strong> Similar to Adagrad but uses a moving average to prevent the learning rate from dropping too fast.</li><li><strong>Adadelta:</strong> Refines Adagrad, completely removing the need to set a starting learning rate.</li></ul>" }
                 ]
             },
             {
                 title: "9. Multiple Features", tag: "Regression", summary: "Predicting with Multiple Features.",
-                subtopics: [{ h: "N-Dimensional Inputs", p: "When moving from one feature to many, the mathematical model expands. We can represent this as a long-form sum of weighted features or use the vectorized 'dot product' notation which is the standard in modern AI computing.<br/>Real-world models use many features (size, age, etc.).<br/>Vector notation allows for a compact model representation.<br/>When we have $n$ features (size, bedrooms, floors, age), each feature $x_n$ gets its own weight $w_n$.<br/> This allows the model to prioritize different factors differently—for example, age might have a negative weight because it decreases value.", formula: "\\begin{aligned} f_{w,b}(x) &= w_1x_1 + w_2x_2 + ... + w_nx_n + b \\\\ f_{\\vec{w},b}(\\vec{x}) &= \\vec{w} \\cdot \\vec{x} + b \\end{aligned}" }]
+                subtopics: [{ h: "N-Dimensional Inputs", p: "When moving from one feature to many, the mathematical model expands. We can represent this as a long-form sum of weighted features or use the vectorized 'dot product' notation which is the standard in modern AI computing.<br/>Real-world models use many features (size, age, etc.).<br/>Vector notation allows for a compact model representation.<br/>When we have $n$ features (size, bedrooms, floors, age), each feature $x_n$ gets its own weight $w_n$.<br/> This allows the model to prioritize different factors differently�for example, age might have a negative weight because it decreases value.", formula: "\\begin{aligned} f_{w,b}(x) &= w_1x_1 + w_2x_2 + ... + w_nx_n + b \\\\ f_{\\vec{w},b}(\\vec{x}) &= \\vec{w} \\cdot \\vec{x} + b \\end{aligned}" }]
             },
             {
                 title: "10. Vectorization", tag: "Computing", summary: "Faster code using NumPy parallel hardware.",
@@ -431,7 +431,7 @@ window.RW_PAGE_TOOLS = [{
                 subtopics: [
 					{ h: "Improving Speed", p: "When features have different scales, gradient descent zigzags inefficiently. Scaling 'squashes' the data so features like Size ($300$-$5000$) and Bedrooms ($1$-$5$) sit in a similar range, making the cost function contours circular and the path to the minimum direct.", formula: "x_{scaled} = \\frac{x - \\mu}{\\sigma}"},
 					{ h: "Scaling Techniques: Max, Mean, & Z-Score", p: "To speed up convergence, we can use: <br/>1) <b>Max Scaling</b> to fit data between 0 and 1. <br/>2) <b>Mean Normalization</b> to center data around zero. <br/>3) <b>Z-score Normalization</b> to scale data based on standard deviation, making the algorithm robust to outliers.<br/>Note: <b>$\\mu$ (Mu)</b> represents the average value of the feature, and <b>$\\sigma$ (Sigma)</b> represents the standard deviation (how spread out the values are). Z-score is the 'gold standard' because it handles outliers effectively.", formula: "\\begin{aligned} \\text{Max Scaling: } & x_{norm} = \\frac{x}{x_{max}} \\\\ \\text{Mean Norm: } & x_{norm} = \\frac{x - \\mu}{x_{max} - x_{min}} \\\\ \\text{Z-score: } & x_{norm} = \\frac{x - \\mu}{\\sigma} \\end{aligned}"},
-					{ h: "Checking Gradient descent is converging", p: "If gradient descent is functioning correctly, the cost $J$ should decrease with every single iteration.<br/><br/>An increase in $J$ typically indicates that the learning rate $\\alpha$ is too large or that there is a bug in the code.<br/><br/>This flattening suggests that the algorithm has converged, as $J$ is no longer decreasing.<br/><br/>Keep in mind that the number of iterations required to reach convergence varies significantly by application—some might take only 30, while others could require 100,000.<br/><br/>Ultimately, convergence indicates that you have found parameters $w$ and $b$ that are near the global minimum of $J$."},
+					{ h: "Checking Gradient descent is converging", p: "If gradient descent is functioning correctly, the cost $J$ should decrease with every single iteration.<br/><br/>An increase in $J$ typically indicates that the learning rate $\\alpha$ is too large or that there is a bug in the code.<br/><br/>This flattening suggests that the algorithm has converged, as $J$ is no longer decreasing.<br/><br/>Keep in mind that the number of iterations required to reach convergence varies significantly by application�some might take only 30, while others could require 100,000.<br/><br/>Ultimately, convergence indicates that you have found parameters $w$ and $b$ that are near the global minimum of $J$."},
 					{ h: "Diagnosing the Learning Rate", p: "A fluctuating cost $J$ usually indicates an $\\alpha$ that is too large.<br/><br/> While a tiny $\\alpha$ is a great debugging tool to ensure your code is correct (as $J$ should never increase), it is inefficient for real training.<br/><br/> The goal is to find the largest possible $\\alpha$ that still results in a consistent decrease in cost."}                
                 ]
             },
@@ -484,7 +484,7 @@ window.RW_PAGE_TOOLS = [{
                 }]
             }
         ],
-        footer: "© 2026 RawWeights. All rights reserved."
+        footer: "� 2026 RawWeights. All rights reserved."
     };
 
 
@@ -638,21 +638,21 @@ window.RW_PAGE_TOOLS = [{
                     
                     <rect x="30" y="50" width="80" height="140" rx="10" fill="#e0f2fe" stroke="#0ea5e9" stroke-dasharray="5,5" />
                     <circle cx="70" cy="80" r="20" fill="#fff" stroke="#0ea5e9" stroke-width="2"/>
-                    <text x="70" y="85" text-anchor="middle" font-family="serif" font-style="italic">x₁</text>
+                    <text x="70" y="85" text-anchor="middle" font-family="serif" font-style="italic">x1</text>
                     <circle cx="70" cy="160" r="20" fill="#fff" stroke="#0ea5e9" stroke-width="2"/>
-                    <text x="70" y="165" text-anchor="middle" font-family="serif" font-style="italic">x₂</text>
+                    <text x="70" y="165" text-anchor="middle" font-family="serif" font-style="italic">x2</text>
                     
                     <circle cx="280" cy="35" r="16" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
                     <text x="280" y="41" text-anchor="middle" font-family="serif" font-style="italic" font-weight="800">b</text>
                     <line x1="280" y1="51" x2="280" y2="90" stroke="#94a3b8" stroke-width="2"/>
                     
                     <line x1="90" y1="80" x2="250" y2="120" stroke="#94a3b8" stroke-width="2"/>
-                    <text x="170" y="90" fill="#64748b" text-anchor="middle" font-family="serif" font-style="italic">w₁</text>
+                    <text x="170" y="90" fill="#64748b" text-anchor="middle" font-family="serif" font-style="italic">w1</text>
                     <line x1="90" y1="160" x2="250" y2="120" stroke="#94a3b8" stroke-width="2"/>
-                    <text x="170" y="155" fill="#64748b" text-anchor="middle" font-family="serif" font-style="italic">w₂</text>
+                    <text x="170" y="155" fill="#64748b" text-anchor="middle" font-family="serif" font-style="italic">w2</text>
                     
                     <circle cx="280" cy="120" r="30" fill="#fae8ff" stroke="#d946ef" stroke-width="2"/>
-                    <text x="280" y="128" text-anchor="middle" font-size="24">Σ</text>
+                    <text x="280" y="128" text-anchor="middle" font-size="24">S</text>
                     
                     <line x1="310" y1="120" x2="380" y2="120" stroke="#94a3b8" stroke-width="2" />
                     
@@ -662,7 +662,7 @@ window.RW_PAGE_TOOLS = [{
                     <line x1="440" y1="120" x2="520" y2="120" stroke="#94a3b8" stroke-width="2" />
                     
                     <circle cx="550" cy="120" r="30" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
-                    <text x="550" y="125" text-anchor="middle" font-size="20" font-family="serif">ŷ</text>
+                    <text x="550" y="125" text-anchor="middle" font-size="20" font-family="serif">y</text>
 
                     <text x="70" y="225" text-anchor="middle" font-weight="800" fill="#64748b" font-size="14" text-transform="uppercase">Input</text>
                     <text x="170" y="225" text-anchor="middle" font-weight="800" fill="#64748b" font-size="14" text-transform="uppercase">Weight</text>
@@ -682,7 +682,7 @@ window.RW_PAGE_TOOLS = [{
                         <label style="font-weight: 800; color: var(--text-main);">Polynomial Degree (1 to 4): <span id="deg-val" style="color:var(--primary); font-size: 1.2rem;">1</span></label>
                         <input type="range" id="poly-deg" min="1" max="4" step="1" value="1" oninput="updatePolyFit()">
                     </div>
-                    <button class="ui-btn" onclick="clearPolyData()" style="border: 2px solid #ef4444; color: #ef4444;">🗑️ Clear Points</button>
+                    <button class="ui-btn" onclick="clearPolyData()" style="border: 2px solid #ef4444; color: #ef4444;">??? Clear Points</button>
                 </div>
                 <div class="chart-wrapper"><canvas id="polyChart"></canvas></div>
                 <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;"><em>Click anywhere on the grid above to drop messy data points. Watch the math try to fit them!</em></p>
@@ -694,7 +694,7 @@ window.RW_PAGE_TOOLS = [{
                 <span class="playground-label">Loss & Residuals Matrix</span>
                 <div class="stack-mobile" style="margin-bottom: 15px; display:flex; gap:10px;">
                     <button onclick="setLossMode('generic')" id="btn-loss-generic" class="ui-btn btn-active">Generic Example</button>
-                    <button onclick="setLossMode('data')" id="btn-loss-data" class="ui-btn">Plot Global Data ↓</button>
+                    <button onclick="setLossMode('data')" id="btn-loss-data" class="ui-btn">Plot Global Data ?</button>
                 </div>
                 <div class="chart-wrapper"><canvas id="lossChart"></canvas></div>
             </div>`;
@@ -731,7 +731,7 @@ window.RW_PAGE_TOOLS = [{
                 <div class="stack-mobile" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
                     <button onclick="setArchMode('labels')" id="btn-mode-labels" class="ui-btn btn-active">Show Labels</button>
                     <button onclick="setArchMode('compute')" id="btn-mode-compute" class="ui-btn">Show Computed</button>
-                    <button onclick="setArchMode('data')" id="btn-mode-data" class="ui-btn">Inject Global Data ↓</button>
+                    <button onclick="setArchMode('data')" id="btn-mode-data" class="ui-btn">Inject Global Data ?</button>
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label style="font-weight: 800; font-size: 0.9em;">Node Formula (JS eval): <span style="font-weight: normal; color: var(--text-muted);"><em>'val' equals sum of inputs</em></span></label>
@@ -759,9 +759,9 @@ window.RW_PAGE_TOOLS = [{
             <div class="playground-area">
                 <span class="playground-label">Live Data & Graph Sandbox</span>
                 <div class="stack-mobile" style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; align-items: center;">
-                    <button class="ui-btn btn-active" id="wb-btn-blue" onclick="setWbColor('blue')">🔵 Blue Class / Data</button>
-                    <button class="ui-btn" id="wb-btn-red" onclick="setWbColor('red')">🔴 Red Class / Data</button>
-                    <button class="ui-btn" onclick="clearWb()" style="border: 2px solid #ef4444; color: #ef4444; margin-left:auto;">🗑️ Clear Canvas</button>
+                    <button class="ui-btn btn-active" id="wb-btn-blue" onclick="setWbColor('blue')">?? Blue Class / Data</button>
+                    <button class="ui-btn" id="wb-btn-red" onclick="setWbColor('red')">?? Red Class / Data</button>
+                    <button class="ui-btn" onclick="clearWb()" style="border: 2px solid #ef4444; color: #ef4444; margin-left:auto;">??? Clear Canvas</button>
                 </div>
                 <div class="stack-mobile" style="display:flex; gap: 15px; margin-bottom: 15px; background: white; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
                     <div style="flex:1;">
@@ -927,7 +927,7 @@ window.RW_PAGE_TOOLS = [{
             data: {
                 datasets: [
                     { label: 'Ground Truth Data (y)', data: currentData, backgroundColor: '#3b82f6', pointRadius: 7 },
-                    { label: 'Model Prediction (ŷ)', data: lineData, type: 'line', borderColor: '#22c55e', borderWidth: 3, showLine: true, pointRadius: 0, tension: 0 }
+                    { label: 'Model Prediction (y)', data: lineData, type: 'line', borderColor: '#22c55e', borderWidth: 3, showLine: true, pointRadius: 0, tension: 0 }
                 ]
             },
             options: {
@@ -1081,7 +1081,7 @@ window.RW_PAGE_TOOLS = [{
             let colorMap = [
                 { fill: '#e0f2fe', stroke: '#0ea5e9', label: 'x' },
                 { fill: '#fae8ff', stroke: '#d946ef', label: 'Z' },
-                { fill: '#dcfce7', stroke: '#22c55e', label: 'ŷ' }
+                { fill: '#dcfce7', stroke: '#22c55e', label: 'y' }
             ];
             let style = (l === 0) ? colorMap[0] : (l === layers.length - 1) ? colorMap[2] : colorMap[1];
 

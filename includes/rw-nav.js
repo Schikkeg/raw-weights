@@ -771,47 +771,86 @@
 
     mc.registerTool({
       name: 'search_rawweights',
-      description: 'Open the RawWeights search UI and return matching articles, guides, and playgrounds. Opens the search overlay and shows live results in the page.',
+      description: [
+        'Search RawWeights for articles, guides, playgrounds, and use cases.',
+        'Always opens the visual search overlay so the user can browse results interactively.',
+        'Also returns up to 5 structured results with title, excerpt, page URL, and section-level anchor links (sub_results).',
+        'Use results[].url to navigate the user to a specific page.',
+        'Use results[].sub_results[].url to link directly to a heading inside a page, e.g. /guide/rag.html#chunking-strategies.',
+        'If no structured results come back (Pagefind not available), still direct the user to results_url.'
+      ].join(' '),
       inputSchema: {
         type: 'object',
-        properties: { query: { type: 'string', description: 'Search term or topic to find' } },
+        properties: { query: { type: 'string', description: 'Search term, topic, or question to find content for' } },
         required: ['query']
       },
       execute: function (p) {
-        /* On the search page itself: fill the hero input (which mirrors to Pagefind) */
+        var resultsUrl = 'https://rawweights.com/search/?q=' + encodeURIComponent(p.query);
+
+        /* Open visual overlay for the user */
         if (window.location.pathname.indexOf('/search') === 0) {
-          if (typeof window.__rw.fillHeroSearch === 'function') {
-            window.__rw.fillHeroSearch(p.query);
-            return { status: 'filled', query: p.query, results_url: window.location.origin + '/search/?q=' + encodeURIComponent(p.query) };
-          }
-        }
-        /* Other pages: open overlay */
-        if (window.__rw && typeof window.__rw.searchFor === 'function') {
+          if (typeof window.__rw.fillHeroSearch === 'function') window.__rw.fillHeroSearch(p.query);
+        } else if (window.__rw && typeof window.__rw.searchFor === 'function') {
           window.__rw.searchFor(p.query);
-          return { status: 'opened', query: p.query, results_url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
         }
-        window.location.href = ROOT + 'search/?q=' + encodeURIComponent(p.query);
-        return { status: 'navigating', url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
+
+        /* Also query Pagefind JS API to return structured results to the agent */
+        var base = 'https://rawweights.com';
+        return import(base + '/pagefind/pagefind.js').then(function (pf) {
+          return pf.search(p.query).then(function (res) {
+            var top = res.results.slice(0, 5);
+            return Promise.all(top.map(function (r) { return r.data(); })).then(function (items) {
+              return {
+                status: 'opened',
+                query: p.query,
+                results_url: resultsUrl,
+                results: items.map(function (d) {
+                  return {
+                    url: d.url,
+                    title: (d.meta && d.meta.title) || '',
+                    excerpt: d.excerpt || '',
+                    sub_results: (d.sub_results || []).map(function (s) {
+                      return { title: s.title, url: d.url + s.anchor, anchor: s.anchor };
+                    })
+                  };
+                })
+              };
+            });
+          });
+        }).catch(function () {
+          return { status: 'opened', query: p.query, results_url: resultsUrl, results: [] };
+        });
       }
     });
 
     mc.registerTool({
       name: 'get_navigation',
-      description: 'Returns the RawWeights site navigation as a flat list of sections and links.',
+      description: [
+        'Returns the complete RawWeights site navigation: every section (Playgrounds, Guides, Use Cases, Blog) with each link\'s label, url, and one-line description.',
+        'Use this to answer "what does this site cover?", "find me something about X", or to build a menu for the user.',
+        'Each entry in sections[].links has a url — present these as clickable links to send the user to that page.',
+        'To navigate the user: return the url from the matching link.',
+        'To summarise the site: group and describe the sections array by section name.',
+        'To find a specific topic: scan links[].desc for keywords, then return the matching url.'
+      ].join(' '),
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       execute: function () {
         var sections = [];
         NAV_DATA.items.forEach(function (item) {
           var links = [];
           if (item.url) {
-            links.push({ label: item.label, url: item.url });
+            links.push({ label: item.label, url: 'https://rawweights.com' + item.url });
           }
           if (item.items) {
-            item.items.forEach(function (i) { links.push({ label: i.label, url: i.url, desc: i.desc || '' }); });
+            item.items.forEach(function (i) {
+              links.push({ label: i.label, url: 'https://rawweights.com' + i.url, desc: i.desc || '' });
+            });
           }
           if (item.groups) {
             item.groups.forEach(function (g) {
-              g.items.forEach(function (i) { links.push({ label: i.label, url: i.url, desc: i.desc || '' }); });
+              g.items.forEach(function (i) {
+                links.push({ label: i.label, url: 'https://rawweights.com' + i.url, desc: i.desc || '' });
+              });
             });
           }
           sections.push({ section: item.label, links: links });
@@ -822,10 +861,9 @@
 
     mc.registerTool({
       name: 'get_footer_links',
-      description: 'Returns all links from the RawWeights site footer.',
+      description: 'Returns all links from the RawWeights site footer grouped by category (Playgrounds, Guides, Use Cases, Connect). Use this to discover supplementary pages or to help the user find a specific section.',
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       execute: function () {
-        /* rw-footer.js replaces #rw-footer via outerHTML → query by class instead */
         var footer = document.querySelector('footer.rw-footer') || document.getElementById('rw-footer');
         var links = footer
           ? Array.from(footer.querySelectorAll('a[href]')).map(function (a) {
@@ -838,15 +876,49 @@
 
     mc.registerTool({
       name: 'get_page_sections',
-      description: 'Returns all h2/h3 section headings and anchor IDs on the current page for deep-linking.',
-      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
-      execute: function () {
+      description: [
+        'Returns h2/h3 section headings with deep-link anchor URLs.',
+        'Two modes:',
+        '(1) No url argument — returns sections of the page currently open in the browser. Use this when the user is already on a page and wants to jump to a specific section.',
+        '(2) url argument provided (e.g. "/guide/rag.html") — fetches that RawWeights page and returns its sections without navigating away. Use this after search_rawweights to inspect the internal structure of a result and produce section-level links like "https://rawweights.com/guide/rag.html#evaluation-metrics".',
+        'Always prefer mode (2) when the user asks about a specific page by name or after a search.'
+      ].join(' '),
+      inputSchema: {
+        type: 'object',
+        properties: {
+          url: {
+            type: 'string',
+            description: 'Optional. Path or full URL of a RawWeights page to inspect, e.g. "/guide/rag.html". Omit to inspect the current page.'
+          }
+        },
+        additionalProperties: false
+      },
+      execute: function (p) {
+        function extractSections(doc, pageUrl) {
+          var base = pageUrl.replace(/#.*$/, '');
+          return Array.from(doc.querySelectorAll('h2, h3')).map(function (h) {
+            var slug = h.id || h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+            if (!h.id) h.id = slug;
+            return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + slug, url: base + '#' + slug };
+          });
+        }
+
+        if (p && p.url) {
+          var target = /^https?:\/\//.test(p.url) ? p.url : 'https://rawweights.com' + (p.url.charAt(0) === '/' ? '' : '/') + p.url;
+          return fetch(target).then(function (resp) {
+            return resp.text();
+          }).then(function (html) {
+            var doc = (new DOMParser()).parseFromString(html, 'text/html');
+            var sections = extractSections(doc, target);
+            return { page: target, sections: sections, count: sections.length };
+          }).catch(function (err) {
+            return { error: err.message, page: target, sections: [] };
+          });
+        }
+
+        /* Current page mode */
         var base = window.location.origin + window.location.pathname;
-        var sections = Array.from(document.querySelectorAll('h2, h3')).map(function (h) {
-          var slug = h.id || h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-          if (!h.id) h.id = slug; /* set the id so the anchor is real and navigable */
-          return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + slug, url: base + '#' + slug };
-        });
+        var sections = extractSections(document, base);
         return { page: window.location.pathname, sections: sections, count: sections.length };
       }
     });

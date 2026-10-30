@@ -1,15 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClaimLens — 3-Agent Fact-Checker | RawWeights</title>
+  <title>ClaimLens � 3-Agent Fact-Checker | RawWeights</title>
   <meta name="description" content="A 3-agent pipeline that shows exactly where a standard AI echoes viral hoaxes. Claim Extractor, Grounder, Verifier. Built in Python and Streamlit after an AI Camp session on grounded agentic pipelines.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/usecase/claimlens.html">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/usecase/claimlens.html">
-  <meta property="og:title" content="ClaimLens — 3-Agent Fact-Checker">
+  <meta property="og:title" content="ClaimLens � 3-Agent Fact-Checker">
   <meta property="og:description" content="A 3-agent pipeline that shows exactly where a standard AI echoes viral hoaxes. Echo Index: 87% on the lemon water claim.">
   <meta property="og:image" content="https://rawweights.com/images/claimlens/og.png">
 
@@ -19,7 +19,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* ── Hero ───────────────────────────────────── */
+    /* -- Hero ------------------------------------- */
     .guide-hero {
       background: linear-gradient(135deg, #071a0f 0%, #071530 50%, #0f0b28 100%);
       padding: 4rem 2rem 3.5rem; position: relative; overflow: hidden;
@@ -63,7 +63,7 @@
     .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
     .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.5); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: .2rem .6rem; }
 
-    /* ── Hero terminal — fixed height prevents CLS ── */
+    /* -- Hero terminal � fixed height prevents CLS -- */
     .hero-terminal-wrap {
       border-radius: 14px; overflow: hidden;
       border: 1px solid rgba(74,222,128,.2);
@@ -79,7 +79,7 @@
     .t-label { font-family: var(--rw-font-mono); font-size: .68rem; color: rgba(74,222,128,.55); margin-left: auto; }
     .hero-terminal-body {
       padding: 1.1rem 1.25rem;
-      height: 340px;       /* fixed — prevents CLS as animation types */
+      height: 340px;       /* fixed � prevents CLS as animation types */
       overflow: hidden;
       position: relative;
     }
@@ -105,7 +105,7 @@
     .cursor { display: inline-block; width: 6px; height: .9em; background: #4ade80; margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: middle; }
     @keyframes blink { 50% { opacity: 0; } }
 
-    /* ── Guide layout ───────────────────────────── */
+    /* -- Guide layout ----------------------------- */
     .guide-layout { display: grid; grid-template-columns: 230px 1fr; gap: 2.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; align-items: start; }
     .guide-layout > * { min-width: 0; }
     .guide-sidebar { position: sticky; top: calc(var(--rw-nav-height) + 1.5rem); }
@@ -115,14 +115,14 @@
     .guide-toc a:hover, .guide-toc a.active { color: #4ade80; border-left-color: #4ade80; background: rgba(74,222,128,.06); }
     .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
 
-    /* ── Sections ───────────────────────────────── */
+    /* -- Sections --------------------------------- */
     .guide-section { margin-bottom: 3.5rem; }
     .guide-section h2 { font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800; color: var(--rw-text); margin-bottom: 1rem; padding-bottom: .6rem; border-bottom: 2px solid rgba(74,222,128,.15); scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
     .guide-section h3 { font-family: var(--rw-font-display); font-size: 1.05rem; font-weight: 700; color: var(--rw-text); margin: 1.5rem 0 .5rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
     .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
     code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: #4ade80; }
 
-    /* ── Stat row ───────────────────────────────── */
+    /* -- Stat row --------------------------------- */
     .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
     .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
     .stat-cell:last-child { border-right: none; }
@@ -131,14 +131,14 @@
     .stat-val-ind { color: #818cf8; }
     .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
 
-    /* ── Feature grid ───────────────────────────── */
+    /* -- Feature grid ----------------------------- */
     .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
     .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
     .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
     .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
     .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
 
-    /* ── Architecture: two-approach ─────────────── */
+    /* -- Architecture: two-approach --------------- */
     .approach-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
     .approach-col { border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 1.25rem; background: var(--rw-card); }
     .approach-header { font-family: var(--rw-font-display); font-size: .73rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: .35rem .75rem; border-radius: 6px; margin-bottom: 1.1rem; display: inline-block; }
@@ -157,7 +157,7 @@
     .pn-verdict { background: rgba(74,222,128,.1);   border: 2px solid rgba(74,222,128,.3);   color: #4ade80; font-weight: 700; }
     .pn-note    { font-family: var(--rw-font-mono); font-size: .67rem; color: var(--rw-text-subtle); text-align: center; margin-top: .5rem; line-height: 1.55; }
 
-    /* ── Walkthrough gallery ─────────────────────── */
+    /* -- Walkthrough gallery ----------------------- */
     .walk-preset-bar, .walk-tab-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
     .walk-preset, .walk-tab {
       padding: .4rem 1rem; border-radius: 9999px; border: 1.5px solid var(--rw-border);
@@ -184,54 +184,54 @@
     .home-shot-wrap img { width: 100%; height: auto; display: block; }
     .home-shot-caption { padding: .55rem 1rem; font-family: var(--rw-font-mono); font-size: .72rem; color: var(--rw-text-subtle); background: var(--rw-bg-subtle); border-top: 1px solid var(--rw-border); }
 
-    /* ── Step list ──────────────────────────────── */
+    /* -- Step list -------------------------------- */
     .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
     .step-item { display: flex; gap: .9rem; align-items: flex-start; }
     .step-num { width: 26px; height: 26px; border-radius: 50%; background: #4ade80; color: #071a0f; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
     .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
 
-    /* ── Tables ─────────────────────────────────── */
+    /* -- Tables ----------------------------------- */
     .table-scroll { overflow-x: auto; }
     .comparison-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: .88rem; }
     .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .78rem; text-align: left; padding: .7rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
     .comparison-table td { padding: .65rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
     .comparison-table tr:hover td { background: var(--rw-bg-alt); }
 
-    /* ── Code block ─────────────────────────────── */
+    /* -- Code block ------------------------------- */
     .code-block { background: #050d0a; border: 1px solid rgba(74,222,128,.15); border-radius: var(--rw-r-md); padding: 1.25rem 1.5rem; font-family: var(--rw-font-mono); font-size: .81rem; line-height: 1.7; color: #94a3b8; margin: 1.25rem 0; overflow-x: auto; }
     .code-block .cm { color: #334155; }
     .code-block .kw { color: #818cf8; }
     .code-block .st { color: #4ade80; }
     .code-block .fn { color: #fbbf24; }
 
-    /* ── Verdict badges ──────────────────────────── */
+    /* -- Verdict badges ---------------------------- */
     .vbadge { display: inline-block; font-family: var(--rw-font-mono); font-size: .72rem; font-weight: 700; padding: .18rem .5rem; border-radius: 4px; margin-right: .3rem; }
     .vb-fab  { background: rgba(248,113,113,.15); color: #f87171; border: 1px solid rgba(248,113,113,.25); }
     .vb-exag { background: rgba(251,191,36,.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,.22); }
     .vb-ok   { background: rgba(74,222,128,.12);  color: #4ade80; border: 1px solid rgba(74,222,128,.22); }
 
-    /* ── Callout ─────────────────────────────────── */
+    /* -- Callout ----------------------------------- */
     .callout { background: rgba(248,113,113,.05); border: 1px solid rgba(248,113,113,.18); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; margin: 1.25rem 0; }
     .callout-label { font-family: var(--rw-font-mono); font-size: .67rem; color: #f87171; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .35rem; }
     .callout-body { font-size: .85rem; color: var(--rw-text-muted); line-height: 1.65; }
     .callout-body strong { color: var(--rw-text); }
 
-    /* ── Learning cards ──────────────────────────── */
+    /* -- Learning cards ---------------------------- */
     .learning-item { margin-bottom: 1.5rem; padding: 1.1rem 1.25rem; border-left: 3px solid #4ade80; background: rgba(74,222,128,.04); border-radius: 0 var(--rw-r-md) var(--rw-r-md) 0; }
     .learning-num { font-family: var(--rw-font-mono); font-size: .65rem; color: #4ade80; letter-spacing: .06em; margin-bottom: .25rem; }
     .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .92rem; color: var(--rw-text); margin-bottom: .4rem; }
     .learning-body { font-size: .83rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .5rem; }
     .learning-quote { font-family: var(--rw-font-mono); font-size: .74rem; color: #4ade80; padding: .4rem .75rem; background: rgba(74,222,128,.07); border-radius: 4px; display: block; }
 
-    /* ── Moment grid ─────────────────────────────── */
+    /* -- Moment grid ------------------------------- */
     .moment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
     .moment-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.1rem; }
     .moment-emoji { font-size: 1.4rem; margin-bottom: .55rem; }
     .moment-title { font-family: var(--rw-font-display); font-size: .87rem; font-weight: 700; color: var(--rw-text); margin-bottom: .3rem; }
     .moment-body { font-size: .8rem; color: var(--rw-text-muted); line-height: 1.6; }
 
-    /* ── Platform review ─────────────────────────── */
+    /* -- Platform review --------------------------- */
     .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
     .review-col { border-radius: var(--rw-r-md); padding: 1.25rem; }
     .review-liked  { background: rgba(74,222,128,.05);  border: 1px solid rgba(74,222,128,.15); }
@@ -242,26 +242,26 @@
     .review-item { display: flex; gap: .55rem; margin-bottom: .6rem; font-size: .82rem; color: var(--rw-text-muted); line-height: 1.55; }
     .review-item strong { color: var(--rw-text); }
 
-    /* ── Team ────────────────────────────────────── */
+    /* -- Team -------------------------------------- */
     .team-card { display: flex; gap: 1rem; align-items: flex-start; background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; margin: 1rem 0; }
     .team-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #4ade80, #818cf8); display: flex; align-items: center; justify-content: center; font-family: var(--rw-font-display); font-weight: 800; font-size: 1rem; color: #07101f; flex-shrink: 0; }
     .team-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .95rem; color: var(--rw-text); margin-bottom: .15rem; }
     .team-role { font-family: var(--rw-font-mono); font-size: .72rem; color: #4ade80; margin-bottom: .4rem; }
     .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.6; }
 
-    /* ── Inspiration box ─────────────────────────── */
+    /* -- Inspiration box --------------------------- */
     .inspiration-box { border: 1px solid rgba(129,140,248,.25); border-radius: var(--rw-r-md); padding: 1.25rem 1.5rem; background: rgba(129,140,248,.04); margin: 1.25rem 0; }
     .inspiration-label { font-family: var(--rw-font-mono); font-size: .67rem; color: #818cf8; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .4rem; }
     .inspiration-body { font-size: .86rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .75rem; }
 
-    /* ── CTA box ─────────────────────────────────── */
+    /* -- CTA box ----------------------------------- */
     .cta-box { background: var(--rw-card); border: 1px solid rgba(74,222,128,.2); border-radius: var(--rw-r-md); padding: 1.5rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin: 1.5rem 0; }
     .cta-box h3 { font-family: var(--rw-font-display); font-size: 1rem; font-weight: 700; color: var(--rw-text); margin-bottom: .3rem; }
     .cta-box p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
     .cta-body { flex: 1; min-width: 180px; }
     .cta-btns { display: flex; gap: .75rem; flex-wrap: wrap; }
 
-    /* ── Responsive ──────────────────────────────── */
+    /* -- Responsive -------------------------------- */
     @media (max-width: 1024px) {
       .guide-layout { grid-template-columns: 1fr; }
       .guide-sidebar { position: static; }
@@ -297,9 +297,9 @@
 <body>
 
 <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- ── Hero ──────────────────────────────────────────────── -->
+<!-- -- Hero ------------------------------------------------ -->
 <div class="guide-hero">
   <div class="hero-split">
     <div class="hero-text">
@@ -336,7 +336,7 @@
   </div>
 </div>
 
-<!-- ── Guide Content ─────────────────────────────────────── -->
+<!-- -- Guide Content --------------------------------------- -->
 <div class="guide-layout" id="guide-content">
 
   <aside class="guide-sidebar">
@@ -357,7 +357,7 @@
 
   <main>
 
-    <!-- ── WHAT IT DOES ─────────────────────────── -->
+    <!-- -- WHAT IT DOES --------------------------- -->
     <section class="guide-section" id="section-what">
       <h2>What It Does</h2>
       <p>When viral health claims spread, the top 10 search results are often SEO blogs repeating each other. A standard AI reads those, writes a confident paragraph, and echoes the hoax &mdash; what the AI Camp session called &ldquo;fluent prose fraud.&rdquo; ClaimLens puts the standard AI and the 3-agent pipeline on the same screen so the gap is impossible to miss.</p>
@@ -409,13 +409,13 @@
       </div>
     </section>
 
-    <!-- ── SEE IT IN ACTION ──────────────────────── -->
+    <!-- -- SEE IT IN ACTION ------------------------ -->
     <section class="guide-section" id="section-demo">
       <h2>See It In Action</h2>
       <p>Select a preset claim, then switch between the four app tabs to see how ClaimLens handles each one. All screenshots are from the live Streamlit app.</p>
 
       <div class="home-shot-wrap">
-        <img src="../images/claimlens/01_home.png" alt="ClaimLens home — sidebar with presets, 4 navigation tabs, Stack Status panel">
+        <img src="../images/claimlens/01_home.png" alt="ClaimLens home � sidebar with presets, 4 navigation tabs, Stack Status panel">
         <div class="home-shot-caption">Home view &mdash; sidebar (claim input, presets, model selector, Stack Status) &middot; 4 tabs (Dual Comparison, Source Explorer, Agent Trace, Audit History)</div>
       </div>
 
@@ -449,7 +449,7 @@
       </div>
     </section>
 
-    <!-- ── ARCHITECTURE ─────────────────────────── -->
+    <!-- -- ARCHITECTURE --------------------------- -->
     <section class="guide-section" id="section-arch">
       <h2>Architecture</h2>
       <p>Two approaches run on every claim. Same 10 search results feed both. Approach A shows what a standard AI returns. Approach B is the 3-agent grounded pipeline.</p>
@@ -509,7 +509,7 @@
       </table></div>
     </section>
 
-    <!-- ── HOW IT WORKS ──────────────────────────── -->
+    <!-- -- HOW IT WORKS ---------------------------- -->
     <section class="guide-section" id="section-how">
       <h2>How It Works</h2>
 
@@ -560,17 +560,17 @@
 
       <div class="code-block"><span class="cm"># orchestrator.py &mdash; full pipeline in one async call</span>
 <span class="kw">async def</span> <span class="fn">run_audit</span>(claim, search_results):
-    sub_claims = <span class="kw">await</span> extract_claims(claim)              <span class="cm"># Qwen3-30B  · step 2</span>
-    grounding  = <span class="kw">await</span> find_primary_sources(               <span class="cm"># Qwen3-235B · step 3</span>
+    sub_claims = <span class="kw">await</span> extract_claims(claim)              <span class="cm"># Qwen3-30B  � step 2</span>
+    grounding  = <span class="kw">await</span> find_primary_sources(               <span class="cm"># Qwen3-235B � step 3</span>
                        claim, sub_claims, search_results)
-    verdict    = <span class="kw">await</span> verify_claim(                        <span class="cm"># Qwen3-235B · step 4</span>
+    verdict    = <span class="kw">await</span> verify_claim(                        <span class="cm"># Qwen3-235B � step 4</span>
                        claim, sub_claims, grounding)
     echo_index = calculate_echo_index(search_results)           <span class="cm"># ratio of SEO echoes</span>
     <span class="kw">return</span> {<span class="st">"verdict"</span>: verdict, <span class="st">"echo_index"</span>: echo_index,
             <span class="st">"grounding"</span>: grounding, <span class="st">"sub_claims"</span>: sub_claims}</div>
     </section>
 
-    <!-- ── COMPONENTS ───────────────────────────── -->
+    <!-- -- COMPONENTS ----------------------------- -->
     <section class="guide-section" id="section-components">
       <h2>Components</h2>
       <div class="table-scroll"><table class="comparison-table">
@@ -588,7 +588,7 @@
       </table></div>
     </section>
 
-    <!-- ── REAL LEARNINGS ────────────────────────── -->
+    <!-- -- REAL LEARNINGS -------------------------- -->
     <section class="guide-section" id="section-learnings">
       <h2>Real Learnings</h2>
 
@@ -635,7 +635,7 @@
       </div>
     </section>
 
-    <!-- ── MOMENTS ───────────────────────────────── -->
+    <!-- -- MOMENTS --------------------------------- -->
     <section class="guide-section" id="section-moments">
       <h2>Moments In Between</h2>
 
@@ -668,7 +668,7 @@
       </div>
     </section>
 
-    <!-- ── PLATFORM REVIEW ──────────────────────── -->
+    <!-- -- PLATFORM REVIEW ------------------------ -->
     <section class="guide-section" id="section-review">
       <h2>Platform Review</h2>
 
@@ -691,7 +691,7 @@
       </div>
     </section>
 
-    <!-- ── TEAM ──────────────────────────────────── -->
+    <!-- -- TEAM ------------------------------------ -->
     <section class="guide-section" id="section-team">
       <h2>Built By</h2>
 
@@ -711,7 +711,7 @@
       </div>
     </section>
 
-    <!-- ── GET STARTED ───────────────────────────── -->
+    <!-- -- GET STARTED ----------------------------- -->
     <section class="guide-section" id="section-start">
       <h2>Get Started</h2>
       <p>Try the live app with no setup &mdash; all 4 presets load from cache with no API key. Or clone the repo and run locally with your own Nebius AI key.</p>
@@ -731,7 +731,7 @@
 git clone https://github.com/researchsite/claimlens
 pip install -r requirements.txt
 
-<span class="cm"># Configure — Nebius AI key for live runs; MongoDB optional</span>
+<span class="cm"># Configure � Nebius AI key for live runs; MongoDB optional</span>
 cp .env.example .env
 <span class="cm"># NEBIUS_API_KEY=...    (or any OpenAI-compatible endpoint)</span>
 <span class="cm"># MONGODB_URI=...       (optional; app uses session state if unset)</span>
@@ -745,12 +745,12 @@ streamlit run app.py</div>
 
 <div id="rw-footer"
      data-linkedin="shassanchi"
-     data-related='[{"label":"AI Camp — Co-Scientist Session","url":"/blog/aicamp-coscientist.html"}]'
+     data-related='[{"label":"AI Camp � Co-Scientist Session","url":"/blog/aicamp-coscientist.html"}]'
 ></div>
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-// ── Walkthrough gallery ───────────────────────────────────────────
+// -- Walkthrough gallery -------------------------------------------
 var walkData = {
   lemon:   ['02_lemon_water_tab1_comparison','02_lemon_water_tab2_sources','02_lemon_water_tab3_trace','02_lemon_water_tab4_history'],
   nasa:    ['03_nasa_signal_tab1_comparison','03_nasa_signal_tab2_sources','03_nasa_signal_tab3_trace','03_nasa_signal_tab4_history'],
@@ -758,10 +758,10 @@ var walkData = {
   leqembi: ['05_leqembi_tab1_comparison','05_leqembi_tab2_sources','05_leqembi_tab3_trace','05_leqembi_tab4_history']
 };
 var walkMeta = {
-  lemon:   {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'~90% echo',claim:'“Harvard study proves hot lemon water cures diabetes in 30 days”'},
-  nasa:    {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'100% echo',claim:'“NASA confirms alien radio signal detected from Mars”'},
-  cash:    {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'100% echo',claim:'“US government passes law banning cash payments over $50”'},
-  leqembi: {icon:'&#128994;',verdict:'VERIFIED REAL',cls:'wct-ok', echo:'~60% echo',claim:'“FDA grants full approval for Leqembi as Alzheimer’s treatment”'}
+  lemon:   {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'~90% echo',claim:'�Harvard study proves hot lemon water cures diabetes in 30 days�'},
+  nasa:    {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'100% echo',claim:'�NASA confirms alien radio signal detected from Mars�'},
+  cash:    {icon:'&#128308;',verdict:'FABRICATED',cls:'wct-fab',echo:'100% echo',claim:'�US government passes law banning cash payments over $50�'},
+  leqembi: {icon:'&#128994;',verdict:'VERIFIED REAL',cls:'wct-ok', echo:'~60% echo',claim:'�FDA grants full approval for Leqembi as Alzheimer�s treatment�'}
 };
 var walkTabLabels = ['Dual Comparison','Source Explorer','Agent Trace','Audit History'];
 var activePreset = 'lemon', activeTab = 0;
@@ -778,7 +778,7 @@ function walkShow(preset, tab) {
   var fname = walkData[activePreset][activeTab];
   var img = document.getElementById('walk-img');
   img.src = '../images/claimlens/' + fname + '.png';
-  img.alt = walkTabLabels[activeTab] + ' — ' + walkMeta[activePreset].claim;
+  img.alt = walkTabLabels[activeTab] + ' � ' + walkMeta[activePreset].claim;
   var m = walkMeta[activePreset];
   document.getElementById('walk-caption-claim').textContent   = m.claim;
   var vEl = document.getElementById('walk-caption-verdict');
@@ -788,27 +788,27 @@ function walkShow(preset, tab) {
   document.getElementById('walk-caption-tab').textContent  = walkTabLabels[activeTab];
 }
 
-// ── Hero terminal animation ───────────────────────────────────────
+// -- Hero terminal animation ---------------------------------------
 (function() {
   var lines = [
     {cls:'tl-cmd',    text:'$ claimlens verify'},
     {cls:'tl-input',  text:'> "Hot lemon water cures diabetes in 3 days"'},
-    {cls:'tl-divi',   text:'────────────────────────────────'},
+    {cls:'tl-divi',   text:'--------------------------------'},
     {cls:'tl-stage',  text:'[1/3] Claim Extractor  (Qwen3-30B)'},
-    {cls:'tl-sub',    text:'  ✓ "Harvard study exists"'},
-    {cls:'tl-sub',    text:'  ✓ "reverses type 2 diabetes"'},
-    {cls:'tl-sub',    text:'  ✓ "effect in 3 days"'},
+    {cls:'tl-sub',    text:'  ? "Harvard study exists"'},
+    {cls:'tl-sub',    text:'  ? "reverses type 2 diabetes"'},
+    {cls:'tl-sub',    text:'  ? "effect in 3 days"'},
     {cls:'tl-stage',  text:'[2/3] Grounder  (Qwen3-235B)'},
     {cls:'tl-echo',   text:'  DuckDuckGo: 9/10 = SEO blogs  echo=87%'},
     {cls:'tl-src',    text:'  NIH: minor flavonoid effects (rat models)'},
     {cls:'tl-echo',   text:'  .gov: 0 results for Harvard lemon study'},
     {cls:'tl-stage',  text:'[3/3] Verifier  (Qwen3-235B)'},
-    {cls:'tl-fab',    text:'  sub-claim 1  → FABRICATED'},
-    {cls:'tl-exag',   text:'  sub-claim 2  → EXAGGERATED (rat only)'},
-    {cls:'tl-fab',    text:'  sub-claim 3  → FABRICATED'},
-    {cls:'tl-divi',   text:'────────────────────────────────'},
+    {cls:'tl-fab',    text:'  sub-claim 1  ? FABRICATED'},
+    {cls:'tl-exag',   text:'  sub-claim 2  ? EXAGGERATED (rat only)'},
+    {cls:'tl-fab',    text:'  sub-claim 3  ? FABRICATED'},
+    {cls:'tl-divi',   text:'--------------------------------'},
     {cls:'tl-verd',   text:'VERDICT: FABRICATED  (conf: 94%)'},
-    {cls:'tl-rewrite',text:'  → "Flavonoids: minor effects in rat models;'},
+    {cls:'tl-rewrite',text:'  ? "Flavonoids: minor effects in rat models;'},
     {cls:'tl-rewrite',text:'     no human RCT supports cure claims"'},
   ];
   var container = document.getElementById('hero-lines');
@@ -842,7 +842,7 @@ function walkShow(preset, tab) {
   setTimeout(nextChar, 600);
 })();
 
-// ── TOC scrollspy ─────────────────────────────────────────────────
+// -- TOC scrollspy -------------------------------------------------
 (function() {
   var sections = document.querySelectorAll('.guide-section[id]');
   var links    = document.querySelectorAll('.guide-toc a');

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
@@ -167,7 +167,7 @@
     <script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_cnn_sandbox',
-  description: 'Returns an overview of the CNN Explorer sandbox — what CNN concepts are visualized and how to interact with the tool.',
+  description: 'Returns an overview of the CNN Explorer sandbox � what CNN concepts are visualized and how to interact with the tool.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3'))
@@ -186,7 +186,7 @@ window.RW_PAGE_TOOLS = [{
 }];
     </script>
     <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
     <header class="site-header">
         <h1>How The Machine Sees</h1>
@@ -255,17 +255,17 @@ window.RW_PAGE_TOOLS = [{
                 <div class="panel">
                     <div class="flex flex-col lg:flex-row items-center justify-between gap-2 text-xs md:text-sm font-bold text-slate-600 text-center mb-12">
                         <div class="p-3 bg-slate-100 rounded-lg flex-1 w-full border border-slate-200">1. Input Image<br><span class="text-[10px] font-normal">Raw Pixels</span></div>
-                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="text-slate-400 hidden lg:block">?</div>
                         <div class="p-3 bg-blue-50 text-blue-700 rounded-lg flex-1 w-full border border-blue-200">2. Convolution<br><span class="text-[10px] font-normal">Feature Extraction</span></div>
-                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="text-slate-400 hidden lg:block">?</div>
                         <div class="p-3 bg-green-50 text-green-700 rounded-lg flex-1 w-full border border-green-200">3. ReLU<br><span class="text-[10px] font-normal">Nonlinearity</span></div>
-                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="text-slate-400 hidden lg:block">?</div>
                         <div class="p-3 bg-purple-50 text-purple-700 rounded-lg flex-1 w-full border border-purple-200">4. Pooling<br><span class="text-[10px] font-normal">Downsampling</span></div>
-                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="text-slate-400 hidden lg:block">?</div>
                         <div class="p-3 bg-red-50 text-red-700 rounded-lg flex-1 w-full border border-red-200">5. Flattening<br><span class="text-[10px] font-normal">To 1D Vector</span></div>
-                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="text-slate-400 hidden lg:block">?</div>
                         <div class="p-3 bg-orange-50 text-orange-700 rounded-lg flex-1 w-full border border-orange-200">6. Softmax<br><span class="text-[10px] font-normal">Task Logic</span></div>
-                        <div class="text-slate-400 hidden lg:block">→</div>
+                        <div class="text-slate-400 hidden lg:block">?</div>
                         <div class="p-3 bg-slate-800 text-white rounded-lg flex-1 w-full border border-slate-900 shadow-md">7. Output<br><span class="text-[10px] text-slate-300 font-normal">Task Execution</span></div>
                     </div>
 
@@ -315,7 +315,7 @@ window.RW_PAGE_TOOLS = [{
                 <div id="conv-in-grid" class="flex flex-wrap shadow-xl outline outline-4 outline-slate-800 bg-white" style="width: 240px; height: 240px;"></div>
             </div>
             
-            <div class="text-3xl font-bold text-slate-300">⊗</div>
+            <div class="text-3xl font-bold text-slate-300">?</div>
             
             <div class="text-center">
                 <h3 class="text-sm font-bold text-slate-500 mb-2" id="conv-filter-title">Filter (3x3)</h3>
@@ -371,7 +371,7 @@ window.RW_PAGE_TOOLS = [{
                 <div id="pool-in-grid" class="flex flex-wrap shadow-md outline outline-4 outline-slate-800 bg-black" style="width: 240px; height: 240px;"></div>
             </div>
             
-            <div class="text-4xl text-slate-300 font-bold">→</div>
+            <div class="text-4xl text-slate-300 font-bold">?</div>
             
             <div class="text-center">
                 <h3 class="text-sm font-bold text-slate-500 mb-2">3x3 Pooled Image</h3>
@@ -393,7 +393,7 @@ window.RW_PAGE_TOOLS = [{
                         <h3 class="text-xs font-bold text-slate-500 mb-1">Random Filter</h3>
                         <div id="bp-cur-filt" class="flex flex-wrap shadow-sm outline outline-2 outline-slate-400 bg-white" style="width: 60px; height: 60px;"></div>
                     </div>
-                    <div class="text-2xl font-bold text-slate-300">→</div>
+                    <div class="text-2xl font-bold text-slate-300">?</div>
                     <div class="text-center">
                         <h3 class="text-xs font-bold text-slate-500 mb-1">Current Feature Map</h3>
                         <div id="bp-cur-out" class="flex flex-wrap shadow-md outline outline-4 outline-slate-800 bg-black" style="width: 180px; height: 180px;"></div>
@@ -412,7 +412,7 @@ window.RW_PAGE_TOOLS = [{
                         <h3 class="text-xs font-bold text-green-600 mb-1">Target Filter</h3>
                         <div id="bp-tar-filt" class="flex flex-wrap shadow-sm outline outline-2 outline-green-500 bg-white" style="width: 60px; height: 60px;"></div>
                     </div>
-                    <div class="text-2xl font-bold text-green-300">→</div>
+                    <div class="text-2xl font-bold text-green-300">?</div>
                     <div class="text-center">
                         <h3 class="text-xs font-bold text-green-600 mb-1">Perfect Feature Map</h3>
                         <div id="bp-tar-out" class="flex flex-wrap shadow-md outline outline-4 outline-green-500 bg-black" style="width: 180px; height: 180px;"></div>
@@ -497,7 +497,7 @@ window.RW_PAGE_TOOLS = [{
                         <path d="M12 2v20M2.05 12h20M12 12l-7 7M12 12l7 7"></path>
                     </svg>
                     <input type="range" id="slider-steer" min="-90" max="90" value="0" class="w-full accent-slate-800 mb-4">
-                    <div class="text-2xl font-mono font-bold bg-white px-6 py-2 rounded-lg border border-slate-200">Angle: <span id="val-steer" class="text-rose-500">0</span>°</div>
+                    <div class="text-2xl font-mono font-bold bg-white px-6 py-2 rounded-lg border border-slate-200">Angle: <span id="val-steer" class="text-rose-500">0</span>�</div>
                 </div>
             </div>
 
@@ -510,7 +510,7 @@ window.RW_PAGE_TOOLS = [{
         <details open class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Show me the code! How do I build this CNN natively in Java (DL4J & ND4J)?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 <p class="mb-4">To build and train neural networks natively on the JVM, the industry standard is <strong>Deeplearning4j (DL4J)</strong> powered by <strong>ND4J</strong> (which handles the heavy matrix math, just like NumPy in Python). Notice how the DL4J Builder pattern perfectly mirrors the visual steps in our sandbox:</p>
@@ -559,7 +559,7 @@ MultiLayerConfiguration conf = <span class="text-purple-400">new</span> NeuralNe
 <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is the exact sequence of a CNN training loop?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed flex flex-col items-center">
                 <p class="mb-4 self-start">Here is the exact lifecycle of a single image passing through the network (one iteration):</p>
@@ -570,8 +570,8 @@ sequenceDiagram
     participant Conv1 as L1: Convolution
     participant ReLU1 as L1: ReLU
     participant Pool1 as L1: Pooling
-    participant L2 as Layer 2 (Conv ➔ ReLU ➔ Pool)
-    participant L3 as Layer 3 (Conv ➔ ReLU ➔ Pool)
+    participant L2 as Layer 2 (Conv ? ReLU ? Pool)
+    participant L3 as Layer 3 (Conv ? ReLU ? Pool)
     participant Flat as Flattening
     participant Out as Classifier (Softmax)
 
@@ -608,17 +608,17 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Why do standard neural networks fail on images? (The Paper Shredder)</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
-                Standard fully-connected networks require 1D inputs. Flattening a 2D image acts like a paper shredder. It destroys the spatial context—the network no longer knows which pixel was next to which, mathematically erasing the geometry of the face or object. CNNs solve this by sliding a 2D filter over the image, preserving the structural layout.
+                Standard fully-connected networks require 1D inputs. Flattening a 2D image acts like a paper shredder. It destroys the spatial context�the network no longer knows which pixel was next to which, mathematically erasing the geometry of the face or object. CNNs solve this by sliding a 2D filter over the image, preserving the structural layout.
             </div>
         </details>
 
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Does the network "know" it is looking for a nose or an eye?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 No. The computer has no concept of biology. A filter is just a dumb grid of numbers looking for contrasting light and dark pixels. For example, a "Collar" filter mathematically just looks for <em>dark pixels directly above bright pixels</em>. If you feed it a zoomed-out photo of a man in a dark suit with bright shoes, the math will highlight the shoes because they match the exact same mathematical light/dark pattern!
@@ -628,7 +628,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>How does Backpropagation find better filters if it's blind?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 CNNs start with completely random noise filters. If the network predicts "Cat" when the image is a "Dog," it calculates an Error (Loss). Backpropagation uses calculus to trace that error backward, nudging all the numbers slightly to reduce the error. Over thousands of images, the network accidentally discovers that detecting "dark circles" helps it get the right answer. The filters naturally evolve into edge and shape detectors through blind mathematical evolution.
@@ -638,7 +638,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Does Max Pooling only shrink the detected features or the whole image?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 It shrinks the <strong>entire</strong> image. Max Pooling acts like a net dragged across the whole Feature Map, extracting the highest number from every 2x2 patch. If it only kept the detected features and threw away the background, the spatial geometry would be destroyed. Shrinking the whole grid keeps the "nose" in the center and the "ears" at the top, just at a lower, more compressed resolution.
@@ -648,7 +648,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Why is the ReLU threshold so important?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 Without ReLU (Rectified Linear Unit), a CNN is just a series of linear multiplications. Because the physical world is non-linear (curves, shadows, complex shapes), we need a way to break the linearity. The simple formula $f(x) = \max(0, x)$ instantly squashes all negative mathematical noise to zero, introducing the non-linearity required to learn complex real-world boundaries.
@@ -658,7 +658,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Autonomous Driving: Waymo vs. Tesla (Pure Vision)?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 <br><br>
@@ -670,7 +670,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What exactly is a "Feature Map"?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 A Feature Map is the new "image" generated after a filter is applied. It looks like a glowing outline of the original photo. Bright spots indicate where the filter found a strong mathematical match, while dark spots indicate no match.
@@ -680,17 +680,17 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Why do we need multiple filters in one layer?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
-                A single filter can only look for one specific thing (e.g., vertical edges). To understand a complex image, a single layer might have 64 or 128 different filters running in parallel—one looking for horizontal edges, one looking for red colors, one looking for dark spots, etc.
+                A single filter can only look for one specific thing (e.g., vertical edges). To understand a complex image, a single layer might have 64 or 128 different filters running in parallel�one looking for horizontal edges, one looking for red colors, one looking for dark spots, etc.
             </div>
         </details>
 
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What happens if the object is off-center? (Translation Invariance)</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 Because the CNN slides the exact same filter across every single pixel of the image, it will find the "dog nose" regardless of whether it is in the top-left corner or dead center. Combined with Max Pooling, this grants the network <em>Translation Invariance</em>.
@@ -700,7 +700,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>How do deeper layers see more complex things?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 This is called Hierarchical Feature Extraction. Layer 1 filters find basic lines and edges. Layer 2 filters run <em>on top of the Layer 1 feature maps</em>, combining those lines into shapes (like circles or squares). Layer 3 combines those shapes into complex objects (like eyes or wheels).
@@ -710,7 +710,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is "Stride" in a Convolution?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 Stride is how many pixels the filter shifts each time it moves. A stride of 1 means it moves pixel by pixel. A stride of 2 means it jumps over a pixel every time, which generates a smaller output Feature Map and saves computational power.
@@ -720,7 +720,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is "Padding" and why use it?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 When a 3x3 filter slides over an image, it can't perfectly reach the edge pixels without hanging off the side. Because of this, the output Feature Map naturally shrinks. "Padding" involves wrapping the original image in a border of artificial zeros (black pixels) so the filter can reach the edges, keeping the output size identical to the input.
@@ -730,7 +730,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is the Softmax function used for?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 At the very end of a classification network, the CNN outputs raw, arbitrary scores (Logits), like "Dog: 120, Cat: 60." Softmax is a mathematical function that squashes these messy scores into a clean probability distribution that always equals 100% (e.g., "Dog: 88%, Cat: 12%").
@@ -740,7 +740,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Classification vs. Object Detection?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 <strong>Image Classification</strong> looks at a photo and outputs one single label for the whole image ("This is a Dog").<br><br><strong>Object Detection</strong> (like R-CNN or YOLO) finds multiple objects inside the image, draws a bounding box around their exact X/Y coordinates, and classifies each box individually ("Dog here, Cat here, Tree here").
@@ -750,7 +750,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is Semantic Segmentation?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 <br><br>
@@ -761,7 +761,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is Regression in computer vision?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 Unlike Classification which outputs a discrete word ("Dog"), Regression outputs a continuous numerical value based on the image. For example, looking at a curved road and outputting exactly "14.5 degrees" to turn the steering wheel.
@@ -771,7 +771,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Why do we flatten the data at the very end?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 While convolutions preserve 2D geometry during feature extraction, the final decision-making process (like Softmax classification) requires standard 1D Dense layers. We flatten the final, highly-condensed 2D pooled feature maps into a 1D array to feed into the final output layer.
@@ -781,7 +781,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is an Epoch?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 An Epoch is one complete pass of the entire training dataset through the neural network. Training a CNN usually requires dozens or hundreds of epochs, meaning the network looks at the same images over and over, refining its filters each time.
@@ -791,7 +791,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>What is Overfitting?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 Overfitting happens when a CNN memorizes the exact training images instead of learning general patterns. For example, it might learn to identify a specific tree in the background of your dog photos rather than the dog itself. We combat this using techniques like Dropout and Data Augmentation.
@@ -801,7 +801,7 @@ sequenceDiagram
         <details class="group bg-white border border-slate-200 rounded-lg shadow-sm">
             <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-5 text-slate-800 hover:bg-slate-50 transition rounded-lg">
                 <span>Why do CNNs require GPUs to train?</span>
-                <span class="transition group-open:rotate-180 text-blue-500">▼</span>
+                <span class="transition group-open:rotate-180 text-blue-500">?</span>
             </summary>
             <div class="text-slate-600 mt-2 p-5 pt-0 border-t border-slate-100 leading-relaxed">
                 As you saw in the sandbox, sliding just one 3x3 filter across one 8x8 image requires hundreds of multiplication operations. A real 4K image with hundreds of filters across dozens of layers requires trillions of simultaneous matrix multiplications. CPUs are designed for sequential tasks, but GPUs contain thousands of cores specifically designed to do parallel matrix math simultaneously.
@@ -1148,7 +1148,7 @@ function setupConvInteractions(filterMat) {
 
                         const inVal = globalImgData[r+fr][c+fc];
                         const fVal = filterMat[fr][fc];
-                        if(fVal !== 0) eq += `(${inVal}×${fVal}) + `;
+                        if(fVal !== 0) eq += `(${inVal}�${fVal}) + `;
                     }
                 }
                 cMath.innerHTML = `${eq.slice(0, -3)} = <strong class="text-xl md:text-2xl text-slate-900">${convData[r][c]}</strong>`;
@@ -1341,10 +1341,10 @@ if (btnTrain) {
 const segmentationData = {
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces": { // Businessman
         legend: `
-            <span class="text-blue-500">■ Background</span> 
-            <span class="text-purple-500">■ Hair</span>
-            <span class="text-green-500">■ Face</span> 
-            <span class="text-rose-500">■ Suit</span>`,
+            <span class="text-blue-500">� Background</span> 
+            <span class="text-purple-500">� Hair</span>
+            <span class="text-green-500">� Face</span> 
+            <span class="text-rose-500">� Suit</span>`,
         mask: `
             <div class="row-span-8 col-span-2 bg-blue-500/50"></div>
             <div class="row-span-8 col-start-7 col-span-2 bg-blue-500/50"></div>
@@ -1354,10 +1354,10 @@ const segmentationData = {
     },
     "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=240&h=240&fit=crop&crop=faces": { // Dog
         legend: `
-            <span class="text-blue-500">■ Background</span> 
-            <span class="text-purple-500">■ Ears</span>
-            <span class="text-green-500">■ Snout/Face</span> 
-            <span class="text-rose-500">■ Body Fur</span>`,
+            <span class="text-blue-500">� Background</span> 
+            <span class="text-purple-500">� Ears</span>
+            <span class="text-green-500">� Snout/Face</span> 
+            <span class="text-rose-500">� Body Fur</span>`,
         mask: `
             <div class="row-span-8 col-span-1 bg-blue-500/50"></div>
             <div class="row-span-8 col-start-8 col-span-1 bg-blue-500/50"></div>
@@ -1368,10 +1368,10 @@ const segmentationData = {
     },
     "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=240&h=240&fit=crop&crop=faces": { // Cat
         legend: `
-            <span class="text-blue-500">■ Background</span> 
-            <span class="text-purple-500">■ Ears</span>
-            <span class="text-green-500">■ Cat Face</span> 
-            <span class="text-rose-500">■ Whiskers/Body</span>`,
+            <span class="text-blue-500">� Background</span> 
+            <span class="text-purple-500">� Ears</span>
+            <span class="text-green-500">� Cat Face</span> 
+            <span class="text-rose-500">� Whiskers/Body</span>`,
         mask: `
             <div class="row-start-1 row-span-2 col-span-8 bg-blue-500/50"></div>
             <div class="row-start-2 row-span-2 col-start-2 col-span-2 bg-purple-500/70 rounded-t-full"></div>
@@ -1381,10 +1381,10 @@ const segmentationData = {
     },
     "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=240&h=240&fit=crop&crop=edges": { // City Traffic
         legend: `
-            <span class="text-blue-400">■ Sky</span> 
-            <span class="text-slate-600">■ Buildings</span>
-            <span class="text-gray-800">■ Road</span> 
-            <span class="text-red-500">■ Vehicles</span>`,
+            <span class="text-blue-400">� Sky</span> 
+            <span class="text-slate-600">� Buildings</span>
+            <span class="text-gray-800">� Road</span> 
+            <span class="text-red-500">� Vehicles</span>`,
         mask: `
             <div class="row-start-1 row-span-2 col-span-8 bg-blue-400/50"></div>
             <div class="row-start-3 row-span-4 col-span-8 bg-slate-600/70"></div>
@@ -1404,9 +1404,9 @@ function updateOutputs() {
     // Update the Segmentation Mask (Use specific mapping, or a generic bulls-eye for custom images)
     const segData = segmentationData[currentImgSrc] || {
         legend: `
-            <span class="text-blue-500">■ Background</span> 
-            <span class="text-purple-500">■ Upper Area</span>
-            <span class="text-green-500">■ Center Focus</span>`,
+            <span class="text-blue-500">� Background</span> 
+            <span class="text-purple-500">� Upper Area</span>
+            <span class="text-green-500">� Center Focus</span>`,
         mask: `
             <div class="row-span-8 col-span-8 bg-blue-500/30"></div>
             <div class="row-start-1 row-span-3 col-start-2 col-span-6 bg-purple-500/50 rounded-t-xl"></div>

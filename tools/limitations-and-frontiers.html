@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -42,7 +42,7 @@
     <script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_dl_limitations',
-  description: 'Returns an overview of the Deep Learning Limitations & Frontiers interactive guide â€” failure modes, UAT, adversarial attacks, and frontier topics.',
+  description: 'Returns an overview of the Deep Learning Limitations & Frontiers interactive guide — failure modes, UAT, adversarial attacks, and frontier topics.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3'))
@@ -54,13 +54,13 @@ window.RW_PAGE_TOOLS = [{
       url: window.location.href,
       sections: sections,
       topics: [
-        'Universal Approximation Theorem (UAT) â€” what neural nets can and cannot represent',
-        'Adversarial attacks â€” fooling classifiers with imperceptible perturbations',
-        'Algorithmic bias â€” how training data encodes societal inequalities',
-        'Uncertainty quantification â€” when a model does not know what it does not know',
+        'Universal Approximation Theorem (UAT) — what neural nets can and cannot represent',
+        'Adversarial attacks — fooling classifiers with imperceptible perturbations',
+        'Algorithmic bias — how training data encodes societal inequalities',
+        'Uncertainty quantification — when a model does not know what it does not know',
         'Out-of-distribution generalization failures',
-        'Diffusion models â€” frontier generative approach',
-        'LLMs â€” emergent capabilities and scaling laws'
+        'Diffusion models — frontier generative approach',
+        'LLMs — emergent capabilities and scaling laws'
       ],
       learning_objective: 'Understand where deep learning breaks down and where the research frontier is pushing beyond those limits.'
     };
@@ -68,7 +68,7 @@ window.RW_PAGE_TOOLS = [{
 }];
     </script>
     <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
     <main class="flex-grow max-w-4xl mx-auto px-6 py-10 w-full">
         
@@ -85,25 +85,25 @@ window.RW_PAGE_TOOLS = [{
                         1. UAT<br><span class="text-[9px] font-normal">Function Approximators</span>
                     </a>
                     
-                    <div class="text-slate-400 hidden lg:block">â†’</div>
+                    <div class="text-slate-400 hidden lg:block">?</div>
                     
                     <a href="#failures" class="p-2 bg-blue-50 text-blue-700 rounded-lg flex-1 w-full border border-blue-200 hover:bg-blue-100 transition shadow-sm">
                         2. Limitations<br><span class="text-[9px] font-normal">Bias &amp; Uncertainty</span>
                     </a>
                     
-                    <div class="text-slate-400 hidden lg:block">â†’</div>
+                    <div class="text-slate-400 hidden lg:block">?</div>
                     
                     <a href="#adversarial" class="p-2 bg-red-50 text-red-700 rounded-lg flex-1 w-full border border-red-200 hover:bg-red-100 transition shadow-sm">
                         3. Adversarial<br><span class="text-[9px] font-normal">Fooling the Network</span>
                     </a>
                     
-                    <div class="text-slate-400 hidden lg:block">â†’</div>
+                    <div class="text-slate-400 hidden lg:block">?</div>
                     
                     <a href="#generative" class="p-2 bg-purple-50 text-purple-700 rounded-lg flex-1 w-full border border-purple-200 hover:bg-purple-100 transition shadow-sm">
                         4. Diffusion<br><span class="text-[9px] font-normal">Iterative Generation</span>
                     </a>
                     
-                    <div class="text-slate-400 hidden lg:block">â†’</div>
+                    <div class="text-slate-400 hidden lg:block">?</div>
                     
                     <a href="#llms" class="p-2 bg-slate-800 text-white rounded-lg flex-1 w-full border border-slate-900 hover:bg-slate-700 transition shadow-md">
                         5. LLMs<br><span class="text-[9px] text-slate-300 font-normal">Next Token Prediction</span>
@@ -167,7 +167,7 @@ window.RW_PAGE_TOOLS = [{
         <div class="text-center mb-8">
             <h3 class="text-2xl font-serif font-bold text-cyan-400 mb-2">The Analogy: AI as the "Neural Architect"</h3>
             <p class="text-slate-400 text-sm max-w-2xl mx-auto">
-                Imagine a simple building block (the "Hinge Neuron"â€”a rectangle combined with a break). The UAT states that if we have enough of these identical puzzle pieces and place them with the correct weight (height) and bias (position), we can assemble any continuous architecture.
+                Imagine a simple building block (the "Hinge Neuron"—a rectangle combined with a break). The UAT states that if we have enough of these identical puzzle pieces and place them with the correct weight (height) and bias (position), we can assemble any continuous architecture.
             </p>
         </div>
 
@@ -255,7 +255,7 @@ window.RW_PAGE_TOOLS = [{
                         <svg class="w-5 h-5 text-gray-500 transition-transform group-open:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </summary>
                     <div class="p-4 pt-0 text-sm text-gray-600 border-t border-gray-100 mt-2 leading-relaxed">
-                        <p class="mb-3">The UAT remains a cornerstone of machine learning because it represents a fundamental mathematical truth. Asking why it hasn't been replaced is a bit like asking why we haven't replaced the Pythagorean theoremâ€”itâ€™s a foundational law that describes the absolute potential of a system.</p>
+                        <p class="mb-3">The UAT remains a cornerstone of machine learning because it represents a fundamental mathematical truth. Asking why it hasn't been replaced is a bit like asking why we haven't replaced the Pythagorean theorem—it’s a foundational law that describes the absolute potential of a system.</p>
                         <p class="mb-2"><strong>Why it persists:</strong></p>
                         <ul class="list-disc list-inside space-y-1 ml-2">
                             <li><strong>Mathematical Fact:</strong> It proves that the "ceiling" for what a neural network can do is effectively infinite.</li>
@@ -314,7 +314,7 @@ window.RW_PAGE_TOOLS = [{
                         <p class="mb-3">This is where the theorem hits a wall. The UAT proves <em>existence</em>, not <em>learnability</em>. It guarantees a solution exists, but bridging the gap between "possible" and "practical" introduces massive challenges:</p>
                         <ul class="space-y-3">
                             <li class="bg-red-50 p-3 rounded-lg border border-red-100">
-                                <strong class="text-red-800">The "Infinite" Problem:</strong> The theorem says you can approximate any function, but it might require an astronomical number of neuronsâ€”more than there are atoms in the universe.
+                                <strong class="text-red-800">The "Infinite" Problem:</strong> The theorem says you can approximate any function, but it might require an astronomical number of neurons—more than there are atoms in the universe.
                             </li>
                             <li class="bg-orange-50 p-3 rounded-lg border border-orange-100">
                                 <strong class="text-orange-800">Optimization:</strong> The theorem doesn't tell you how to find the right weights. Just because a solution exists doesn't mean our search methods (like Gradient Descent) will actually find it.
@@ -335,7 +335,7 @@ window.RW_PAGE_TOOLS = [{
                     <div class="p-4 pt-0 text-sm text-gray-600 border-t border-gray-100 mt-2 leading-relaxed">
                         <p>No. The Universal Approximation Theorem is an existence proof. It effectively defines the boundaries of the <strong>"sandbox"</strong> we play in.</p>
                         <p class="mt-2">We don't replace it; we simply build better toys inside the sandbox. Modern research has shifted away from asking <em>"Can a network do this?"</em> (Yes, says the UAT) to asking <em>"How can a network do this efficiently and reliably?"</em></p>
-                        <p class="mt-2">This vital shift is what led to highly specific architectures like Transformers and CNNsâ€”which are essentially just specialized, hyper-efficient versions of the UAT in action.</p>
+                        <p class="mt-2">This vital shift is what led to highly specific architectures like Transformers and CNNs—which are essentially just specialized, hyper-efficient versions of the UAT in action.</p>
                     </div>
                 </details>
             </div>
@@ -384,7 +384,7 @@ window.RW_PAGE_TOOLS = [{
                     </div>
                     <div class="w-full md:w-3/4">
                         <h4 class="font-bold text-gray-900 mb-1">Uncertainty & Out-of-Distribution Failures</h4>
-                        <p class="text-sm text-gray-700">A profound limitation is that models struggle to know what they do not know. When they encounter out-of-distribution eventsâ€”such as an autonomous vehicle encountering a newly constructed road barrier absent from its training dataâ€”they fail to calibrate their uncertainty, leading to potentially fatal outcomes.</p>
+                        <p class="text-sm text-gray-700">A profound limitation is that models struggle to know what they do not know. When they encounter out-of-distribution events—such as an autonomous vehicle encountering a newly constructed road barrier absent from its training data—they fail to calibrate their uncertainty, leading to potentially fatal outcomes.</p>
                     </div>
                 </div>
             </div>
@@ -623,7 +623,7 @@ window.RW_PAGE_TOOLS = [{
                     <canvas id="adv-noise" width="160" height="160" class="w-full h-full object-cover"></canvas>
                 </div>
                 <div class="text-center bg-slate-950/50 w-full rounded py-2">
-                    <span class="block text-xs text-slate-400 uppercase tracking-wide">Strength (Î·):</span>
+                    <span class="block text-xs text-slate-400 uppercase tracking-wide">Strength (?):</span>
                     <span id="adv-strength-val" class="block text-lg font-bold text-orange-400">0.050</span>
                 </div>
             </div>
@@ -646,7 +646,7 @@ window.RW_PAGE_TOOLS = [{
 
         <!-- Controls -->
         <div class="controls mt-10 bg-slate-950 rounded-xl p-6 border border-slate-800 text-center max-w-xl mx-auto">
-            <label class="block text-sm uppercase tracking-widest text-slate-300 font-bold mb-4">Perturbation Intensity (Epsilon / Î·)</label>
+            <label class="block text-sm uppercase tracking-widest text-slate-300 font-bold mb-4">Perturbation Intensity (Epsilon / ?)</label>
             <input type="range" id="adv-epsilon" min="0" max="0.2" step="0.005" value="0.00" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500 mb-4">
             <p class="text-slate-400 leading-relaxed text-sm"><small>Move the slider to maximize the error. Even at levels where the image looks identical to the human eye, the AI's confidence in "Temple" evaporates [2].</small></p>
         </div>
@@ -1456,7 +1456,7 @@ window.RW_PAGE_TOOLS = [{
                         <svg class="w-5 h-5 text-gray-500 transition-transform group-open:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </summary>
                     <div class="p-4 pt-0 text-sm text-gray-600 border-t border-gray-100 mt-2">
-                        Emergent abilities are new capabilitiesâ€”like understanding phonetics or performing arithmeticâ€”that are completely absent in smaller models but appear via rapid step-changes once a language model reaches a large enough scale in terms of parameters.
+                        Emergent abilities are new capabilities—like understanding phonetics or performing arithmetic—that are completely absent in smaller models but appear via rapid step-changes once a language model reaches a large enough scale in terms of parameters.
                     </div>
                 </details>
             </div>

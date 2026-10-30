@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth scroll-pt-28">
 <head>
   <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
@@ -52,7 +52,7 @@
     <script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_rl_playground',
-  description: 'Returns an overview of the Deep Reinforcement Learning playground — RL algorithms available, training environments, and interactive features.',
+  description: 'Returns an overview of the Deep Reinforcement Learning playground � RL algorithms available, training environments, and interactive features.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3'))
@@ -66,27 +66,27 @@ window.RW_PAGE_TOOLS = [{
       algorithms: ['Q-Learning', 'Deep Q-Network (DQN)', 'Policy Gradients (REINFORCE)', 'Actor-Critic', 'Proximal Policy Optimization (PPO)'],
       topics: ['Markov Decision Processes', 'Bellman equation', 'Exploration vs exploitation', 'Reward shaping', 'Value functions', 'Policy networks', 'Experience replay'],
       features: ['Train AI agent live in the browser', 'Visualize policy and value function updates', 'Adjustable hyperparameters', 'Multiple environments to train in'],
-      learning_objective: 'Observe an agent learn from scratch using deep RL — no setup, runs entirely in the browser.'
+      learning_objective: 'Observe an agent learn from scratch using deep RL � no setup, runs entirely in the browser.'
     };
   }
 }];
     </script>
     <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
     <div class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm py-3">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-2 text-[11px] md:text-xs font-bold text-slate-600 text-center">
                 <a href="#intro" class="p-2 bg-slate-100 rounded-lg flex-1 w-full border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition shadow-sm">1. Introduction<br><span class="text-[9px] font-normal">Beyond Supervised</span></a>
-                <div class="text-slate-400 hidden lg:block">→</div>
+                <div class="text-slate-400 hidden lg:block">?</div>
                 <a href="#pillars" class="p-2 bg-blue-50 text-blue-700 rounded-lg flex-1 w-full border border-blue-200 hover:bg-blue-100 transition shadow-sm">2. Core Pillars<br><span class="text-[9px] font-normal">Agent & Env Diagram</span></a>
-                <div class="text-slate-400 hidden lg:block">→</div>
+                <div class="text-slate-400 hidden lg:block">?</div>
                 <a href="#q-learning" class="p-2 bg-purple-50 text-purple-700 rounded-lg flex-1 w-full border border-purple-200 hover:bg-purple-100 transition shadow-sm">3. Q-Learning<br><span class="text-[9px] font-normal">Discrete Values</span></a>
-                <div class="text-slate-400 hidden lg:block">→</div>
+                <div class="text-slate-400 hidden lg:block">?</div>
                 <a href="#policy-gradients" class="p-2 bg-orange-50 text-orange-700 rounded-lg flex-1 w-full border border-orange-200 hover:bg-orange-100 transition shadow-sm">4. Policy Gradients<br><span class="text-[9px] font-normal">Continuous Action</span></a>
-                <div class="text-slate-400 hidden lg:block">→</div>
+                <div class="text-slate-400 hidden lg:block">?</div>
                 <a href="#training-algo" class="p-2 bg-red-50 text-red-700 rounded-lg flex-1 w-full border border-red-200 hover:bg-red-100 transition shadow-sm">5. Training Logic<br><span class="text-[9px] font-normal">The 5-Step Loop</span></a>
-                <div class="text-slate-400 hidden lg:block">→</div>
+                <div class="text-slate-400 hidden lg:block">?</div>
                 <a href="#playground" class="p-2 bg-slate-800 text-white rounded-lg flex-1 w-full border border-slate-900 hover:bg-slate-700 transition shadow-md">6. Playground<br><span class="text-[9px] text-slate-300 font-normal">Live Simulation</span></a>
             </div>
         </div>
@@ -125,12 +125,12 @@ window.RW_PAGE_TOOLS = [{
 
                     <div class="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none z-0">
                         <div class="bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full border-2 border-slate-300 shadow-sm text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
-                            <span class="text-lg text-brand-500">↻</span> Continuous Feedback Loop
+                            <span class="text-lg text-brand-500">?</span> Continuous Feedback Loop
                         </div>
                     </div>
 
                     <div class="z-10 bg-slate-50 p-5 rounded-xl border-2 border-slate-800 w-full md:w-1/4 text-center shadow-md">
-                        <div class="w-16 h-16 bg-slate-800 text-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">🚴</div>
+                        <div class="w-16 h-16 bg-slate-800 text-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">??</div>
                         <h3 class="font-bold text-slate-900 text-lg mb-1">1. Agent</h3>
                         <p class="text-[11px] text-slate-600 mb-3">The actor making decisions.</p>
                         <div class="bg-white p-2 text-left rounded border border-slate-200 text-[10px]">
@@ -188,7 +188,7 @@ window.RW_PAGE_TOOLS = [{
                     </div>
 
                     <div class="z-10 bg-slate-50 p-5 rounded-xl border-2 border-emerald-600 w-full md:w-1/4 text-center shadow-md">
-                        <div class="w-16 h-16 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">🛣️</div>
+                        <div class="w-16 h-16 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">???</div>
                         <h3 class="font-bold text-slate-900 text-lg mb-1">2. Environment</h3>
                         <p class="text-[11px] text-slate-600 mb-3">The world the agent acts within.</p>
                         <div class="bg-white p-2 text-left rounded border border-slate-200 text-[10px]">
@@ -205,10 +205,10 @@ window.RW_PAGE_TOOLS = [{
                 <div class="math-box">Q(s<sub>t</sub>, a<sub>t</sub>) = E[ R<sub>t</sub> | s<sub>t</sub>, a<sub>t</sub> ]</div>
                 
                 <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm text-amber-900 mb-4 flex items-start gap-3">
-                    <span class="text-2xl mt-1">⚠️</span>
+                    <span class="text-2xl mt-1">??</span>
                     <div>
                         <strong class="block mb-1">Compute Warning: The Bicycle Example</strong>
-                        <p class="text-[13px] leading-relaxed">If we attempted to build a traditional Q-table and mathematically calculate the true expected future reward for <em>every possible raw pixel combination</em> and every continuous distance measurement in our bicycle environment, the massive amount of calculation required would instantly freeze our systems—the computer would simply "die to compute." This explosion of states is exactly why this interactive simulator is a sampled approximation, and why Deep Neural Networks are strictly required to estimate Q-functions in real-world scenarios.</p>
+                        <p class="text-[13px] leading-relaxed">If we attempted to build a traditional Q-table and mathematically calculate the true expected future reward for <em>every possible raw pixel combination</em> and every continuous distance measurement in our bicycle environment, the massive amount of calculation required would instantly freeze our systems�the computer would simply "die to compute." This explosion of states is exactly why this interactive simulator is a sampled approximation, and why Deep Neural Networks are strictly required to estimate Q-functions in real-world scenarios.</p>
                     </div>
                 </div>
 
@@ -219,9 +219,9 @@ window.RW_PAGE_TOOLS = [{
                 <h2 class="text-2xl font-serif font-semibold text-slate-900 mb-3">Policy Learning & Continuous Actions</h2>
                 <p class="mb-2 text-slate-700">Instead of predicting static mathematical values for distinct choices, <strong>Policy Gradients</strong> output a probability distribution. This enables the modeling of infinite continuous actions (like precise steering wheel angles) by parameterizing a Gaussian curve defined by a Mean and Variance. The agent then samples from this curve to act.</p>
                 <div class="math-box">
-                    π(s) ~ P(a|s) = N(μ, σ²) <br><br>
+                    p(s) ~ P(a|s) = N(�, s�) <br><br>
                     <span class="text-slate-500 text-xs block mb-1 mt-3">Policy Gradient Update (Gradient Ascent)</span>
-                    w' = w + ∇ log P(a<sub>t</sub> | s<sub>t</sub>) * R<sub>t</sub>
+                    w' = w + ? log P(a<sub>t</sub> | s<sub>t</sub>) * R<sub>t</sub>
                 </div>
             </section>
         </div>
@@ -270,7 +270,7 @@ window.RW_PAGE_TOOLS = [{
                                 
                                 <g id="anim-crash" transform="translate(0,0)" class="hidden">
                                     <circle cx="0" cy="0" r="15" fill="#ef4444" class="animate-ping opacity-75"/>
-                                    <text x="-10" y="5" fill="white" font-weight="bold" font-size="20">💥</text>
+                                    <text x="-10" y="5" fill="white" font-weight="bold" font-size="20">??</text>
                                 </g>
                             </svg>
                             <div id="anim-run-counter" class="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded font-mono">Episode 1 Loading...</div>
@@ -289,11 +289,11 @@ window.RW_PAGE_TOOLS = [{
             <h2 class="text-3xl font-serif font-bold text-slate-900 mb-4 text-center">Interactive RL Simulator</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
                 <div class="bg-white p-4 rounded-xl border border-brand-200 shadow-sm">
-                    <h3 class="font-bold text-brand-700 mb-1 flex items-center"><span class="text-base mr-2">🕹️</span> DQN (Discrete Actions)</h3>
+                    <h3 class="font-bold text-brand-700 mb-1 flex items-center"><span class="text-base mr-2">???</span> DQN (Discrete Actions)</h3>
                     <p class="text-slate-600 text-[13px] leading-relaxed">The agent is restricted to rigid choices: strictly left (-2.5), straight (0.0), or strictly right (+2.5). Watch the dashboard and the bike: DQN agents abruptly jerk back and forth, failing to weave smoothly.</p>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-purple-200 shadow-sm">
-                    <h3 class="font-bold text-purple-700 mb-1 flex items-center"><span class="text-base mr-2">🌊</span> Policy Gradients (Continuous Actions)</h3>
+                    <h3 class="font-bold text-purple-700 mb-1 flex items-center"><span class="text-base mr-2">??</span> Policy Gradients (Continuous Actions)</h3>
                     <p class="text-slate-600 text-[13px] leading-relaxed">The agent samples an exact, precise decimal angle (e.g., -1.24) from a Gaussian distribution. Watch the dashboard continuously update with precise floats as the bike fluidly weaves around obstacles.</p>
                 </div>
             </div>
@@ -330,7 +330,7 @@ window.RW_PAGE_TOOLS = [{
                             
                             <div>
                                 <div class="flex justify-between text-[10px] font-mono text-slate-600 mb-1">
-                                    <span>Mean (μ) Direction</span>
+                                    <span>Mean (�) Direction</span>
                                     <span id="val-mu">0.00</span>
                                 </div>
                                 <input type="range" id="slide-mu" min="-3" max="3" step="0.1" value="0" class="w-full accent-brand-500 h-1" oninput="handlePGSliders(true)" onchange="handlePGSliders(false)">
@@ -338,7 +338,7 @@ window.RW_PAGE_TOOLS = [{
                             
                             <div>
                                 <div class="flex justify-between text-[10px] font-mono text-slate-600 mb-1">
-                                    <span>Variance (σ²) Noise</span>
+                                    <span>Variance (s�) Noise</span>
                                     <span id="val-sigma">0.50</span>
                                 </div>
                                 <input type="range" id="slide-sigma" min="0" max="2" step="0.1" value="0.5" class="w-full accent-purple-500 h-1" oninput="handlePGSliders(true)" onchange="handlePGSliders(false)">
@@ -348,7 +348,7 @@ window.RW_PAGE_TOOLS = [{
 
                     <div class="mt-auto pt-4 border-t border-slate-200 space-y-2">
                         <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">3. Simulation Execution</h3>
-                        <button onclick="togglePlaygroundAuto()" id="btn-play-auto" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-white shadow transition text-sm">▶ Run Auto-Agent</button>
+                        <button onclick="togglePlaygroundAuto()" id="btn-play-auto" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-white shadow transition text-sm">? Run Auto-Agent</button>
                         <p id="play-log" class="text-[10px] text-slate-500 text-center h-3 font-mono"></p>
                     </div>
                 </div>
@@ -365,7 +365,7 @@ window.RW_PAGE_TOOLS = [{
                             <span id="dash-action" class="text-lg font-mono font-bold text-brand-400">0.0</span>
                         </div>
                         <div class="bg-slate-800 p-2 rounded-lg border border-slate-700 relative overflow-hidden">
-                            <span class="block text-[9px] text-slate-400 uppercase tracking-wider mb-0.5">Reward (R = Σr)</span>
+                            <span class="block text-[9px] text-slate-400 uppercase tracking-wider mb-0.5">Reward (R = Sr)</span>
                             <span id="dash-reward" class="text-sm font-mono font-bold text-emerald-400">0</span>
                         </div>
                         <div class="bg-slate-800 p-2 rounded-lg border border-slate-700">
@@ -396,7 +396,7 @@ window.RW_PAGE_TOOLS = [{
                         </svg>
 
                         <div id="play-crash" class="absolute inset-0 bg-red-900/80 backdrop-blur-sm flex flex-col items-center justify-center hidden z-20">
-                            <span class="text-4xl mb-1">💥</span>
+                            <span class="text-4xl mb-1">??</span>
                             <span class="text-xl font-bold text-white tracking-widest">TERMINATION</span>
                             <span id="play-crash-reason" class="text-red-200 mt-1 font-mono text-xs">Out of Bounds</span>
                         </div>
@@ -405,7 +405,7 @@ window.RW_PAGE_TOOLS = [{
             </div>
             
                 <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm text-amber-900 mb-4 flex items-start gap-3">
-                    <span class="text-2xl mt-1">⚠️</span>
+                    <span class="text-2xl mt-1">??</span>
                     <div>
                         <strong class="block mb-1">Note:</strong>
                         <p class="text-[13px] leading-relaxed">This simulator is built in plain JavaScript to provide a visual intuition of the algorithms. While real-world RL requires massive neural networks and heavy compute, the underlying mathematical principles shown here remain exactly the same.</p>
@@ -497,7 +497,7 @@ window.RW_PAGE_TOOLS = [{
             animInterval = setInterval(() => {
                 if (animStep === 0) {
                     updateStepUI(1);
-                    log.innerHTML += `<div class="text-brand-400 py-1">=> Agent Initialized. Running Policy π(s).</div>`;
+                    log.innerHTML += `<div class="text-brand-400 py-1">=> Agent Initialized. Running Policy p(s).</div>`;
                     animStep++;
                 } else if (animStep === 1) {
                     updateStepUI(2);
@@ -528,14 +528,14 @@ window.RW_PAGE_TOOLS = [{
                         setTimeout(() => updateStepUI(4), 800);
                         
                         log.innerHTML += `<div class="my-2 p-2 bg-slate-900 border border-slate-700 rounded text-slate-300">
-                            <strong class="text-white block mb-1">Applying Gradients: w' = w + ∇ log P(a|s)*R</strong>
+                            <strong class="text-white block mb-1">Applying Gradients: w' = w + ? log P(a|s)*R</strong>
                             <span class="text-red-400">- Decrease P(a|s) for moves near crash (R=-10)</span><br>
                             <span class="text-emerald-400">+ Increase P(a|s) for stable moves (R=+1)</span>
                         </div>`;
                         log.scrollTop = log.scrollHeight;
                         animStep++;
                     } else {
-                        log.innerHTML += `<div class="text-white font-bold my-2 py-1.5 text-center bg-emerald-600/20 rounded border border-emerald-600">✨ Policy Learned Successfully!</div>`;
+                        log.innerHTML += `<div class="text-white font-bold my-2 py-1.5 text-center bg-emerald-600/20 rounded border border-emerald-600">? Policy Learned Successfully!</div>`;
                         log.scrollTop = log.scrollHeight;
                         animStep++;
                     }
@@ -697,14 +697,14 @@ window.RW_PAGE_TOOLS = [{
             if(pIsRunning) {
                 pIsRunning = false;
                 cancelAnimationFrame(pAnimFrame);
-                btn.innerText = "▶ Run Auto-Agent";
+                btn.innerText = "? Run Auto-Agent";
                 btn.className = "w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-white shadow transition text-sm";
                 elDashStatus.innerText = "Stopped";
                 elDashStatus.className = "text-sm font-mono font-bold text-slate-400";
             } else {
                 if(!elCrash.classList.contains('hidden')) resetPlayground(); 
                 pIsRunning = true;
-                btn.innerText = "■ Stop Simulation";
+                btn.innerText = "� Stop Simulation";
                 btn.className = "w-full py-2.5 bg-red-600 hover:bg-red-500 rounded font-bold text-white shadow transition text-sm";
                 elDashStatus.innerText = "Running Policy...";
                 elDashStatus.className = "text-sm font-mono font-bold text-brand-400";
@@ -749,7 +749,7 @@ window.RW_PAGE_TOOLS = [{
             pIsRunning = false;
             cancelAnimationFrame(pAnimFrame);
             
-            document.getElementById('btn-play-auto').innerText = "▶ Restart Episode";
+            document.getElementById('btn-play-auto').innerText = "? Restart Episode";
             document.getElementById('btn-play-auto').className = "w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-white shadow transition text-sm";
             
             elDashStatus.innerText = "TERMINATED";

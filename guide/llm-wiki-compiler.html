@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Compiler | LLM Wiki — RawWeights</title>
-  <meta name="description" content="Karpathy's LLM Wiki explained as a compiler: raw sources go in, compiled wiki pages come out. Understand ingest, query, lint — and when pre-compiled knowledge beats RAG.">
+  <title>The Compiler | LLM Wiki � RawWeights</title>
+  <meta name="description" content="Karpathy's LLM Wiki explained as a compiler: raw sources go in, compiled wiki pages come out. Understand ingest, query, lint � and when pre-compiled knowledge beats RAG.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/guide/llm-wiki-compiler.html">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/guide/llm-wiki-compiler.html">
-  <meta property="og:title" content="The Compiler | LLM Wiki — RawWeights">
-  <meta property="og:description" content="Karpathy's LLM Wiki: compile your knowledge once, query it cheaply forever. Ingest, query, lint — explained interactively.">
+  <meta property="og:title" content="The Compiler | LLM Wiki � RawWeights">
+  <meta property="og:description" content="Karpathy's LLM Wiki: compile your knowledge once, query it cheaply forever. Ingest, query, lint � explained interactively.">
   <meta property="og:image" content="https://www.rawweights.com/images/wiki.png">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -19,7 +19,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* ── Page accent: rose-red + lime ── */
+    /* -- Page accent: rose-red + lime -- */
     :root {
       --ac:    #f43f5e;
       --ac-h:  #e11d48;
@@ -30,7 +30,7 @@
       --ac2-br: rgba(132,204,22,0.25);
     }
 
-    /* ── Hero ── */
+    /* -- Hero -- */
     .guide-hero {
       background: linear-gradient(135deg, #0f0008 0%, #1a0010 55%, #050f00 100%);
       padding: 5rem 1.5rem 4rem;
@@ -92,7 +92,7 @@
     .cf-arrow    { color:rgba(255,255,255,0.35); font-size:1.1rem; }
     .cf-label    { font-size:0.65rem; text-align:center; margin-top:0.3rem; letter-spacing:0.04em; opacity:0.55; }
 
-    /* ── Layout ── */
+    /* -- Layout -- */
     .guide-layout {
       display:grid; grid-template-columns:220px 1fr;
       gap:2.5rem; max-width:1200px;
@@ -116,7 +116,7 @@
     }
     .guide-toc .toc-sub { padding-left:1rem; font-size:0.78rem; }
 
-    /* ── Sections ── */
+    /* -- Sections -- */
     .guide-section { margin-bottom:3.5rem; }
     .guide-section h2 {
       font-family:var(--rw-font-display); font-size:1.6rem; font-weight:800;
@@ -131,7 +131,7 @@
     }
     .guide-section p { font-size:1rem; color:var(--rw-text-muted,#9aa); line-height:1.75; margin-bottom:1rem; }
 
-    /* ── Callout ── */
+    /* -- Callout -- */
     .callout {
       border-left:3px solid var(--ac); background:var(--ac-lt);
       border-radius:0 8px 8px 0; padding:1rem 1.25rem; margin:1.25rem 0;
@@ -140,7 +140,7 @@
     .callout p { margin:0; font-size:0.9rem; line-height:1.65; }
     .callout strong { color:var(--rw-text,#f0f4ff); }
 
-    /* ── Layer Explorer ── */
+    /* -- Layer Explorer -- */
     .layer-tabs {
       display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;
     }
@@ -201,7 +201,7 @@
     .rule-list li .ri { flex-shrink:0; font-size:1rem; }
     .rule-list li strong { color:var(--rw-text,#f0f4ff); }
 
-    /* ── Operation Stepper ── */
+    /* -- Operation Stepper -- */
     .op-tabs {
       display:flex; border-bottom:2px solid var(--rw-border,#333); margin-bottom:0;
     }
@@ -239,7 +239,7 @@
     }
     .op-note strong { color:var(--rw-text,#f0f4ff); }
 
-    /* ── Lint Simulator ── */
+    /* -- Lint Simulator -- */
     .lint-sim {
       background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
       border-radius:12px; overflow:hidden;
@@ -312,7 +312,7 @@
       font-size:0.75rem; cursor:pointer; font-family:var(--rw-font-display); font-weight:700;
     }
 
-    /* ── Comparison table ── */
+    /* -- Comparison table -- */
     .comparison-table { width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:0.875rem; }
     .comparison-table th {
       background:var(--rw-bg-subtle,#111); font-family:var(--rw-font-display);
@@ -331,7 +331,7 @@
     .bad { color:#ef4444; font-weight:700; }
     .mid { color:#f59e0b; font-weight:700; }
 
-    /* ── Decision Wizard ── */
+    /* -- Decision Wizard -- */
     .decision-wizard {
       background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
       border-radius:12px; padding:1.5rem;
@@ -374,7 +374,7 @@
     .dw-verdict.both .dv-label { color:#fbbf24; }
     .dv-text { font-size:0.875rem; color:var(--rw-text-muted,#aaa); line-height:1.65; }
 
-    /* ── Capacity Gauge ── */
+    /* -- Capacity Gauge -- */
     .capacity-gauge {
       background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
       border-radius:12px; padding:1.5rem;
@@ -412,7 +412,7 @@
     }
     .gauge-break strong { color:#fb7185; }
 
-    /* ── Feature grid ── */
+    /* -- Feature grid -- */
     .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
     .feature-card {
       background:var(--rw-card,#1a1a2e); border:1px solid var(--rw-border,#333);
@@ -425,7 +425,7 @@
     .feature-card h4 { font-family:var(--rw-font-display); font-size:0.9rem; font-weight:700; color:var(--rw-text,#f0f4ff); margin-bottom:0.35rem; }
     .feature-card p  { font-size:0.82rem; color:var(--rw-text-muted,#aaa); margin:0; line-height:1.55; }
 
-    /* ── Code block ── */
+    /* -- Code block -- */
     .code-block {
       background:#0d0d12; border:1px solid var(--rw-border,#333);
       border-radius:10px; overflow:hidden; margin:1.25rem 0;
@@ -448,7 +448,7 @@
     .code-block .h  { color:#fbbf24; } /* heading */
     .code-block .p  { color:#c084fc; } /* property */
 
-    /* ── Related ── */
+    /* -- Related -- */
     .related-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.5rem 0; }
     .related-cta {
       display:flex; align-items:center; justify-content:space-between; gap:1rem;
@@ -461,7 +461,7 @@
     .related-cta p  { font-size:0.78rem; color:var(--rw-text-muted,#aaa); margin:0; line-height:1.45; }
     .related-arrow  { color:var(--ac); font-size:1.2rem; flex-shrink:0; }
 
-    /* ── Responsive ── */
+    /* -- Responsive -- */
     @media(max-width:1024px){
       .guide-layout { grid-template-columns:1fr; }
       .guide-sidebar { position:static; }
@@ -478,27 +478,27 @@
 <body>
 
 <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- ══ HERO ══ -->
+<!-- -- HERO -- -->
 <div class="guide-hero">
   <div class="guide-hero-inner">
-    <span class="guide-hero-label">⚙️ Knowledge Architecture</span>
+    <span class="guide-hero-label">?? Knowledge Architecture</span>
     <h1>The <span class="rose">Compiler</span></h1>
     <p class="guide-hero-sub">Karpathy's LLM Wiki is not a fancier RAG. It's a fundamentally different idea: compile your raw knowledge into an artifact once, then query the artifact cheaply forever.</p>
-    <p class="guide-hero-note">This is Andrej Karpathy's April 2026 GitHub Gist — explained through the lens you already know: the compiler metaphor.</p>
+    <p class="guide-hero-note">This is Andrej Karpathy's April 2026 GitHub Gist � explained through the lens you already know: the compiler metaphor.</p>
 
     <div class="compiler-flow">
       <div>
         <div class="cf-box src">raw/</div>
         <div class="cf-label">Source files</div>
       </div>
-      <div class="cf-arrow">→</div>
+      <div class="cf-arrow">?</div>
       <div>
         <div class="cf-box cmp">LLM + CLAUDE.md</div>
         <div class="cf-label">The compiler</div>
       </div>
-      <div class="cf-arrow">→</div>
+      <div class="cf-arrow">?</div>
       <div>
         <div class="cf-box out">wiki/</div>
         <div class="cf-label">Compiled artifact</div>
@@ -506,13 +506,13 @@
     </div>
 
     <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-      <a href="#section-arch"   class="rw-btn rw-btn-primary">Explore the Architecture ↓</a>
-      <a href="#section-lint"   class="rw-btn rw-btn-ghost" style="border-color:rgba(163,230,53,0.4);color:#a3e635;">Run the Lint Simulator →</a>
+      <a href="#section-arch"   class="rw-btn rw-btn-primary">Explore the Architecture ?</a>
+      <a href="#section-lint"   class="rw-btn rw-btn-ghost" style="border-color:rgba(163,230,53,0.4);color:#a3e635;">Run the Lint Simulator ?</a>
     </div>
   </div>
 </div>
 
-<!-- ══ CONTENT ══ -->
+<!-- -- CONTENT -- -->
 <div class="guide-layout">
 
   <!-- Sidebar -->
@@ -521,11 +521,11 @@
     <ul class="guide-toc">
       <li><a href="#section-why">Why a Compiler?</a></li>
       <li><a href="#section-arch">3-Layer Architecture</a></li>
-      <li><a href="#section-schema" class="toc-sub">CLAUDE.md — The Schema</a></li>
+      <li><a href="#section-schema" class="toc-sub">CLAUDE.md � The Schema</a></li>
       <li><a href="#section-ops">3 Operations</a></li>
       <li><a href="#section-ingest" class="toc-sub">Ingest</a></li>
       <li><a href="#section-query" class="toc-sub">Query</a></li>
-      <li><a href="#section-lint">Lint — The Analyzer</a></li>
+      <li><a href="#section-lint">Lint � The Analyzer</a></li>
       <li><a href="#section-vs">Wiki vs RAG</a></li>
       <li><a href="#section-limits">The Limits</a></li>
       <li><a href="#section-start">How to Start</a></li>
@@ -535,11 +535,11 @@
   <!-- Main -->
   <main>
 
-    <!-- ── WHY A COMPILER ── -->
+    <!-- -- WHY A COMPILER -- -->
     <section class="guide-section" id="section-why">
       <h2>Why the Compiler Metaphor</h2>
       <p>In 2026, most teams using Claude or GPT-4o for internal knowledge access have the same setup: dump documents into a vector database, write a RAG pipeline, retrieve chunks at query time, inject into context, answer. It works. It also costs tokens every single query, returns different answers to the same question depending on retrieval luck, and is nearly impossible to debug when it gets something wrong.</p>
-      <p>Andrej Karpathy published a GitHub Gist in April 2026 describing a different pattern. Instead of retrieving at runtime, you do the expensive reading and synthesis work <em>once</em>, upfront. The result is a set of structured markdown files — a wiki — that both humans and AI agents can query cheaply.</p>
+      <p>Andrej Karpathy published a GitHub Gist in April 2026 describing a different pattern. Instead of retrieving at runtime, you do the expensive reading and synthesis work <em>once</em>, upfront. The result is a set of structured markdown files � a wiki � that both humans and AI agents can query cheaply.</p>
 
       <div class="callout">
         <p>A compiled program runs fast because the hard work happened at compile time, not at runtime. The LLM Wiki does the same: the expensive retrieval and synthesis happens at <strong>ingest time</strong>. Every query after that just reads already-compiled files.</p>
@@ -547,24 +547,24 @@
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">🔁</div>
-          <h4>RAG — Interpreted</h4>
+          <div class="feature-card-icon">??</div>
+          <h4>RAG � Interpreted</h4>
           <p>Every query re-retrieves from the source. Like an interpreted language: flexible, but pays the parsing cost every run.</p>
         </div>
         <div class="feature-card lime">
-          <div class="feature-card-icon">⚡</div>
-          <h4>Wiki — Compiled</h4>
+          <div class="feature-card-icon">?</div>
+          <h4>Wiki � Compiled</h4>
           <p>Knowledge compiled once at ingest. Queries just read files. Cheaper, faster, auditable.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">🔬</div>
-          <h4>Lint — Static Analysis</h4>
-          <p>A scheduled pass that checks the compiled artifact for errors — dead links, contradictions, stale data. This is where the compiler metaphor completes.</p>
+          <div class="feature-card-icon">??</div>
+          <h4>Lint � Static Analysis</h4>
+          <p>A scheduled pass that checks the compiled artifact for errors � dead links, contradictions, stale data. This is where the compiler metaphor completes.</p>
         </div>
       </div>
     </section>
 
-    <!-- ── ARCHITECTURE ── -->
+    <!-- -- ARCHITECTURE -- -->
     <section class="guide-section" id="section-arch">
       <h2>3-Layer Architecture</h2>
       <p>Every LLM Wiki is three things. Click each layer to see what lives inside it.</p>
@@ -581,23 +581,23 @@
           <div class="layer-card-head">
             <div class="layer-badge red">Layer 1</div>
             <div>
-              <h4>raw/ — Source files (immutable)</h4>
+              <h4>raw/ � Source files (immutable)</h4>
               <p>The LLM reads these. It never modifies them.</p>
             </div>
           </div>
           <div class="layer-body">
             <div class="file-tree">
               <div><span class="dir">raw/</span></div>
-              <div>&nbsp;&nbsp;<span class="file">meeting-2026-06-01.txt</span> <span class="note">← Zoom transcript</span></div>
-              <div>&nbsp;&nbsp;<span class="file">client-feedback-q2.pdf</span> <span class="note">← Exported from Maven</span></div>
-              <div>&nbsp;&nbsp;<span class="file">competitor-analysis.md</span> <span class="note">← Your research notes</span></div>
-              <div>&nbsp;&nbsp;<span class="file">slack-export-2026-05.json</span> <span class="note">← Team Slack archive</span></div>
-              <div>&nbsp;&nbsp;<span class="file">sales-call-recording.vtt</span> <span class="note">← WebVTT transcript</span></div>
+              <div>&nbsp;&nbsp;<span class="file">meeting-2026-06-01.txt</span> <span class="note">? Zoom transcript</span></div>
+              <div>&nbsp;&nbsp;<span class="file">client-feedback-q2.pdf</span> <span class="note">? Exported from Maven</span></div>
+              <div>&nbsp;&nbsp;<span class="file">competitor-analysis.md</span> <span class="note">? Your research notes</span></div>
+              <div>&nbsp;&nbsp;<span class="file">slack-export-2026-05.json</span> <span class="note">? Team Slack archive</span></div>
+              <div>&nbsp;&nbsp;<span class="file">sales-call-recording.vtt</span> <span class="note">? WebVTT transcript</span></div>
             </div>
             <ul class="rule-list" style="margin-top:1rem;">
-              <li><span class="ri">🔒</span><div><strong>Never modified by the LLM.</strong> If a source is wrong, you fix the source and re-ingest.</div></li>
-              <li><span class="ri">📥</span><div><strong>Any format works.</strong> PDF, Markdown, JSON, VTT, plain text — the LLM reads them all at ingest time.</div></li>
-              <li><span class="ri">⏱️</span><div><strong>Timestamped or dated files</strong> help the lint step detect staleness. Name files with ISO dates when possible.</div></li>
+              <li><span class="ri">??</span><div><strong>Never modified by the LLM.</strong> If a source is wrong, you fix the source and re-ingest.</div></li>
+              <li><span class="ri">??</span><div><strong>Any format works.</strong> PDF, Markdown, JSON, VTT, plain text � the LLM reads them all at ingest time.</div></li>
+              <li><span class="ri">??</span><div><strong>Timestamped or dated files</strong> help the lint step detect staleness. Name files with ISO dates when possible.</div></li>
             </ul>
           </div>
         </div>
@@ -609,12 +609,12 @@
           <div class="layer-card-head">
             <div class="layer-badge wht">Layer 2</div>
             <div>
-              <h4>CLAUDE.md — The Schema (compiler flags)</h4>
+              <h4>CLAUDE.md � The Schema (compiler flags)</h4>
               <p>You write this. The LLM reads it before every operation.</p>
             </div>
           </div>
           <div class="layer-body">
-            <p style="font-size:0.85rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1rem;">CLAUDE.md is the constitution of your wiki. It defines what page types exist, how they're structured, how they're named, and what the three operations (ingest / query / lint) should do. Karpathy called this "the most important file in the repo — it co-evolved constantly."</p>
+            <p style="font-size:0.85rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1rem;">CLAUDE.md is the constitution of your wiki. It defines what page types exist, how they're structured, how they're named, and what the three operations (ingest / query / lint) should do. Karpathy called this "the most important file in the repo � it co-evolved constantly."</p>
             <div class="code-block" id="section-schema">
               <div class="code-block-head">
                 <span class="code-block-title">CLAUDE.md</span>
@@ -635,7 +635,7 @@
 <span class="p">- sources:</span>     <span class="s">raw/ files used</span>
 
 <span class="k">### concepts/{slug}.md</span>
-<span class="p">- definition:</span>  <span class="s">1–2 sentences</span>
+<span class="p">- definition:</span>  <span class="s">1�2 sentences</span>
 <span class="p">- how_we_use_it:</span> <span class="s">specific to our context</span>
 
 <span class="h">## Naming Conventions</span>
@@ -646,12 +646,12 @@
 <span class="s">1. Read raw source fully</span>
 <span class="s">2. Identify all entities (clients, competitors, concepts)</span>
 <span class="s">3. For each entity: update existing page OR create new page</span>
-<span class="s">4. Append (never overwrite) — tag additions with date</span>
+<span class="s">4. Append (never overwrite) � tag additions with date</span>
 <span class="s">5. Update index.md and log.md</span>
 
 <span class="h">## Lint Procedure</span>
-<span class="s">1. Verify every index.md entry → real file exists</span>
-<span class="s">2. Verify every wiki file → appears in index.md</span>
+<span class="s">1. Verify every index.md entry ? real file exists</span>
+<span class="s">2. Verify every wiki file ? appears in index.md</span>
 <span class="s">3. Scan for broken [[links]]</span>
 <span class="s">4. Flag: status=active AND last_contact > 90 days</span>
 <span class="s">5. Flag: pages with >85% content overlap (merge candidates)</span>
@@ -668,17 +668,17 @@
           <div class="layer-card-head">
             <div class="layer-badge grn">Layer 3</div>
             <div>
-              <h4>wiki/ — Compiled artifact (LLM-maintained)</h4>
+              <h4>wiki/ � Compiled artifact (LLM-maintained)</h4>
               <p>Plain markdown files. The LLM is the primary author. Humans can edit too.</p>
             </div>
           </div>
           <div class="layer-body">
             <div class="file-tree">
               <div><span class="lime">wiki/</span></div>
-              <div>&nbsp;&nbsp;<span class="file">index.md</span>  <span class="note">← catalogue of all pages (must fit in one context window)</span></div>
-              <div>&nbsp;&nbsp;<span class="file">log.md</span>    <span class="note">← append-only operation log</span></div>
+              <div>&nbsp;&nbsp;<span class="file">index.md</span>  <span class="note">? catalogue of all pages (must fit in one context window)</span></div>
+              <div>&nbsp;&nbsp;<span class="file">log.md</span>    <span class="note">? append-only operation log</span></div>
               <div>&nbsp;&nbsp;<span class="dir">clients/</span></div>
-              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">acme-corp.md</span>  <span class="note">← compiled from 6 raw sources</span></div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">acme-corp.md</span>  <span class="note">? compiled from 6 raw sources</span></div>
               <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">techvision.md</span></div>
               <div>&nbsp;&nbsp;<span class="dir">competitors/</span></div>
               <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">openai.md</span></div>
@@ -688,35 +688,35 @@
               <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">churn-signal.md</span></div>
             </div>
             <ul class="rule-list" style="margin-top:1rem;">
-              <li><span class="ri">👤</span><div><strong>Human-readable by design.</strong> If the client page is wrong, you open it, read it, fix it. No retrieval logs to trace.</div></li>
-              <li><span class="ri">🤖</span><div><strong>Agent-readable by design.</strong> Every query starts with index.md (small), selects relevant pages, reads those. Cheap.</div></li>
-              <li><span class="ri">📋</span><div><strong>index.md is the map.</strong> It must stay small enough to fit in one context window (~200 pages max before this breaks).</div></li>
+              <li><span class="ri">??</span><div><strong>Human-readable by design.</strong> If the client page is wrong, you open it, read it, fix it. No retrieval logs to trace.</div></li>
+              <li><span class="ri">??</span><div><strong>Agent-readable by design.</strong> Every query starts with index.md (small), selects relevant pages, reads those. Cheap.</div></li>
+              <li><span class="ri">??</span><div><strong>index.md is the map.</strong> It must stay small enough to fit in one context window (~200 pages max before this breaks).</div></li>
             </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ── 3 OPERATIONS ── -->
+    <!-- -- 3 OPERATIONS -- -->
     <section class="guide-section" id="section-ops">
       <h2>The 3 Operations</h2>
       <p>Everything in the LLM Wiki is one of three operations. The LLM reads CLAUDE.md first every time to know the rules, then executes.</p>
 
       <div class="op-tabs">
-        <button class="op-tab active"   id="op-tab-ingest" onclick="showOp('ingest')">⚡ Ingest</button>
-        <button class="op-tab"          id="op-tab-query"  onclick="showOp('query')">🔍 Query</button>
-        <button class="op-tab lime-op"  id="op-tab-lint"   onclick="showOp('lint')">🔬 Lint</button>
+        <button class="op-tab active"   id="op-tab-ingest" onclick="showOp('ingest')">? Ingest</button>
+        <button class="op-tab"          id="op-tab-query"  onclick="showOp('query')">?? Query</button>
+        <button class="op-tab lime-op"  id="op-tab-lint"   onclick="showOp('lint')">?? Lint</button>
       </div>
 
       <!-- Ingest -->
       <div class="op-panel active" id="op-panel-ingest" id="section-ingest">
-        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">Triggered when you drop a new file into <code>raw/</code>. This is the "compile" step. It's slow and expensive — but you only pay once per source.</p>
+        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">Triggered when you drop a new file into <code>raw/</code>. This is the "compile" step. It's slow and expensive � but you only pay once per source.</p>
         <ol class="op-steps">
           <li class="op-step">
             <div class="op-step-num">1</div>
             <div class="op-step-body">
               <h5>Read CLAUDE.md</h5>
-              <p>Load the schema — page types, naming conventions, the ingest procedure rules.</p>
+              <p>Load the schema � page types, naming conventions, the ingest procedure rules.</p>
             </div>
           </li>
           <li class="op-step">
@@ -730,7 +730,7 @@
             <div class="op-step-num">3</div>
             <div class="op-step-body">
               <h5>Read the raw source</h5>
-              <p>Fully read the new file. PDFs, VTT transcripts, Slack exports — all gets read now.</p>
+              <p>Fully read the new file. PDFs, VTT transcripts, Slack exports � all gets read now.</p>
             </div>
           </li>
           <li class="op-step">
@@ -744,7 +744,7 @@
             <div class="op-step-num">5</div>
             <div class="op-step-body">
               <h5>Update or create wiki pages</h5>
-              <p>Existing page → append new information (tagged with date, never overwriting). New entity → create a page following the schema. Contradictions between old and new → surface them explicitly.</p>
+              <p>Existing page ? append new information (tagged with date, never overwriting). New entity ? create a page following the schema. Contradictions between old and new ? surface them explicitly.</p>
             </div>
           </li>
           <li class="op-step">
@@ -756,13 +756,13 @@
           </li>
         </ol>
         <div class="op-note">
-          <strong>Cost reality:</strong> A thorough ingest of a 90-minute meeting transcript might cost ~50K tokens. But every person who later queries <code>wiki/clients/acme-corp.md</code> spends ~500 tokens. If 10 people query it, you're already ahead — and the compound savings grow over time.
+          <strong>Cost reality:</strong> A thorough ingest of a 90-minute meeting transcript might cost ~50K tokens. But every person who later queries <code>wiki/clients/acme-corp.md</code> spends ~500 tokens. If 10 people query it, you're already ahead � and the compound savings grow over time.
         </div>
       </div>
 
       <!-- Query -->
       <div class="op-panel" id="op-panel-query" id="section-query">
-        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">How you ask questions. This is the fast path — you never go back to raw sources.</p>
+        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">How you ask questions. This is the fast path � you never go back to raw sources.</p>
         <ol class="op-steps">
           <li class="op-step">
             <div class="op-step-num">1</div>
@@ -775,25 +775,25 @@
             <div class="op-step-num">2</div>
             <div class="op-step-body">
               <h5>Select relevant pages</h5>
-              <p>Based on the query, pick 2-5 relevant wiki pages. "What did Acme Corp say about pricing?" → load <code>clients/acme-corp.md</code>.</p>
+              <p>Based on the query, pick 2-5 relevant wiki pages. "What did Acme Corp say about pricing?" ? load <code>clients/acme-corp.md</code>.</p>
             </div>
           </li>
           <li class="op-step">
             <div class="op-step-num">3</div>
             <div class="op-step-body">
               <h5>Read selected pages &amp; answer</h5>
-              <p>Read the markdown files and answer from them. The total context might be 3-4 pages × 2KB = 6-8KB. Far cheaper than re-retrieving from raw sources.</p>
+              <p>Read the markdown files and answer from them. The total context might be 3-4 pages � 2KB = 6-8KB. Far cheaper than re-retrieving from raw sources.</p>
             </div>
           </li>
         </ol>
         <div class="op-note">
-          <strong>Debuggability:</strong> If the answer is wrong, you know exactly why — open the page it read, see the incorrect claim, fix it. With RAG you'd need to trace chunk IDs, retrieval scores, and prompt injection order to find the same bug.
+          <strong>Debuggability:</strong> If the answer is wrong, you know exactly why � open the page it read, see the incorrect claim, fix it. With RAG you'd need to trace chunk IDs, retrieval scores, and prompt injection order to find the same bug.
         </div>
       </div>
 
       <!-- Lint -->
       <div class="op-panel" id="op-panel-lint">
-        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">The scheduled health check. Run weekly or monthly. This is what keeps the compiled artifact trustworthy over time — without it, the wiki rots.</p>
+        <p style="font-size:0.875rem;color:var(--rw-text-muted);line-height:1.65;margin-bottom:1.25rem;">The scheduled health check. Run weekly or monthly. This is what keeps the compiled artifact trustworthy over time � without it, the wiki rots.</p>
         <ol class="op-steps">
           <li class="op-step lime">
             <div class="op-step-num">1</div>
@@ -820,14 +820,14 @@
             <div class="op-step-num">4</div>
             <div class="op-step-body">
               <h5>Fix what can be auto-fixed</h5>
-              <p>Broken links, missing index entries, schema violations — fix automatically. Contradictions and staleness → flag for human review.</p>
+              <p>Broken links, missing index entries, schema violations � fix automatically. Contradictions and staleness ? flag for human review.</p>
             </div>
           </li>
           <li class="op-step lime">
             <div class="op-step-num">5</div>
             <div class="op-step-body">
               <h5>Append full run report to log.md</h5>
-              <p>Every check, every fix, every flag — logged permanently so humans can audit and revert if needed.</p>
+              <p>Every check, every fix, every flag � logged permanently so humans can audit and revert if needed.</p>
             </div>
           </li>
         </ol>
@@ -837,41 +837,41 @@
       </div>
     </section>
 
-    <!-- ── LINT SIMULATOR ── -->
+    <!-- -- LINT SIMULATOR -- -->
     <section class="guide-section" id="section-lint">
-      <h2>Lint — The Static Analyzer</h2>
+      <h2>Lint � The Static Analyzer</h2>
       <p>In compiler tooling, <strong>lint</strong> is a static analysis pass that checks an artifact for errors without running it. In the LLM Wiki, lint reads every page in <code>wiki/</code> and runs 7 checks. Click "Run Lint" to simulate a real lint pass.</p>
 
       <div class="lint-sim">
         <div class="lint-sim-head">
           <span class="lint-sim-title">$ llm-wiki lint --all</span>
-          <button class="lint-run-btn" id="lintRunBtn" onclick="runLint()">▶ Run Lint</button>
+          <button class="lint-run-btn" id="lintRunBtn" onclick="runLint()">? Run Lint</button>
         </div>
         <div class="lint-body" id="lintBody">
-          <p style="font-size:0.82rem;color:var(--rw-text-muted,#666);margin:auto;text-align:center;padding:2rem 0;">Click "Run Lint" to start the analyzer…</p>
+          <p style="font-size:0.82rem;color:var(--rw-text-muted,#666);margin:auto;text-align:center;padding:2rem 0;">Click "Run Lint" to start the analyzer�</p>
         </div>
         <div class="lint-summary" id="lintSummary">
-          ✅ Lint complete — 5 auto-fixed, 2 flagged for human review
+          ? Lint complete � 5 auto-fixed, 2 flagged for human review
           <button class="lint-reset-btn" onclick="resetLint()">Reset</button>
         </div>
       </div>
 
       <h3>The 7 Lint Checks Explained</h3>
       <ul class="rule-list">
-        <li><span class="ri">🔗</span><div><strong>Dead links</strong> — Scans every <code>[[link]]</code> reference and verifies the target file exists. Auto-fixes by removing or updating broken references.</div></li>
-        <li><span class="ri">📋</span><div><strong>Index drift</strong> — Checks that every file in <code>wiki/</code> appears in <code>index.md</code>, and every <code>index.md</code> entry points to a real file. Auto-fixes both directions.</div></li>
-        <li><span class="ri">⚡</span><div><strong>Contradictions</strong> — Detects when two pages make conflicting claims about the same entity or fact. Flags for human review (cannot auto-fix — needs judgment).</div></li>
-        <li><span class="ri">🕰️</span><div><strong>Staleness</strong> — Finds pages with <code>status: active</code> but <code>last_contact</code> older than your threshold (e.g. 90 days). Updates status to "stale" and flags.</div></li>
-        <li><span class="ri">🔁</span><div><strong>Duplication</strong> — Detects pages with high content overlap (&gt;85%). Auto-merges when safe, flags ambiguous cases.</div></li>
-        <li><span class="ri">🔍</span><div><strong>Orphan pages</strong> — Finds pages that nothing links to. Either adds them to a relevant parent page or flags for deletion.</div></li>
-        <li><span class="ri">📐</span><div><strong>Schema violations</strong> — Checks that all pages have the required fields defined in CLAUDE.md. Auto-generates missing fields from page content when possible.</div></li>
+        <li><span class="ri">??</span><div><strong>Dead links</strong> � Scans every <code>[[link]]</code> reference and verifies the target file exists. Auto-fixes by removing or updating broken references.</div></li>
+        <li><span class="ri">??</span><div><strong>Index drift</strong> � Checks that every file in <code>wiki/</code> appears in <code>index.md</code>, and every <code>index.md</code> entry points to a real file. Auto-fixes both directions.</div></li>
+        <li><span class="ri">?</span><div><strong>Contradictions</strong> � Detects when two pages make conflicting claims about the same entity or fact. Flags for human review (cannot auto-fix � needs judgment).</div></li>
+        <li><span class="ri">???</span><div><strong>Staleness</strong> � Finds pages with <code>status: active</code> but <code>last_contact</code> older than your threshold (e.g. 90 days). Updates status to "stale" and flags.</div></li>
+        <li><span class="ri">??</span><div><strong>Duplication</strong> � Detects pages with high content overlap (&gt;85%). Auto-merges when safe, flags ambiguous cases.</div></li>
+        <li><span class="ri">??</span><div><strong>Orphan pages</strong> � Finds pages that nothing links to. Either adds them to a relevant parent page or flags for deletion.</div></li>
+        <li><span class="ri">??</span><div><strong>Schema violations</strong> � Checks that all pages have the required fields defined in CLAUDE.md. Auto-generates missing fields from page content when possible.</div></li>
       </ul>
     </section>
 
-    <!-- ── WIKI vs RAG ── -->
+    <!-- -- WIKI vs RAG -- -->
     <section class="guide-section" id="section-vs">
-      <h2>Wiki vs RAG — When Each Wins</h2>
-      <p>These aren't competing philosophies — they're tools for different situations. If you've read the RAG guides here, you already know the retrieval mechanics. Here's how to choose.</p>
+      <h2>Wiki vs RAG � When Each Wins</h2>
+      <p>These aren't competing philosophies � they're tools for different situations. If you've read the RAG guides here, you already know the retrieval mechanics. Here's how to choose.</p>
 
       <table class="comparison-table">
         <thead>
@@ -894,17 +894,17 @@
           </tr>
           <tr>
             <td class="dim-label">Human readability</td>
-            <td><span class="bad">No</span> — chunks, embeddings, vector scores</td>
-            <td><span class="ok">Yes</span> — plain markdown, open and fix</td>
+            <td><span class="bad">No</span> � chunks, embeddings, vector scores</td>
+            <td><span class="ok">Yes</span> � plain markdown, open and fix</td>
           </tr>
           <tr>
             <td class="dim-label">Debuggability</td>
-            <td><span class="bad">Hard</span> — trace retrieval logs, chunk IDs</td>
-            <td><span class="ok">Easy</span> — open the wrong page, fix the fact</td>
+            <td><span class="bad">Hard</span> � trace retrieval logs, chunk IDs</td>
+            <td><span class="ok">Easy</span> � open the wrong page, fix the fact</td>
           </tr>
           <tr>
             <td class="dim-label">Contradiction handling</td>
-            <td><span class="bad">None</span> — retrieves both, LLM picks one</td>
+            <td><span class="bad">None</span> � retrieves both, LLM picks one</td>
             <td><span class="ok">Lint step</span> surfaces and resolves explicitly</td>
           </tr>
           <tr>
@@ -914,8 +914,8 @@
           </tr>
           <tr>
             <td class="dim-label">Best corpus size</td>
-            <td><span class="ok">Unlimited</span> — scales to millions of docs</td>
-            <td><span class="mid">~200 pages</span> — index.md must fit in context</td>
+            <td><span class="ok">Unlimited</span> � scales to millions of docs</td>
+            <td><span class="mid">~200 pages</span> � index.md must fit in context</td>
           </tr>
           <tr>
             <td class="dim-label">Best for</td>
@@ -965,38 +965,38 @@
       </div>
     </section>
 
-    <!-- ── LIMITS ── -->
+    <!-- -- LIMITS -- -->
     <section class="guide-section" id="section-limits">
       <h2>The Limits</h2>
-      <p>The LLM Wiki is a personal-to-team scale tool by design. Karpathy's original gist was honest about where it breaks. Understanding the limits tells you when to switch to RAG — or to a hybrid.</p>
+      <p>The LLM Wiki is a personal-to-team scale tool by design. Karpathy's original gist was honest about where it breaks. Understanding the limits tells you when to switch to RAG � or to a hybrid.</p>
 
       <div class="capacity-gauge">
         <div class="gauge-row">
           <div class="gauge-item">
             <div class="gauge-meta">
-              <span class="gauge-name">Wiki pages (50 pages — healthy)</span>
+              <span class="gauge-name">Wiki pages (50 pages � healthy)</span>
               <span class="gauge-val">50 / 200</span>
             </div>
             <div class="gauge-track">
               <div class="gauge-fill green" style="width:25%" data-pct="25%"></div>
             </div>
-            <div class="gauge-note">index.md is small and coherent. The LLM can navigate the full graph in context. ✅ Ideal range.</div>
+            <div class="gauge-note">index.md is small and coherent. The LLM can navigate the full graph in context. ? Ideal range.</div>
           </div>
 
           <div class="gauge-item">
             <div class="gauge-meta">
-              <span class="gauge-name">Wiki pages (150 pages — approaching limit)</span>
+              <span class="gauge-name">Wiki pages (150 pages � approaching limit)</span>
               <span class="gauge-val">150 / 200</span>
             </div>
             <div class="gauge-track">
               <div class="gauge-fill amber" style="width:75%" data-pct="75%"></div>
             </div>
-            <div class="gauge-note">index.md is getting heavy. Cross-page linking may become inconsistent. Time to audit page granularity — are some pages too narrow?</div>
+            <div class="gauge-note">index.md is getting heavy. Cross-page linking may become inconsistent. Time to audit page granularity � are some pages too narrow?</div>
           </div>
 
           <div class="gauge-item">
             <div class="gauge-meta">
-              <span class="gauge-name">Wiki pages (200+ pages — breaks here)</span>
+              <span class="gauge-name">Wiki pages (200+ pages � breaks here)</span>
               <span class="gauge-val">200+ / 200</span>
             </div>
             <div class="gauge-track">
@@ -1007,7 +1007,7 @@
 
           <div class="gauge-item">
             <div class="gauge-meta">
-              <span class="gauge-name">Compiled word count (~400K words — hard ceiling)</span>
+              <span class="gauge-name">Compiled word count (~400K words � hard ceiling)</span>
               <span class="gauge-val">400K words</span>
             </div>
             <div class="gauge-track">
@@ -1018,30 +1018,30 @@
         </div>
 
         <div class="gauge-break">
-          <strong>What to do when you hit the limit:</strong> Split into multiple focused wikis (one per domain — clients wiki, competitors wiki, concepts wiki). Each gets its own CLAUDE.md and index.md. Queries load only the relevant wiki, not all of them.
+          <strong>What to do when you hit the limit:</strong> Split into multiple focused wikis (one per domain � clients wiki, competitors wiki, concepts wiki). Each gets its own CLAUDE.md and index.md. Queries load only the relevant wiki, not all of them.
         </div>
       </div>
 
       <div class="feature-grid" style="margin-top:1.5rem;">
         <div class="feature-card">
-          <div class="feature-card-icon">📊</div>
+          <div class="feature-card-icon">??</div>
           <h4>High-velocity data</h4>
           <p>If your raw sources change hourly and queries need real-time accuracy, RAG is better. The wiki is a snapshot that re-compiles on a schedule.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">🔀</div>
+          <div class="feature-card-icon">??</div>
           <h4>Concurrent writers</h4>
           <p>Multiple LLM agents writing to the same wiki simultaneously risks corruption. The pattern assumes a single writer per wiki at a time.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">🌐</div>
+          <div class="feature-card-icon">??</div>
           <h4>Millions of documents</h4>
-          <p>The wiki is designed for bounded knowledge bases — your clients, your competitors, your concepts. Not for indexing the public internet.</p>
+          <p>The wiki is designed for bounded knowledge bases � your clients, your competitors, your concepts. Not for indexing the public internet.</p>
         </div>
       </div>
     </section>
 
-    <!-- ── HOW TO START ── -->
+    <!-- -- HOW TO START -- -->
     <section class="guide-section" id="section-start">
       <h2>How to Start</h2>
       <p>The original Karpathy gist is short and copy-pasteable into Claude Code. Here's the minimum viable path:</p>
@@ -1051,14 +1051,14 @@
           <div class="op-step-num">1</div>
           <div class="op-step-body">
             <h5>Create the folder structure</h5>
-            <p>Make <code>raw/</code>, <code>wiki/</code>, and an empty <code>CLAUDE.md</code>. Drop 2-3 source files into <code>raw/</code> — meeting transcripts, documents, notes.</p>
+            <p>Make <code>raw/</code>, <code>wiki/</code>, and an empty <code>CLAUDE.md</code>. Drop 2-3 source files into <code>raw/</code> � meeting transcripts, documents, notes.</p>
           </div>
         </li>
         <li class="op-step lime">
           <div class="op-step-num">2</div>
           <div class="op-step-body">
             <h5>Write your CLAUDE.md</h5>
-            <p>Define 2-3 page types that make sense for your domain. Don't over-engineer — start with <code>clients/</code> and <code>concepts/</code>. The schema evolves as you use it.</p>
+            <p>Define 2-3 page types that make sense for your domain. Don't over-engineer � start with <code>clients/</code> and <code>concepts/</code>. The schema evolves as you use it.</p>
           </div>
         </li>
         <li class="op-step lime">
@@ -1072,7 +1072,7 @@
           <div class="op-step-num">4</div>
           <div class="op-step-body">
             <h5>Query it</h5>
-            <p>Ask a question about the content you just ingested. Notice how it loads index.md first, selects a page, answers from the page — not from re-reading the raw source.</p>
+            <p>Ask a question about the content you just ingested. Notice how it loads index.md first, selects a page, answers from the page � not from re-reading the raw source.</p>
           </div>
         </li>
         <li class="op-step lime">
@@ -1085,7 +1085,7 @@
       </ol>
 
       <div class="callout lime">
-        <p><strong>Primary source:</strong> Karpathy's original gist is at <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener" style="color:#a3e635;">gist.github.com/karpathy/442a6bf555914893e9891c11519de94f</a> — it's short, worth reading in full. The CLAUDE.md section is the most copy-pasteable starting point.</p>
+        <p><strong>Primary source:</strong> Karpathy's original gist is at <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener" style="color:#a3e635;">gist.github.com/karpathy/442a6bf555914893e9891c11519de94f</a> � it's short, worth reading in full. The CLAUDE.md section is the most copy-pasteable starting point.</p>
       </div>
 
       <h3>Related on RawWeights</h3>
@@ -1093,30 +1093,30 @@
         <a href="rag-architects-studio.html" class="related-cta">
           <div>
             <h4>RAG Architect's Studio</h4>
-            <p>Context engineering, Lost in the Middle, agentic RAG — the retrieval foundations the wiki replaces or complements.</p>
+            <p>Context engineering, Lost in the Middle, agentic RAG � the retrieval foundations the wiki replaces or complements.</p>
           </div>
-          <span class="related-arrow">→</span>
+          <span class="related-arrow">?</span>
         </a>
         <a href="mem0-b2b-signal-memory.html" class="related-cta">
           <div>
             <h4>The Signal Memory Problem</h4>
-            <p>Mem0's approach to cross-session memory — a different architecture for a different memory problem.</p>
+            <p>Mem0's approach to cross-session memory � a different architecture for a different memory problem.</p>
           </div>
-          <span class="related-arrow">→</span>
+          <span class="related-arrow">?</span>
         </a>
         <a href="mcp-practitioner-playbook.html" class="related-cta">
           <div>
             <h4>MCP Practitioner's Playbook</h4>
-            <p>How to connect your wiki folder to Claude Code via MCP — the plumbing that makes CLAUDE.md operations work.</p>
+            <p>How to connect your wiki folder to Claude Code via MCP � the plumbing that makes CLAUDE.md operations work.</p>
           </div>
-          <span class="related-arrow">→</span>
+          <span class="related-arrow">?</span>
         </a>
         <a href="eval-proving-ground.html" class="related-cta">
           <div>
             <h4>Eval Proving Ground</h4>
-            <p>How to know if your wiki pages are actually correct — eval patterns that apply to compiled knowledge.</p>
+            <p>How to know if your wiki pages are actually correct � eval patterns that apply to compiled knowledge.</p>
           </div>
-          <span class="related-arrow">→</span>
+          <span class="related-arrow">?</span>
         </a>
       </div>
     </section>
@@ -1135,7 +1135,7 @@
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-  /* ── Layer Explorer ── */
+  /* -- Layer Explorer -- */
   function showLayer(id) {
     ['raw','schema','wiki'].forEach(l => {
       document.getElementById('panel-' + l).classList.toggle('active', l === id);
@@ -1143,7 +1143,7 @@
     });
   }
 
-  /* ── Operation Tabs ── */
+  /* -- Operation Tabs -- */
   function showOp(id) {
     ['ingest','query','lint'].forEach(o => {
       document.getElementById('op-panel-' + o).classList.toggle('active', o === id);
@@ -1151,49 +1151,49 @@
     });
   }
 
-  /* ── Lint Simulator ── */
+  /* -- Lint Simulator -- */
   const LINT_CHECKS = [
     {
       name: 'Dead Links',
       state: 'found',
-      icon: '🔗',
-      detail: '<span class="found-text">Found:</span> clients/acme-corp.md links to [[projects/alpha.md]] — file does not exist. <span class="fix-text">Fixed:</span> Removed broken reference, added to log.md.'
+      icon: '??',
+      detail: '<span class="found-text">Found:</span> clients/acme-corp.md links to [[projects/alpha.md]] � file does not exist. <span class="fix-text">Fixed:</span> Removed broken reference, added to log.md.'
     },
     {
       name: 'Index Drift',
       state: 'fixed',
-      icon: '📋',
+      icon: '??',
       detail: '<span class="found-text">Found:</span> wiki/competitors/mistral.md exists but is missing from index.md. <span class="fix-text">Fixed:</span> Added entry to index.md under Competitors section.'
     },
     {
       name: 'Contradictions',
       state: 'warn',
-      icon: '⚡',
-      detail: '<span class="warn-text">Flagged:</span> competitors/openai.md says GPT-5 launched "Q1 2025"; concepts/market-trends.md says "Q3 2025". Cannot auto-resolve — requires human judgment.'
+      icon: '?',
+      detail: '<span class="warn-text">Flagged:</span> competitors/openai.md says GPT-5 launched "Q1 2025"; concepts/market-trends.md says "Q3 2025". Cannot auto-resolve � requires human judgment.'
     },
     {
       name: 'Staleness',
       state: 'fixed',
-      icon: '🕰️',
-      detail: '<span class="found-text">Found:</span> clients/globalcorp.md — status: active, last_contact: 2025-08-14 (305 days ago). <span class="fix-text">Fixed:</span> Status updated to "stale — follow-up needed".'
+      icon: '???',
+      detail: '<span class="found-text">Found:</span> clients/globalcorp.md � status: active, last_contact: 2025-08-14 (305 days ago). <span class="fix-text">Fixed:</span> Status updated to "stale � follow-up needed".'
     },
     {
       name: 'Duplication',
       state: 'fixed',
-      icon: '🔁',
-      detail: '<span class="found-text">Found:</span> concepts/rag.md and concepts/retrieval.md — 89% content overlap detected. <span class="fix-text">Fixed:</span> Merged into concepts/rag.md. concepts/retrieval.md archived.'
+      icon: '??',
+      detail: '<span class="found-text">Found:</span> concepts/rag.md and concepts/retrieval.md � 89% content overlap detected. <span class="fix-text">Fixed:</span> Merged into concepts/rag.md. concepts/retrieval.md archived.'
     },
     {
       name: 'Orphan Pages',
       state: 'fixed',
-      icon: '🔍',
-      detail: '<span class="found-text">Found:</span> concepts/muon-optimizer.md — no other pages link to it. <span class="fix-text">Fixed:</span> Added reference from concepts/training-methods.md. Page preserved.'
+      icon: '??',
+      detail: '<span class="found-text">Found:</span> concepts/muon-optimizer.md � no other pages link to it. <span class="fix-text">Fixed:</span> Added reference from concepts/training-methods.md. Page preserved.'
     },
     {
       name: 'Schema Violations',
       state: 'warn',
-      icon: '📐',
-      detail: '<span class="found-text">Found:</span> clients/newco.md — required field "one_liner" missing. Auto-generation attempted but company context insufficient. <span class="warn-text">Flagged for human input.</span>'
+      icon: '??',
+      detail: '<span class="found-text">Found:</span> clients/newco.md � required field "one_liner" missing. Auto-generation attempted but company context insufficient. <span class="warn-text">Flagged for human input.</span>'
     }
   ];
 
@@ -1208,7 +1208,7 @@
     const sum  = document.getElementById('lintSummary');
 
     btn.disabled = true;
-    btn.textContent = '⏳ Running…';
+    btn.textContent = '? Running�';
     body.innerHTML = '';
     sum.classList.remove('visible');
 
@@ -1217,7 +1217,7 @@
         const el = document.createElement('div');
         el.className = 'lint-check';
         el.innerHTML = `
-          <div class="lint-status ${check.state}">${check.state === 'found' || check.state === 'fixed' ? (check.state === 'fixed' ? '✓' : '✕') : '⚠'}</div>
+          <div class="lint-status ${check.state}">${check.state === 'found' || check.state === 'fixed' ? (check.state === 'fixed' ? '?' : '?') : '?'}</div>
           <div class="lint-content">
             <div class="lint-check-name ${check.state}">${check.icon} Check: ${check.name}</div>
             <div class="lint-detail">${check.detail}</div>
@@ -1228,7 +1228,7 @@
         if (i === LINT_CHECKS.length - 1) {
           setTimeout(() => {
             sum.classList.add('visible');
-            btn.textContent = '✓ Complete';
+            btn.textContent = '? Complete';
           }, 400);
         }
       }, i * 480);
@@ -1241,12 +1241,12 @@
     const body = document.getElementById('lintBody');
     const sum  = document.getElementById('lintSummary');
     btn.disabled  = false;
-    btn.textContent = '▶ Run Lint';
-    body.innerHTML = '<p style="font-size:0.82rem;color:var(--rw-text-muted,#666);margin:auto;text-align:center;padding:2rem 0;">Click "Run Lint" to start the analyzer…</p>';
+    btn.textContent = '? Run Lint';
+    body.innerHTML = '<p style="font-size:0.82rem;color:var(--rw-text-muted,#666);margin:auto;text-align:center;padding:2rem 0;">Click "Run Lint" to start the analyzer�</p>';
     sum.classList.remove('visible');
   }
 
-  /* ── Decision Wizard ── */
+  /* -- Decision Wizard -- */
   const dwAnswers = {};
 
   function dwSelect(btn) {
@@ -1270,22 +1270,22 @@
     let type, label, text;
 
     if (size === 'huge') {
-      type = 'rag'; label = '→ Use RAG';
+      type = 'rag'; label = '? Use RAG';
       text = 'Millions of documents exceeds the LLM Wiki\'s ~200 page ceiling. A vector database scales; index.md does not. Build a proper RAG pipeline.';
     } else if (churn === 'fast' && size !== 'small') {
-      type = 'rag'; label = '→ Use RAG';
+      type = 'rag'; label = '? Use RAG';
       text = 'High-velocity, large corpora are what RAG was built for. Re-embedding on change is cheaper than re-running a full wiki ingest at this scale.';
     } else if (size === 'small' && churn === 'stable' && reader === 'human') {
-      type = 'wiki'; label = '→ LLM Wiki';
-      text = 'Perfect conditions. Bounded, stable knowledge that humans need to audit and fix. Build the wiki — start with CLAUDE.md, ingest your top 5 sources, schedule weekly lint.';
+      type = 'wiki'; label = '? LLM Wiki';
+      text = 'Perfect conditions. Bounded, stable knowledge that humans need to audit and fix. Build the wiki � start with CLAUDE.md, ingest your top 5 sources, schedule weekly lint.';
     } else if (size === 'small' && churn === 'stable') {
-      type = 'wiki'; label = '→ LLM Wiki (or RAG)';
-      text = 'The wiki works well here. If agents never need to explain their sources or be debugged by humans, RAG also works — but the wiki gives you a cheaper query path.';
+      type = 'wiki'; label = '? LLM Wiki (or RAG)';
+      text = 'The wiki works well here. If agents never need to explain their sources or be debugged by humans, RAG also works � but the wiki gives you a cheaper query path.';
     } else if (size === 'large' && churn === 'stable' && reader === 'human') {
-      type = 'both'; label = '→ Hybrid';
+      type = 'both'; label = '? Hybrid';
       text = 'Too large for one wiki, too stable for pure RAG. Consider multiple focused wikis (one per domain) with cross-wiki index. Or use RAG for the archive and a wiki for the active working set.';
     } else {
-      type = 'both'; label = '→ Hybrid';
+      type = 'both'; label = '? Hybrid';
       text = 'Mixed signals. Start with a wiki for the most-queried, stable knowledge (your clients, competitors, key concepts). Use RAG for the long tail of historical raw data.';
     }
 
@@ -1293,7 +1293,7 @@
     v.innerHTML = `<div class="dv-label">${label}</div><div class="dv-text">${text}</div>`;
   }
 
-  /* ── TOC active state ── */
+  /* -- TOC active state -- */
   const sections = document.querySelectorAll('.guide-section[id]');
   const links    = document.querySelectorAll('.guide-toc a');
   const observer = new IntersectionObserver(entries => {

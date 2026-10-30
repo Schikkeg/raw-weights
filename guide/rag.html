@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -60,19 +60,19 @@
       <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})();</script>
   <link rel="stylesheet" href="../includes/brand.css">
 <style>
-/* ── Dark mode: hero persona selector ── */
+/* -- Dark mode: hero persona selector -- */
 [data-theme="dark"] .header-persona { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
 [data-theme="dark"] .header-persona .persona-btn { color: #cbd5e1; border-color: rgba(255,255,255,0.15); }
 [data-theme="dark"] .header-persona .persona-btn:hover:not(.active) { background: rgba(255,255,255,0.12); color: #ffffff; }
-/* ── Dark mode: article body cards ── */
+/* -- Dark mode: article body cards -- */
 [data-theme="dark"] .glass-card { background: rgba(17,24,39,0.95); border-color: rgba(255,255,255,0.08); }
 [data-theme="dark"] article .bg-white { background-color: #111827 !important; color: #e2e8f0 !important; }
 [data-theme="dark"] article .text-gray-900 { color: #f0f4ff !important; }
 [data-theme="dark"] article .text-gray-700 { color: #cbd5e1 !important; }
-/* ── Dark mode: limitations section (bg-red-50 card) ── */
+/* -- Dark mode: limitations section (bg-red-50 card) -- */
 [data-theme="dark"] #content-limitations { background-color: rgba(127,29,29,0.25) !important; border-color: rgba(239,68,68,0.3) !important; color: #fca5a5 !important; }
 [data-theme="dark"] #content-limitations strong { color: #f87171; }
-/* ── Dark mode: comparison cards injected via JS (bg-white inside content areas) ── */
+/* -- Dark mode: comparison cards injected via JS (bg-white inside content areas) -- */
 [data-theme="dark"] .bg-gray-50 { background-color: #1a2236 !important; }
 [data-theme="dark"] .border-gray-100, [data-theme="dark"] .border-gray-200 { border-color: #1e293b !important; }
 </style>
@@ -132,18 +132,18 @@
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
     <div id="rw-nav"></div>
-<script src="../includes/rw-nav.js?v=20261030"></script>
+<script src="../includes/rw-nav.js?v=20261031"></script>
 
     <script type="application/json" id="persona-data">
 
 
     {
         "developer": {
-            "intro": "Retrieval-Augmented Generation (RAG) is a critical architecture addressing the non-deterministic nature of LLMs by grounding outputs in verified external data. Unlike fine-tuning—which updates model weights to adapt stylistic responses—RAG handles ever-growing repositories of external knowledge dynamically.",
+            "intro": "Retrieval-Augmented Generation (RAG) is a critical architecture addressing the non-deterministic nature of LLMs by grounding outputs in verified external data. Unlike fine-tuning�which updates model weights to adapt stylistic responses�RAG handles ever-growing repositories of external knowledge dynamically.",
             "architecture": "The pipeline strictly separates into Offline Ingestion (Indexing) and Online Retrieval. Offline, raw data is broken into chunks, run through an embedding model to create dense n-dimensional vectors, and stored in a Vector DB (like Pinecone) with rich metadata. Online, user queries are embedded using the <strong>exact same embedding model</strong>. We execute a similarity search (Cosine Similarity) to retrieve the Top-K vectors. Finally, a Re-ranker sorts these chunks for semantic relevance.",
             "chunking": "<h4 class='font-bold text-lg mb-2'>1. Fixed-Size & Sliding Window</h4><p class='text-sm mb-4'>Splits strictly by token limits. Low complexity but prone to 'context fragmentation'.</p><h4 class='font-bold text-lg mb-2'>2. Recursive / Document-Based</h4><p class='text-sm mb-4'>Leverages natural structures. High accuracy, recommended baseline.</p><h4 class='font-bold text-lg mb-2'>3. Semantic Chunking</h4><p class='text-sm mb-4'>Groups text mathematically by semantic meaning. High accuracy but high latency.</p>",
-            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Hybrid Retrieval:</strong> Combines dense vector search with sparse keyword matching (BM25).</li><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Agentic RAG:</strong> The LLM sits inside the retrieval process. It retrieves, evaluates what it got, and decides if it was enough before generating the answer.</li></ul>",
-            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>Access Control (RBAC):</strong> RAG doesn't restrict permissions natively. You must enforce RBAC programmatically.</li><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>Data Lag:</strong> Data must be indexed, chunked, and embedded before it's retrievable.</li></ul>",
+            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>?</span><strong>Hybrid Retrieval:</strong> Combines dense vector search with sparse keyword matching (BM25).</li><li class='flex items-start'><span class='text-brand-500 mr-2'>?</span><strong>Agentic RAG:</strong> The LLM sits inside the retrieval process. It retrieves, evaluates what it got, and decides if it was enough before generating the answer.</li></ul>",
+            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>?</span><strong>Access Control (RBAC):</strong> RAG doesn't restrict permissions natively. You must enforce RBAC programmatically.</li><li class='flex items-start'><span class='text-red-500 mr-2'>?</span><strong>Data Lag:</strong> Data must be indexed, chunked, and embedded before it's retrievable.</li></ul>",
             "metrics": "<p class='mb-3'>It is impossible to manually test 100 questions to verify if a RAG pipeline is working. 'Vibe evals' do not scale.</p><p>You need quantitative measures to evaluate <strong>Retrieval Quality</strong> and <strong>Generation Quality</strong> consistently.</p>",
             "misconceptions": "<ul class='space-y-4 text-sm'><li><strong>Myth: RAG is Dead:</strong> False. Agentic workflows rely heavily on RAG.</li><li><strong>Myth: Fine-Tuning replaces RAG:</strong> False. Fine-tuning teaches style; RAG provides factual external knowledge.</li></ul>",
             "comparisons": "<div class='space-y-4'><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>RAG (Retrieval-Augmented Generation):</strong> Acts as an 'open-book exam' by connecting the LLM to live, external enterprise data. It prevents hallucination by fetching exact paragraphs before answering <sup></sup>.</div><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>Fine-Tuning:</strong> Updates the actual mathematical weights of the model. This is used to teach the model a specific 'style' or 'structure' to respond in, NOT to give it facts. It is extremely expensive to run every day <sup></sup>.</div><div class='p-4 bg-brand-50 border border-brand-200 rounded-lg'><strong>RAFT (Retrieval-Augmented Fine Tuning):</strong> A highly advanced architecture that combines both methodologies. You fine-tune the model to understand complex domain jargon while simultaneously giving it dynamic RAG retrieval capabilities <sup></sup>.</div></div>",
@@ -155,8 +155,8 @@
             "intro": "RAG enables organizations to safely use generative AI on proprietary enterprise data without the risk of 'hallucination'. It bridges the gap between public LLMs and your secure internal policies.",
             "architecture": "Building a reliable product requires managing an Offline Phase (Indexing documents) and an Online Phase (Real-time queries). A major PM focus must be on <strong>Metadata</strong>. If documents aren't tagged correctly (e.g., department, access level), retrieval costs soar and accuracy drops.",
             "chunking": "<h4 class='font-bold text-lg mb-2'>Why Chunking Matters</h4><p class='text-sm mb-4'>Accuracy in RAG doesn't come from having <em>many</em> chunks, but from having <em>meaningful</em> chunks. Good chunking ensures the bot reads complete paragraphs and provides better user experiences.</p>",
-            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Enterprise Search:</strong> An internal 'Google' for your company.</li><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Customer Support Bots:</strong> B2C bots that read exact, updated return policies.</li></ul>",
-            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>Role-Based Access Control (RBAC):</strong> A user asking about their salary should only get answers derived from documents they are authorized to see.</li></ul>",
+            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>?</span><strong>Enterprise Search:</strong> An internal 'Google' for your company.</li><li class='flex items-start'><span class='text-brand-500 mr-2'>?</span><strong>Customer Support Bots:</strong> B2C bots that read exact, updated return policies.</li></ul>",
+            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>?</span><strong>Role-Based Access Control (RBAC):</strong> A user asking about their salary should only get answers derived from documents they are authorized to see.</li></ul>",
             "metrics": "<p class='mb-3'>As a Product Manager, you cannot rely on manual 'vibe evals'. Asking a handful of test questions is not a sustainable way to track product health.</p><p>You need quantitative metrics to continuously monitor if the generated answers are satisfying users' intents.</p>",
             "misconceptions": "<ul class='space-y-4 text-sm'><li><strong>Myth: Just fine-tune the model instead:</strong> False. Fine-tuning an AI on daily database changes is financially ruinous. RAG is cost-effective for facts.</li></ul>",
             "comparisons": "<div class='space-y-4'><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>RAG (Retrieval-Augmented Generation):</strong> Highly cost-effective. Acts as an updating memory allowing AI to read live policies <sup></sup>.</div><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>Fine-Tuning:</strong> Used to teach the AI brand tone. Updating this daily when databases change is financially ruinous <sup></sup>.</div><div class='p-4 bg-brand-50 border border-brand-200 rounded-lg'><strong>RAFT:</strong> A hybrid approach for products that need strict stylistic conformity AND live external knowledge retrieval <sup></sup>.</div></div>",
@@ -168,8 +168,8 @@
             "intro": "Large Language Models are smart, but they don't know your private information. RAG turns interactions into an 'open-book exam,' allowing the AI to read your specific documents right before it answers.",
             "architecture": "RAG works in two steps. <strong>Step 1: Offline Indexing.</strong> We translate documents into numbers (embeddings) and store them. <strong>Step 2: Real-time Search.</strong> We turn your question into numbers, find matching documents, and hand them to the AI to answer.",
             "chunking": "<h4 class='font-bold text-lg mb-2'>Breaking things down</h4><p class='text-sm mb-4'>Computers can't read a 10,000-page manual at once. 'Chunking' breaks it down into paragraphs before storing, helping the AI find exact answers.</p>",
-            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Simple Q&A:</strong> Chatbots answering HR policy questions.</li><li class='flex items-start'><span class='text-brand-500 mr-2'>✔</span><strong>Multimodal RAG:</strong> Searching through company images, audio, and videos.</li></ul>",
-            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>⚠</span><strong>It needs good organization:</strong> If company files are a mess, the AI will struggle. Good 'metadata' (tags) fixes this.</li></ul>",
+            "types": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-brand-500 mr-2'>?</span><strong>Simple Q&A:</strong> Chatbots answering HR policy questions.</li><li class='flex items-start'><span class='text-brand-500 mr-2'>?</span><strong>Multimodal RAG:</strong> Searching through company images, audio, and videos.</li></ul>",
+            "limitations": "<ul class='space-y-4 text-sm'><li class='flex items-start'><span class='text-red-500 mr-2'>?</span><strong>It needs good organization:</strong> If company files are a mess, the AI will struggle. Good 'metadata' (tags) fixes this.</li></ul>",
             "metrics": "<p class='mb-3'>How do we know if the AI is telling the truth? We use automated scoring systems. These scores act like a report card, constantly checking if the AI is pulling the right facts from your files.</p>",
             "misconceptions": "<ul class='space-y-4 text-sm'><li><strong>Myth: We should just train the AI instead:</strong> Training is like teaching a style. RAG is giving it a textbook to read from. You need RAG for facts.</li></ul>",
             "comparisons": "<div class='space-y-4'><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>RAG:</strong> Think of it as giving the AI an open-book textbook. It looks up the exact facts before answering <sup></sup>.</div><div class='p-4 bg-white border border-gray-200 rounded-lg'><strong>Fine-Tuning:</strong> Think of it as sending the AI to acting class. It learns how to talk differently, but it doesn't automatically learn new daily facts <sup></sup>.</div><div class='p-4 bg-brand-50 border border-brand-200 rounded-lg'><strong>RAFT:</strong> A special combination where the AI goes to acting class AND gets to use the open-book textbook <sup></sup>.</div></div>",
@@ -192,13 +192,13 @@
 	                <p class="text-xs text-brand-100 font-semibold uppercase tracking-wider mb-3">Select Your Persona:</p>
 	                <div class="flex flex-col sm:flex-row gap-2">
 	                    <button class="persona-btn active border rounded-lg px-4 py-2 text-sm font-medium transition flex items-center justify-center" data-target="developer">
-	                        <span class="mr-2">💻</span> Developer
+	                        <span class="mr-2">??</span> Developer
 	                    </button>
 	                    <button class="persona-btn border rounded-lg px-4 py-2 text-sm font-medium transition flex items-center justify-center" data-target="pm">
-	                        <span class="mr-2">📊</span> Product Manager
+	                        <span class="mr-2">??</span> Product Manager
 	                    </button>
 	                    <button class="persona-btn border rounded-lg px-4 py-2 text-sm font-medium transition flex items-center justify-center" data-target="beginner">
-	                        <span class="mr-2">🌱</span> Beginner
+	                        <span class="mr-2">??</span> Beginner
 	                    </button>
 	                </div>
 	            </div>
@@ -607,13 +607,13 @@
             
             if (score === total) {
                 resultDiv.classList.add('bg-green-100', 'text-green-800');
-                resultDiv.innerHTML = `🎉 Perfect! You scored ${score} out of ${total}. You're a RAG expert!`;
+                resultDiv.innerHTML = `?? Perfect! You scored ${score} out of ${total}. You're a RAG expert!`;
             } else if (score >= Math.ceil(total / 2)) {
                 resultDiv.classList.add('bg-yellow-100', 'text-yellow-800');
-                resultDiv.innerHTML = `👍 Good job! You scored ${score} out of ${total}. Review the sections above to fill in the gaps.`;
+                resultDiv.innerHTML = `?? Good job! You scored ${score} out of ${total}. Review the sections above to fill in the gaps.`;
             } else {
                 resultDiv.classList.add('bg-red-100', 'text-red-800');
-                resultDiv.innerHTML = `📚 You scored ${score} out of ${total}. Keep reading and try again!`;
+                resultDiv.innerHTML = `?? You scored ${score} out of ${total}. Keep reading and try again!`;
             }
         }
         
