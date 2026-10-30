@@ -36,80 +36,104 @@
       {
         id: 'playgrounds',
         label: 'Playgrounds',
-        items: [
-          { label: 'ML Master Hub',          url: '/tools/master_ml_hub.html',            desc: 'Interactive ML sandbox — all models' },
-          { label: 'Attention Journey',      url: '/tools/master_sequence_hub.html',       desc: 'RNNs → Transformers visual deep dive' },
-          { label: 'CNN Explorer',           url: '/tools/cnn_sandbox.html',               desc: 'Convolutional network architecture' },
-          { label: 'Generative Modeling',    url: '/tools/deep_generative_modeling.html',  desc: 'VAE, GAN & CycleGAN playground' },
-          { label: 'Reinforcement Learning', url: '/tools/deep_reinforcement.html',        desc: 'Deep RL with policy gradients' },
-          { label: 'Simple Regression',      url: '/srt.html',                             desc: 'Gradient descent visualizer' },
-          { label: 'Limitations & Frontiers',url: '/tools/limitations-and-frontiers.html', desc: 'Edge cases and AI model boundaries' }
-        ]
-      },
-      {
-        id: 'guides',
-        label: 'Guides',
+        cols: 2,
+        viewAll: { label: 'See all playgrounds', url: '/tools/master_ml_hub.html' },
         groups: [
           {
-            heading: 'Fundamentals',
+            heading: 'Core ML',
             items: [
-              { label: 'RAG Guide',            url: '/guide/rag.html',                           desc: 'Complete retrieval-augmented generation guide' },
-              { label: 'LLM Post-Training',    url: '/guide/llm-post-training-guide.html',       desc: 'Fine-tune your own language model' },
-              { label: 'MCP Architecture',     url: '/guide/mcp.html',                           desc: 'Model Context Protocol interactive guide' },
-              { label: 'LLM Lifecycle',        url: '/guide/full-lifecycle.html',                desc: 'Full LLM architecture & production lifecycle' },
-              { label: 'Mythos Report',        url: '/guide/mythos.html',                        desc: 'AI threats & safety — preview report' },
-              { label: 'The Compiler | LLM Wiki ',        url: '/guide/llm-wiki-compiler.html',                        desc: 'Understand ingest, query, lint — and when pre-compiled knowledge beats RAG.' },
+              { label: 'ML Master Hub',          url: '/tools/master_ml_hub.html',            desc: 'Interactive ML sandbox — all models' },
+              { label: 'Attention Journey',      url: '/tools/master_sequence_hub.html',       desc: 'RNNs → Transformers visual deep dive' },
+              { label: 'CNN Explorer',           url: '/tools/cnn_sandbox.html',               desc: 'Convolutional network architecture' },
+              { label: 'Generative Modeling',    url: '/tools/deep_generative_modeling.html',  desc: 'VAE, GAN & CycleGAN playground' }
             ]
           },
           {
-            heading: 'Agentic & Applied',
+            heading: 'Applied',
             items: [
-              { label: 'Agentic AI Strategy',      url: '/guide/adobe-cx-enterprise-ecosystem.html',  desc: 'Strategic framework for agentic systems' },
-              { label: 'Agent Autonomy Dial',      url: '/guide/agent-autonomy-dial.html',            desc: 'How much should an AI agent decide?' },
-              { label: 'AI Security Stack',        url: '/guide/ai-security-stack-autopsy.html',      desc: 'Why legacy security misses AI agents' },
-              { label: 'Blueprint: Site Transform',url: '/guide/agent-blueprint-site-transform.html', desc: 'How an agent rebuilds a site end-to-end' }
+              { label: 'Reinforcement Learning', url: '/tools/deep_reinforcement.html',        desc: 'Deep RL with policy gradients' },
+              { label: 'Simple Regression',      url: '/srt.html',                             desc: 'Gradient descent visualizer' },
+              { label: 'Limitations & Frontiers',url: '/tools/limitations-and-frontiers.html', desc: 'Edge cases and AI model boundaries' },
+              { label: 'Build. Measure. Ship',   url: '/tools/eval-proving-ground.html',       desc: 'AI eval — the proving ground', badge: 'New' }
             ]
           }
         ]
       },
       {
-        id: 'agentic',
-        label: 'Agentic AI',
+        id: 'guides',
+        label: 'Guides',
+        cols: 3,
+        viewAll: { label: 'Browse all guides', url: '/guide/rag.html' },
         groups: [
           {
-            heading: 'Strategy',
+            heading: 'ML Fundamentals',
             items: [
-              { label: 'AI Stack Practices',    url: '/blog/ai-stack-practices.html',            desc: 'Patterns for production AI systems' },
-              { label: 'Agentic Architecture',  url: '/blog/agentic-architecture-strategy.html',  desc: 'Strategy for agentic system design' },
-              { label: 'Agent Autonomy Dial',   url: '/guide/agent-autonomy-dial.html',           desc: 'How much should an AI agent decide?' },
-              { label: 'Digital Colleague',     url: '/blog/digital-colleague-masterclass.html',  desc: 'Masterclass: AI as a team member' },
-              { label: 'Threatscope',           url: '/blog/threatscope.html',                    desc: 'AI-powered threat intelligence' },
-              { label: 'Voice AI Insights',     url: '/blog/voice-ai-insights.html',              desc: 'Building voice-first AI interfaces' },
-              { label: 'Agent Memory',     url: '/usecase/mem0-b2b-signal-memory.html',              desc: 'Beyond RAG,across sessions' },
-              { label: 'Build. Measure. Ship',     url: '/tools/eval-proving-ground.html',              desc: 'The Proving Ground' },
-              { label: 'Fine-Tuning LLMs',     url: '/guide/fine-tuning-llm-guide.html',              desc: 'The Specialist Protocol' },
-              { label: 'Fine-Tuning Part 2: ',     url: '/guide/fine-tuning-production.html',              desc: 'The Production Protocol ' },
-              { label: 'Agent Security Guide ',     url: '/guide/ai-security-redteam-brief.html',              desc: 'See the Attack Taxonomy ' },
-              { label: 'AI Threat Model ',     url: '/guide/ai-security-threat-model.html',              desc: 'Explore the Blueprint ' }
+              { label: 'RAG Guide',              url: '/guide/rag.html',                           desc: 'Complete retrieval-augmented generation guide' },
+              { label: 'LLM Post-Training',      url: '/guide/llm-post-training-guide.html',       desc: 'Fine-tune your own language model' },
+              { label: 'MCP Architecture',       url: '/guide/mcp.html',                           desc: 'Model Context Protocol interactive guide' },
+              { label: 'LLM Lifecycle',          url: '/guide/full-lifecycle.html',                desc: 'Full LLM architecture & production lifecycle' },
+              { label: 'Fine-Tuning LLMs',       url: '/guide/fine-tuning-llm-guide.html',         desc: 'When to fine-tune — the specialist protocol' },
+              { label: 'Fine-Tuning: Production',url: '/guide/fine-tuning-production.html',        desc: 'LoRA, alignment, synthetic data, GPU costs' }
+            ]
+          },
+          {
+            heading: 'Agentic Systems',
+            items: [
+              { label: 'Agentic AI Strategy',      url: '/guide/adobe-cx-enterprise-ecosystem.html',  desc: 'Strategic framework for agentic systems' },
+              { label: 'Agent Autonomy Dial',      url: '/guide/agent-autonomy-dial.html',            desc: 'How much should an AI agent decide?' },
+              { label: 'AI Security Stack',        url: '/guide/ai-security-stack-autopsy.html',      desc: 'Why legacy security misses AI agents' },
+              { label: 'AI Threat Model',          url: '/guide/ai-security-threat-model.html',       desc: 'STRIDE, trust boundaries, security blueprint' },
+              { label: 'Agent Security Guide',     url: '/guide/ai-security-redteam-brief.html',      desc: 'OWASP LLM Top 10 attacker playbook' },
+              { label: 'Blueprint: Site Transform',url: '/guide/agent-blueprint-site-transform.html', desc: 'How an agent rebuilds a site end-to-end' }
             ]
           },
           {
             heading: 'Build & Deploy',
             items: [
-              { label: 'RAG Pipeline Toolkit',  url: '/guide/rag-pipeline-toolkit.html',              desc: 'Production RAG pipeline patterns' },
-              { label: "RAG Architect's Studio",url: '/guide/rag-architects-studio.html',             desc: 'Advanced RAG design patterns' },
-              { label: 'Pinecone Retrieval',    url: '/guide/pinecone-retrieval-playbook.html',        desc: 'Vector search playbook' },
-              { label: 'Passive Safety',        url: '/guide/passive-safety-watchdog.html',            desc: 'AI safety monitoring patterns' },
-              { label: 'NVIDIA Post-Training',  url: '/blog/nvidia-llm-post-training.html',            desc: 'LLM fine-tuning strategies' },
-              { label: 'LlamaIndex Intel',      url: '/guide/llamaindex-document-intelligence.html',   desc: 'Document AI with LlamaIndex' },
-              { label: 'MCP Practitioner',      url: '/guide/mcp-practitioner-playbook.html',          desc: 'Hands-on MCP server patterns & real integrations' },
-              { label: 'AG2 Quick Reference',   url: '/guide/ag2-quickref.html',                       desc: 'AG2 — 10 key concepts from the beta session' },
-              { label: 'ContextCal',            url: '/guide/ContextCal.html',                        desc: 'Agentic scheduling across language contexts' },
-              { label: 'ElevenLabs Builder Map',url: '/guide/elevenlabs-builders-map.html',            desc: 'Five practical decisions for voice AI builders' },
-              { label: 'Sent Triage',url: '/usecase/sent-triage.html',            desc: 'Behavioral Email Classifier' },
-              { label: 'Vocab Forge',url: '/usecase/vocabforge-fine-tuning-guide.html',            desc: 'Fine-tuned model. Local inference. Habit tracking. Zero cloud.' },
-              { label: 'ShadowShield AI',url: '/usecase/shadowshield-ai.html',            desc: 'Swap sensitive information before it sends.' }
-
+              { label: 'RAG Pipeline Toolkit',   url: '/guide/rag-pipeline-toolkit.html',            desc: 'Production RAG pipeline patterns' },
+              { label: "RAG Architect's Studio",  url: '/guide/rag-architects-studio.html',           desc: 'Advanced RAG design patterns' },
+              { label: 'MCP Practitioner',        url: '/guide/mcp-practitioner-playbook.html',       desc: 'Hands-on MCP server patterns' },
+              { label: 'AG2 Quick Reference',     url: '/guide/ag2-quickref.html',                    desc: 'AG2 — 10 key concepts from beta' },
+              { label: 'The Compiler | LLM Wiki', url: '/guide/llm-wiki-compiler.html',               desc: 'When pre-compiled knowledge beats RAG' },
+              { label: 'AI Observability',        url: '/usecase/observability.html',                 desc: 'Why 200 OK lies — telemetry for agents', badge: 'New' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'usecases',
+        label: 'Use Cases',
+        cols: 3,
+        viewAll: { label: 'Browse all use cases', url: '/blog.html' },
+        groups: [
+          {
+            heading: 'Recent Builds',
+            items: [
+              { label: 'Debrief',          url: '/usecase/debrief.html',               desc: 'Conference memory & networking intelligence', badge: 'New' },
+              { label: 'ClaimLens',        url: '/usecase/claimlens.html',             desc: '3-agent fact-checker pipeline' },
+              { label: 'TrustLens',        url: '/usecase/trustlens.html',             desc: 'AI vendor trust scorer' },
+              { label: 'Plumber Lab',      url: '/usecase/plumber-lab.html',           desc: 'Pipeline security, visualized' },
+              { label: 'TechDebt Copilot', url: '/usecase/tech-debt-copilot.html',     desc: 'AI agent for EOL & CVE audits' }
+            ]
+          },
+          {
+            heading: 'Agentic Builds',
+            items: [
+              { label: 'Briefd',        url: '/usecase/briefd.html',                desc: 'Personal reply agent with approval loop' },
+              { label: 'TripRipple',    url: '/usecase/tripripple.html',            desc: 'Agent memory copilot for travel' },
+              { label: 'BuildBridge',   url: '/usecase/buildbridge-ai.html',        desc: 'Article → GitHub repo in 30 seconds' },
+              { label: 'AgentIntel',    url: '/usecase/agentintel-guide.html',      desc: '7-agent swarm for AI visibility' },
+              { label: 'Signal Memory', url: '/usecase/mem0-b2b-signal-memory.html', desc: 'Beyond RAG — memory across sessions' }
+            ]
+          },
+          {
+            heading: 'Security & Edge',
+            items: [
+              { label: 'SecurityTwin',  url: '/usecase/securitytwin.html',                   desc: 'IDOR detection in an isolated app copy' },
+              { label: 'ShadowShield',  url: '/usecase/shadowshield-ai.html',                desc: 'Swap PII before AI chatbots see it' },
+              { label: 'SentTriage',    url: '/usecase/sent-triage.html',                    desc: 'Behavioral email classifier' },
+              { label: 'VocabForge',    url: '/usecase/vocabforge-fine-tuning-guide.html',   desc: 'Fine-tuned model, local inference' },
+              { label: 'SERP Delta',    url: '/usecase/serpdelta.html',                      desc: 'LLM knowledge staleness detector' }
             ]
           }
         ]
@@ -184,8 +208,9 @@
   /* ── Build desktop dropdown item ───────────────────────────── */
   function buildDropdownItem(item) {
     const active = isActive(item.url) ? ' rw-dropdown-item-active' : '';
+    const badge = item.badge ? `<span class="rw-nav-badge">${item.badge}</span>` : '';
     return `<a class="rw-dropdown-item${active}" href="${u(item.url)}">
-      <span class="rw-dropdown-item-label">${item.label}</span>
+      <span class="rw-dropdown-item-label">${item.label}${badge}</span>
       ${item.desc ? `<span class="rw-dropdown-item-desc">${item.desc}</span>` : ''}
     </a>`;
   }
@@ -194,19 +219,24 @@
   function buildDesktopNav() {
     return NAV_DATA.items.map(item => {
       if (item.groups) {
+        const cols3 = item.cols === 3;
         const active = item.groups.some(g => g.items.some(i => isActive(i.url)));
+        const viewAllHTML = item.viewAll
+          ? `<div class="rw-dropdown-footer"><a class="rw-dropdown-viewall" href="${u(item.viewAll.url)}">${item.viewAll.label} →</a></div>`
+          : '';
         return `<div class="rw-dropdown${active ? ' open-default' : ''}" data-dropdown="${item.id}">
           <button class="rw-nav-link rw-dropdown-trigger${active ? ' active' : ''}" type="button"
                   aria-haspopup="true" aria-expanded="false" aria-controls="rw-dd-${item.id}">
             ${item.label} ${ICONS.chevron}
           </button>
-          <div class="rw-dropdown-menu rw-dropdown-wide" id="rw-dd-${item.id}" role="menu">
-            <div class="rw-dropdown-cols">
+          <div class="rw-dropdown-menu rw-dropdown-wide${cols3 ? ' rw-dropdown-wide-3' : ''}" id="rw-dd-${item.id}" role="menu">
+            <div class="rw-dropdown-cols${cols3 ? ' rw-dropdown-cols-3' : ''}">
               ${item.groups.map(g => `<div class="rw-dropdown-group">
                 <div class="rw-dropdown-group-heading">${g.heading}</div>
                 ${g.items.map(buildDropdownItem).join('')}
               </div>`).join('')}
             </div>
+            ${viewAllHTML}
           </div>
         </div>`;
       }
