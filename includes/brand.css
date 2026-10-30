@@ -700,7 +700,7 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
 
 /* Input — form is the visual border box; icon + input + clear all sit inside it */
 .rw-search-panel .pagefind-ui__form {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.25rem;
   border: 1.5px solid var(--rw-border) !important;
   border-radius: 10px !important;
   background: var(--rw-bg-subtle) !important;
@@ -732,8 +732,16 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   border: none !important;
 }
 
+/* Count message ("N results for…") */
+.rw-search-panel .pagefind-ui__message {
+  padding: 1rem 0 0.5rem !important;
+  font-size: 0.85rem !important;
+  color: var(--rw-text-subtle) !important;
+  font-weight: 600 !important;
+}
+
 /* Results list */
-.rw-search-panel .pagefind-ui__results-area { margin-top: 0.5rem; }
+.rw-search-panel .pagefind-ui__results-area { margin-top: 0 !important; }
 .rw-search-panel .pagefind-ui__results { list-style: none; padding: 0; margin: 0; }
 .rw-search-panel .pagefind-ui__result {
   display: flex !important;
