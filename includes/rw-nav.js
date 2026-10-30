@@ -229,7 +229,9 @@
 
   /* ── Build mobile nav ──────────────────────────────────────── */
   function buildMobileNav() {
-    let html = '';
+    let html = `<button class="rw-mobile-search-btn" id="rw-mobile-search-btn" type="button" aria-label="Search site">
+      ${ICONS.search}<span>Search RawWeights</span>
+    </button>`;
     NAV_DATA.items.forEach(item => {
       if (item.groups) {
         html += `<div class="rw-mobile-section-label">${item.label}</div>`;
@@ -285,10 +287,12 @@
   ${buildMobileNav()}
 </div>
 <div class="rw-search-overlay" id="rw-search-overlay" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
-  <div class="rw-search-modal">
-    <div id="rw-search-pagefind"></div>
-    <div class="rw-search-modal-hint">
-      <kbd>Esc</kbd> to close &nbsp;&middot;&nbsp; <kbd>Ctrl K</kbd> / <kbd>&#8984; K</kbd> to open
+  <div class="rw-search-panel" id="rw-search-panel">
+    <div class="rw-search-inner">
+      <div id="rw-search-pagefind"></div>
+      <div class="rw-search-hint">
+        <kbd>Esc</kbd> to close &nbsp;&middot;&nbsp; <kbd>Ctrl K</kbd> / <kbd>&#8984; K</kbd> to open
+      </div>
     </div>
   </div>
 </div>`;
@@ -387,11 +391,49 @@
 
   /* ── Search overlay — Pagefind UI ─────────────────────────── */
   function initSearch() {
-    const overlay = document.getElementById('rw-search-overlay');
-    const openBtn = document.getElementById('rw-search-btn');
-    if (!overlay || !openBtn) return;
+    const overlay   = document.getElementById('rw-search-overlay');
+    const openBtn   = document.getElementById('rw-search-btn');
+    const mobileBtn = document.getElementById('rw-mobile-search-btn');
+    if (!overlay) return;
 
     let pfLoaded = false;
+
+    /* Derive page type badge from URL for eyebrow labels */
+    function typeFromHref(href) {
+      if (!href) return '';
+      if (href.indexOf('/blog/')      !== -1) return 'Blog';
+      if (href.indexOf('/guide/')     !== -1) return 'Guide';
+      if (href.indexOf('/usecase/')   !== -1) return 'Usecase';
+      if (href.indexOf('/tools/')     !== -1 || href.indexOf('/srt.html') !== -1) return 'Playground';
+      if (href.indexOf('/portfolio/') !== -1) return 'Portfolio';
+      return '';
+    }
+
+    /* Watch result DOM and inject type eyebrow spans */
+    function watchResults(container) {
+      const mo = new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          m.addedNodes.forEach(function (node) {
+            if (!node || node.nodeType !== 1) return;
+            const results = node.classList && node.classList.contains('pagefind-ui__result')
+              ? [node] : Array.from((node.querySelectorAll || function () { return []; })
+                  .call(node, '.pagefind-ui__result'));
+            results.forEach(function (r) {
+              if (r.querySelector('.rw-result-type')) return;
+              const a = r.querySelector('a[href]');
+              const type = typeFromHref(a ? a.getAttribute('href') : '');
+              if (!type) return;
+              const badge = document.createElement('span');
+              badge.className = 'rw-result-type rw-result-type--' + type.toLowerCase();
+              badge.textContent = type;
+              const inner = r.querySelector('.pagefind-ui__result-inner') || r;
+              inner.insertBefore(badge, inner.firstChild);
+            });
+          });
+        });
+      });
+      mo.observe(container, { childList: true, subtree: true });
+    }
 
     function loadPagefind(cb) {
       if (pfLoaded) { cb(); return; }
@@ -400,52 +442,67 @@
       css.href = ROOT + 'pagefind/pagefind-ui.css';
       document.head.appendChild(css);
 
-      const js = document.createElement('script');
-      js.src = ROOT + 'pagefind/pagefind-ui.js';
+      const js  = document.createElement('script');
+      js.src    = ROOT + 'pagefind/pagefind-ui.js';
       js.onload = function () {
         pfLoaded = true;
+        const el = document.getElementById('rw-search-pagefind');
         try {
           new window.PagefindUI({
-            element:    '#rw-search-pagefind',
-            showImages: false,
-            resetStyles: false,
-            translations: { placeholder: 'Search guides, blogs, playgrounds…' }
+            element:         '#rw-search-pagefind',
+            showImages:      true,
+            showFilters:     false,
+            resetStyles:     false,
+            excerptLength:   20,
+            translations:    { placeholder: 'Search guides, blogs, playgrounds…' }
           });
+          if (el) watchResults(el);
         } catch (_) {}
         cb();
       };
       js.onerror = function () {
         const el = document.getElementById('rw-search-pagefind');
         if (el) el.innerHTML =
-          '<p style="padding:1rem;color:var(--rw-text-secondary,#888);font-size:.875rem">' +
-          'Search index not found. Run <code>npm run build</code> locally.</p>';
-        pfLoaded = true;
-        cb();
+          '<p class="rw-search-error">Search index not found — run <code>npm run build</code>.</p>';
+        pfLoaded = true; cb();
       };
       document.head.appendChild(js);
     }
 
     function focusInput() {
-      const inp = overlay.querySelector('input[type=text], input[type=search], .pagefind-ui__search-input');
+      const inp = overlay.querySelector('.pagefind-ui__search-input, input[type=text], input[type=search]');
       if (inp) { inp.focus(); inp.select(); }
     }
 
     function openSearch() {
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
-      openBtn.setAttribute('aria-expanded', 'true');
-      loadPagefind(function () { setTimeout(focusInput, 60); });
+      document.body.classList.add('rw-search-open');
+      if (openBtn)   openBtn.setAttribute('aria-expanded', 'true');
+      loadPagefind(function () { setTimeout(focusInput, 80); });
     }
     function closeSearch() {
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
-      openBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('rw-search-open');
+      if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
     }
 
-    openBtn.addEventListener('click', openSearch);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSearch(); });
+    if (openBtn)   openBtn.addEventListener('click', openSearch);
+    if (mobileBtn) mobileBtn.addEventListener('click', function () {
+      closeSearch(); // close mobile menu first
+      const mob = document.getElementById('rw-mobile-menu');
+      const ham = document.getElementById('rw-hamburger');
+      if (mob) { mob.classList.remove('open'); mob.setAttribute('aria-hidden', 'true'); }
+      if (ham) { ham.classList.remove('open'); ham.setAttribute('aria-expanded', 'false'); }
+      document.body.style.overflow = '';
+      setTimeout(openSearch, 80);
+    });
 
-    document.addEventListener('keydown', (e) => {
+    /* Close on backdrop click */
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeSearch(); });
+
+    document.addEventListener('keydown', function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         overlay.classList.contains('open') ? closeSearch() : openSearch();
@@ -665,42 +722,76 @@
 
   /* ── JSON-LD structured data (no per-page edits) ─────────── */
   function injectStructuredData() {
-    if (document.querySelector('script[type="application/ld+json"]')) return;
+    try {
+      if (document.querySelector('script[type="application/ld+json"]')) return;
+      var pathname = window.location.pathname;
+      var title    = document.title || '';
+      var metaDesc = document.querySelector('meta[name="description"]');
+      var desc     = metaDesc ? (metaDesc.getAttribute('content') || '') : '';
+      var metaCan  = document.querySelector('link[rel="canonical"]');
+      var canon    = metaCan ? (metaCan.getAttribute('href') || '') : '';
+      if (!canon) canon = 'https://rawweights.com' + pathname;
+      var pub      = { '@type': 'Organization', name: 'RawWeights', url: 'https://rawweights.com' };
+      var schema   = null;
 
-    const pathname = window.location.pathname;
-    const title    = document.title || '';
-    const desc     = (document.querySelector('meta[name="description"]') || {}).content || '';
-    const canon    = (document.querySelector('link[rel="canonical"]') || {}).href
-                   || ('https://rawweights.com' + pathname);
-    const pub      = { '@type': 'Organization', name: 'RawWeights', url: 'https://rawweights.com' };
+      if (/^\/blog\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'Article',
+                   headline: title, description: desc, url: canon, publisher: pub };
+      } else if (/^\/guide\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'LearningResource',
+                   name: title, description: desc, url: canon,
+                   educationalLevel: 'advanced', publisher: pub };
+      } else if (/^\/tools\//.test(pathname) || pathname === '/srt.html') {
+        schema = { '@context': 'https://schema.org', '@type': 'SoftwareApplication',
+                   name: title, description: desc, url: canon,
+                   applicationCategory: 'EducationalApplication', operatingSystem: 'Web Browser' };
+      } else if (/^\/usecase\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'Article',
+                   headline: title, description: desc, url: canon,
+                   about: { '@type': 'Thing', name: 'AI/ML case study' }, publisher: pub };
+      } else if (/^\/portfolio\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'CollectionPage',
+                   name: title, description: desc, url: canon };
+      }
 
-    let schema = null;
+      if (!schema) return;
+      var s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.text = JSON.stringify(schema);
+      document.head.appendChild(s);
+    } catch (_) {}
+  }
 
-    if (/^\/blog\//.test(pathname)) {
-      schema = { '@context': 'https://schema.org', '@type': 'Article',
-                 headline: title, description: desc, url: canon, publisher: pub };
-    } else if (/^\/guide\//.test(pathname)) {
-      schema = { '@context': 'https://schema.org', '@type': 'LearningResource',
-                 name: title, description: desc, url: canon,
-                 educationalLevel: 'advanced', publisher: pub };
-    } else if (/^\/tools\//.test(pathname) || pathname === '/srt.html') {
-      schema = { '@context': 'https://schema.org', '@type': 'SoftwareApplication',
-                 name: title, description: desc, url: canon,
-                 applicationCategory: 'EducationalApplication', operatingSystem: 'Web Browser' };
-    } else if (/^\/usecase\//.test(pathname)) {
-      schema = { '@context': 'https://schema.org', '@type': ['Article', 'TechArticle'],
-                 headline: title, description: desc, url: canon,
-                 about: { '@type': 'Thing', name: 'AI/ML case study' }, publisher: pub };
-    } else if (/^\/portfolio\//.test(pathname)) {
-      schema = { '@context': 'https://schema.org', '@type': 'CollectionPage',
-                 name: title, description: desc, url: canon };
-    }
-
-    if (!schema) return;
-    const s = document.createElement('script');
-    s.type        = 'application/ld+json';
-    s.textContent = JSON.stringify(schema);
-    document.head.appendChild(s);
+  /* ── Pagefind metadata — OG image + type filter ─────────── */
+  function injectPagefindMeta() {
+    try {
+      /* OG image → pagefind:image so results show thumbnails */
+      var ogImg = document.querySelector('meta[property="og:image"]');
+      if (ogImg && ogImg.getAttribute('content')) {
+        if (!document.querySelector('meta[name="pagefind:image"]')) {
+          var pm = document.createElement('meta');
+          pm.name = 'pagefind:image';
+          pm.content = ogImg.getAttribute('content');
+          document.head.appendChild(pm);
+        }
+      }
+      /* Page type → hidden span with data-pagefind-filter so Pagefind indexes it */
+      if (document.getElementById('rw-pf-type')) return;
+      var p  = window.location.pathname;
+      var t  = '';
+      if (/^\/blog\//.test(p))                              t = 'Blog';
+      else if (/^\/guide\//.test(p))                        t = 'Guide';
+      else if (/^\/tools\//.test(p) || p === '/srt.html')   t = 'Playground';
+      else if (/^\/usecase\//.test(p))                      t = 'Usecase';
+      else if (/^\/portfolio\//.test(p))                    t = 'Portfolio';
+      if (t) {
+        var span = document.createElement('span');
+        span.id = 'rw-pf-type';
+        span.setAttribute('data-pagefind-filter', 'type:' + t);
+        span.style.cssText = 'display:none!important';
+        document.body.appendChild(span);
+      }
+    } catch (_) {}
   }
 
   /* ── Main init ─────────────────────────────────────────────── */
@@ -714,6 +805,7 @@
     injectFavicons();
     injectWebMCP();
     injectStructuredData();
+    injectPagefindMeta();
     container.innerHTML = buildHeaderHTML();
 
     updateThemeIcon();
