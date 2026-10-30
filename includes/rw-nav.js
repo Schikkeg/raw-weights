@@ -753,32 +753,53 @@
 
     mc.registerTool({
       name: 'get_navigation',
-      description: 'Returns the complete RawWeights site navigation tree with sections, links, and descriptions.',
-      inputSchema: { type: 'object', properties: {} },
-      execute: function () { return NAV_DATA; }
+      description: 'Returns the RawWeights site navigation as a flat list of sections and links.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+      execute: function () {
+        var sections = [];
+        NAV_DATA.items.forEach(function (item) {
+          var links = [];
+          if (item.url) {
+            links.push({ label: item.label, url: item.url });
+          }
+          if (item.items) {
+            item.items.forEach(function (i) { links.push({ label: i.label, url: i.url, desc: i.desc || '' }); });
+          }
+          if (item.groups) {
+            item.groups.forEach(function (g) {
+              g.items.forEach(function (i) { links.push({ label: i.label, url: i.url, desc: i.desc || '' }); });
+            });
+          }
+          sections.push({ section: item.label, links: links });
+        });
+        return { site: 'RawWeights', baseUrl: 'https://rawweights.com', sections: sections };
+      }
     });
 
     mc.registerTool({
       name: 'get_footer_links',
-      description: 'Returns the RawWeights footer link categories and social links.',
-      inputSchema: { type: 'object', properties: {} },
+      description: 'Returns all links from the RawWeights site footer.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       execute: function () {
         var footer = document.getElementById('rw-footer');
-        if (!footer) return {};
-        return Array.from(footer.querySelectorAll('a[href]')).map(function (a) {
-          return { text: a.textContent.trim(), href: a.getAttribute('href') };
-        });
+        var links = footer
+          ? Array.from(footer.querySelectorAll('a[href]')).map(function (a) {
+              return { text: a.textContent.trim(), href: a.getAttribute('href') };
+            })
+          : [];
+        return { links: links, count: links.length };
       }
     });
 
     mc.registerTool({
       name: 'get_page_sections',
-      description: 'Returns all section headings and anchor IDs on the current page for precise deep-linking.',
-      inputSchema: { type: 'object', properties: {} },
+      description: 'Returns all h2/h3 section headings and anchor IDs on the current page for deep-linking.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       execute: function () {
-        return Array.from(document.querySelectorAll('h2[id], h3[id]')).map(function (h) {
+        var sections = Array.from(document.querySelectorAll('h2[id], h3[id]')).map(function (h) {
           return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + h.id };
         });
+        return { page: window.location.pathname, sections: sections, count: sections.length };
       }
     });
 
