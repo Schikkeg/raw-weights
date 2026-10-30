@@ -229,7 +229,9 @@
 
   /* ── Build mobile nav ──────────────────────────────────────── */
   function buildMobileNav() {
-    let html = '';
+    let html = `<button class="rw-mobile-search-btn" id="rw-mobile-search-btn" type="button" aria-label="Search site">
+      ${ICONS.search}<span>Search RawWeights</span>
+    </button>`;
     NAV_DATA.items.forEach(item => {
       if (item.groups) {
         html += `<div class="rw-mobile-section-label">${item.label}</div>`;
@@ -285,12 +287,12 @@
   ${buildMobileNav()}
 </div>
 <div class="rw-search-overlay" id="rw-search-overlay" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
-  <div class="rw-search-modal">
-    <div class="rw-search-modal-icon">${ICONS.search}</div>
-    <div class="rw-search-modal-title">Search RawWeights</div>
-    <p class="rw-search-modal-sub">Full-text search is coming in the next update, powered by Pagefind.</p>
-    <div class="rw-search-modal-hint">
-      <kbd>Esc</kbd> to close &nbsp;&middot;&nbsp; <kbd>Ctrl K</kbd> / <kbd>&#8984; K</kbd> to open
+  <div class="rw-search-panel" id="rw-search-panel">
+    <div class="rw-search-inner">
+      <div id="rw-search-pagefind"></div>
+      <div class="rw-search-hint">
+        <kbd>Esc</kbd> to close &nbsp;&middot;&nbsp; <kbd>Ctrl K</kbd> / <kbd>&#8984; K</kbd> to open
+      </div>
     </div>
   </div>
 </div>`;
@@ -387,34 +389,195 @@
     });
   }
 
-  /* ── Search overlay (stub — full wiring in PR4) ───────────── */
+  /* ── Search overlay — Pagefind UI ─────────────────────────── */
   function initSearch() {
-    const overlay = document.getElementById('rw-search-overlay');
-    const openBtn = document.getElementById('rw-search-btn');
-    if (!overlay || !openBtn) return;
+    const overlay   = document.getElementById('rw-search-overlay');
+    const openBtn   = document.getElementById('rw-search-btn');
+    const mobileBtn = document.getElementById('rw-mobile-search-btn');
+    if (!overlay) return;
+
+    let pfLoaded = false;
+
+    /* Derive page type badge from URL for eyebrow labels */
+    function typeFromHref(href) {
+      if (!href) return '';
+      if (href.indexOf('/blog/')      !== -1) return 'Blog';
+      if (href.indexOf('/guide/')     !== -1) return 'Guide';
+      if (href.indexOf('/usecase/')   !== -1) return 'Usecase';
+      if (href.indexOf('/tools/')     !== -1 || href.indexOf('/srt.html') !== -1) return 'Playground';
+      if (href.indexOf('/portfolio/') !== -1) return 'Portfolio';
+      return '';
+    }
+
+    /* Inline SVG icons for default thumbnails (injected directly — avoids CSS background-image Svelte specificity issues) */
+    const SVG_ICONS = {
+      blog:       '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+      guide:      '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+      playground: '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      usecase:    '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      portfolio:  '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+      other:      '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+    };
+
+    /* Process a single result: inject type badge + default thumbnail SVG when no image.
+       Skips loading placeholders — called again once real thumb arrives. */
+    function processResult(r) {
+      const a    = r.querySelector('a[href]');
+      const type = typeFromHref(a ? a.getAttribute('href') : '') || 'other';
+      const slug = type.toLowerCase();
+
+      if (!r.querySelector('.rw-result-type')) {
+        const badge = document.createElement('span');
+        badge.className = 'rw-result-type rw-result-type--' + slug;
+        badge.textContent = type;
+        const inner = r.querySelector('.pagefind-ui__result-inner') || r;
+        inner.insertBefore(badge, inner.firstChild);
+      }
+
+      /* Pagefind renders a loading placeholder first, then swaps it for the real thumb.
+         Only process the real thumb (no pagefind-ui__loading class). */
+      const thumb = r.querySelector('.pagefind-ui__result-thumb:not(.pagefind-ui__loading)');
+      if (!thumb) return;
+
+      const svgIcon = SVG_ICONS[slug] || SVG_ICONS.other;
+      const useDefault = function () {
+        thumb.innerHTML = svgIcon;
+        thumb.classList.add('rw-thumb-default', 'rw-thumb-' + slug);
+      };
+
+      if (thumb.classList.contains('rw-thumb-default')) return; // already processed
+
+      const img = thumb.querySelector('img');
+      if (!img || !img.getAttribute('src')) {
+        useDefault();
+      } else {
+        img.addEventListener('error', useDefault);
+      }
+    }
+
+    /* Watch result DOM — handles both new result additions and the loading→real thumb swap */
+    function watchResults(container) {
+      Array.from(container.querySelectorAll('.pagefind-ui__result')).forEach(processResult);
+
+      const mo = new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          m.addedNodes.forEach(function (node) {
+            if (!node || node.nodeType !== 1) return;
+            if (node.classList && node.classList.contains('pagefind-ui__result')) {
+              /* A result <li> was added directly */
+              processResult(node);
+            } else {
+              /* A descendant was added — could be the real thumb replacing a loading placeholder.
+                 Walk up to find the parent result and re-run processResult on it. */
+              const ancestor = node.closest && node.closest('.pagefind-ui__result');
+              if (ancestor) { processResult(ancestor); return; }
+              /* Or a container holding multiple results was added */
+              Array.from(node.querySelectorAll ? node.querySelectorAll('.pagefind-ui__result') : [])
+                .forEach(processResult);
+            }
+          });
+        });
+      });
+      mo.observe(container, { childList: true, subtree: true });
+    }
+
+    function loadPagefind(cb) {
+      if (pfLoaded) { cb(); return; }
+      const css = document.createElement('link');
+      css.rel  = 'stylesheet';
+      css.href = ROOT + 'pagefind/pagefind-ui.css';
+      document.head.appendChild(css);
+
+      const js  = document.createElement('script');
+      js.src    = ROOT + 'pagefind/pagefind-ui.js';
+      js.onload = function () {
+        pfLoaded = true;
+        const el = document.getElementById('rw-search-pagefind');
+        try {
+          new window.PagefindUI({
+            element:         '#rw-search-pagefind',
+            bundlePath:      ROOT + 'pagefind/',
+            showImages:      true,
+            showFilters:     false,
+            resetStyles:     false,
+            excerptLength:   20,
+            translations:    { placeholder: 'Search guides, blogs, playgrounds…' }
+          });
+          if (el) watchResults(el);
+        } catch (_) {}
+        cb();
+      };
+      js.onerror = function () {
+        const el = document.getElementById('rw-search-pagefind');
+        if (el) el.innerHTML =
+          '<p class="rw-search-error">Search index not found — run <code>npm run build</code>.</p>';
+        pfLoaded = true; cb();
+      };
+      document.head.appendChild(js);
+    }
+
+    function focusInput() {
+      const inp = overlay.querySelector('.pagefind-ui__search-input, input[type=text], input[type=search]');
+      if (inp) { inp.focus(); inp.select(); }
+    }
 
     function openSearch() {
+      window.scrollTo(0, 0); // panel anchors to top; scroll there so it is immediately visible
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
-      openBtn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('rw-search-open');
+      document.documentElement.classList.add('rw-search-open'); // iOS Safari scroll-lock fix
+      if (openBtn) openBtn.setAttribute('aria-expanded', 'true');
+      loadPagefind(function () { setTimeout(focusInput, 80); });
     }
     function closeSearch() {
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
-      openBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('rw-search-open');
+      document.documentElement.classList.remove('rw-search-open');
+      if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
     }
 
-    openBtn.addEventListener('click', openSearch);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSearch(); });
+    /* Expose search API for WebMCP tool execute() and page scripts */
+    window.__rw = window.__rw || {};
+    window.__rw.openSearch = openSearch;
+    window.__rw.searchFor  = function (q) {
+      openSearch();
+      loadPagefind(function () {
+        setTimeout(function () {
+          const inp = document.querySelector('.pagefind-ui__search-input');
+          if (inp) { inp.value = q; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+        }, 250);
+      });
+    };
+    /* Exposed for search page: apply same badge + thumbnail injection to any Pagefind container */
+    window.__rw.watchResults = watchResults;
 
-    document.addEventListener('keydown', (e) => {
+    if (openBtn)   openBtn.addEventListener('click', openSearch);
+    if (mobileBtn) mobileBtn.addEventListener('click', function () {
+      closeSearch(); // close mobile menu first
+      const mob = document.getElementById('rw-mobile-menu');
+      const ham = document.getElementById('rw-hamburger');
+      if (mob) { mob.classList.remove('open'); mob.setAttribute('aria-hidden', 'true'); }
+      if (ham) { ham.classList.remove('open'); ham.setAttribute('aria-expanded', 'false'); }
+      document.body.style.overflow = '';
+      setTimeout(openSearch, 80);
+    });
+
+    /* Close on backdrop click */
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeSearch(); });
+
+    document.addEventListener('keydown', function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
+        /* On the search page, focus the hero input instead of opening the overlay */
+        if (window.__rw && typeof window.__rw.fillHeroSearch === 'function') {
+          var heroInp = document.getElementById('rw-sp-q');
+          if (heroInp) { heroInp.focus(); heroInp.select(); return; }
+        }
         overlay.classList.contains('open') ? closeSearch() : openSearch();
       }
-      if (e.key === 'Escape' && overlay.classList.contains('open')) {
-        closeSearch();
-      }
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeSearch();
     });
   }
 
@@ -508,6 +671,237 @@
     });
   }
 
+  /* ── WebMCP: meta tags + registerTool() shell tools ────────── */
+  function injectWebMCP() {
+    if (document.querySelector('meta[name^="webmcp:"]')) return;
+
+    const head     = document.head;
+    const pathname = window.location.pathname;
+
+    const pageType = (function () {
+      if (pathname === '/' || /\/index\.html$/.test(pathname))     return 'home';
+      if (pathname === '/blog.html')                               return 'listing';
+      if (/^\/blog\//.test(pathname))                             return 'article';
+      if (/^\/guide\//.test(pathname))                            return 'guide';
+      if (/^\/tools\//.test(pathname)
+          || pathname === '/srt.html'
+          || pathname === '/how-it-started.html')                 return 'tool';
+      if (/^\/usecase\//.test(pathname))                          return 'usecase';
+      if (/^\/portfolio\//.test(pathname))                        return 'portfolio';
+      return 'article';
+    })();
+
+    const TYPE_CFG = {
+      home:      { type: 'website', action: 'read search', search: true  },
+      listing:   { type: 'listing', action: 'search read', search: true  },
+      article:   { type: 'article', action: 'read',        search: false },
+      guide:     { type: 'article', action: 'read',        search: false },
+      tool:      { type: 'tool',    action: 'read interact', tools: 'interactive-ml-playground', search: false },
+      usecase:   { type: 'article', action: 'read',        search: false },
+      portfolio: { type: 'article', action: 'read',        search: false }
+    };
+    const tcfg    = TYPE_CFG[pageType] || TYPE_CFG.article;
+    const pageDesc = (document.querySelector('meta[name="description"]') || {}).content || '';
+    const mdPath   = pathname === '/' ? '/index.md' : pathname.replace(/\.html$/, '.md');
+
+    function addMeta(name, content) {
+      if (!content) return;
+      const m = document.createElement('meta');
+      m.name    = name;
+      m.content = content;
+      head.appendChild(m);
+    }
+    function addLink(rel, href, type) {
+      if (document.querySelector('link[rel="' + rel + '"]')) return;
+      const l = document.createElement('link');
+      l.rel  = rel;
+      l.href = href;
+      if (type) l.type = type;
+      head.appendChild(l);
+    }
+
+    /* Discovery links */
+    addLink('webmcp',    'https://rawweights.com/.well-known/webmcp.json', 'application/json');
+    addLink('llms-txt',  'https://rawweights.com/llms.txt');
+    addLink('alternate', 'https://rawweights.com' + mdPath, 'text/markdown');
+
+    /* Meta-tag fallback (non-Chrome agents / scrapers) */
+    addMeta('webmcp:site',         'RawWeights');
+    addMeta('webmcp:feed',         'https://rawweights.com/llms.txt');
+    addMeta('webmcp:type',         tcfg.type);
+    addMeta('webmcp:action',       tcfg.action);
+    if (pageDesc) addMeta('webmcp:description',  pageDesc);
+    addMeta('webmcp:canonical-md', 'https://rawweights.com' + mdPath);
+    if (tcfg.search) addMeta('webmcp:search', 'https://rawweights.com/search/?q={query}');
+    if (tcfg.tools)  addMeta('webmcp:tools',  tcfg.tools);
+
+    /* registerTool() — Chrome 149+ origin trial only */
+    const mc = document.modelContext;
+    if (!mc || typeof mc.registerTool !== 'function') return;
+
+    mc.registerTool({
+      name: 'search_rawweights',
+      description: 'Open the RawWeights search UI and return matching articles, guides, and playgrounds. Opens the search overlay and shows live results in the page.',
+      inputSchema: {
+        type: 'object',
+        properties: { query: { type: 'string', description: 'Search term or topic to find' } },
+        required: ['query']
+      },
+      execute: function (p) {
+        /* On the search page itself: fill the hero input (which mirrors to Pagefind) */
+        if (window.location.pathname.indexOf('/search') === 0) {
+          if (typeof window.__rw.fillHeroSearch === 'function') {
+            window.__rw.fillHeroSearch(p.query);
+            return { status: 'filled', query: p.query, results_url: window.location.origin + '/search/?q=' + encodeURIComponent(p.query) };
+          }
+        }
+        /* Other pages: open overlay */
+        if (window.__rw && typeof window.__rw.searchFor === 'function') {
+          window.__rw.searchFor(p.query);
+          return { status: 'opened', query: p.query, results_url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
+        }
+        window.location.href = ROOT + 'search/?q=' + encodeURIComponent(p.query);
+        return { status: 'navigating', url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
+      }
+    });
+
+    mc.registerTool({
+      name: 'get_navigation',
+      description: 'Returns the RawWeights site navigation as a flat list of sections and links.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+      execute: function () {
+        var sections = [];
+        NAV_DATA.items.forEach(function (item) {
+          var links = [];
+          if (item.url) {
+            links.push({ label: item.label, url: item.url });
+          }
+          if (item.items) {
+            item.items.forEach(function (i) { links.push({ label: i.label, url: i.url, desc: i.desc || '' }); });
+          }
+          if (item.groups) {
+            item.groups.forEach(function (g) {
+              g.items.forEach(function (i) { links.push({ label: i.label, url: i.url, desc: i.desc || '' }); });
+            });
+          }
+          sections.push({ section: item.label, links: links });
+        });
+        return { site: 'RawWeights', baseUrl: 'https://rawweights.com', sections: sections };
+      }
+    });
+
+    mc.registerTool({
+      name: 'get_footer_links',
+      description: 'Returns all links from the RawWeights site footer.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+      execute: function () {
+        /* rw-footer.js replaces #rw-footer via outerHTML → query by class instead */
+        var footer = document.querySelector('footer.rw-footer') || document.getElementById('rw-footer');
+        var links = footer
+          ? Array.from(footer.querySelectorAll('a[href]')).map(function (a) {
+              return { text: a.textContent.trim(), url: a.href, path: a.getAttribute('href') };
+            })
+          : [];
+        return { links: links, count: links.length };
+      }
+    });
+
+    mc.registerTool({
+      name: 'get_page_sections',
+      description: 'Returns all h2/h3 section headings and anchor IDs on the current page for deep-linking.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+      execute: function () {
+        var base = window.location.origin + window.location.pathname;
+        var sections = Array.from(document.querySelectorAll('h2, h3')).map(function (h) {
+          var slug = h.id || h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+          if (!h.id) h.id = slug; /* set the id so the anchor is real and navigable */
+          return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + slug, url: base + '#' + slug };
+        });
+        return { page: window.location.pathname, sections: sections, count: sections.length };
+      }
+    });
+
+    /* Per-page custom tools declared via window.RW_PAGE_TOOLS */
+    var pageTool = window.RW_PAGE_TOOLS;
+    if (Array.isArray(pageTool)) {
+      pageTool.forEach(function (t) { try { mc.registerTool(t); } catch (_) {} });
+    }
+  }
+
+  /* ── JSON-LD structured data (no per-page edits) ─────────── */
+  function injectStructuredData() {
+    try {
+      if (document.querySelector('script[type="application/ld+json"]')) return;
+      var pathname = window.location.pathname;
+      var title    = document.title || '';
+      var metaDesc = document.querySelector('meta[name="description"]');
+      var desc     = metaDesc ? (metaDesc.getAttribute('content') || '') : '';
+      var metaCan  = document.querySelector('link[rel="canonical"]');
+      var canon    = metaCan ? (metaCan.getAttribute('href') || '') : '';
+      if (!canon) canon = 'https://rawweights.com' + pathname;
+      var pub      = { '@type': 'Organization', name: 'RawWeights', url: 'https://rawweights.com' };
+      var schema   = null;
+
+      if (/^\/blog\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'Article',
+                   headline: title, description: desc, url: canon, publisher: pub };
+      } else if (/^\/guide\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'LearningResource',
+                   name: title, description: desc, url: canon,
+                   educationalLevel: 'advanced', publisher: pub };
+      } else if (/^\/tools\//.test(pathname) || pathname === '/srt.html') {
+        schema = { '@context': 'https://schema.org', '@type': 'SoftwareApplication',
+                   name: title, description: desc, url: canon,
+                   applicationCategory: 'EducationalApplication', operatingSystem: 'Web Browser' };
+      } else if (/^\/usecase\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'Article',
+                   headline: title, description: desc, url: canon,
+                   about: { '@type': 'Thing', name: 'AI/ML case study' }, publisher: pub };
+      } else if (/^\/portfolio\//.test(pathname)) {
+        schema = { '@context': 'https://schema.org', '@type': 'CollectionPage',
+                   name: title, description: desc, url: canon };
+      }
+
+      if (!schema) return;
+      var s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.text = JSON.stringify(schema);
+      document.head.appendChild(s);
+    } catch (_) {}
+  }
+
+  /* ── Pagefind metadata — OG image + type filter ─────────── */
+  function injectPagefindMeta() {
+    try {
+      /* OG image → pagefind:image so results show thumbnails */
+      var ogImg = document.querySelector('meta[property="og:image"]');
+      if (ogImg && ogImg.getAttribute('content')) {
+        if (!document.querySelector('meta[name="pagefind:image"]')) {
+          var pm = document.createElement('meta');
+          pm.name = 'pagefind:image';
+          pm.content = ogImg.getAttribute('content');
+          document.head.appendChild(pm);
+        }
+      }
+      /* Page type → hidden span with data-pagefind-filter so Pagefind indexes it */
+      if (document.getElementById('rw-pf-type')) return;
+      var p  = window.location.pathname;
+      var t  = '';
+      if (/^\/blog\//.test(p))                              t = 'Blog';
+      else if (/^\/guide\//.test(p))                        t = 'Guide';
+      else if (/^\/tools\//.test(p) || p === '/srt.html')   t = 'Playground';
+      else if (/^\/usecase\//.test(p))                      t = 'Usecase';
+      else if (/^\/portfolio\//.test(p))                    t = 'Portfolio';
+      if (t) {
+        var span = document.createElement('span');
+        span.id = 'rw-pf-type';
+        span.setAttribute('data-pagefind-filter', 'type:' + t);
+        span.style.cssText = 'display:none!important';
+        document.body.appendChild(span);
+      }
+    } catch (_) {}
+  }
+
   /* ── Main init ─────────────────────────────────────────────── */
   function init() {
     const container = document.getElementById('rw-nav');
@@ -517,6 +911,9 @@
 
     injectAnnouncement();
     injectFavicons();
+    injectWebMCP();
+    injectStructuredData();
+    injectPagefindMeta();
     container.innerHTML = buildHeaderHTML();
 
     updateThemeIcon();

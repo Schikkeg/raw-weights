@@ -105,6 +105,34 @@
 
 <body class="flex flex-col antialiased bg-gray-50 font-sans min-h-screen text-gray-800">
 
+    <script>
+window.RW_PAGE_TOOLS = [{
+  name: 'describe_generative_models',
+  description: 'Returns an overview of the Deep Generative Modeling playground — model types, interactive architectures, and what each section visualizes.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  execute: function () {
+    var sections = Array.from(document.querySelectorAll('h2, h3'))
+      .map(function (h) { return { text: h.textContent.trim(), tag: h.tagName.toLowerCase() }; })
+      .filter(function (s) { return s.text.length > 2; });
+    return {
+      title: document.title,
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      url: window.location.href,
+      sections: sections,
+      models_covered: [
+        'Autoencoders — compress and reconstruct',
+        'Variational Autoencoders (VAEs) — reparameterization trick, latent space continuity',
+        'Generative Adversarial Networks (GANs) — generator vs discriminator',
+        'CycleGAN — unpaired image-to-image translation',
+        'Anomaly detection with generative models'
+      ],
+      key_concepts: ['Latent space', 'KL divergence', 'Reparameterization trick', 'Mode collapse', 'Training stability', 'Style transfer', 'Unsupervised learning'],
+      features: ['Interactive architecture diagrams', 'Animated training dynamics', 'Latent space visualization'],
+      learning_objective: 'Understand how generative models learn to produce new data by mastering the math behind VAEs, GANs, and CycleGANs.'
+    };
+  }
+}];
+    </script>
     <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20260615"></script>
 

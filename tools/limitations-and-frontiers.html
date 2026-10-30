@@ -39,6 +39,34 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
+    <script>
+window.RW_PAGE_TOOLS = [{
+  name: 'describe_dl_limitations',
+  description: 'Returns an overview of the Deep Learning Limitations & Frontiers interactive guide — failure modes, UAT, adversarial attacks, and frontier topics.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  execute: function () {
+    var sections = Array.from(document.querySelectorAll('h2, h3'))
+      .map(function (h) { return { text: h.textContent.trim(), anchor: h.id ? '#' + h.id : '' }; })
+      .filter(function (s) { return s.text.length > 2; });
+    return {
+      title: document.title,
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      url: window.location.href,
+      sections: sections,
+      topics: [
+        'Universal Approximation Theorem (UAT) — what neural nets can and cannot represent',
+        'Adversarial attacks — fooling classifiers with imperceptible perturbations',
+        'Algorithmic bias — how training data encodes societal inequalities',
+        'Uncertainty quantification — when a model does not know what it does not know',
+        'Out-of-distribution generalization failures',
+        'Diffusion models — frontier generative approach',
+        'LLMs — emergent capabilities and scaling laws'
+      ],
+      learning_objective: 'Understand where deep learning breaks down and where the research frontier is pushing beyond those limits.'
+    };
+  }
+}];
+    </script>
     <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20260615"></script>
 

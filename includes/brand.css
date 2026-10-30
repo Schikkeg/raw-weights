@@ -642,89 +642,277 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
 }
 
 /* ─── 3c. SEARCH OVERLAY ────────────────────────────────────── */
+
+/* Backdrop — covers full page */
 .rw-search-overlay {
   position: fixed;
   inset: 0;
   z-index: var(--rw-z-modal);
-  background: rgba(15,23,42,0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(10,14,26,0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   display: none;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: clamp(80px, 15vh, 140px);
+  animation: rwFadeIn 0.18s var(--rw-ease);
 }
 
-.rw-search-overlay.open {
-  display: flex;
-  animation: rwFadeIn 0.15s var(--rw-ease);
-}
+.rw-search-overlay.open { display: block; }
 
 @keyframes rwFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-.rw-search-modal {
+/* Panel drops from under the sticky nav */
+.rw-search-panel {
+  position: absolute;
+  top: calc(var(--rw-nav-height, 64px) + var(--rw-announce-height, 0px));
+  left: 0;
+  right: 0;
   background: var(--rw-card);
-  border: 1px solid var(--rw-border);
-  border-radius: var(--rw-r-lg);
-  box-shadow: var(--rw-shadow-xl);
-  padding: 2rem 2rem 1.75rem;
-  width: min(520px, 90vw);
-  text-align: center;
-  animation: rwSlideUp 0.2s var(--rw-ease-out);
+  border-bottom: 2px solid var(--rw-orange);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+  animation: rwSearchDrop 0.22s var(--rw-ease-out);
+  max-height: calc(100vh - var(--rw-nav-height, 64px) - var(--rw-announce-height, 0px) - 1rem);
+  overflow-y: auto;
 }
 
-@keyframes rwSlideUp {
-  from { opacity: 0; transform: translateY(10px); }
+@keyframes rwSearchDrop {
+  from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.rw-search-modal-icon {
-  width: 48px; height: 48px;
-  background: var(--rw-orange-light);
-  border-radius: var(--rw-r-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  color: var(--rw-orange);
+.rw-search-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 1.5rem;
 }
 
-.rw-search-modal-title {
-  font-family: var(--rw-font-display);
+/* ── Pagefind UI variables ──────────────────────────────────── */
+.rw-search-panel {
+  --pagefind-ui-scale: 1;
+  --pagefind-ui-primary: var(--rw-orange, #f97316);
+  --pagefind-ui-text: var(--rw-text, #1a1a2e);
+  --pagefind-ui-background: var(--rw-card, #ffffff);
+  --pagefind-ui-border: var(--rw-border, #e2e8f0);
+  --pagefind-ui-border-radius: 10px;
+  --pagefind-ui-font: var(--rw-font-body, 'Inter', sans-serif);
+}
+
+/* Input — form is the visual border box; icon + input + clear all sit inside it */
+.rw-search-panel .pagefind-ui__form {
+  margin: 0 0 0.5rem !important;
+  border: 1.5px solid var(--rw-border) !important;
+  border-radius: 10px !important;
+  background: var(--rw-bg-subtle) !important;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.rw-search-panel .pagefind-ui__form:focus-within {
+  border-color: var(--rw-orange) !important;
+  box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important;
+}
+.rw-search-panel .pagefind-ui__search-input {
+  font-size: 1.1rem !important;
+  height: 52px !important;
+  padding-left: 3rem !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: var(--rw-text) !important;
+  width: 100% !important;
+}
+.rw-search-panel .pagefind-ui__search-input:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.rw-search-panel .pagefind-ui__search-clear {
+  color: var(--rw-text-subtle) !important;
+  background: transparent !important;
+  border: none !important;
+  /* Re-center for our 52px input (Pagefind defaults to 64px) */
+  top: 0 !important;
+  height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+/* Search icon (::before) — re-center for 52px input; Pagefind hardcodes top:23px for 64px */
+.rw-search-panel .pagefind-ui__form::before {
+  top: calc(50% - 9px) !important;
+}
+
+/* Count message — 3-class selector beats Svelte's 2-class specificity */
+.rw-search-panel .pagefind-ui__results-area .pagefind-ui__message {
+  padding: 1.25rem 0 0.5rem 0.75rem !important;
+  font-size: 0.85rem !important;
+  color: var(--rw-text-subtle) !important;
+  font-weight: 600 !important;
+}
+
+/* Drawer margin-top — Pagefind never sets this, so no cascade conflict at all */
+.rw-search-panel .pagefind-ui__drawer { margin-top: 1.5rem !important; }
+/* Results list */
+.rw-search-panel .pagefind-ui__results-area { margin-top: 0; }
+.rw-search-panel .pagefind-ui__results { list-style: none; padding: 0; margin: 0; }
+.rw-search-panel .pagefind-ui__result {
+  display: flex !important;
+  gap: 1rem !important;
+  padding: 1rem 0 1rem 0.75rem !important;
+  border-bottom: 1px solid var(--rw-border) !important;
+  text-decoration: none !important;
+  align-items: flex-start !important;
+  background: transparent !important;
+}
+.rw-search-panel .pagefind-ui__result:last-child { border-bottom: none !important; }
+.rw-search-panel .pagefind-ui__result:hover { background: var(--rw-bg-subtle) !important; border-radius: 8px; }
+
+/* Thumbnail */
+.rw-search-panel .pagefind-ui__result-thumb {
+  flex-shrink: 0;
+  width: 88px !important;
+  height: 60px !important;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--rw-bg-subtle);
+  border: 1px solid var(--rw-border);
+}
+.rw-search-panel .pagefind-ui__result-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* ── Type-default thumbnails — inline SVG injected by JS, tinted bg per type ── */
+.rw-search-panel .rw-thumb-default {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+}
+.rw-search-panel .rw-thumb-default svg {
+  width: 32px !important;
+  height: 32px !important;
+  flex-shrink: 0;
+}
+.rw-search-panel .rw-thumb-blog       { background-color: rgba(249,115,22,0.10) !important; }
+.rw-search-panel .rw-thumb-guide      { background-color: rgba(59,130,246,0.10) !important; }
+.rw-search-panel .rw-thumb-playground { background-color: rgba(139,92,246,0.10) !important; }
+.rw-search-panel .rw-thumb-usecase    { background-color: rgba(16,185,129,0.10) !important; }
+.rw-search-panel .rw-thumb-portfolio  { background-color: rgba(100,116,139,0.10) !important; }
+.rw-search-panel .rw-thumb-other      { background-color: rgba(100,116,139,0.08) !important; }
+
+/* Inner content */
+.rw-search-panel .pagefind-ui__result-inner {
+  flex: 1;
+  min-width: 0;
+}
+.rw-search-panel .pagefind-ui__result-title {
+  font-family: var(--rw-font-display) !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  margin: 0.2rem 0 0.3rem !important;
+  line-height: 1.3 !important;
+}
+.rw-search-panel .pagefind-ui__result-title a {
+  color: var(--rw-text) !important;
+  text-decoration: none !important;
+}
+.rw-search-panel .pagefind-ui__result-title a:hover { color: var(--rw-orange) !important; }
+.rw-search-panel .pagefind-ui__result-excerpt {
+  font-size: 0.82rem !important;
+  color: var(--rw-text-subtle) !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rw-search-panel .pagefind-ui__result-excerpt mark {
+  background: rgba(249,115,22,0.18) !important;
+  color: var(--rw-orange) !important;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* ── Type eyebrow badge injected by JS ──────────────────────── */
+.rw-result-type {
+  display: inline-block;
+  font-size: 0.65rem;
   font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--rw-text);
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.3rem;
 }
+.rw-result-type--blog       { background: rgba(249,115,22,0.12); color: #ea580c; }
+.rw-result-type--guide      { background: rgba(59,130,246,0.12); color: #2563eb; }
+.rw-result-type--playground { background: rgba(139,92,246,0.12); color: #7c3aed; }
+.rw-result-type--usecase    { background: rgba(16,185,129,0.12); color: #059669; }
+.rw-result-type--portfolio  { background: rgba(100,116,139,0.12); color: #475569; }
 
-.rw-search-modal-sub {
-  font-size: 0.875rem;
-  color: var(--rw-text-subtle);
-  line-height: 1.5;
-}
-
-.rw-search-modal-hint {
-  margin-top: 1.5rem;
+/* ── Hint bar ───────────────────────────────────────────────── */
+.rw-search-hint {
   display: flex;
   gap: 0.4rem;
-  font-size: 0.78rem;
+  font-size: 0.73rem;
   color: var(--rw-text-subtle);
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-top: 0.75rem;
   flex-wrap: wrap;
 }
-
-.rw-search-modal-hint kbd {
+.rw-search-hint kbd {
   background: var(--rw-bg-subtle);
   border: 1px solid var(--rw-border-strong);
   border-radius: 4px;
-  padding: 0.15rem 0.45rem;
-  font-size: 0.72rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.68rem;
   font-family: var(--rw-font-mono);
   color: var(--rw-text-muted);
+}
+
+/* ── Mobile search button in drawer ────────────────────────── */
+.rw-mobile-search-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--rw-orange-light, rgba(249,115,22,0.08));
+  border: none;
+  border-bottom: 1px solid var(--rw-border);
+  color: var(--rw-orange, #f97316);
+  font-family: var(--rw-font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+.rw-mobile-search-btn svg { flex-shrink: 0; }
+.rw-mobile-search-btn:hover { background: rgba(249,115,22,0.14); }
+
+/* ── No-scroll when search open (html target fixes iOS Safari scroll-lock) ── */
+body.rw-search-open,
+html.rw-search-open { overflow: hidden; }
+
+/* ── Prevent page-level horizontal overflow ────────────────── */
+/* html clips the scroll container; body clips its own content */
+html { overflow-x: hidden; }
+body { overflow-x: hidden; }
+
+/* ── Search error fallback ──────────────────────────────────── */
+.rw-search-error {
+  padding: 1rem;
+  color: var(--rw-text-subtle, #888);
+  font-size: 0.875rem;
+}
+
+/* ── Mobile: thumbnails off (default icons also hidden), tighter padding ── */
+@media (max-width: 640px) {
+  .rw-search-panel .pagefind-ui__result-thumb { display: none !important; }
+  .rw-search-inner { padding: 1rem; }
 }
 
 /* ─── 4. FOOTER COMPONENT ───────────────────────────────────── */

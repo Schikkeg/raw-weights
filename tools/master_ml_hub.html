@@ -193,6 +193,28 @@
 </head>
 <body>
 
+<script>
+window.RW_PAGE_TOOLS = [{
+  name: 'describe_ml_hub',
+  description: 'Returns an overview of the ML Master Hub — available topics, interactive visualizers, and how to navigate to a specific ML concept.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  execute: function () {
+    var sections = Array.from(document.querySelectorAll('h2, h3, .section-title, [data-section]'))
+      .map(function (h) { return h.textContent.trim(); })
+      .filter(function (t) { return t.length > 2; })
+      .slice(0, 25);
+    return {
+      title: document.title,
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      url: window.location.href,
+      sections: sections,
+      topics: ['Gradient Descent', 'Activation Functions', 'Backpropagation', 'Regularization', 'Batch Norm', 'CNNs', 'RNNs', 'LSTMs', 'Attention', 'Transformers', 'GANs', 'Reinforcement Learning', 'Embeddings', 'Autoencoders'],
+      features: ['Searchable card gallery of all ML models', 'Interactive math visualizers per concept', 'Deep-link to a concept via URL hash (e.g. #gradient-descent)'],
+      navigation_tip: 'Append a concept hash to the URL to jump directly to a model card.'
+    };
+  }
+}];
+</script>
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20260615"></script>
 
