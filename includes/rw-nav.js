@@ -419,7 +419,8 @@
       other:      '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
     };
 
-    /* Process a single result: inject type badge + default thumbnail SVG when no image */
+    /* Process a single result: inject type badge + default thumbnail SVG when no image.
+       Skips loading placeholders — called again once real thumb arrives. */
     function processResult(r) {
       const a    = r.querySelector('a[href]');
       const type = typeFromHref(a ? a.getAttribute('href') : '') || 'other';
@@ -433,35 +434,47 @@
         inner.insertBefore(badge, inner.firstChild);
       }
 
-      const thumb = r.querySelector('.pagefind-ui__result-thumb');
+      /* Pagefind renders a loading placeholder first, then swaps it for the real thumb.
+         Only process the real thumb (no pagefind-ui__loading class). */
+      const thumb = r.querySelector('.pagefind-ui__result-thumb:not(.pagefind-ui__loading)');
+      if (!thumb) return;
+
       const svgIcon = SVG_ICONS[slug] || SVG_ICONS.other;
       const useDefault = function () {
         thumb.innerHTML = svgIcon;
         thumb.classList.add('rw-thumb-default', 'rw-thumb-' + slug);
       };
-      if (thumb) {
-        const img = thumb.querySelector('img');
-        if (!img || !img.getAttribute('src')) {
-          useDefault();
-        } else {
-          img.addEventListener('error', useDefault);
-        }
+
+      if (thumb.classList.contains('rw-thumb-default')) return; // already processed
+
+      const img = thumb.querySelector('img');
+      if (!img || !img.getAttribute('src')) {
+        useDefault();
+      } else {
+        img.addEventListener('error', useDefault);
       }
     }
 
-    /* Watch result DOM for new results */
+    /* Watch result DOM — handles both new result additions and the loading→real thumb swap */
     function watchResults(container) {
-      /* Scan results already in DOM at attach time */
       Array.from(container.querySelectorAll('.pagefind-ui__result')).forEach(processResult);
 
       const mo = new MutationObserver(function (muts) {
         muts.forEach(function (m) {
           m.addedNodes.forEach(function (node) {
             if (!node || node.nodeType !== 1) return;
-            const results = node.classList && node.classList.contains('pagefind-ui__result')
-              ? [node] : Array.from((node.querySelectorAll || function () { return []; })
-                  .call(node, '.pagefind-ui__result'));
-            results.forEach(processResult);
+            if (node.classList && node.classList.contains('pagefind-ui__result')) {
+              /* A result <li> was added directly */
+              processResult(node);
+            } else {
+              /* A descendant was added — could be the real thumb replacing a loading placeholder.
+                 Walk up to find the parent result and re-run processResult on it. */
+              const ancestor = node.closest && node.closest('.pagefind-ui__result');
+              if (ancestor) { processResult(ancestor); return; }
+              /* Or a container holding multiple results was added */
+              Array.from(node.querySelectorAll ? node.querySelectorAll('.pagefind-ui__result') : [])
+                .forEach(processResult);
+            }
           });
         });
       });
