@@ -16,14 +16,12 @@
   <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
 
   <link rel="stylesheet" href="../includes/brand.css">
-  <link rel="stylesheet" href="../pagefind/pagefind-ui.css">
-  <script src="../pagefind/pagefind-ui.js" defer></script>
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
     /* ── Page shell ──────────────────────────────────────────── */
     .rw-sp { min-height: 100vh; display: flex; flex-direction: column; background: var(--rw-bg); }
-    .rw-sp-results { flex: 1; }
+    .rw-sp-results-section { flex: 1; }
 
     /* ── Hero ────────────────────────────────────────────────── */
     .rw-sp-hero {
@@ -80,7 +78,7 @@
       max-width: 680px;
       margin: 0 auto;
     }
-    .rw-sp-input-wrap .rw-sp-icon {
+    .rw-sp-icon {
       position: absolute;
       left: 1.1rem;
       top: 50%;
@@ -89,7 +87,6 @@
       height: 20px;
       stroke: rgba(255,255,255,0.42);
       pointer-events: none;
-      flex-shrink: 0;
     }
     #rw-sp-q {
       width: 100%;
@@ -112,8 +109,6 @@
       box-shadow: 0 0 0 4px rgba(249,115,22,0.16);
       background: rgba(255,255,255,0.09);
     }
-    /* search icon colour fix on :focus */
-    #rw-sp-q:focus ~ .rw-sp-icon { stroke: rgba(255,255,255,0.6); }
     #rw-sp-clear {
       position: absolute;
       right: 0.85rem;
@@ -151,7 +146,7 @@
     }
 
     /* ── Results section ─────────────────────────────────────── */
-    .rw-sp-results {
+    .rw-sp-results-section {
       background: var(--rw-bg, #fff);
       min-height: 50vh;
     }
@@ -162,127 +157,91 @@
     }
 
     /* ── Empty / suggested topics ────────────────────────────── */
-    #rw-sp-empty { padding-top: 0.5rem; }
+    #rw-sp-empty { padding-top: 0.25rem; }
     .rw-sp-empty-label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--rw-text-subtle, #94a3b8);
-      margin: 0 0 1rem;
+      margin: 0 0 0.9rem;
     }
-    .rw-sp-cats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
+    .rw-sp-cats { display: flex; flex-wrap: wrap; gap: 0.55rem; }
     .rw-sp-cat {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      padding: 0.45rem 0.95rem;
+      padding: 0.4rem 0.9rem;
       border: 1px solid var(--rw-border, #e2e8f0);
       border-radius: 999px;
       font-family: var(--rw-font-body, 'Inter', sans-serif);
-      font-size: 0.84rem;
+      font-size: 0.83rem;
       font-weight: 500;
       color: var(--rw-text-muted, #475569);
       background: none;
       cursor: pointer;
       transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
-    .rw-sp-cat:hover {
-      border-color: var(--rw-orange, #f97316);
-      color: var(--rw-orange, #f97316);
-      background: rgba(249,115,22,0.05);
-    }
+    .rw-sp-cat:hover { border-color: var(--rw-orange, #f97316); color: var(--rw-orange, #f97316); background: rgba(249,115,22,0.05); }
     .rw-sp-cat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
-    /* ── Pagefind results area ───────────────────────────────── */
-    #rw-sp-pf {
-      --pagefind-ui-scale: 1;
-      --pagefind-ui-primary: var(--rw-orange, #f97316);
-      --pagefind-ui-text: var(--rw-text, #0f172a);
-      --pagefind-ui-background: var(--rw-bg, #fff);
-      --pagefind-ui-border: var(--rw-border, #e2e8f0);
-      --pagefind-ui-border-radius: 10px;
-      --pagefind-ui-font: var(--rw-font-body, 'Inter', sans-serif);
+    /* ── Status / count / error ──────────────────────────────── */
+    .rw-sp-status {
+      font-size: 0.85rem;
+      color: var(--rw-text-subtle, #94a3b8);
+      padding: 0 0 1.25rem 0.25rem;
+      min-height: 1.5rem;
     }
-    /* Pagefind's own form — visually hidden but live in DOM so synthetic events work.
-       display:none kills event processing; clip+opacity keeps it accessible to JS. */
-    #rw-sp-pf .pagefind-ui__form {
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      overflow: hidden !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-      clip: rect(0,0,0,0) !important;
+    .rw-sp-status strong { color: var(--rw-text, #0f172a); }
+    .rw-sp-no-results { font-size: 0.95rem; color: var(--rw-text-muted); padding: 0.5rem 0 0 0.25rem; }
+    .rw-sp-no-results strong { color: var(--rw-text); }
+
+    /* ── Result list ─────────────────────────────────────────── */
+    .rw-sp-result-list { list-style: none; padding: 0; margin: 0; }
+    .rw-sp-result { margin-bottom: 0.75rem; }
+    .rw-sp-result:last-child { margin-bottom: 0; }
+    .rw-sp-result a {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1rem 1rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid var(--rw-border, #e2e8f0);
+      background: var(--rw-card, #fff);
+      text-decoration: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    #rw-sp-pf .pagefind-ui__results-area { margin-top: 0; }
-    #rw-sp-pf .pagefind-ui__results { list-style: none; padding: 0; margin: 0; }
-    #rw-sp-pf .pagefind-ui__message {
-      padding: 0 0 1.25rem 0.25rem !important;
-      font-size: 0.85rem !important;
-      color: var(--rw-text-subtle, #94a3b8) !important;
-      font-weight: 500 !important;
+    .rw-sp-result a:hover {
+      border-color: var(--rw-orange, #f97316);
+      box-shadow: 0 2px 16px rgba(249,115,22,0.08);
     }
-    #rw-sp-pf .pagefind-ui__result {
-      display: flex !important;
-      gap: 1rem !important;
-      align-items: flex-start !important;
-      padding: 1rem 1rem 1rem 0.75rem !important;
-      margin-bottom: 0.75rem !important;
-      border-radius: 12px !important;
-      border: 1px solid var(--rw-border, #e2e8f0) !important;
-      background: var(--rw-card, #fff) !important;
-      transition: border-color 0.15s, box-shadow 0.15s !important;
+
+    /* Thumbnail */
+    .rw-sp-thumb {
+      flex-shrink: 0;
+      width: 104px;
+      height: 72px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--rw-border, #e2e8f0);
     }
-    #rw-sp-pf .pagefind-ui__result:last-child { margin-bottom: 0 !important; }
-    #rw-sp-pf .pagefind-ui__result:hover {
-      border-color: var(--rw-orange, #f97316) !important;
-      box-shadow: 0 2px 16px rgba(249,115,22,0.08) !important;
+    .rw-sp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .rw-sp-thumb.rw-thumb-default {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
     }
-    #rw-sp-pf .pagefind-ui__result-thumb {
-      flex-shrink: 0 !important;
-      width: 104px !important;
-      height: 72px !important;
-      border-radius: 8px !important;
-      overflow: hidden !important;
-      border: 1px solid var(--rw-border, #e2e8f0) !important;
-    }
-    #rw-sp-pf .pagefind-ui__result-thumb img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
-    #rw-sp-pf .rw-thumb-default { display: flex !important; align-items: center !important; justify-content: center !important; border: none !important; }
-    #rw-sp-pf .rw-thumb-default svg { width: 32px !important; height: 32px !important; flex-shrink: 0; }
-    #rw-sp-pf .rw-thumb-blog       { background-color: rgba(249,115,22,0.10) !important; }
-    #rw-sp-pf .rw-thumb-guide      { background-color: rgba(59,130,246,0.10) !important; }
-    #rw-sp-pf .rw-thumb-playground { background-color: rgba(139,92,246,0.10) !important; }
-    #rw-sp-pf .rw-thumb-usecase    { background-color: rgba(16,185,129,0.10) !important; }
-    #rw-sp-pf .rw-thumb-portfolio  { background-color: rgba(100,116,139,0.10) !important; }
-    #rw-sp-pf .rw-thumb-other      { background-color: rgba(100,116,139,0.08) !important; }
-    #rw-sp-pf .pagefind-ui__result-inner { flex: 1; min-width: 0; }
-    #rw-sp-pf .pagefind-ui__result-title {
-      font-family: var(--rw-font-display, 'Space Grotesk', sans-serif) !important;
-      font-weight: 700 !important;
-      font-size: 1rem !important;
-      margin: 0 0 0.3rem !important;
-      line-height: 1.3 !important;
-    }
-    #rw-sp-pf .pagefind-ui__result-title a { color: var(--rw-text, #0f172a) !important; text-decoration: none !important; }
-    #rw-sp-pf .pagefind-ui__result-title a:hover { color: var(--rw-orange, #f97316) !important; }
-    #rw-sp-pf .pagefind-ui__result-excerpt {
-      font-size: 0.83rem !important;
-      color: var(--rw-text-muted, #475569) !important;
-      line-height: 1.55 !important;
-      margin: 0 !important;
-    }
-    #rw-sp-pf .pagefind-ui__result-excerpt mark {
-      background: rgba(249,115,22,0.16) !important;
-      color: var(--rw-orange, #f97316) !important;
-      border-radius: 2px;
-      padding: 0 2px;
-    }
-    #rw-sp-pf .rw-result-type {
+    .rw-thumb-blog       { background: rgba(249,115,22,0.10); }
+    .rw-thumb-guide      { background: rgba(59,130,246,0.10); }
+    .rw-thumb-playground { background: rgba(139,92,246,0.10); }
+    .rw-thumb-usecase    { background: rgba(16,185,129,0.10); }
+    .rw-thumb-portfolio  { background: rgba(100,116,139,0.10); }
+    .rw-thumb-other      { background: rgba(100,116,139,0.08); }
+
+    /* Result body */
+    .rw-sp-result-body { flex: 1; min-width: 0; }
+    .rw-result-type {
       display: inline-block;
       font-size: 0.67rem;
       font-weight: 700;
@@ -292,33 +251,40 @@
       border-radius: 999px;
       margin-bottom: 0.35rem;
     }
-    #rw-sp-pf .rw-result-type--blog       { background: rgba(249,115,22,0.12); color: #ea580c; }
-    #rw-sp-pf .rw-result-type--guide      { background: rgba(59,130,246,0.12); color: #2563eb; }
-    #rw-sp-pf .rw-result-type--playground { background: rgba(139,92,246,0.12); color: #7c3aed; }
-    #rw-sp-pf .rw-result-type--usecase    { background: rgba(16,185,129,0.12); color: #059669; }
-    #rw-sp-pf .rw-result-type--portfolio  { background: rgba(100,116,139,0.10); color: #64748b; }
-    #rw-sp-pf .rw-result-type--other      { background: rgba(100,116,139,0.08); color: #94a3b8; }
-    #rw-sp-pf .pagefind-ui__button {
-      margin-top: 1.5rem !important;
-      padding: 0.6rem 1.75rem !important;
-      border: 1.5px solid var(--rw-border, #e2e8f0) !important;
-      border-radius: 8px !important;
-      background: transparent !important;
-      color: var(--rw-text, #0f172a) !important;
-      font-family: var(--rw-font-body, 'Inter', sans-serif) !important;
-      font-size: 0.9rem !important;
-      cursor: pointer !important;
-      transition: border-color 0.15s, color 0.15s !important;
+    .rw-result-type--blog       { background: rgba(249,115,22,0.12); color: #ea580c; }
+    .rw-result-type--guide      { background: rgba(59,130,246,0.12); color: #2563eb; }
+    .rw-result-type--playground { background: rgba(139,92,246,0.12); color: #7c3aed; }
+    .rw-result-type--usecase    { background: rgba(16,185,129,0.12); color: #059669; }
+    .rw-result-type--portfolio  { background: rgba(100,116,139,0.10); color: #64748b; }
+    .rw-result-type--other      { background: rgba(100,116,139,0.08); color: #94a3b8; }
+    .rw-sp-result-title {
+      font-family: var(--rw-font-display, 'Space Grotesk', sans-serif);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--rw-text, #0f172a);
+      margin: 0 0 0.3rem;
+      line-height: 1.3;
     }
-    #rw-sp-pf .pagefind-ui__button:hover { border-color: var(--rw-orange, #f97316) !important; color: var(--rw-orange, #f97316) !important; }
+    .rw-sp-result-excerpt {
+      font-size: 0.83rem;
+      color: var(--rw-text-muted, #475569);
+      line-height: 1.55;
+      margin: 0;
+    }
+    .rw-sp-result-excerpt mark {
+      background: rgba(249,115,22,0.16);
+      color: var(--rw-orange, #f97316);
+      border-radius: 2px;
+      padding: 0 2px;
+    }
 
-    /* ── Nav search button hidden — we're already here ────────── */
+    /* ── Nav search button hidden ────────────────────────────── */
     #rw-search-btn, #rw-mobile-search-btn { display: none !important; }
 
     @media (max-width: 640px) {
       .rw-sp-hero { padding: 2.5rem 1rem 2.25rem; }
       .rw-sp-results-inner { padding: 1.75rem 1rem 3rem; }
-      #rw-sp-pf .pagefind-ui__result-thumb { display: none !important; }
+      .rw-sp-thumb { display: none; }
     }
   </style>
 </head>
@@ -340,10 +306,10 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
-    <p class="rw-sp-hint">Press <kbd>↵ Enter</kbd> to search &nbsp;·&nbsp; <kbd>Ctrl K</kbd> opens search anywhere on the site</p>
+    <p class="rw-sp-hint">Press <kbd>↵ Enter</kbd> to search &nbsp;·&nbsp; <kbd>Ctrl K</kbd> opens search anywhere</p>
   </section>
 
-  <section class="rw-sp-results">
+  <section class="rw-sp-results-section">
     <div class="rw-sp-results-inner">
       <div id="rw-sp-empty">
         <p class="rw-sp-empty-label">Suggested topics</p>
@@ -355,88 +321,148 @@
           <button class="rw-sp-cat" data-q="MCP model context"><span class="rw-sp-cat-dot" style="background:#64748b"></span>MCP</button>
           <button class="rw-sp-cat" data-q="evaluation benchmark"><span class="rw-sp-cat-dot" style="background:#0891b2"></span>Evaluation</button>
           <button class="rw-sp-cat" data-q="generative AI"><span class="rw-sp-cat-dot" style="background:#be185d"></span>Generative AI</button>
-          <button class="rw-sp-cat" data-q="neural network deep learning"><span class="rw-sp-cat-dot" style="background:#b45309"></span>Deep Learning</button>
+          <button class="rw-sp-cat" data-q="deep learning neural"><span class="rw-sp-cat-dot" style="background:#b45309"></span>Deep Learning</button>
         </div>
       </div>
-      <!-- Pagefind renders results here; its own form is hidden via CSS -->
-      <div id="rw-sp-pf" role="region" aria-label="Search results" aria-live="polite"></div>
+      <p id="rw-sp-status" class="rw-sp-status" aria-live="polite"></p>
+      <ul id="rw-sp-list" class="rw-sp-result-list" role="list" aria-label="Search results"></ul>
     </div>
   </section>
 
   <div id="rw-footer"></div>
   <script src="../includes/rw-nav.js?v=20261030"></script>
   <script src="../includes/rw-footer.js?v=20260612"></script>
-  <script>
-    (function () {
-      var q        = new URLSearchParams(window.location.search).get('q') || '';
-      var heroInp  = document.getElementById('rw-sp-q');
-      var clearBtn = document.getElementById('rw-sp-clear');
-      var emptyEl  = document.getElementById('rw-sp-empty');
-      var pfEl     = document.getElementById('rw-sp-pf');
-      var pfInp    = null;
+  <script type="module">
+    var heroInp  = document.getElementById('rw-sp-q');
+    var clearBtn = document.getElementById('rw-sp-clear');
+    var emptyEl  = document.getElementById('rw-sp-empty');
+    var statusEl = document.getElementById('rw-sp-status');
+    var listEl   = document.getElementById('rw-sp-list');
+    var timer    = null;
+    var pf       = null;
 
-      /* Expose hero input API — used by WebMCP search_rawweights and Ctrl+K handler in nav.js */
-      window.__rw = window.__rw || {};
-      window.__rw.fillHeroSearch = function (term) {
-        heroInp.value = term;
+    /* ── SVG icons for default thumbnails ── */
+    var ICONS = {
+      blog:       '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+      guide:      '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+      playground: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      usecase:    '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      other:      '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+    };
+
+    function typeFromUrl(url) {
+      if (url.indexOf('/blog/')       !== -1) return 'blog';
+      if (url.indexOf('/guide/')      !== -1) return 'guide';
+      if (url.indexOf('/tools/')      !== -1) return 'playground';
+      if (url.indexOf('/usecase/')    !== -1) return 'usecase';
+      if (url.indexOf('/portfolio/')  !== -1) return 'portfolio';
+      return 'other';
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderResults(data, query) {
+      listEl.innerHTML = '';
+      if (!data.length) {
+        statusEl.innerHTML = 'No results for <strong>"' + esc(query) + '"</strong> — try different keywords.';
+        return;
+      }
+      statusEl.innerHTML = data.length + ' result' + (data.length !== 1 ? 's' : '') + ' for <strong>"' + esc(query) + '"</strong>';
+      data.forEach(function (r) {
+        var slug  = typeFromUrl(r.url);
+        var label = { blog:'Blog', guide:'Guide', playground:'Playground', usecase:'Use Case', portfolio:'Portfolio', other:'' }[slug] || '';
+        var badge = label ? '<span class="rw-result-type rw-result-type--' + slug + '">' + label + '</span>' : '';
+        var thumb = r.meta && r.meta.image
+          ? '<div class="rw-sp-thumb"><img src="' + esc(r.meta.image) + '" alt="" loading="lazy"></div>'
+          : '<div class="rw-sp-thumb rw-thumb-default rw-thumb-' + slug + '">' + (ICONS[slug] || ICONS.other) + '</div>';
+        var li = document.createElement('li');
+        li.className = 'rw-sp-result';
+        li.innerHTML = '<a href="' + esc(r.url) + '">' + thumb +
+          '<div class="rw-sp-result-body">' + badge +
+          '<p class="rw-sp-result-title">' + esc(r.meta && r.meta.title || '') + '</p>' +
+          '<p class="rw-sp-result-excerpt">' + (r.excerpt || '') + '</p>' +
+          '</div></a>';
+        listEl.appendChild(li);
+      });
+    }
+
+    async function doSearch(query) {
+      if (!query.trim()) {
+        listEl.innerHTML = '';
+        statusEl.textContent = '';
+        emptyEl.style.display = '';
+        return;
+      }
+      emptyEl.style.display = 'none';
+      statusEl.textContent = 'Searching…';
+      if (!pf) { statusEl.textContent = 'Loading search…'; return; }
+      try {
+        var search = await pf.search(query);
+        var data   = await Promise.all(search.results.slice(0, 12).map(function (r) { return r.data(); }));
+        renderResults(data, query);
+      } catch (e) {
+        statusEl.textContent = 'Search unavailable — try reloading the page.';
+      }
+    }
+
+    function onInput() {
+      var val = heroInp.value;
+      clearBtn.classList.toggle('visible', val.length > 0);
+      clearTimeout(timer);
+      timer = setTimeout(function () { doSearch(val); }, 260);
+    }
+
+    heroInp.addEventListener('input', onInput);
+
+    clearBtn.addEventListener('click', function () {
+      heroInp.value = '';
+      heroInp.focus();
+      onInput();
+    });
+
+    document.querySelectorAll('.rw-sp-cat').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        heroInp.value = btn.getAttribute('data-q');
         heroInp.dispatchEvent(new Event('input', { bubbles: true }));
         heroInp.focus();
-      };
+      });
+    });
 
-      function onInput() {
-        var val = heroInp.value.trim();
-        clearBtn.classList.toggle('visible', val.length > 0);
-        if (emptyEl) emptyEl.style.display = val ? 'none' : '';
-        /* Mirror to hidden Pagefind input */
-        if (!pfInp) pfInp = pfEl.querySelector('.pagefind-ui__search-input');
-        if (pfInp) {
-          pfInp.value = heroInp.value;
-          pfInp.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-      }
+    /* Expose for WebMCP search_rawweights and nav Ctrl+K handler */
+    window.__rw = window.__rw || {};
+    window.__rw.fillHeroSearch = function (term) {
+      heroInp.value = term;
+      heroInp.dispatchEvent(new Event('input', { bubbles: true }));
+      heroInp.focus();
+    };
 
-      heroInp.addEventListener('input', onInput);
-
-      clearBtn.addEventListener('click', function () {
-        heroInp.value = '';
+    /* Ctrl K focuses this input (nav.js also checks fillHeroSearch) */
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
         heroInp.focus();
-        onInput();
-      });
-
-      document.querySelectorAll('.rw-sp-cat').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          heroInp.value = btn.getAttribute('data-q');
-          heroInp.focus();
-          onInput();
-        });
-      });
-
-      function initPF() {
-        if (typeof PagefindUI === 'undefined') { setTimeout(initPF, 50); return; }
-        try {
-          new PagefindUI({
-            element:       '#rw-sp-pf',
-            showImages:    true,
-            showFilters:   false,
-            resetStyles:   false,
-            excerptLength: 20,
-            translations:  { placeholder: 'Search…' }
-          });
-          if (window.__rw && window.__rw.watchResults) window.__rw.watchResults(pfEl);
-          /* Grab Pagefind input now, not lazily — so first keystroke mirrors correctly */
-          pfInp = pfEl.querySelector('.pagefind-ui__search-input');
-          if (q) {
-            /* Auto-fill from ?q= param */
-            setTimeout(function () { window.__rw.fillHeroSearch(q); }, 120);
-          } else {
-            heroInp.focus();
-          }
-        } catch (err) {
-          pfEl.innerHTML = '<p style="padding:1rem 0;color:var(--rw-text-subtle,#94a3b8);font-size:.9rem">Search index not found.</p>';
-        }
+        heroInp.select();
       }
-      initPF();
-    })();
+    });
+
+    /* Load Pagefind raw API */
+    try {
+      pf = await import('../pagefind/pagefind.js');
+      await pf.init();
+      var q = new URLSearchParams(window.location.search).get('q') || '';
+      if (q) {
+        heroInp.value = q;
+        clearBtn.classList.add('visible');
+        emptyEl.style.display = 'none';
+        doSearch(q);
+      } else {
+        heroInp.focus();
+      }
+    } catch (e) {
+      statusEl.textContent = 'Search index not available. Merge the PR and check GitHub Pages.';
+    }
   </script>
 </body>
 </html>
