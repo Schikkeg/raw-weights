@@ -698,22 +698,40 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   --pagefind-ui-font: var(--rw-font-body, 'Inter', sans-serif);
 }
 
-/* Input */
-.rw-search-panel .pagefind-ui__form { margin: 0 0 0.25rem; }
+/* Input — form is the visual border box; icon + input + clear all sit inside it */
+.rw-search-panel .pagefind-ui__form {
+  margin: 0 0 1rem;
+  border: 1.5px solid var(--rw-border) !important;
+  border-radius: 10px !important;
+  background: var(--rw-bg-subtle) !important;
+  overflow: hidden !important;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.rw-search-panel .pagefind-ui__form:focus-within {
+  border-color: var(--rw-orange) !important;
+  box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important;
+}
 .rw-search-panel .pagefind-ui__search-input {
   font-size: 1.1rem !important;
   height: 52px !important;
   padding-left: 3rem !important;
-  background: var(--rw-bg-subtle) !important;
-  border: 1.5px solid var(--rw-border) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
   color: var(--rw-text) !important;
+  width: 100% !important;
 }
 .rw-search-panel .pagefind-ui__search-input:focus {
-  border-color: var(--rw-orange) !important;
+  border: none !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important;
+  box-shadow: none !important;
 }
-.rw-search-panel .pagefind-ui__search-clear { color: var(--rw-text-subtle) !important; }
+.rw-search-panel .pagefind-ui__search-clear {
+  color: var(--rw-text-subtle) !important;
+  background: transparent !important;
+  border: none !important;
+}
 
 /* Results list */
 .rw-search-panel .pagefind-ui__results-area { margin-top: 0.5rem; }
@@ -730,7 +748,7 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
 .rw-search-panel .pagefind-ui__result:last-child { border-bottom: none !important; }
 .rw-search-panel .pagefind-ui__result:hover { background: var(--rw-bg-subtle) !important; border-radius: 8px; }
 
-/* Thumbnail */
+/* Thumbnail — hidden when no image (JS adds rw-no-thumb; :has() covers modern browsers) */
 .rw-search-panel .pagefind-ui__result-thumb {
   flex-shrink: 0;
   width: 88px !important;
@@ -745,6 +763,8 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   height: 100% !important;
   object-fit: cover !important;
 }
+.rw-search-panel .pagefind-ui__result-thumb.rw-no-thumb { display: none !important; }
+.rw-search-panel .pagefind-ui__result-thumb:not(:has(img[src])) { display: none !important; }
 
 /* Inner content */
 .rw-search-panel .pagefind-ui__result-inner {
@@ -848,11 +868,16 @@ body.rw-search-open { overflow: hidden; }
   font-size: 0.875rem;
 }
 
-/* ── Mobile: search results single-column ──────────────────── */
+/* ── Mobile: single-column layout, no overflow ──────────────── */
 @media (max-width: 640px) {
   .rw-search-panel .pagefind-ui__result-thumb { display: none !important; }
   .rw-search-inner { padding: 1rem; }
+  /* Pagefind drawer is flex-row by default — force column to prevent horizontal overflow */
+  .rw-search-panel .pagefind-ui__drawer { flex-direction: column !important; }
+  .rw-search-panel .pagefind-ui__results-area { min-width: 0 !important; }
 }
+/* Pagefind sets --pagefind-ui-scale on :root globally; contain it to the panel */
+.rw-search-panel { --pagefind-ui-scale: 0.85; }
 
 /* ─── 4. FOOTER COMPONENT ───────────────────────────────────── */
 .rw-footer {

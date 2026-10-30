@@ -409,8 +409,35 @@
       return '';
     }
 
-    /* Watch result DOM and inject type eyebrow spans */
+    /* Process a single result node: inject type badge + hide empty thumbnail */
+    function processResult(r) {
+      if (!r.querySelector('.rw-result-type')) {
+        const a = r.querySelector('a[href]');
+        const type = typeFromHref(a ? a.getAttribute('href') : '');
+        if (type) {
+          const badge = document.createElement('span');
+          badge.className = 'rw-result-type rw-result-type--' + type.toLowerCase();
+          badge.textContent = type;
+          const inner = r.querySelector('.pagefind-ui__result-inner') || r;
+          inner.insertBefore(badge, inner.firstChild);
+        }
+      }
+      const thumb = r.querySelector('.pagefind-ui__result-thumb');
+      if (thumb) {
+        const img = thumb.querySelector('img');
+        if (!img || !img.getAttribute('src')) {
+          thumb.classList.add('rw-no-thumb');
+        } else {
+          img.addEventListener('error', function () { thumb.classList.add('rw-no-thumb'); });
+        }
+      }
+    }
+
+    /* Watch result DOM for new results */
     function watchResults(container) {
+      /* Scan results already in DOM at attach time */
+      Array.from(container.querySelectorAll('.pagefind-ui__result')).forEach(processResult);
+
       const mo = new MutationObserver(function (muts) {
         muts.forEach(function (m) {
           m.addedNodes.forEach(function (node) {
@@ -418,17 +445,7 @@
             const results = node.classList && node.classList.contains('pagefind-ui__result')
               ? [node] : Array.from((node.querySelectorAll || function () { return []; })
                   .call(node, '.pagefind-ui__result'));
-            results.forEach(function (r) {
-              if (r.querySelector('.rw-result-type')) return;
-              const a = r.querySelector('a[href]');
-              const type = typeFromHref(a ? a.getAttribute('href') : '');
-              if (!type) return;
-              const badge = document.createElement('span');
-              badge.className = 'rw-result-type rw-result-type--' + type.toLowerCase();
-              badge.textContent = type;
-              const inner = r.querySelector('.pagefind-ui__result-inner') || r;
-              inner.insertBefore(badge, inner.firstChild);
-            });
+            results.forEach(processResult);
           });
         });
       });
