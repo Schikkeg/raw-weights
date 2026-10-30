@@ -178,11 +178,6 @@
     <span class="port-hero-label">⚙️ Applied AI</span>
     <h1>Building with <span>Raw Weights</span></h1>
     <p>Production projects at the intersection of AI fundamentals and real-world engineering — from agentic pipelines to interactive learning tools.</p>
-    <div class="port-hero-stats">
-      <div class="port-hero-stat"><strong id="stat-total">—</strong> Projects</div>
-      <div class="port-hero-stat"><strong id="stat-hackathon">—</strong> Hackathon wins</div>
-      <div class="port-hero-stat"><strong id="stat-agentic">—</strong> Agentic builds</div>
-    </div>
   </div>
 </div>
 
@@ -211,13 +206,6 @@
   var ROOT = '../';
   var data = window.PORTFOLIO_DATA || [];
   var activeTag = 'All';
-
-  // Hero stats
-  var hackatonCount = data.filter(function(p){ return p.tags.indexOf('Hackathon') > -1; }).length;
-  var agentCount    = data.filter(function(p){ return p.tags.indexOf('Agentic AI') > -1; }).length;
-  document.getElementById('stat-total').textContent     = data.length;
-  document.getElementById('stat-hackathon').textContent = hackatonCount;
-  document.getElementById('stat-agentic').textContent   = agentCount;
 
   function cardHTML(p) {
     var media = p.image
