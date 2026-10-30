@@ -606,18 +606,24 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
 #rw-announce-text a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
 #rw-announce-text a:hover { opacity: 0.85; }
 
-#rw-announce-close {
-  position: absolute; right: 0.75rem;
-  background: none; border: none;
-  color: rgba(255,255,255,0.8);
+/* Prev / Next arrows */
+.rw-announce-arrow {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.75);
   cursor: pointer;
-  padding: 0.5rem;
-  line-height: 0;
-  border-radius: 4px;
+  padding: 0 0.6rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
   transition: color 0.15s, background 0.15s;
-  z-index: 1;
+  line-height: 0;
 }
-#rw-announce-close:hover { color: #fff; background: rgba(255,255,255,0.15); }
+.rw-announce-arrow:hover { color: #fff; background: rgba(255,255,255,0.15); }
+
+/* Hide arrows when there is only one slide */
+#rw-announcement.rw-announce-single .rw-announce-arrow { display: none; }
 
 /* Progress bar — duration set inline by JS via --rw-announce-interval */
 #rw-announce-progress {
