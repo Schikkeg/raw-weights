@@ -30,8 +30,10 @@
     }
     /* Stretch main so footer always sits at page bottom, even with zero results */
     .rw-search-page > main { flex: 1; }
-    /* Reserve space for results — prevents footer jump while Pagefind loads */
-    #rw-search-results { min-height: 60vh; }
+    /* Pre-allocate results drawer space — input stays put when results appear (no CLS) */
+    .rw-search-page-panel.rw-search-panel .pagefind-ui__drawer {
+      min-height: 55vh !important;
+    }
 
     .rw-search-page-header {
       border-bottom: 1px solid var(--rw-border, #e2e8f0);
