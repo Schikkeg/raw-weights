@@ -1,0 +1,34 @@
+{
+  "name": "RawWeights",
+  "description": "AI/ML technical education site for practitioners — interactive browser-based playgrounds, deep guides on RAG, LLMs, agentic systems, fine-tuning, and security, plus build stories from real AI products.",
+  "version": "1.0",
+  "baseUrl": "https://rawweights.com",
+  "capabilities": ["read", "search"],
+  "contentTypes": ["article", "guide", "tool", "usecase"],
+  "topics": [
+    "machine-learning",
+    "large-language-models",
+    "retrieval-augmented-generation",
+    "agentic-ai",
+    "fine-tuning",
+    "model-context-protocol",
+    "ai-security",
+    "transformers",
+    "neural-networks"
+  ],
+  "search": {
+    "endpoint": "https://rawweights.com/search/",
+    "param": "q",
+    "description": "Full-text search across blog, guides, and usecases (Pagefind-powered)"
+  },
+  "feed": "https://rawweights.com/llms.txt",
+  "sitemap": "https://rawweights.com/sitemap.xml",
+  "companionFormat": {
+    "description": "Every HTML content page has a companion .md file at the same path with .html replaced by .md",
+    "example": "/guide/rag.html → /guide/rag.md"
+  },
+  "shellTools": {
+    "description": "All pages register four tools via document.modelContext (Chrome 149+): search_rawweights, get_navigation, get_footer_links, get_page_sections",
+    "perPageTools": "Interactive playground pages declare additional domain-specific tools via window.RW_PAGE_TOOLS before the nav script loads"
+  }
+}

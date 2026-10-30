@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search | RawWeights</title>
+  <meta name="description" content="Search all RawWeights articles, guides, and interactive playgrounds.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/search/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rawweights.com/search/">
+  <meta property="og:title" content="Search | RawWeights">
+  <meta property="og:image" content="https://rawweights.com/images/rw-og.png">
+
+  <script>(function(){document.documentElement.setAttribute('data-theme','light');})();</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <link rel="stylesheet" href="../pagefind/pagefind-ui.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <style>
+    .rw-search-page {
+      min-height: 100vh;
+      background: var(--rw-bg, #ffffff);
+    }
+    .rw-search-hero {
+      background: linear-gradient(160deg, #0a0e1a 0%, #160e28 40%, #0a1530 100%);
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+    }
+    .rw-search-hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 0.5rem;
+    }
+    .rw-search-hero p {
+      color: rgba(255,255,255,0.6);
+      font-size: 1rem;
+      margin: 0;
+    }
+    .rw-search-body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    /* Pagefind UI theme overrides */
+    :root {
+      --pagefind-ui-scale: 1;
+      --pagefind-ui-primary: #f97316;
+      --pagefind-ui-text: var(--rw-text, #1a1a2e);
+      --pagefind-ui-background: var(--rw-bg, #ffffff);
+      --pagefind-ui-border: var(--rw-border, #e2e8f0);
+      --pagefind-ui-border-radius: 8px;
+    }
+    [data-theme="dark"] {
+      --pagefind-ui-text: #e2e8f0;
+      --pagefind-ui-background: #0f172a;
+      --pagefind-ui-border: #334155;
+    }
+  </style>
+</head>
+<body class="rw-search-page">
+  <div id="rw-nav"></div>
+
+  <section class="rw-search-hero">
+    <h1>Search RawWeights</h1>
+    <p>Articles, guides, and interactive playgrounds</p>
+  </section>
+
+  <main class="rw-search-body" id="rw-search-main">
+    <form toolname="search-rawweights"
+          tooldescription="Search all RawWeights articles, guides, and interactive playgrounds by keyword or topic">
+      <div id="rw-search-results"></div>
+      <input name="q" type="hidden" toolparamdescription="Search query — topic, technology, or concept">
+    </form>
+  </main>
+
+  <div id="rw-footer"></div>
+  <script src="../includes/rw-nav.js?v=20261030"></script>
+  <script src="../includes/rw-footer.js?v=20260612"></script>
+  <script>
+    (function () {
+      /* Initialize Pagefind UI */
+      var q = new URLSearchParams(window.location.search).get('q') || '';
+      new PagefindUI({
+        element:     '#rw-search-results',
+        showImages:  false,
+        resetStyles: false,
+        translations: { placeholder: 'Search guides, blogs, playgrounds…' }
+      });
+
+      /* Auto-fill from ?q= param */
+      if (q) {
+        var inp = document.querySelector('.pagefind-ui__search-input');
+        if (inp) {
+          inp.value = q;
+          inp.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+          /* Pagefind may still be initializing — wait for first render */
+          document.addEventListener('pagefind-init', function () {
+            var i = document.querySelector('.pagefind-ui__search-input');
+            if (i) { i.value = q; i.dispatchEvent(new Event('input', { bubbles: true })); }
+          });
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

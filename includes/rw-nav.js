@@ -286,9 +286,7 @@
 </div>
 <div class="rw-search-overlay" id="rw-search-overlay" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
   <div class="rw-search-modal">
-    <div class="rw-search-modal-icon">${ICONS.search}</div>
-    <div class="rw-search-modal-title">Search RawWeights</div>
-    <p class="rw-search-modal-sub">Full-text search is coming in the next update, powered by Pagefind.</p>
+    <div id="rw-search-pagefind"></div>
     <div class="rw-search-modal-hint">
       <kbd>Esc</kbd> to close &nbsp;&middot;&nbsp; <kbd>Ctrl K</kbd> / <kbd>&#8984; K</kbd> to open
     </div>
@@ -387,16 +385,56 @@
     });
   }
 
-  /* ── Search overlay (stub — full wiring in PR4) ───────────── */
+  /* ── Search overlay — Pagefind UI ─────────────────────────── */
   function initSearch() {
     const overlay = document.getElementById('rw-search-overlay');
     const openBtn = document.getElementById('rw-search-btn');
     if (!overlay || !openBtn) return;
 
+    let pfLoaded = false;
+
+    function loadPagefind(cb) {
+      if (pfLoaded) { cb(); return; }
+      const css = document.createElement('link');
+      css.rel  = 'stylesheet';
+      css.href = ROOT + 'pagefind/pagefind-ui.css';
+      document.head.appendChild(css);
+
+      const js = document.createElement('script');
+      js.src = ROOT + 'pagefind/pagefind-ui.js';
+      js.onload = function () {
+        pfLoaded = true;
+        try {
+          new window.PagefindUI({
+            element:    '#rw-search-pagefind',
+            showImages: false,
+            resetStyles: false,
+            translations: { placeholder: 'Search guides, blogs, playgrounds…' }
+          });
+        } catch (_) {}
+        cb();
+      };
+      js.onerror = function () {
+        const el = document.getElementById('rw-search-pagefind');
+        if (el) el.innerHTML =
+          '<p style="padding:1rem;color:var(--rw-text-secondary,#888);font-size:.875rem">' +
+          'Search index not found. Run <code>npm run build</code> locally.</p>';
+        pfLoaded = true;
+        cb();
+      };
+      document.head.appendChild(js);
+    }
+
+    function focusInput() {
+      const inp = overlay.querySelector('input[type=text], input[type=search], .pagefind-ui__search-input');
+      if (inp) { inp.focus(); inp.select(); }
+    }
+
     function openSearch() {
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
       openBtn.setAttribute('aria-expanded', 'true');
+      loadPagefind(function () { setTimeout(focusInput, 60); });
     }
     function closeSearch() {
       overlay.classList.remove('open');
@@ -412,9 +450,7 @@
         e.preventDefault();
         overlay.classList.contains('open') ? closeSearch() : openSearch();
       }
-      if (e.key === 'Escape' && overlay.classList.contains('open')) {
-        closeSearch();
-      }
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeSearch();
     });
   }
 
@@ -508,6 +544,165 @@
     });
   }
 
+  /* ── WebMCP: meta tags + registerTool() shell tools ────────── */
+  function injectWebMCP() {
+    if (document.querySelector('meta[name^="webmcp:"]')) return;
+
+    const head     = document.head;
+    const pathname = window.location.pathname;
+
+    const pageType = (function () {
+      if (pathname === '/' || /\/index\.html$/.test(pathname))     return 'home';
+      if (pathname === '/blog.html')                               return 'listing';
+      if (/^\/blog\//.test(pathname))                             return 'article';
+      if (/^\/guide\//.test(pathname))                            return 'guide';
+      if (/^\/tools\//.test(pathname)
+          || pathname === '/srt.html'
+          || pathname === '/how-it-started.html')                 return 'tool';
+      if (/^\/usecase\//.test(pathname))                          return 'usecase';
+      if (/^\/portfolio\//.test(pathname))                        return 'portfolio';
+      return 'article';
+    })();
+
+    const TYPE_CFG = {
+      home:      { type: 'website', action: 'read search', search: true  },
+      listing:   { type: 'listing', action: 'search read', search: true  },
+      article:   { type: 'article', action: 'read',        search: false },
+      guide:     { type: 'article', action: 'read',        search: false },
+      tool:      { type: 'tool',    action: 'read interact', tools: 'interactive-ml-playground', search: false },
+      usecase:   { type: 'article', action: 'read',        search: false },
+      portfolio: { type: 'article', action: 'read',        search: false }
+    };
+    const tcfg    = TYPE_CFG[pageType] || TYPE_CFG.article;
+    const pageDesc = (document.querySelector('meta[name="description"]') || {}).content || '';
+    const mdPath   = pathname === '/' ? '/index.md' : pathname.replace(/\.html$/, '.md');
+
+    function addMeta(name, content) {
+      if (!content) return;
+      const m = document.createElement('meta');
+      m.name    = name;
+      m.content = content;
+      head.appendChild(m);
+    }
+    function addLink(rel, href, type) {
+      if (document.querySelector('link[rel="' + rel + '"]')) return;
+      const l = document.createElement('link');
+      l.rel  = rel;
+      l.href = href;
+      if (type) l.type = type;
+      head.appendChild(l);
+    }
+
+    /* Discovery links */
+    addLink('webmcp',    'https://rawweights.com/.well-known/webmcp.json', 'application/json');
+    addLink('llms-txt',  'https://rawweights.com/llms.txt');
+    addLink('alternate', 'https://rawweights.com' + mdPath, 'text/markdown');
+
+    /* Meta-tag fallback (non-Chrome agents / scrapers) */
+    addMeta('webmcp:site',         'RawWeights');
+    addMeta('webmcp:feed',         'https://rawweights.com/llms.txt');
+    addMeta('webmcp:type',         tcfg.type);
+    addMeta('webmcp:action',       tcfg.action);
+    if (pageDesc) addMeta('webmcp:description',  pageDesc);
+    addMeta('webmcp:canonical-md', 'https://rawweights.com' + mdPath);
+    if (tcfg.search) addMeta('webmcp:search', 'https://rawweights.com/search/?q={query}');
+    if (tcfg.tools)  addMeta('webmcp:tools',  tcfg.tools);
+
+    /* registerTool() — Chrome 149+ origin trial only */
+    const mc = document.modelContext;
+    if (!mc || typeof mc.registerTool !== 'function') return;
+
+    mc.registerTool({
+      name: 'search_rawweights',
+      description: 'Search all RawWeights articles, guides, and interactive playgrounds by keyword or topic.',
+      inputSchema: {
+        type: 'object',
+        properties: { query: { type: 'string', description: 'Search term or topic' } },
+        required: ['query']
+      },
+      execute: function (p) {
+        return { url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
+      }
+    });
+
+    mc.registerTool({
+      name: 'get_navigation',
+      description: 'Returns the complete RawWeights site navigation tree with sections, links, and descriptions.',
+      inputSchema: { type: 'object', properties: {} },
+      execute: function () { return NAV_DATA; }
+    });
+
+    mc.registerTool({
+      name: 'get_footer_links',
+      description: 'Returns the RawWeights footer link categories and social links.',
+      inputSchema: { type: 'object', properties: {} },
+      execute: function () {
+        var footer = document.getElementById('rw-footer');
+        if (!footer) return {};
+        return Array.from(footer.querySelectorAll('a[href]')).map(function (a) {
+          return { text: a.textContent.trim(), href: a.getAttribute('href') };
+        });
+      }
+    });
+
+    mc.registerTool({
+      name: 'get_page_sections',
+      description: 'Returns all section headings and anchor IDs on the current page for precise deep-linking.',
+      inputSchema: { type: 'object', properties: {} },
+      execute: function () {
+        return Array.from(document.querySelectorAll('h2[id], h3[id]')).map(function (h) {
+          return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + h.id };
+        });
+      }
+    });
+
+    /* Per-page custom tools declared via window.RW_PAGE_TOOLS */
+    var pageTool = window.RW_PAGE_TOOLS;
+    if (Array.isArray(pageTool)) {
+      pageTool.forEach(function (t) { try { mc.registerTool(t); } catch (_) {} });
+    }
+  }
+
+  /* ── JSON-LD structured data (no per-page edits) ─────────── */
+  function injectStructuredData() {
+    if (document.querySelector('script[type="application/ld+json"]')) return;
+
+    const pathname = window.location.pathname;
+    const title    = document.title || '';
+    const desc     = (document.querySelector('meta[name="description"]') || {}).content || '';
+    const canon    = (document.querySelector('link[rel="canonical"]') || {}).href
+                   || ('https://rawweights.com' + pathname);
+    const pub      = { '@type': 'Organization', name: 'RawWeights', url: 'https://rawweights.com' };
+
+    let schema = null;
+
+    if (/^\/blog\//.test(pathname)) {
+      schema = { '@context': 'https://schema.org', '@type': 'Article',
+                 headline: title, description: desc, url: canon, publisher: pub };
+    } else if (/^\/guide\//.test(pathname)) {
+      schema = { '@context': 'https://schema.org', '@type': 'LearningResource',
+                 name: title, description: desc, url: canon,
+                 educationalLevel: 'advanced', publisher: pub };
+    } else if (/^\/tools\//.test(pathname) || pathname === '/srt.html') {
+      schema = { '@context': 'https://schema.org', '@type': 'SoftwareApplication',
+                 name: title, description: desc, url: canon,
+                 applicationCategory: 'EducationalApplication', operatingSystem: 'Web Browser' };
+    } else if (/^\/usecase\//.test(pathname)) {
+      schema = { '@context': 'https://schema.org', '@type': ['Article', 'TechArticle'],
+                 headline: title, description: desc, url: canon,
+                 about: { '@type': 'Thing', name: 'AI/ML case study' }, publisher: pub };
+    } else if (/^\/portfolio\//.test(pathname)) {
+      schema = { '@context': 'https://schema.org', '@type': 'CollectionPage',
+                 name: title, description: desc, url: canon };
+    }
+
+    if (!schema) return;
+    const s = document.createElement('script');
+    s.type        = 'application/ld+json';
+    s.textContent = JSON.stringify(schema);
+    document.head.appendChild(s);
+  }
+
   /* ── Main init ─────────────────────────────────────────────── */
   function init() {
     const container = document.getElementById('rw-nav');
@@ -517,6 +712,8 @@
 
     injectAnnouncement();
     injectFavicons();
+    injectWebMCP();
+    injectStructuredData();
     container.innerHTML = buildHeaderHTML();
 
     updateThemeIcon();
