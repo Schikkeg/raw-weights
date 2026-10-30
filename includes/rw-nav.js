@@ -472,6 +472,7 @@
         try {
           new window.PagefindUI({
             element:         '#rw-search-pagefind',
+            bundlePath:      ROOT + 'pagefind/',
             showImages:      true,
             showFilters:     false,
             resetStyles:     false,
