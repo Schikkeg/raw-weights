@@ -554,7 +554,7 @@ img[loading="lazy"] { content-visibility: auto; }
 /* Body padding to account for fixed nav + optional announcement bar */
 body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px)); }
 
-/* ─── 3b. ANNOUNCEMENT BAR ─────────────────────────────────── */
+/* ─── 3b. ANNOUNCEMENT BAR (carousel) ──────────────────────── */
 #rw-announcement {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -565,7 +565,6 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
   padding: 0 1rem;
   font-family: var(--rw-font-display);
   font-size: 0.82rem;
@@ -573,6 +572,17 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   line-height: 1;
   overflow: hidden;
   transition: height 0.25s var(--rw-ease), opacity 0.25s var(--rw-ease);
+}
+
+/* Stage fades in/out on slide change */
+#rw-announce-stage {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  flex: 1;
+  justify-content: center;
+  transition: opacity 0.22s ease;
 }
 
 #rw-announce-label {
@@ -591,11 +601,10 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: calc(100vw - 8rem);
+  max-width: calc(100vw - 10rem);
 }
-
 #rw-announce-text a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
-#rw-announce-text a:hover { opacity: 0.85; text-decoration: underline; }
+#rw-announce-text a:hover { opacity: 0.85; }
 
 #rw-announce-close {
   position: absolute; right: 0.75rem;
@@ -606,9 +615,25 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   line-height: 0;
   border-radius: 4px;
   transition: color 0.15s, background 0.15s;
-  flex-shrink: 0;
+  z-index: 1;
 }
 #rw-announce-close:hover { color: #fff; background: rgba(255,255,255,0.15); }
+
+/* Progress bar — duration set inline by JS via --rw-announce-interval */
+#rw-announce-progress {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: rgba(255,255,255,0.5);
+}
+#rw-announce-progress.running {
+  animation: rwAnnounceProgress var(--rw-announce-interval, 10s) linear forwards;
+}
+@keyframes rwAnnounceProgress {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
 
 /* ─── 3c. SEARCH OVERLAY ────────────────────────────────────── */
 .rw-search-overlay {
