@@ -659,6 +659,27 @@
 </head>
 <body>
 
+<script>
+window.RW_PAGE_TOOLS = [{
+  name: 'describe_eval_proving_ground',
+  description: 'Returns an overview of The Proving Ground — covers AI evaluation frameworks, why benchmarks fail, RAGAS, G-Eval, and the Iron Triangle.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  execute: function () {
+    var sections = Array.from(document.querySelectorAll('h2, h3'))
+      .map(function (h) { return { text: h.textContent.trim(), anchor: h.id ? '#' + h.id : '' }; })
+      .filter(function (s) { return s.text.length > 2; });
+    return {
+      title: document.title,
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      url: window.location.href,
+      sections: sections,
+      frameworks_covered: ['RAGAS', 'G-Eval', 'LLM-as-judge', 'Human evaluation baselines', 'Cascade evaluation math'],
+      key_concepts: ['Why benchmarks lie', 'Coverage matrices', 'The Iron Triangle (quality/speed/cost)', 'Eval-driven development', 'Hallucination detection metrics'],
+      learning_objective: 'Build a rigorous AI evaluation layer — understand what to measure, how to measure it, and the tradeoffs involved.'
+    };
+  }
+}];
+</script>
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20260615"></script>
 

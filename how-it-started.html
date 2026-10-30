@@ -307,6 +307,29 @@
 <body>
 
 <!-- ── Centralized Navigation ──────────────────────────────── -->
+<script>
+window.RW_PAGE_TOOLS = [{
+  name: 'describe_atomic_gpt',
+  description: 'Returns an overview of the Atomic GPT Playground — train a real decoder-only Transformer entirely in the browser with no Python or GPU.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  execute: function () {
+    var sections = Array.from(document.querySelectorAll('h2, h3'))
+      .map(function (h) { return { text: h.textContent.trim(), anchor: h.id ? '#' + h.id : '' }; })
+      .filter(function (s) { return s.text.length > 2; });
+    return {
+      title: document.title,
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      url: window.location.href,
+      sections: sections,
+      architecture: 'Decoder-only Transformer (GPT-style)',
+      components: ['Pure JavaScript autograd engine', 'Adam optimizer', 'Causal self-attention', 'Positional encoding', 'Token embedding layer', 'Cross-entropy loss'],
+      configurable_params: ['Number of layers', 'Embedding dimension', 'Number of attention heads', 'Context length', 'Learning rate', 'Batch size'],
+      features: ['Train live in browser — watch loss decrease in real time', 'Inspect attention weights per head', 'Generate text after training', 'No Python, no GPU, no installation required'],
+      learning_objective: 'Understand the exact mechanics of GPT-style training by running a real (small) Transformer in JavaScript.'
+    };
+  }
+}];
+</script>
 <div id="rw-nav"></div>
 <script src="./includes/rw-nav.js?v=20260615"></script>
 

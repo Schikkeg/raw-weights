@@ -49,6 +49,28 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased flex flex-col min-h-screen relative">
 
+    <script>
+window.RW_PAGE_TOOLS = [{
+  name: 'describe_rl_playground',
+  description: 'Returns an overview of the Deep Reinforcement Learning playground — RL algorithms available, training environments, and interactive features.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  execute: function () {
+    var sections = Array.from(document.querySelectorAll('h2, h3'))
+      .map(function (h) { return { text: h.textContent.trim(), tag: h.tagName.toLowerCase() }; })
+      .filter(function (s) { return s.text.length > 2; });
+    return {
+      title: document.title,
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      url: window.location.href,
+      sections: sections,
+      algorithms: ['Q-Learning', 'Deep Q-Network (DQN)', 'Policy Gradients (REINFORCE)', 'Actor-Critic', 'Proximal Policy Optimization (PPO)'],
+      topics: ['Markov Decision Processes', 'Bellman equation', 'Exploration vs exploitation', 'Reward shaping', 'Value functions', 'Policy networks', 'Experience replay'],
+      features: ['Train AI agent live in the browser', 'Visualize policy and value function updates', 'Adjustable hyperparameters', 'Multiple environments to train in'],
+      learning_objective: 'Observe an agent learn from scratch using deep RL — no setup, runs entirely in the browser.'
+    };
+  }
+}];
+    </script>
     <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20260615"></script>
 

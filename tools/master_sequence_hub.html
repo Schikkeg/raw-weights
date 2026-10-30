@@ -28,6 +28,42 @@
 </head>
 <body>
 
+	<script>
+window.RW_PAGE_TOOLS = [{
+  name: 'describe_sequence_hub',
+  description: 'Returns an overview of the Sequence Models to Transformers guide — all 13 interactive visualizers and the progression from RNNs to modern attention.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  execute: function () {
+    var sections = Array.from(document.querySelectorAll('h2, h3, [id]'))
+      .filter(function (el) { return el.id || el.tagName.match(/^H[23]$/); })
+      .map(function (el) { return { text: el.textContent.trim(), anchor: el.id ? '#' + el.id : '' }; })
+      .filter(function (s) { return s.text.length > 2; })
+      .slice(0, 20);
+    return {
+      title: document.title,
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      url: window.location.href,
+      sections: sections,
+      visualizers: [
+        'Vanilla RNN — sequential hidden state passing',
+        'Vanishing gradient problem visualization',
+        'LSTM — forget, input, output gate mechanics',
+        'GRU — simplified gating',
+        'Seq2Seq encoder-decoder',
+        'Bahdanau attention mechanism',
+        'Self-attention and query/key/value',
+        'Multi-head attention',
+        'Positional encoding',
+        'Transformer encoder block',
+        'Transformer decoder block',
+        'BERT masked language model',
+        'GPT causal language model'
+      ],
+      learning_objective: 'Understand the complete evolution from vanilla RNNs to modern Transformer architectures through 13 interactive steps.'
+    };
+  }
+}];
+	</script>
 	<div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20260615"></script>
 
