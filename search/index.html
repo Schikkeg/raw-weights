@@ -22,7 +22,16 @@
 
   <style>
     /* ── Search page: reuse overlay panel styles, but in-flow (not positioned) ── */
-    .rw-search-page { min-height: 100vh; background: var(--rw-bg, #ffffff); }
+    .rw-search-page {
+      min-height: 100vh;
+      background: var(--rw-bg, #ffffff);
+      display: flex;
+      flex-direction: column;
+    }
+    /* Stretch main so footer always sits at page bottom, even with zero results */
+    .rw-search-page > main { flex: 1; }
+    /* Reserve space for results — prevents footer jump while Pagefind loads */
+    #rw-search-results { min-height: 60vh; }
 
     .rw-search-page-header {
       border-bottom: 1px solid var(--rw-border, #e2e8f0);
