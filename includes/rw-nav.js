@@ -409,7 +409,17 @@
       return '';
     }
 
-    /* Process a single result: inject type badge + set default thumbnail if no image */
+    /* Inline SVG icons for default thumbnails (injected directly — avoids CSS background-image Svelte specificity issues) */
+    const SVG_ICONS = {
+      blog:       '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+      guide:      '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+      playground: '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      usecase:    '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      portfolio:  '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+      other:      '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+    };
+
+    /* Process a single result: inject type badge + default thumbnail SVG when no image */
     function processResult(r) {
       const a    = r.querySelector('a[href]');
       const type = typeFromHref(a ? a.getAttribute('href') : '') || 'other';
@@ -424,12 +434,13 @@
       }
 
       const thumb = r.querySelector('.pagefind-ui__result-thumb');
+      const svgIcon = SVG_ICONS[slug] || SVG_ICONS.other;
+      const useDefault = function () {
+        thumb.innerHTML = svgIcon;
+        thumb.classList.add('rw-thumb-default', 'rw-thumb-' + slug);
+      };
       if (thumb) {
         const img = thumb.querySelector('img');
-        const useDefault = function () {
-          thumb.innerHTML = '';
-          thumb.classList.add('rw-thumb-default', 'rw-thumb-' + slug);
-        };
         if (!img || !img.getAttribute('src')) {
           useDefault();
         } else {

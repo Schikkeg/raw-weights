@@ -700,7 +700,7 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
 
 /* Input — form is the visual border box; icon + input + clear all sit inside it */
 .rw-search-panel .pagefind-ui__form {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.75rem;
   border: 1.5px solid var(--rw-border) !important;
   border-radius: 10px !important;
   background: var(--rw-bg-subtle) !important;
@@ -763,40 +763,24 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
   object-fit: cover !important;
 }
 
-/* ── Type-default thumbnails when no OG image ─────────────── */
+/* ── Type-default thumbnails — inline SVG injected by JS, tinted bg per type ── */
 .rw-search-panel .rw-thumb-default {
   display: flex !important;
-  align-items: center;
-  justify-content: center;
+  align-items: center !important;
+  justify-content: center !important;
   border: none !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: 32px 32px !important;
 }
-.rw-search-panel .rw-thumb-blog {
-  background-color: rgba(249,115,22,0.10) !important;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjk3MzE2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDIwaDkiLz48cGF0aCBkPSJNMTYuNSAzLjVhMi4xMjEgMi4xMjEgMCAwIDEgMyAzTDcgMTlsLTQgMSAxLTRMMTYuNSAzLjV6Ii8+PC9zdmc+") !important;
+.rw-search-panel .rw-thumb-default svg {
+  width: 32px !important;
+  height: 32px !important;
+  flex-shrink: 0;
 }
-.rw-search-panel .rw-thumb-guide {
-  background-color: rgba(59,130,246,0.10) !important;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M2ViIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTQgMTkuNUEyLjUgMi41IDAgMCAxIDYuNSAxN0gyMCIvPjxwYXRoIGQ9Ik02LjUgMkgyMHYyMEg2LjVBMi41IDIuNSAwIDAgMSA0IDE5LjV2LTE1QTIuNSAyLjUgMCAwIDEgNi41IDJ6Ii8+PC9zdmc+") !important;
-}
-.rw-search-panel .rw-thumb-playground {
-  background-color: rgba(139,92,246,0.10) !important;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN2MzYWVkIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBvbHlsaW5lIHBvaW50cz0iMTYgMTggMjIgMTIgMTYgNiIvPjxwb2x5bGluZSBwb2ludHM9IjggNiAyIDEyIDggMTgiLz48L3N2Zz4=") !important;
-}
-.rw-search-panel .rw-thumb-usecase {
-  background-color: rgba(16,185,129,0.10) !important;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDU5NjY5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGxpbmUgeDE9IjE4IiB5MT0iMjAiIHgyPSIxOCIgeTI9IjEwIi8+PGxpbmUgeDE9IjEyIiB5MT0iMjAiIHgyPSIxMiIgeTI9IjQiLz48bGluZSB4MT0iNiIgeTE9IjIwIiB4Mj0iNiIgeTI9IjE0Ii8+PC9zdmc+") !important;
-}
-.rw-search-panel .rw-thumb-portfolio {
-  background-color: rgba(100,116,139,0.10) !important;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMiIgeT0iNyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjE0IiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNMTYgMjFWNWEyIDIgMCAwIDAtMi0yaC00YTIgMiAwIDAgMC0yIDJ2MTYiLz48L3N2Zz4=") !important;
-}
-.rw-search-panel .rw-thumb-other {
-  background-color: rgba(100,116,139,0.08) !important;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTRhM2I4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE0IDJINmEyIDIgMCAwIDAtMiAydjE2YTIgMiAwIDAgMCAyIDJoMTJhMiAyIDAgMCAwIDItMlY4eiIvPjxwb2x5bGluZSBwb2ludHM9IjE0IDIgMTQgOCAyMCA4Ii8+PC9zdmc+") !important;
-}
+.rw-search-panel .rw-thumb-blog       { background-color: rgba(249,115,22,0.10) !important; }
+.rw-search-panel .rw-thumb-guide      { background-color: rgba(59,130,246,0.10) !important; }
+.rw-search-panel .rw-thumb-playground { background-color: rgba(139,92,246,0.10) !important; }
+.rw-search-panel .rw-thumb-usecase    { background-color: rgba(16,185,129,0.10) !important; }
+.rw-search-panel .rw-thumb-portfolio  { background-color: rgba(100,116,139,0.10) !important; }
+.rw-search-panel .rw-thumb-other      { background-color: rgba(100,116,139,0.08) !important; }
 
 /* Inner content */
 .rw-search-panel .pagefind-ui__result-inner {
@@ -894,7 +878,9 @@ body { padding-top: calc(var(--rw-nav-height) + var(--rw-announce-height, 0px));
 body.rw-search-open,
 html.rw-search-open { overflow: hidden; }
 
-/* ── Prevent page-level horizontal overflow (Pagefind CSS can cause it) ─ */
+/* ── Prevent page-level horizontal overflow ────────────────── */
+/* html clips the scroll container; body clips its own content */
+html { overflow-x: hidden; }
 body { overflow-x: hidden; }
 
 /* ── Search error fallback ──────────────────────────────────── */
