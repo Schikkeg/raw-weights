@@ -146,7 +146,8 @@
     sun: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
     moon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
     menu: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
-    close: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+    close: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+    search: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`
   };
 
   /* ── Theme helpers ─────────────────────────────────────────── */
@@ -274,6 +275,7 @@
     </nav>
 
     <div class="rw-nav-right">
+      <button class="rw-search-btn" id="rw-search-btn" type="button" aria-label="Search" aria-expanded="false" aria-controls="rw-search-overlay">${ICONS.search}</button>
       <button class="rw-theme-btn" id="rw-theme-btn" type="button"></button>
       <a class="rw-cta-btn" href="${u(NAV_DATA.cta.url)}">${NAV_DATA.cta.label}</a>
     </div>
@@ -281,6 +283,16 @@
 </header>
 <div class="rw-mobile-menu" id="rw-mobile-menu" aria-hidden="true">
   ${buildMobileNav()}
+</div>
+<div class="rw-search-overlay" id="rw-search-overlay" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
+  <div class="rw-search-modal">
+    <div class="rw-search-modal-icon">${ICONS.search}</div>
+    <div class="rw-search-modal-title">Search RawWeights</div>
+    <p class="rw-search-modal-sub">Full-text search is coming in the next update, powered by Pagefind.</p>
+    <div class="rw-search-modal-hint">
+      <kbd>Esc</kbd> to close &nbsp;&middot;&nbsp; <kbd>Ctrl K</kbd> / <kbd>&#8984; K</kbd> to open
+    </div>
+  </div>
 </div>`;
   }
 
@@ -375,6 +387,37 @@
     });
   }
 
+  /* ── Search overlay (stub — full wiring in PR4) ───────────── */
+  function initSearch() {
+    const overlay = document.getElementById('rw-search-overlay');
+    const openBtn = document.getElementById('rw-search-btn');
+    if (!overlay || !openBtn) return;
+
+    function openSearch() {
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      openBtn.setAttribute('aria-expanded', 'true');
+    }
+    function closeSearch() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      openBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    openBtn.addEventListener('click', openSearch);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSearch(); });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        overlay.classList.contains('open') ? closeSearch() : openSearch();
+      }
+      if (e.key === 'Escape' && overlay.classList.contains('open')) {
+        closeSearch();
+      }
+    });
+  }
+
   /* ── Number counter animation ─────────────────────────────── */
   function initCounters() {
     const els = document.querySelectorAll('[data-count]');
@@ -428,6 +471,15 @@
     }
   }
 
+  /* ── Announcement bar injection ───────────────────────────── */
+  function injectAnnouncement() {
+    if (document.getElementById('rw-announce-script')) return;
+    const script = document.createElement('script');
+    script.id = 'rw-announce-script';
+    script.src = ROOT + 'includes/rw-announcement.js';
+    document.head.appendChild(script);
+  }
+
   /* ── Favicon injection — runs once on first nav init ───────── */
   function injectFavicons() {
     if (document.querySelector('link[data-rw-favicon]')) return;
@@ -463,6 +515,7 @@
     if (container.dataset.rwNavInit) return; /* guard against double-init */
     container.dataset.rwNavInit = '1';
 
+    injectAnnouncement();
     injectFavicons();
     container.innerHTML = buildHeaderHTML();
 
@@ -474,6 +527,7 @@
     initScroll();
     initDropdowns();
     initMobile();
+    initSearch();
     initCounters();
 
     // Run after all DOMContentLoaded handlers have fired (page persona systems initialize there)
