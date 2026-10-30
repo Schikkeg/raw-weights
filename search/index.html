@@ -17,65 +17,88 @@
 
   <link rel="stylesheet" href="../includes/brand.css">
   <link rel="stylesheet" href="../pagefind/pagefind-ui.css">
-  <script src="../pagefind/pagefind-ui.js"></script>
+  <script src="../pagefind/pagefind-ui.js" defer></script>
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    .rw-search-page {
-      min-height: 100vh;
-      background: var(--rw-bg, #ffffff);
-    }
-    .rw-search-hero {
-      background: linear-gradient(160deg, #0a0e1a 0%, #160e28 40%, #0a1530 100%);
-      padding: 4rem 1.5rem 3rem;
+    /* ── Search page: reuse overlay panel styles, but in-flow (not positioned) ── */
+    .rw-search-page { min-height: 100vh; background: var(--rw-bg, #ffffff); }
+
+    .rw-search-page-header {
+      border-bottom: 1px solid var(--rw-border, #e2e8f0);
+      padding: 2rem 1.5rem 1.5rem;
       text-align: center;
     }
-    .rw-search-hero h1 {
-      font-size: clamp(1.75rem, 4vw, 2.5rem);
+    .rw-search-page-header h1 {
+      font-family: var(--rw-font-display, 'Space Grotesk', sans-serif);
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
       font-weight: 700;
-      color: #ffffff;
-      margin: 0 0 0.5rem;
+      color: var(--rw-text, #1a1a2e);
+      margin: 0 0 0.3rem;
     }
-    .rw-search-hero p {
-      color: rgba(255,255,255,0.6);
-      font-size: 1rem;
+    .rw-search-page-header h1 span { color: var(--rw-orange, #f97316); }
+    .rw-search-page-header p {
+      font-size: 0.88rem;
+      color: var(--rw-text-subtle, #64748b);
       margin: 0;
     }
-    .rw-search-body {
-      max-width: 800px;
+
+    /* Container that mirrors .rw-search-inner on the overlay */
+    .rw-search-page-body {
+      max-width: 860px;
       margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
+      padding: 1.5rem 1.5rem 4rem;
     }
-    /* Pagefind UI theme overrides */
-    :root {
-      --pagefind-ui-scale: 1;
-      --pagefind-ui-primary: #f97316;
-      --pagefind-ui-text: var(--rw-text, #1a1a2e);
-      --pagefind-ui-background: var(--rw-bg, #ffffff);
-      --pagefind-ui-border: var(--rw-border, #e2e8f0);
-      --pagefind-ui-border-radius: 8px;
+
+    /* Override overlay-specific positioning while keeping all Pagefind UI styles */
+    .rw-search-page-panel.rw-search-panel {
+      position: static !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      max-height: none !important;
+      overflow-y: visible !important;
+      box-shadow: none !important;
+      border-bottom: none !important;
+      animation: none !important;
+      background: transparent !important;
     }
-    [data-theme="dark"] {
-      --pagefind-ui-text: #e2e8f0;
-      --pagefind-ui-background: #0f172a;
-      --pagefind-ui-border: #334155;
+    /* On the full page, give result rows a gentle card style */
+    .rw-search-page-panel.rw-search-panel .pagefind-ui__result {
+      border-radius: 10px !important;
+      border: 1px solid var(--rw-border, #e2e8f0) !important;
+      border-bottom: 1px solid var(--rw-border, #e2e8f0) !important;
+      padding: 1rem 1rem 1rem 0.75rem !important;
+      margin-bottom: 0.75rem !important;
+    }
+    .rw-search-page-panel.rw-search-panel .pagefind-ui__result:hover {
+      border-color: var(--rw-orange, #f97316) !important;
+      box-shadow: 0 2px 12px rgba(249,115,22,0.08) !important;
+    }
+    /* Show thumbnails at a larger size on the full page */
+    .rw-search-page-panel.rw-search-panel .pagefind-ui__result-thumb {
+      width: 104px !important;
+      height: 72px !important;
+    }
+
+    @media (max-width: 640px) {
+      .rw-search-page-header { padding: 1.5rem 1rem 1rem; }
+      .rw-search-page-body   { padding: 1rem 1rem 3rem; }
     }
   </style>
 </head>
 <body class="rw-search-page">
   <div id="rw-nav"></div>
 
-  <section class="rw-search-hero">
-    <h1>Search RawWeights</h1>
+  <header class="rw-search-page-header">
+    <h1>Search <span>RawWeights</span></h1>
     <p>Articles, guides, and interactive playgrounds</p>
-  </section>
+  </header>
 
-  <main class="rw-search-body" id="rw-search-main">
-    <form toolname="search-rawweights"
-          tooldescription="Search all RawWeights articles, guides, and interactive playgrounds by keyword or topic">
-      <div id="rw-search-results"></div>
-      <input name="q" type="hidden" toolparamdescription="Search query — topic, technology, or concept">
-    </form>
+  <main class="rw-search-page-body">
+    <div id="rw-search-results" class="rw-search-panel rw-search-page-panel"
+         role="search" aria-label="Site search">
+    </div>
   </main>
 
   <div id="rw-footer"></div>
@@ -83,29 +106,35 @@
   <script src="../includes/rw-footer.js?v=20260612"></script>
   <script>
     (function () {
-      /* Initialize Pagefind UI */
       var q = new URLSearchParams(window.location.search).get('q') || '';
-      new PagefindUI({
-        element:     '#rw-search-results',
-        showImages:  false,
-        resetStyles: false,
-        translations: { placeholder: 'Search guides, blogs, playgrounds…' }
-      });
+      var el = document.getElementById('rw-search-results');
 
-      /* Auto-fill from ?q= param */
-      if (q) {
-        var inp = document.querySelector('.pagefind-ui__search-input');
-        if (inp) {
-          inp.value = q;
-          inp.dispatchEvent(new Event('input', { bubbles: true }));
-        } else {
-          /* Pagefind may still be initializing — wait for first render */
-          document.addEventListener('pagefind-init', function () {
-            var i = document.querySelector('.pagefind-ui__search-input');
-            if (i) { i.value = q; i.dispatchEvent(new Event('input', { bubbles: true })); }
+      /* PagefindUI is loaded via defer in <head> — run after DOM ready */
+      function initPF() {
+        if (typeof PagefindUI === 'undefined') { setTimeout(initPF, 50); return; }
+        try {
+          new PagefindUI({
+            element:      '#rw-search-results',
+            showImages:   true,
+            showFilters:  false,
+            resetStyles:  false,
+            excerptLength: 20,
+            translations: { placeholder: 'Search guides, blogs, playgrounds…' }
           });
+          /* Apply same type badge + SVG thumbnail logic as the nav overlay */
+          if (window.__rw && window.__rw.watchResults) window.__rw.watchResults(el);
+          /* Auto-fill from ?q= param */
+          if (q) {
+            setTimeout(function () {
+              var inp = el.querySelector('.pagefind-ui__search-input');
+              if (inp) { inp.value = q; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+            }, 100);
+          }
+        } catch (e) {
+          el.innerHTML = '<p style="padding:1rem;color:var(--rw-text-subtle)">Search index not found.</p>';
         }
       }
+      initPF();
     })();
   </script>
 </body>

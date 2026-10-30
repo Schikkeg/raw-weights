@@ -550,6 +550,8 @@
         }, 250);
       });
     };
+    /* Exposed for search page: apply same badge + thumbnail injection to any Pagefind container */
+    window.__rw.watchResults = watchResults;
 
     if (openBtn)   openBtn.addEventListener('click', openSearch);
     if (mobileBtn) mobileBtn.addEventListener('click', function () {
