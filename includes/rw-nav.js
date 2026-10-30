@@ -781,7 +781,8 @@
       description: 'Returns all links from the RawWeights site footer.',
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       execute: function () {
-        var footer = document.getElementById('rw-footer');
+        /* rw-footer.js replaces #rw-footer via outerHTML → query by class instead */
+        var footer = document.querySelector('footer.rw-footer') || document.getElementById('rw-footer');
         var links = footer
           ? Array.from(footer.querySelectorAll('a[href]')).map(function (a) {
               return { text: a.textContent.trim(), href: a.getAttribute('href') };
@@ -796,8 +797,11 @@
       description: 'Returns all h2/h3 section headings and anchor IDs on the current page for deep-linking.',
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       execute: function () {
-        var sections = Array.from(document.querySelectorAll('h2[id], h3[id]')).map(function (h) {
-          return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + h.id };
+        var sections = Array.from(document.querySelectorAll('h2, h3')).map(function (h) {
+          var anchor = h.id
+            ? '#' + h.id
+            : '#' + h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+          return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: anchor };
         });
         return { page: window.location.pathname, sections: sections, count: sections.length };
       }
