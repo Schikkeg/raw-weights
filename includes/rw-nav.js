@@ -743,11 +743,21 @@
         required: ['query']
       },
       execute: function (p) {
+        /* On the search page itself: fill the page input directly */
+        if (window.location.pathname.replace(/\/$/, '').split('/').pop() === 'search' ||
+            window.location.pathname.indexOf('/search') === 0) {
+          var inp = document.querySelector('#rw-search-results .pagefind-ui__search-input');
+          if (inp) {
+            inp.value = p.query;
+            inp.dispatchEvent(new Event('input', { bubbles: true }));
+            return { status: 'filled', query: p.query, results_url: window.location.origin + '/search/?q=' + encodeURIComponent(p.query) };
+          }
+        }
+        /* Other pages: open overlay */
         if (window.__rw && typeof window.__rw.searchFor === 'function') {
           window.__rw.searchFor(p.query);
-          return { status: 'opened', query: p.query, message: 'Search overlay opened with results for "' + p.query + '"' };
+          return { status: 'opened', query: p.query, results_url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
         }
-        /* Fallback: navigate to the full search page */
         window.location.href = ROOT + 'search/?q=' + encodeURIComponent(p.query);
         return { status: 'navigating', url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
       }
@@ -787,7 +797,7 @@
         var footer = document.querySelector('footer.rw-footer') || document.getElementById('rw-footer');
         var links = footer
           ? Array.from(footer.querySelectorAll('a[href]')).map(function (a) {
-              return { text: a.textContent.trim(), href: a.getAttribute('href') };
+              return { text: a.textContent.trim(), url: a.href, path: a.getAttribute('href') };
             })
           : [];
         return { links: links, count: links.length };
@@ -799,11 +809,11 @@
       description: 'Returns all h2/h3 section headings and anchor IDs on the current page for deep-linking.',
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       execute: function () {
+        var base = window.location.origin + window.location.pathname;
         var sections = Array.from(document.querySelectorAll('h2, h3')).map(function (h) {
-          var anchor = h.id
-            ? '#' + h.id
-            : '#' + h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-          return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: anchor };
+          var slug = h.id || h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+          if (!h.id) h.id = slug; /* set the id so the anchor is real and navigable */
+          return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + slug, url: base + '#' + slug };
         });
         return { page: window.location.pathname, sections: sections, count: sections.length };
       }
