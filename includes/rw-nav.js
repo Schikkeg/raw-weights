@@ -409,26 +409,31 @@
       return '';
     }
 
-    /* Process a single result node: inject type badge + hide empty thumbnail */
+    /* Process a single result: inject type badge + set default thumbnail if no image */
     function processResult(r) {
+      const a    = r.querySelector('a[href]');
+      const type = typeFromHref(a ? a.getAttribute('href') : '') || 'other';
+      const slug = type.toLowerCase();
+
       if (!r.querySelector('.rw-result-type')) {
-        const a = r.querySelector('a[href]');
-        const type = typeFromHref(a ? a.getAttribute('href') : '');
-        if (type) {
-          const badge = document.createElement('span');
-          badge.className = 'rw-result-type rw-result-type--' + type.toLowerCase();
-          badge.textContent = type;
-          const inner = r.querySelector('.pagefind-ui__result-inner') || r;
-          inner.insertBefore(badge, inner.firstChild);
-        }
+        const badge = document.createElement('span');
+        badge.className = 'rw-result-type rw-result-type--' + slug;
+        badge.textContent = type;
+        const inner = r.querySelector('.pagefind-ui__result-inner') || r;
+        inner.insertBefore(badge, inner.firstChild);
       }
+
       const thumb = r.querySelector('.pagefind-ui__result-thumb');
       if (thumb) {
         const img = thumb.querySelector('img');
+        const useDefault = function () {
+          thumb.innerHTML = '';
+          thumb.classList.add('rw-thumb-default', 'rw-thumb-' + slug);
+        };
         if (!img || !img.getAttribute('src')) {
-          thumb.classList.add('rw-no-thumb');
+          useDefault();
         } else {
-          img.addEventListener('error', function () { thumb.classList.add('rw-no-thumb'); });
+          img.addEventListener('error', useDefault);
         }
       }
     }
@@ -492,18 +497,34 @@
     }
 
     function openSearch() {
+      window.scrollTo(0, 0); // panel anchors to top; scroll there so it is immediately visible
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
       document.body.classList.add('rw-search-open');
-      if (openBtn)   openBtn.setAttribute('aria-expanded', 'true');
+      document.documentElement.classList.add('rw-search-open'); // iOS Safari scroll-lock fix
+      if (openBtn) openBtn.setAttribute('aria-expanded', 'true');
       loadPagefind(function () { setTimeout(focusInput, 80); });
     }
     function closeSearch() {
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('rw-search-open');
+      document.documentElement.classList.remove('rw-search-open');
       if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
     }
+
+    /* Expose search API for WebMCP tool execute() and page scripts */
+    window.__rw = window.__rw || {};
+    window.__rw.openSearch = openSearch;
+    window.__rw.searchFor  = function (q) {
+      openSearch();
+      loadPagefind(function () {
+        setTimeout(function () {
+          const inp = document.querySelector('.pagefind-ui__search-input');
+          if (inp) { inp.value = q; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+        }, 250);
+      });
+    };
 
     if (openBtn)   openBtn.addEventListener('click', openSearch);
     if (mobileBtn) mobileBtn.addEventListener('click', function () {
@@ -688,14 +709,20 @@
 
     mc.registerTool({
       name: 'search_rawweights',
-      description: 'Search all RawWeights articles, guides, and interactive playgrounds by keyword or topic.',
+      description: 'Open the RawWeights search UI and return matching articles, guides, and playgrounds. Opens the search overlay and shows live results in the page.',
       inputSchema: {
         type: 'object',
-        properties: { query: { type: 'string', description: 'Search term or topic' } },
+        properties: { query: { type: 'string', description: 'Search term or topic to find' } },
         required: ['query']
       },
       execute: function (p) {
-        return { url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
+        if (window.__rw && typeof window.__rw.searchFor === 'function') {
+          window.__rw.searchFor(p.query);
+          return { status: 'opened', query: p.query, message: 'Search overlay opened with results for "' + p.query + '"' };
+        }
+        /* Fallback: navigate to the full search page */
+        window.location.href = ROOT + 'search/?q=' + encodeURIComponent(p.query);
+        return { status: 'navigating', url: ROOT + 'search/?q=' + encodeURIComponent(p.query) };
       }
     });
 
