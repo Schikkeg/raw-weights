@@ -570,6 +570,11 @@
     document.addEventListener('keydown', function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
+        /* On the search page, focus the hero input instead of opening the overlay */
+        if (window.__rw && typeof window.__rw.fillHeroSearch === 'function') {
+          var heroInp = document.getElementById('rw-sp-q');
+          if (heroInp) { heroInp.focus(); heroInp.select(); return; }
+        }
         overlay.classList.contains('open') ? closeSearch() : openSearch();
       }
       if (e.key === 'Escape' && overlay.classList.contains('open')) closeSearch();
@@ -743,13 +748,10 @@
         required: ['query']
       },
       execute: function (p) {
-        /* On the search page itself: fill the page input directly */
-        if (window.location.pathname.replace(/\/$/, '').split('/').pop() === 'search' ||
-            window.location.pathname.indexOf('/search') === 0) {
-          var inp = document.querySelector('#rw-search-results .pagefind-ui__search-input');
-          if (inp) {
-            inp.value = p.query;
-            inp.dispatchEvent(new Event('input', { bubbles: true }));
+        /* On the search page itself: fill the hero input (which mirrors to Pagefind) */
+        if (window.location.pathname.indexOf('/search') === 0) {
+          if (typeof window.__rw.fillHeroSearch === 'function') {
+            window.__rw.fillHeroSearch(p.query);
             return { status: 'filled', query: p.query, results_url: window.location.origin + '/search/?q=' + encodeURIComponent(p.query) };
           }
         }
