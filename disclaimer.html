@@ -1,82 +1,179 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disclaimer | RawWeights</title>
-      <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disclaimer | RawWeights</title>
+  <meta name="description" content="Disclaimer for RawWeights — educational use, personal experience, and project limitations.">
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})();</script>
   <link rel="stylesheet" href="./includes/brand.css">
-<script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Merriweather', 'serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0f9ff',
-                            600: '#0077b5',
-                            900: '#0e1111',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-        <script type="text/javascript" async src="./includes/analytics.js"></script>
-
+  <script type="text/javascript" async src="./includes/analytics.js"></script>
+  <style>
+    .disclaimer-hero {
+      background: var(--rw-bg-alt);
+      border-bottom: 1px solid var(--rw-border);
+      padding: 3.5rem 1.5rem 2.5rem;
+    }
+    .disclaimer-hero-inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .disclaimer-hero h1 {
+      font-family: var(--rw-font-display);
+      font-size: clamp(1.9rem, 4vw, 2.75rem);
+      font-weight: 800;
+      color: var(--rw-text);
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    .disclaimer-meta {
+      font-size: 0.82rem;
+      color: var(--rw-text-subtle);
+      font-weight: 500;
+    }
+    .disclaimer-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+    .disclaimer-intro {
+      font-size: 1.05rem;
+      color: var(--rw-text-muted);
+      line-height: 1.75;
+      margin-bottom: 2.25rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--rw-border);
+    }
+    .disclaimer-item {
+      display: flex;
+      gap: 1.25rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--rw-border);
+    }
+    .disclaimer-item:last-child {
+      border-bottom: none;
+    }
+    .disclaimer-icon {
+      flex-shrink: 0;
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.5rem;
+      background: var(--rw-orange-light, rgba(249,115,22,0.08));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      margin-top: 0.15rem;
+    }
+    .disclaimer-item-content h3 {
+      font-family: var(--rw-font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--rw-text);
+      margin: 0 0 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .disclaimer-item-content p {
+      font-size: 0.925rem;
+      color: var(--rw-text-muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+    .disclaimer-contact {
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      background: var(--rw-bg-alt);
+      border: 1px solid var(--rw-border);
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--rw-text-muted);
+      line-height: 1.65;
+    }
+    .disclaimer-contact a {
+      color: var(--rw-orange, #f97316);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .disclaimer-contact a:hover { text-decoration: underline; }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+<body>
 
-    <div id="rw-nav"></div>
-<script src="./includes/rw-nav.js?v=20260615"></script>
+  <div id="rw-nav"></div>
+  <script src="./includes/rw-nav.js?v=20261030"></script>
 
-    <main class="flex-grow max-w-3xl mx-auto px-6 py-16 w-full">
-        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
-            
-            <header class="mb-8 border-b border-gray-100 pb-8">
-                <h1 class="text-3xl md:text-4xl font-bold font-serif text-gray-900 leading-tight mb-4">
-                    Disclaimer
-                </h1>
-                <p class="text-gray-500 text-sm">Last updated: February 2026</p>
-            </header>
+  <main>
+    <div class="disclaimer-hero">
+      <div class="disclaimer-hero-inner">
+        <p class="rw-section-label" style="margin-bottom:0.75rem;">Legal</p>
+        <h1>Disclaimer</h1>
+        <p class="disclaimer-meta">Last updated: October 2026</p>
+      </div>
+    </div>
 
-            <div class="prose prose-lg max-w-none font-serif text-gray-700 leading-loose">
-                <p class="mb-6">
-                    The information provided on this website is for general informational and educational purposes only. By using this site, you agree to the following terms:
-                </p>
+    <div class="disclaimer-body">
+      <p class="disclaimer-intro">
+        The information provided on RawWeights is for general informational and educational purposes only. By using this site, you agree to the following terms.
+      </p>
 
-                <ul class="list-disc pl-6 space-y-4 mb-8">
-                    <li>
-                        <strong class="font-sans text-gray-900">Educational Purposes Only:</strong> The content on this blog is intended to share technical insights, learnings, and tutorials. It is not intended to serve as a substitute for professional, financial, or legal advice.
-                    </li>
-                    <li>
-                        <strong class="font-sans text-gray-900">Based on Personal Experience:</strong> The articles and tutorials published here reflect my personal experiences, opinions, and knowledge gathered from various online resources, documentation, and real-world practice. What works for my specific tech stack or organization may not work for yours.
-                    </li>
-                    <li>
-                        <strong class="font-sans text-gray-900">No Guarantees of Accuracy:</strong> The technology landscape evolves rapidly. While I strive to keep the information up-to-date and correct, I make no representations or warranties of any kind regarding the completeness, accuracy, reliability, or suitability of the information, code snippets, or related graphics contained on the website.
-                    </li>
-                    <li>
-                        <strong class="font-sans text-gray-900">Use at Your Own Risk:</strong> Any action you take upon the information you find on this website is strictly at your own risk. I will not be liable for any losses, bugs, downtime, or damages in connection with the use of our website or the code provided. Always test code in a safe environment before deploying to production.
-                    </li>
-                    <li>
-                        <strong class="font-sans text-gray-900">External Links:</strong> Through this website, you are able to link to other websites which are not under my control. The inclusion of any links does not necessarily imply a recommendation or endorse the views expressed within them.
-                    </li>
-                </ul>
+      <div class="disclaimer-item">
+        <div class="disclaimer-icon">📚</div>
+        <div class="disclaimer-item-content">
+          <h3>Educational Purposes Only</h3>
+          <p>The content on this site is intended to share technical insights, learnings, and interactive tutorials. It is not intended as a substitute for professional, financial, or legal advice.</p>
+        </div>
+      </div>
 
-                <p>
-                    If you have any questions about this disclaimer or the content on this site, please feel free to reach out to me via LinkedIn or Twitter.
-                </p>
-            </div>
-        </article>
-    </main>
+      <div class="disclaimer-item">
+        <div class="disclaimer-icon">🧑‍💻</div>
+        <div class="disclaimer-item-content">
+          <h3>Based on Personal Experience</h3>
+          <p>Articles and tutorials here reflect personal experiences, opinions, and knowledge gathered from documentation, research, and real-world practice. What works for one tech stack or organization may not work for yours.</p>
+        </div>
+      </div>
 
-    <div id="rw-footer"></div>
-<script src="./includes/rw-footer.js?v=20260612"></script>
+      <div class="disclaimer-item">
+        <div class="disclaimer-icon">⚡</div>
+        <div class="disclaimer-item-content">
+          <h3>No Guarantees of Accuracy</h3>
+          <p>The technology landscape evolves rapidly. While I strive to keep information up to date and correct, I make no representations regarding the completeness, accuracy, reliability, or suitability of the information, code snippets, or related graphics on this site.</p>
+        </div>
+      </div>
+
+      <div class="disclaimer-item">
+        <div class="disclaimer-icon">⚠️</div>
+        <div class="disclaimer-item-content">
+          <h3>Use at Your Own Risk</h3>
+          <p>Any action you take based on information found here is strictly at your own risk. I will not be liable for any losses, bugs, downtime, or damages resulting from the use of this site or any code provided. Always test code in a safe environment before deploying to production.</p>
+        </div>
+      </div>
+
+      <div class="disclaimer-item">
+        <div class="disclaimer-icon">🔗</div>
+        <div class="disclaimer-item-content">
+          <h3>External Links</h3>
+          <p>This site links to external websites that are not under my control. The inclusion of any link does not imply a recommendation or endorsement of the views expressed within them.</p>
+        </div>
+      </div>
+
+      <div class="disclaimer-item">
+        <div class="disclaimer-icon">🪙</div>
+        <div class="disclaimer-item-content">
+          <h3>Sponsor Credits &amp; Live Experiments</h3>
+          <p>Some experiments and projects on this site are developed using sponsor or free-tier API credits. Once those credits run out, a live demo or hosted app may stop working. The source code is always maintained and publicly available — every project can be run locally following the repository instructions.</p>
+        </div>
+      </div>
+
+      <div class="disclaimer-contact">
+        Have questions about this disclaimer or the content on this site? Reach out via
+        <a href="https://www.linkedin.com/in/shamhc/" target="_blank" rel="noopener noreferrer">LinkedIn</a> or
+        <a href="https://x.com/intent/user?screen_name=shamhcs" target="_blank" rel="noopener noreferrer">X / Twitter</a>.
+      </div>
+    </div>
+  </main>
+
+  <div id="rw-footer"></div>
+  <script src="./includes/rw-footer.js?v=20261030"></script>
 
 </body>
 </html>

@@ -81,44 +81,57 @@
     brand: {
       name: 'RawWeights',
       tagline: 'Raw Weights. Real Intelligence.',
-      description: 'Exploring AI from raw fundamentals to applied intelligence — interactive playgrounds, in-depth guides, and field notes on building real systems.',
+      description: 'AI from raw fundamentals to applied intelligence — interactive playgrounds, practitioner guides, and field notes on building real systems.',
       url: '/'
     },
     columns: [
       {
-        heading: 'Explore',
+        heading: 'Playgrounds',
         links: [
-          { label: 'ML Master Hub',       url: '/tools/master_ml_hub.html' },
-          { label: 'Attention Journey',   url: '/tools/master_sequence_hub.html' },
-          { label: 'Generative Modeling', url: '/tools/deep_generative_modeling.html' },
-          { label: 'Reinforcement RL',    url: '/tools/deep_reinforcement.html' },
-          { label: 'Simple Regression',   url: '/srt.html' }
+          { label: 'ML Master Hub',          url: '/tools/master_ml_hub.html' },
+          { label: 'Attention Journey',      url: '/tools/master_sequence_hub.html' },
+          { label: 'CNN Explorer',           url: '/tools/cnn_sandbox.html' },
+          { label: 'Generative Modeling',    url: '/tools/deep_generative_modeling.html' },
+          { label: 'Reinforcement Learning', url: '/tools/deep_reinforcement.html' },
+          { label: 'Build. Measure. Ship.',  url: '/tools/eval-proving-ground.html' }
         ]
       },
       {
         heading: 'Guides',
         links: [
-          { label: 'RAG Guide',           url: '/guide/rag.html' },
-          { label: 'LLM Post-Training',   url: '/guide/llm-post-training-guide.html' },
-          { label: 'MCP Architecture',    url: '/guide/mcp.html' },
-          { label: 'Agentic Strategy',    url: '/guide/adobe-cx-enterprise-ecosystem.html' },
-          { label: 'LLM Lifecycle',       url: '/guide/full-lifecycle.html' }
+          { label: 'RAG Guide',              url: '/guide/rag.html' },
+          { label: 'LLM Post-Training',      url: '/guide/llm-post-training-guide.html' },
+          { label: 'MCP Architecture',       url: '/guide/mcp.html' },
+          { label: 'AI Threat Model',        url: '/guide/ai-security-threat-model.html' },
+          { label: 'Agent Security Guide',   url: '/guide/ai-security-redteam-brief.html' },
+          { label: 'AI Observability',       url: '/usecase/observability.html' }
+        ]
+      },
+      {
+        heading: 'Use Cases',
+        links: [
+          { label: 'Debrief',          url: '/usecase/debrief.html' },
+          { label: 'ClaimLens',        url: '/usecase/claimlens.html' },
+          { label: 'AgentIntel',       url: '/usecase/agentintel-guide.html' },
+          { label: 'SecurityTwin',     url: '/usecase/securitytwin.html' },
+          { label: 'ShadowShield',     url: '/usecase/shadowshield-ai.html' }
         ]
       },
       {
         heading: 'Connect',
         links: [
-          { label: 'Blog',                url: '/blog.html' },
-          { label: 'Portfolio',           url: '/portfolio/index.html' },
-          { label: 'LinkedIn',            url: 'https://www.linkedin.com/in/shamhc/', external: true },
-          { label: 'X / Twitter',         url: 'https://x.com/intent/user?screen_name=shamhcs', external: true },
-          { label: 'Disclaimer',          url: '/disclaimer.html' }
+          { label: 'Blog',             url: '/blog.html' },
+          { label: 'Portfolio',        url: '/portfolio/index.html' },
+          { label: 'Search',           url: '/search/' },
+          { label: 'GitHub',           url: 'https://github.com/Schikkeg', external: true },
+          { label: 'Disclaimer',       url: '/disclaimer.html' }
         ]
       }
     ],
     social: [
       { label: 'LinkedIn', url: 'https://www.linkedin.com/in/shamhc/', icon: 'linkedin' },
-      { label: 'X / Twitter', url: 'https://x.com/intent/user?screen_name=shamhcs', icon: 'twitter' }
+      { label: 'X / Twitter', url: 'https://x.com/intent/user?screen_name=shamhcs', icon: 'twitter' },
+      { label: 'GitHub', url: 'https://github.com/Schikkeg', icon: 'github' }
     ],
     copyright: `© ${new Date().getFullYear()} RawWeights. All rights reserved.`
   };

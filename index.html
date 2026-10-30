@@ -38,6 +38,189 @@
   <script type="text/javascript" async src="./includes/analytics.js"></script>
 
   <style>
+    /* ── Hero search bar ──────────────────────────────────────── */
+    .hero-search-form {
+      display: flex;
+      max-width: 480px;
+      margin: 1.75rem auto 0;
+      background: var(--rw-card);
+      border: 1.5px solid var(--rw-border);
+      border-radius: var(--rw-r-full);
+      overflow: hidden;
+      transition: border-color var(--rw-t), box-shadow var(--rw-t);
+      animation: rwFadeUp 0.6s var(--rw-ease-out) 0.42s both;
+    }
+    .hero-search-form:focus-within {
+      border-color: var(--rw-orange-border);
+      box-shadow: 0 0 0 3px var(--rw-orange-light);
+    }
+    .hero-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.9rem;
+      color: var(--rw-text);
+      font-family: var(--rw-font-body);
+      min-width: 0;
+    }
+    .hero-search-input::placeholder { color: var(--rw-text-subtle); }
+    .hero-search-submit {
+      background: var(--rw-orange);
+      border: none;
+      padding: 0 1.2rem;
+      cursor: pointer;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--rw-t);
+      flex-shrink: 0;
+    }
+    .hero-search-submit:hover { background: var(--rw-orange-hover); }
+
+    /* ── Topic pills ──────────────────────────────────────────── */
+    .topic-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 1.1rem 0;
+    }
+    .topic-pills-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--rw-font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rw-text-subtle);
+      flex-shrink: 0;
+      margin-right: 0.2rem;
+    }
+    .topic-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.28rem 0.8rem;
+      border-radius: var(--rw-r-full);
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: var(--rw-font-display);
+      color: var(--rw-text-muted);
+      text-decoration: none;
+      transition: background var(--rw-t-fast), border-color var(--rw-t-fast), color var(--rw-t-fast);
+      white-space: nowrap;
+    }
+    .topic-pill:hover {
+      background: var(--rw-orange-light);
+      border-color: var(--rw-orange-border);
+      color: var(--rw-orange);
+    }
+    .topic-pill-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Type + New badges on cards ───────────────────────────── */
+    .rw-card-badges {
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.45rem;
+    }
+    .rw-card-type {
+      display: inline-block;
+      padding: 0.13rem 0.55rem;
+      border-radius: var(--rw-r-full);
+      font-size: 0.67rem;
+      font-weight: 700;
+      font-family: var(--rw-font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border: 1px solid transparent;
+    }
+    .rw-card-new {
+      display: inline-block;
+      padding: 0.13rem 0.5rem;
+      border-radius: var(--rw-r-full);
+      font-size: 0.65rem;
+      font-weight: 800;
+      font-family: var(--rw-font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      background: var(--rw-orange);
+      color: #fff;
+      animation: rwCardNewPulse 2.5s ease infinite;
+    }
+    @keyframes rwCardNewPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.65; }
+    }
+
+    /* ── Stat items — clickable ───────────────────────────────── */
+    a.stat-item {
+      text-decoration: none;
+      cursor: pointer;
+      transition: background var(--rw-t), border-color var(--rw-t), transform var(--rw-t);
+    }
+    a.stat-item:hover {
+      background: var(--rw-orange-light);
+      border-color: var(--rw-orange-border);
+      transform: translateY(-2px);
+    }
+    a.stat-item:hover .stat-num { color: var(--rw-orange-hover); }
+    a.stat-item:hover .stat-label { color: var(--rw-orange); }
+
+    /* ── Content filter tabs ──────────────────────────────────── */
+    .content-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--rw-border);
+      margin-bottom: 1.75rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .content-tabs::-webkit-scrollbar { display: none; }
+    .content-tab {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      padding: 0.6rem 1.1rem;
+      font-family: var(--rw-font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--rw-text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color var(--rw-t-fast), border-color var(--rw-t-fast);
+      flex-shrink: 0;
+    }
+    .content-tab:hover { color: var(--rw-text); }
+    .content-tab.active { color: var(--rw-orange); border-bottom-color: var(--rw-orange); }
+    .content-tab-count {
+      display: inline-block;
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-full);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.05rem 0.45rem;
+      margin-left: 0.3rem;
+      color: var(--rw-text-subtle);
+      vertical-align: middle;
+    }
+    .content-tab.active .content-tab-count {
+      background: var(--rw-orange-light);
+      border-color: var(--rw-orange-border);
+      color: var(--rw-orange);
+    }
+
     /* ── Hero ──────────────────────────────────────────────────── */
     .hero {
       min-height: 100vh;
@@ -512,6 +695,54 @@
       flex-shrink: 0;
     }
 
+    /* ── Use case cards ──────────────────────────────────────────── */
+    .usecase-card {
+      background: var(--rw-card);
+      border: 1px solid var(--rw-border);
+      border-radius: var(--rw-r-md);
+      padding: 1.25rem 1.5rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: border-color var(--rw-t), box-shadow var(--rw-t), transform var(--rw-t);
+      border-left: 3px solid var(--rw-orange);
+    }
+    .usecase-card:hover {
+      border-color: var(--rw-orange-border);
+      border-left-color: var(--rw-orange);
+      box-shadow: var(--rw-shadow-md);
+      transform: translateY(-2px);
+    }
+    .usecase-card-meta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--rw-orange);
+      font-family: var(--rw-font-display);
+    }
+    .usecase-card h3 {
+      font-family: var(--rw-font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--rw-text);
+      line-height: 1.35;
+    }
+    .usecase-card p {
+      font-size: 0.82rem;
+      color: var(--rw-text-muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+    .usecase-card-read {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--rw-orange);
+      font-family: var(--rw-font-display);
+      margin-top: 0.25rem;
+    }
+
     /* ── Section header row ────────────────────────────────────── */
     .section-header {
       display: flex;
@@ -541,15 +772,19 @@
       .guide-strip-item:last-child { border-bottom: none; }
     }
     @media (max-width: 768px) {
-      .rw-grid-3 { grid-template-columns: 1fr; }
+      .rw-grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
       .cta-banner { padding: 2.5rem 1.5rem; }
       .stats-bar { gap: 0; }
       .stat-item { min-width: 50%; border-bottom: 1px solid var(--rw-border); }
       .stat-item:nth-child(even) { border-right: none; }
+      .hero-search-form { max-width: 100%; }
     }
     @media (max-width: 600px) {
       .hero-actions { flex-direction: column; align-items: stretch; }
       .hero-actions .rw-btn { justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .rw-grid-3 { grid-template-columns: 1fr !important; }
     }
   </style>
 </head>
@@ -557,7 +792,7 @@
 
 <!-- ── Centralized Navigation ──────────────────────────────── -->
 <div id="rw-nav"></div>
-<script src="./includes/rw-nav.js?v=20260615"></script>
+<script src="./includes/rw-nav.js?v=20261030"></script>
 
 <!-- ══════════════════════════════════════════════════════════
      HERO
@@ -586,10 +821,15 @@
       <a href="./tools/master_ml_hub.html" class="rw-btn rw-btn-primary rw-btn-lg">
         Explore Playgrounds →
       </a>
-      <a href="./blog.html" class="rw-btn rw-btn-ghost rw-btn-lg">
-        Read the Blog
+      <a href="./guide/rag.html" class="rw-btn rw-btn-secondary rw-btn-lg">
+        Browse Guides
       </a>
     </div>
+
+    <form class="hero-search-form" action="./search/" method="get" role="search" aria-label="Search site">
+      <input type="search" name="q" class="hero-search-input" placeholder="Search guides, builds, playgrounds…" autocomplete="off" spellcheck="false">
+      <button type="submit" class="hero-search-submit" aria-label="Search">→</button>
+    </form>
   </div>
 
   <div class="hero-scroll" aria-hidden="true">
@@ -604,22 +844,42 @@
 <section class="rw-section-sm" style="padding-top:0;">
   <div class="rw-container">
     <div class="stats-bar">
-      <div class="stat-item">
-        <div class="stat-num" data-count="6" data-suffix="+">6+</div>
+      <a class="stat-item" href="#playgrounds">
+        <div class="stat-num" id="stat-playgrounds" data-count="8">8</div>
         <div class="stat-label">Interactive Playgrounds</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" data-count="12" data-suffix="+">12+</div>
-        <div class="stat-label">Deep Guides</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" data-count="25" data-suffix="+">25+</div>
-        <div class="stat-label">Blog Articles</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" data-count="100" data-suffix="%">100%</div>
-        <div class="stat-label">Browser-Based</div>
-      </div>
+      </a>
+      <a class="stat-item" href="#content-explore?tab=Guide">
+        <div class="stat-num" id="stat-guides" data-count="25" data-suffix="+">25+</div>
+        <div class="stat-label">In-Depth Guides</div>
+      </a>
+      <a class="stat-item" href="#content-explore?tab=Usecase">
+        <div class="stat-num" id="stat-builds" data-count="20" data-suffix="+">20+</div>
+        <div class="stat-label">AI Builds & Use Cases</div>
+      </a>
+      <a class="stat-item" href="#content-explore">
+        <div class="stat-num" id="stat-total" data-count="70" data-suffix="+">70+</div>
+        <div class="stat-label">Total Pieces Published</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     TOPIC PILLS
+══════════════════════════════════════════════════════════ -->
+<section class="rw-section-sm" style="padding-top:0.25rem;padding-bottom:0.5rem;border-bottom:1px solid var(--rw-border);">
+  <div class="rw-container">
+    <div class="topic-pills-row">
+      <span class="topic-pills-label">Topics</span>
+      <a class="topic-pill" href="./search/?q=RAG+retrieval"><span class="topic-pill-dot" style="background:#f97316"></span>RAG</a>
+      <a class="topic-pill" href="./search/?q=fine-tuning+LLM"><span class="topic-pill-dot" style="background:#7c3aed"></span>Fine-Tuning</a>
+      <a class="topic-pill" href="./search/?q=MCP+model+context+protocol"><span class="topic-pill-dot" style="background:#0891b2"></span>MCP</a>
+      <a class="topic-pill" href="./search/?q=agentic+AI+agents"><span class="topic-pill-dot" style="background:#059669"></span>Agentic AI</a>
+      <a class="topic-pill" href="./search/?q=AI+security+threat"><span class="topic-pill-dot" style="background:#dc2626"></span>AI Security</a>
+      <a class="topic-pill" href="./search/?q=voice+AI+ElevenLabs"><span class="topic-pill-dot" style="background:#d97706"></span>Voice AI</a>
+      <a class="topic-pill" href="./search/?q=hackathon+build"><span class="topic-pill-dot" style="background:#be185d"></span>Hackathon Builds</a>
+      <a class="topic-pill" href="./search/?q=observability+telemetry+agents"><span class="topic-pill-dot" style="background:#475569"></span>Observability</a>
+      <a class="topic-pill" href="./search/?q=deep+learning+neural+network"><span class="topic-pill-dot" style="background:#1d4ed8"></span>Deep Learning</a>
     </div>
   </div>
 </section>
@@ -746,7 +1006,7 @@
 <!-- ══════════════════════════════════════════════════════════
      PLAYGROUNDS
 ══════════════════════════════════════════════════════════ -->
-<section class="rw-section" style="background: var(--rw-bg-alt);">
+<section id="playgrounds" class="rw-section" style="background: var(--rw-bg-alt);">
   <div class="rw-container">
     <div class="section-header">
       <div>
@@ -757,7 +1017,7 @@
       <a href="./tools/master_ml_hub.html">View all →</a>
     </div>
 
-    <div class="rw-grid-3" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="rw-grid-3" style="grid-template-columns: repeat(4, 1fr);">
       <a class="playground-card" href="./tools/master_ml_hub.html">
         <div class="playground-card-icon" style="background: rgba(249,115,22,0.12);">🧪</div>
         <h3>ML Master Hub</h3>
@@ -788,30 +1048,50 @@
         <p>Deep RL with policy gradients. Watch an agent learn to balance, navigate, and optimize.</p>
         <span class="playground-card-arrow">Play →</span>
       </a>
-      <a class="playground-card" href="./how-it-started.html" style="border-color:var(--rw-orange-border); background: var(--rw-orange-light);">
-        <div class="playground-card-icon" style="background: rgba(249,115,22,0.2);">⚡</div>
-        <h3>Atomic GPT</h3>
-        <p>Train a real Transformer in your browser. The glass-box that started everything. Pure JavaScript.</p>
-        <span class="playground-card-arrow" style="color:var(--rw-orange);">How It Started →</span>
+      <a class="playground-card" href="./srt.html">
+        <div class="playground-card-icon" style="background: rgba(99,102,241,0.12);">📉</div>
+        <h3>Simple Regression</h3>
+        <p>Gradient descent made visual. Adjust learning rate and watch the loss surface converge in real time.</p>
+        <span class="playground-card-arrow">Experiment →</span>
+      </a>
+      <a class="playground-card" href="./tools/limitations-and-frontiers.html">
+        <div class="playground-card-icon" style="background: rgba(245,158,11,0.12);">⚠️</div>
+        <h3>Limitations &amp; Frontiers</h3>
+        <p>Where AI models break down, hallucinate, or refuse. Edge cases and failure modes explored interactively.</p>
+        <span class="playground-card-arrow">Probe →</span>
+      </a>
+      <a class="playground-card" href="./tools/eval-proving-ground.html">
+        <div class="playground-card-icon" style="background: rgba(16,185,129,0.12);">🚀</div>
+        <h3>Build. Measure. Ship.</h3>
+        <p>AI eval in practice. Score your model outputs, compare prompts, and prove performance before deploying.</p>
+        <span class="playground-card-arrow">Start evaluating →</span>
       </a>
     </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════
-     FROM THE BLOG
+     EXPLORE ALL CONTENT — tabbed
 ══════════════════════════════════════════════════════════ -->
-<section class="rw-section">
+<section id="content-explore" class="rw-section">
   <div class="rw-container">
-    <div class="section-header">
+    <div class="section-header" style="margin-bottom:1rem;">
       <div>
         <p class="rw-section-label">Latest</p>
-        <h2 class="rw-section-title">From the Blog</h2>
+        <h2 class="rw-section-title">Explore</h2>
+        <p class="rw-section-subtitle">Field notes, guides, and build logs from the practice of building AI.</p>
       </div>
-      <a href="./blog.html">All articles →</a>
+      <a href="./blog.html" id="explore-view-all">All content →</a>
     </div>
 
-    <div class="rw-grid-3" id="home-blog-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+    <div class="content-tabs" id="content-tabs" role="tablist" aria-label="Content type filter">
+      <button class="content-tab active" role="tab" aria-selected="true" data-type="all">All <span class="content-tab-count" id="tab-count-all"></span></button>
+      <button class="content-tab" role="tab" aria-selected="false" data-type="Blog">Blog <span class="content-tab-count" id="tab-count-blog"></span></button>
+      <button class="content-tab" role="tab" aria-selected="false" data-type="Guide">Guides <span class="content-tab-count" id="tab-count-guide"></span></button>
+      <button class="content-tab" role="tab" aria-selected="false" data-type="Usecase">Use Cases <span class="content-tab-count" id="tab-count-usecase"></span></button>
+    </div>
+
+    <div class="rw-grid-3" id="home-explore-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
   </div>
 </section>
 
@@ -826,6 +1106,7 @@
         <h2 class="rw-section-title">Guides</h2>
         <p class="rw-section-subtitle">Structured, interactive learning for the hard parts of AI.</p>
       </div>
+      <a href="./blog.html?type=Guide">All guides →</a>
     </div>
 
     <div class="guide-strip">
@@ -849,15 +1130,30 @@
         <div class="guide-strip-label">Architecting Autonomous AI Systems</div>
         <div class="guide-strip-desc">Levels of autonomy, LangChain, n8n, SDK frameworks, and designing resilient agents.</div>
       </a>
-      <a class="guide-strip-item" href="./guide/full-lifecycle.html">
-        <div class="guide-strip-num">05 · LLM Lifecycle</div>
-        <div class="guide-strip-label">Full LLM Architecture & Production Lifecycle</div>
-        <div class="guide-strip-desc">From tokenization to serving — the complete picture of how a language model goes live.</div>
+      <a class="guide-strip-item" href="./guide/ai-security-threat-model.html">
+        <div class="guide-strip-num">05 · AI Security</div>
+        <div class="guide-strip-label">Threat Modeling AI Systems Before You Build</div>
+        <div class="guide-strip-desc">STRIDE, trust boundaries, and a hands-on AI threat model — from first principles to production.</div>
       </a>
-      <a class="guide-strip-item" href="./guide/mythos.html">
-        <div class="guide-strip-num">06 · Safety</div>
-        <div class="guide-strip-label">Mythos — AI Threats Preview Report</div>
-        <div class="guide-strip-desc">Claude AI threat modeling, safety analysis, and what adversarial AI actually looks like today.</div>
+      <a class="guide-strip-item" href="./guide/rag-pipeline-toolkit.html">
+        <div class="guide-strip-num">06 · RAG Toolkit</div>
+        <div class="guide-strip-label">RAG Pipeline — Design, Tune & Debug</div>
+        <div class="guide-strip-desc">Chunk size, top-K, embedding model picker, retrieval strategy, and 20-point pre-launch checklist.</div>
+      </a>
+      <a class="guide-strip-item" href="./guide/fine-tuning-llm-guide.html">
+        <div class="guide-strip-num">07 · Fine-Tuning</div>
+        <div class="guide-strip-label">Fine-Tuning LLMs — The Specialist Protocol</div>
+        <div class="guide-strip-desc">When RAG isn't enough. SFT, DPO, RAFT, and when to fine-tune vs. prompt-engineer.</div>
+      </a>
+      <a class="guide-strip-item" href="./usecase/observability.html">
+        <div class="guide-strip-num">08 · Observability</div>
+        <div class="guide-strip-label">AI Agent Observability — Why 200 OK Lies</div>
+        <div class="guide-strip-desc">Telemetry standards, trace architectures, and interactive tools to see what your agent actually did.</div>
+      </a>
+      <a class="guide-strip-item" href="./guide/agent-autonomy-dial.html">
+        <div class="guide-strip-num">09 · Agents</div>
+        <div class="guide-strip-label">The Agent Autonomy Dial</div>
+        <div class="guide-strip-desc">Five levels of AI autonomy — an interactive framework for how much your agent should decide.</div>
       </a>
     </div>
   </div>
@@ -881,29 +1177,155 @@
 
 <!-- ── Centralized Footer ───────────────────────────────────── -->
 <div id="rw-footer"></div>
-<script src="./includes/rw-footer.js?v=20260612"></script>
+<script src="./includes/rw-footer.js?v=20261030"></script>
 <script src="./data/site-content.js"></script>
 <script>
 (function () {
-  var grid = document.getElementById('home-blog-grid');
-  if (!grid || !window.SITE_CONTENT) return;
-  var posts = window.SITE_CONTENT.articles.slice(0, 3);
-  grid.innerHTML = posts.map(function (a) {
-    var imgHTML = a.image
-      ? '<img src="' + a.image + '" alt="' + a.title + '" loading="lazy">'
-      : '';
-    var date = a.date.replace(/(\w+ \d+), (\d+)/, function (_, dm, y) { return dm + ' ' + y; });
-    var href = a.link.startsWith('http') ? a.link : a.link;
+  if (!window.SITE_CONTENT) return;
+  var articles = window.SITE_CONTENT.articles;
+
+  /* ── Type colors ─── */
+  var TYPE_COLORS = {
+    'Guide':           { bg: 'rgba(249,115,22,0.12)',  color: '#f97316', border: 'rgba(249,115,22,0.3)' },
+    'Blog':            { bg: 'rgba(99,102,241,0.12)',  color: '#6366f1', border: 'rgba(99,102,241,0.3)' },
+    'Usecase':         { bg: 'rgba(16,185,129,0.12)',  color: '#10b981', border: 'rgba(16,185,129,0.3)' },
+    'Web Performance': { bg: 'rgba(8,145,178,0.12)',   color: '#0891b2', border: 'rgba(8,145,178,0.3)'  },
+    'LinkedIn Article':{ bg: 'rgba(10,102,194,0.12)',  color: '#0a66c2', border: 'rgba(10,102,194,0.3)' }
+  };
+
+  /* ── "New" badge: within 14 days ─── */
+  function isNew(dateStr) {
+    try { return (Date.now() - new Date(dateStr).getTime()) < 14 * 86400000; }
+    catch(_) { return false; }
+  }
+
+  /* ── Relative date label ─── */
+  function relativeDate(dateStr) {
+    try {
+      var diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+      if (diff === 0) return 'Today';
+      if (diff === 1) return 'Yesterday';
+      if (diff < 7)  return diff + ' days ago';
+      if (diff < 30) return Math.floor(diff / 7) + (diff < 14 ? ' week ago' : ' weeks ago');
+    } catch(_) {}
+    return dateStr;
+  }
+
+  /* ── Badge HTML builder ─── */
+  function badgeHTML(article) {
+    var tc = TYPE_COLORS[article.type] || { bg: 'rgba(100,116,139,0.12)', color: '#64748b', border: 'rgba(100,116,139,0.3)' };
+    var typeLabel = article.type === 'Usecase' ? 'Use Case' : article.type;
+    var typeBadge = '<span class="rw-card-type" style="background:' + tc.bg + ';color:' + tc.color + ';border-color:' + tc.border + '">' + typeLabel + '</span>';
+    var newBadge = isNew(article.date) ? '<span class="rw-card-new">New</span>' : '';
+    return '<div class="rw-card-badges">' + typeBadge + newBadge + '</div>';
+  }
+
+  /* ── Render a blog-style card ─── */
+  function blogCardHTML(a) {
+    var imgHTML = a.image ? '<img src="' + a.image + '" alt="' + a.title + '" loading="lazy">' : '';
     var target = a.link.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
-    return '<a class="blog-card" href="' + href + '"' + target + '>'
+    var relDate = relativeDate(a.date);
+    return '<a class="blog-card" href="' + a.link + '"' + target + '>'
       + imgHTML
       + '<div class="blog-card-body">'
-      + '<div class="blog-card-meta">' + date + ' · ' + a.type + '</div>'
+      + badgeHTML(a)
+      + '<div class="blog-card-meta">' + relDate + '</div>'
       + '<h3>' + a.title + '</h3>'
       + '<p>' + a.excerpt + '</p>'
       + '<span class="blog-card-read">Read →</span>'
       + '</div></a>';
-  }).join('');
+  }
+
+  /* ── Render a compact use-case card ─── */
+  function usecaseCardHTML(a) {
+    var target = a.link.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+    var excerpt = a.excerpt.length > 110 ? a.excerpt.slice(0, 110).replace(/\s\S+$/, '') + '…' : a.excerpt;
+    return '<a class="usecase-card" href="' + a.link + '"' + target + '>'
+      + badgeHTML(a)
+      + '<h3>' + a.title + '</h3>'
+      + '<p>' + excerpt + '</p>'
+      + '<span class="usecase-card-read">Read the build log →</span>'
+      + '</a>';
+  }
+
+  /* ── Card renderer by type ─── */
+  function cardHTML(a) {
+    return (a.type === 'Usecase') ? usecaseCardHTML(a) : blogCardHTML(a);
+  }
+
+  /* ── Compute counts ─── */
+  var counts = { guide: 0, usecase: 0, blog: 0 };
+  articles.forEach(function (a) {
+    var t = (a.type || '').toLowerCase();
+    if (t === 'guide') counts.guide++;
+    else if (t === 'usecase') counts.usecase++;
+    else counts.blog++;
+  });
+
+  /* ── Update stat numbers ─── */
+  function setEl(id, text) { var el = document.getElementById(id); if (el) el.textContent = text; }
+  setEl('stat-guides',      Math.max(counts.guide,   25) + '+');
+  setEl('stat-builds',      Math.max(counts.usecase, 20) + '+');
+  setEl('stat-total',       Math.max(articles.length, 70) + '+');
+  setEl('tab-count-all',    articles.length);
+  setEl('tab-count-blog',   articles.filter(function(a){ return a.type === 'Blog' || a.type === 'LinkedIn Article' || a.type === 'Web Performance'; }).length);
+  setEl('tab-count-guide',  counts.guide);
+  setEl('tab-count-usecase',counts.usecase);
+
+  /* ── Tabbed explore grid ─── */
+  var exploreGrid = document.getElementById('home-explore-grid');
+  var tabs = document.querySelectorAll('.content-tab');
+  var viewAllLink = document.getElementById('explore-view-all');
+
+  var TAB_LINKS = {
+    'all': './blog.html', 'Blog': './blog.html',
+    'Guide': './blog.html?type=Guide', 'Usecase': './blog.html?type=Usecase'
+  };
+
+  function renderExplore(type) {
+    if (!exploreGrid) return;
+    var filtered;
+    if (type === 'all') {
+      filtered = articles.slice(0, 6);
+    } else if (type === 'Blog') {
+      filtered = articles.filter(function(a){ return a.type === 'Blog' || a.type === 'LinkedIn Article' || a.type === 'Web Performance'; }).slice(0, 6);
+    } else {
+      filtered = articles.filter(function(a){ return a.type === type; }).slice(0, 6);
+    }
+    exploreGrid.innerHTML = filtered.map(cardHTML).join('');
+    if (viewAllLink) viewAllLink.href = TAB_LINKS[type] || './blog.html';
+
+    /* Update stat bar link for Guide/Usecase tabs */
+    var guideStatLink = document.querySelector('a.stat-item[href="#content-explore?tab=Guide"]');
+    var ucStatLink    = document.querySelector('a.stat-item[href="#content-explore?tab=Usecase"]');
+    if (guideStatLink) guideStatLink.onclick = function(e){ e.preventDefault(); activateTab('Guide'); scrollToExplore(); };
+    if (ucStatLink)    ucStatLink.onclick    = function(e){ e.preventDefault(); activateTab('Usecase'); scrollToExplore(); };
+    var totalLink = document.querySelector('a.stat-item[href="#content-explore"]');
+    if (totalLink) totalLink.onclick = function(e){ e.preventDefault(); activateTab('all'); scrollToExplore(); };
+  }
+
+  function scrollToExplore() {
+    var el = document.getElementById('content-explore');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function activateTab(type) {
+    tabs.forEach(function(t) {
+      var active = t.getAttribute('data-type') === type;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    renderExplore(type);
+  }
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      activateTab(tab.getAttribute('data-type'));
+    });
+  });
+
+  /* Initial render */
+  renderExplore('all');
 })();
 </script>
 
