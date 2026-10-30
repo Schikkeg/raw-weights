@@ -42,45 +42,271 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LAYER 1 — STITCH / MATERIAL DESIGN 3 SEMANTIC TOKENS
+   These follow the Google Stitch / MD3 naming convention.
+   Edit ONLY this layer when re-theming the site.
+   See DESIGN_GUIDE.md for the full explanation.
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+
+  /* ── Primary role  (Orange — main action, buttons, links) ───── */
+  --md-sys-color-primary:              #f97316;
+  --md-sys-color-on-primary:           #ffffff;
+  --md-sys-color-primary-container:    #fff7ed;
+  --md-sys-color-on-primary-container: #7c2d12;
+
+  /* ── Secondary role  (Indigo — supporting interactive) ────────── */
+  --md-sys-color-secondary:              #6366f1;
+  --md-sys-color-on-secondary:           #ffffff;
+  --md-sys-color-secondary-container:    #eef2ff;
+  --md-sys-color-on-secondary-container: #312e81;
+
+  /* ── Tertiary role  (Cyan — accent highlights) ─────────────────── */
+  --md-sys-color-tertiary:              #06b6d4;
+  --md-sys-color-on-tertiary:           #ffffff;
+  --md-sys-color-tertiary-container:    #ecfeff;
+  --md-sys-color-on-tertiary-container: #164e63;
+
+  /* ── Quaternary role  (Emerald — extra, beyond MD3 core) ──────── */
+  --md-sys-color-quaternary:            #10b981;
+  --md-sys-color-on-quaternary:         #ffffff;
+
+  /* ── Error role ────────────────────────────────────────────────── */
+  --md-sys-color-error:              #ef4444;
+  --md-sys-color-on-error:           #ffffff;
+  --md-sys-color-error-container:    #fee2e2;
+  --md-sys-color-on-error-container: #991b1b;
+
+  /* ── Background  (outermost page wash) ─────────────────────────── */
+  --md-sys-color-background:    #f8fafc;
+  --md-sys-color-on-background: #0f172a;
+
+  /* ── Surface  (5-level hierarchy — cards, panels, overlays) ───── */
+  --md-sys-color-surface:                   #ffffff;
+  --md-sys-color-on-surface:                #0f172a;
+  --md-sys-color-surface-variant:           #f1f5f9;
+  --md-sys-color-on-surface-variant:        #475569;
+  --md-sys-color-surface-container-lowest:  #ffffff;
+  --md-sys-color-surface-container-low:     #f8fafc;
+  --md-sys-color-surface-container:         #f1f5f9;
+  --md-sys-color-surface-container-high:    #e2e8f0;
+  --md-sys-color-surface-container-highest: #cbd5e1;
+
+  /* ── Outline  (borders, dividers) ──────────────────────────────── */
+  --md-sys-color-outline:         #e2e8f0;
+  --md-sys-color-outline-variant: #cbd5e1;
+
+  /* ── Inverse  (dark chips/badges on light pages) ───────────────── */
+  --md-sys-color-inverse-surface:    #0f172a;
+  --md-sys-color-inverse-on-surface: #f0f4ff;
+  --md-sys-color-inverse-primary:    #fb923c;
+
+  /* ── Utility ────────────────────────────────────────────────────── */
+  --md-sys-color-shadow: rgba(0, 0, 0, 0.08);
+  --md-sys-color-scrim:  rgba(0, 0, 0, 0.5);
+
+  /* ── Typography scale  (MD3 / Stitch type system) ───────────────── */
+  --md-sys-typescale-display-large-size:        3.5625rem;   /* 57px */
+  --md-sys-typescale-display-large-line-height: 4rem;        /* 64px */
+  --md-sys-typescale-display-large-weight:      400;
+  --md-sys-typescale-display-large-tracking:    -0.015625rem;
+
+  --md-sys-typescale-display-medium-size:        2.8125rem;  /* 45px */
+  --md-sys-typescale-display-medium-line-height: 3.25rem;    /* 52px */
+  --md-sys-typescale-display-medium-weight:      400;
+  --md-sys-typescale-display-medium-tracking:    0;
+
+  --md-sys-typescale-display-small-size:        2.25rem;     /* 36px */
+  --md-sys-typescale-display-small-line-height: 2.75rem;     /* 44px */
+  --md-sys-typescale-display-small-weight:      400;
+  --md-sys-typescale-display-small-tracking:    0;
+
+  --md-sys-typescale-headline-large-size:        2rem;       /* 32px */
+  --md-sys-typescale-headline-large-line-height: 2.5rem;     /* 40px */
+  --md-sys-typescale-headline-large-weight:      400;
+
+  --md-sys-typescale-headline-medium-size:        1.75rem;   /* 28px */
+  --md-sys-typescale-headline-medium-line-height: 2.25rem;   /* 36px */
+  --md-sys-typescale-headline-medium-weight:      400;
+
+  --md-sys-typescale-headline-small-size:        1.5rem;     /* 24px */
+  --md-sys-typescale-headline-small-line-height: 2rem;       /* 32px */
+  --md-sys-typescale-headline-small-weight:      400;
+
+  --md-sys-typescale-title-large-size:        1.375rem;      /* 22px */
+  --md-sys-typescale-title-large-line-height: 1.75rem;       /* 28px */
+  --md-sys-typescale-title-large-weight:      400;
+
+  --md-sys-typescale-title-medium-size:        1rem;         /* 16px */
+  --md-sys-typescale-title-medium-line-height: 1.5rem;       /* 24px */
+  --md-sys-typescale-title-medium-weight:      500;
+  --md-sys-typescale-title-medium-tracking:    0.009375rem;
+
+  --md-sys-typescale-title-small-size:        0.875rem;      /* 14px */
+  --md-sys-typescale-title-small-line-height: 1.25rem;       /* 20px */
+  --md-sys-typescale-title-small-weight:      500;
+  --md-sys-typescale-title-small-tracking:    0.00625rem;
+
+  --md-sys-typescale-body-large-size:        1rem;           /* 16px */
+  --md-sys-typescale-body-large-line-height: 1.5rem;         /* 24px */
+  --md-sys-typescale-body-large-weight:      400;
+  --md-sys-typescale-body-large-tracking:    0.03125rem;
+
+  --md-sys-typescale-body-medium-size:        0.875rem;      /* 14px */
+  --md-sys-typescale-body-medium-line-height: 1.25rem;       /* 20px */
+  --md-sys-typescale-body-medium-weight:      400;
+  --md-sys-typescale-body-medium-tracking:    0.015625rem;
+
+  --md-sys-typescale-body-small-size:        0.75rem;        /* 12px */
+  --md-sys-typescale-body-small-line-height: 1rem;           /* 16px */
+  --md-sys-typescale-body-small-weight:      400;
+  --md-sys-typescale-body-small-tracking:    0.025rem;
+
+  --md-sys-typescale-label-large-size:        0.875rem;      /* 14px */
+  --md-sys-typescale-label-large-line-height: 1.25rem;       /* 20px */
+  --md-sys-typescale-label-large-weight:      500;
+  --md-sys-typescale-label-large-tracking:    0.00625rem;
+
+  --md-sys-typescale-label-medium-size:        0.75rem;      /* 12px */
+  --md-sys-typescale-label-medium-line-height: 1rem;         /* 16px */
+  --md-sys-typescale-label-medium-weight:      500;
+  --md-sys-typescale-label-medium-tracking:    0.03125rem;
+
+  --md-sys-typescale-label-small-size:        0.6875rem;     /* 11px */
+  --md-sys-typescale-label-small-line-height: 1rem;          /* 16px */
+  --md-sys-typescale-label-small-weight:      500;
+  --md-sys-typescale-label-small-tracking:    0.03125rem;
+
+  /* ── Spacing scale  (8pt grid) ──────────────────────────────────── */
+  --md-sys-spacing-1:  0.5rem;   /*  8px */
+  --md-sys-spacing-2:  1rem;     /* 16px */
+  --md-sys-spacing-3:  1.5rem;   /* 24px */
+  --md-sys-spacing-4:  2rem;     /* 32px */
+  --md-sys-spacing-5:  2.5rem;   /* 40px */
+  --md-sys-spacing-6:  3rem;     /* 48px */
+  --md-sys-spacing-8:  4rem;     /* 64px */
+  --md-sys-spacing-10: 5rem;     /* 80px */
+  --md-sys-spacing-12: 6rem;     /* 96px */
+  --md-sys-spacing-16: 8rem;     /* 128px */
+
+  /* ── Shape scale  (border-radius, matches MD3 shape system) ────── */
+  --md-sys-shape-corner-none:        0;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small:       8px;
+  --md-sys-shape-corner-medium:      12px;
+  --md-sys-shape-corner-large:       16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full:        9999px;
+
+  /* ── Elevation  (box-shadows at 5 MD3 levels) ─────────────────── */
+  --md-sys-elevation-1: 0 1px 2px rgba(0,0,0,.05), 0 1px 3px rgba(0,0,0,.08);
+  --md-sys-elevation-2: 0 2px 6px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --md-sys-elevation-3: 0 4px 8px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.06);
+  --md-sys-elevation-4: 0 8px 16px rgba(0,0,0,.09), 0 4px 6px rgba(0,0,0,.06);
+  --md-sys-elevation-5: 0 20px 40px rgba(0,0,0,.12), 0 8px 12px rgba(0,0,0,.07);
+}
+
+/* ─── Dark mode overrides for Layer 1 ─────────────────────────── */
+[data-theme="dark"] {
+  /* ── Primary ─ */
+  --md-sys-color-primary:              #fb923c;
+  --md-sys-color-on-primary:           #431407;
+  --md-sys-color-primary-container:    rgba(249,115,22,0.15);
+  --md-sys-color-on-primary-container: #fed7aa;
+
+  /* ── Secondary ─ */
+  --md-sys-color-secondary:              #a5b4fc;
+  --md-sys-color-on-secondary:           #1e1b4b;
+  --md-sys-color-secondary-container:    rgba(99,102,241,0.15);
+  --md-sys-color-on-secondary-container: #c7d2fe;
+
+  /* ── Tertiary ─ */
+  --md-sys-color-tertiary:              #67e8f9;
+  --md-sys-color-on-tertiary:           #0e7490;
+  --md-sys-color-tertiary-container:    rgba(6,182,212,0.15);
+  --md-sys-color-on-tertiary-container: #a5f3fc;
+
+  /* ── Error ─ */
+  --md-sys-color-error:              #fca5a5;
+  --md-sys-color-on-error:           #7f1d1d;
+  --md-sys-color-error-container:    rgba(239,68,68,0.15);
+  --md-sys-color-on-error-container: #fecaca;
+
+  /* ── Background ─ */
+  --md-sys-color-background:    #080c18;
+  --md-sys-color-on-background: #f0f4ff;
+
+  /* ── Surface ─ */
+  --md-sys-color-surface:                   #111827;
+  --md-sys-color-on-surface:                #f0f4ff;
+  --md-sys-color-surface-variant:           #1a2236;
+  --md-sys-color-on-surface-variant:        #94a3b8;
+  --md-sys-color-surface-container-lowest:  #080c18;
+  --md-sys-color-surface-container-low:     #0f172a;
+  --md-sys-color-surface-container:         #1a2236;
+  --md-sys-color-surface-container-high:    #1e293b;
+  --md-sys-color-surface-container-highest: #334155;
+
+  /* ── Outline ─ */
+  --md-sys-color-outline:         #1e293b;
+  --md-sys-color-outline-variant: #334155;
+
+  /* ── Inverse ─ */
+  --md-sys-color-inverse-surface:    #f0f4ff;
+  --md-sys-color-inverse-on-surface: #0f172a;
+  --md-sys-color-inverse-primary:    #f97316;
+
+  /* ── Utility ─ */
+  --md-sys-color-shadow: rgba(0, 0, 0, 0.4);
+  --md-sys-color-scrim:  rgba(0, 0, 0, 0.7);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYER 2 — RAWWEIGHTS BRAND ALIASES
+   These point through Layer 1. Existing pages use these names.
+   Do NOT change unless changing the brand identity.
+   ═══════════════════════════════════════════════════════════════ */
+
 /* ─── 1. DESIGN TOKENS ──────────────────────────────────────── */
 :root {
-  /* Brand palette */
-  --rw-orange:        #f97316;
-  --rw-orange-hover:  #ea580c;
-  --rw-orange-light:  #fff7ed;
-  --rw-orange-border: #fed7aa;
-  --rw-indigo:        #6366f1;
+  /* Brand shortcuts — backed by MD3 semantic layer */
+  --rw-orange:        var(--md-sys-color-primary);
+  --rw-orange-hover:  #ea580c;   /* hover states aren't in MD3 — kept raw */
+  --rw-orange-light:  var(--md-sys-color-primary-container);
+  --rw-orange-border: var(--md-sys-color-on-primary-container);
+  --rw-indigo:        var(--md-sys-color-secondary);
   --rw-indigo-hover:  #4f46e5;
-  --rw-indigo-light:  #eef2ff;
-  --rw-cyan:          #06b6d4;
-  --rw-emerald:       #10b981;
+  --rw-indigo-light:  var(--md-sys-color-secondary-container);
+  --rw-cyan:          var(--md-sys-color-tertiary);
+  --rw-emerald:       var(--md-sys-color-quaternary);
 
-  /* Light mode surfaces */
-  --rw-bg:            #ffffff;
-  --rw-bg-alt:        #f8fafc;
-  --rw-bg-subtle:     #f1f5f9;
-  --rw-card:          #ffffff;
-  --rw-card-hover:    #fafbfc;
+  /* Surfaces — backed by MD3 surface hierarchy */
+  --rw-bg:            var(--md-sys-color-background);
+  --rw-bg-alt:        var(--md-sys-color-surface-container-low);
+  --rw-bg-subtle:     var(--md-sys-color-surface-container);
+  --rw-card:          var(--md-sys-color-surface);
+  --rw-card-hover:    var(--md-sys-color-surface-container-low);
 
-  /* Light mode borders */
-  --rw-border:        #e2e8f0;
-  --rw-border-strong: #cbd5e1;
+  /* Borders — backed by MD3 outline tokens */
+  --rw-border:        var(--md-sys-color-outline);
+  --rw-border-strong: var(--md-sys-color-outline-variant);
 
-  /* Light mode text */
-  --rw-text:          #0f172a;
-  --rw-text-muted:    #475569;
-  --rw-text-subtle:   #94a3b8;
-  --rw-text-inverse:  #ffffff;
-  --rw-link:          #f97316;
-  --rw-link-hover:    #ea580c;
+  /* Text — backed by MD3 on-surface tokens */
+  --rw-text:          var(--md-sys-color-on-surface);
+  --rw-text-muted:    var(--md-sys-color-on-surface-variant);
+  --rw-text-subtle:   #94a3b8;   /* 3-level depth; no direct MD3 equivalent */
+  --rw-text-inverse:  var(--md-sys-color-inverse-on-surface);
+  --rw-link:          var(--md-sys-color-primary);
+  --rw-link-hover:    var(--md-sys-color-inverse-primary);
 
-  /* Nav */
+  /* Nav — semi-transparent surfaces (can't use var() inside rgba()) */
   --rw-nav-height:    64px;
   --rw-nav-bg:        rgba(255,255,255,0.88);
-  --rw-nav-text:      #0f172a;
+  --rw-nav-text:      var(--md-sys-color-on-surface);
   --rw-nav-border:    rgba(226,232,240,0.7);
-  --rw-dropdown-bg:   #ffffff;
-  --rw-dropdown-border: #e2e8f0;
+  --rw-dropdown-bg:   var(--md-sys-color-surface);
+  --rw-dropdown-border: var(--md-sys-color-outline);
 
   /* Shadows */
   --rw-shadow-xs:   0 1px 2px rgba(0,0,0,0.05);
@@ -92,15 +318,15 @@
   --rw-shadow-orange: 0 0 0 3px rgba(249,115,22,0.18);
   --rw-shadow-indigo: 0 0 0 3px rgba(99,102,241,0.18);
 
-  /* Border Radius */
-  --rw-r-xs:   4px;
-  --rw-r-sm:   6px;
-  --rw-r:      8px;
-  --rw-r-md:   12px;
-  --rw-r-lg:   16px;
-  --rw-r-xl:   24px;
+  /* Border Radius — backed by MD3 shape scale */
+  --rw-r-xs:   var(--md-sys-shape-corner-extra-small);  /* 4px  */
+  --rw-r-sm:   6px;                                      /* between xs and sm */
+  --rw-r:      var(--md-sys-shape-corner-small);         /* 8px  */
+  --rw-r-md:   var(--md-sys-shape-corner-medium);        /* 12px */
+  --rw-r-lg:   var(--md-sys-shape-corner-large);         /* 16px */
+  --rw-r-xl:   24px;                                     /* between lg and xl */
   --rw-r-2xl:  32px;
-  --rw-r-full: 9999px;
+  --rw-r-full: var(--md-sys-shape-corner-full);
 
   /* Typography */
   --rw-font-display: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
@@ -123,33 +349,21 @@
   --rw-z-toast:     500;
 }
 
-/* ─── Dark mode overrides ───────────────────────────────────── */
+/* ─── Dark mode overrides for Layer 2 ──────────────────────────
+   Most --rw-* values are now automatic (they resolve through the
+   MD3 Layer 1 tokens above which already have dark overrides).
+   Only override here what MD3 can't handle: semi-transparent
+   surfaces and elevated shadow alphas.
+   ─────────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --rw-orange-light:  rgba(249,115,22,0.12);
-  --rw-orange-border: rgba(249,115,22,0.3);
-  --rw-indigo-light:  rgba(99,102,241,0.12);
-
-  --rw-bg:            #080c18;
-  --rw-bg-alt:        #0f172a;
-  --rw-bg-subtle:     #1a2236;
-  --rw-card:          #111827;
-  --rw-card-hover:    #1a2236;
-
-  --rw-border:        #1e293b;
-  --rw-border-strong: #334155;
-
-  --rw-text:          #f0f4ff;
-  --rw-text-muted:    #94a3b8;
+  /* 3-level text depth — no MD3 equivalent */
   --rw-text-subtle:   #64748b;
-  --rw-link:          #fb923c;
-  --rw-link-hover:    #f97316;
 
-  --rw-nav-bg:        rgba(8,12,24,0.88);
-  --rw-nav-text:      #f0f4ff;
-  --rw-nav-border:    rgba(30,41,59,0.7);
-  --rw-dropdown-bg:   #111827;
-  --rw-dropdown-border: #1e293b;
+  /* Semi-transparent nav — can't express via MD3 var() inside rgba() */
+  --rw-nav-bg:     rgba(8,12,24,0.88);
+  --rw-nav-border: rgba(30,41,59,0.7);
 
+  /* Shadows need higher alpha in dark mode */
   --rw-shadow-xs:   0 1px 2px rgba(0,0,0,0.4);
   --rw-shadow-sm:   0 1px 3px rgba(0,0,0,0.4);
   --rw-shadow:      0 4px 6px -1px rgba(0,0,0,0.4);
