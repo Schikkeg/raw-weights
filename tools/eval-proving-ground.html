@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Proving Ground | RawWeights</title>
-  <meta name="description" content="Why benchmarks lie, what modern AI eval actually looks like, and how to build the measurement layer your system deserves � RAGAS, G-Eval, cascade math, coverage matrices, and the Iron Triangle.">
+  <meta name="description" content="Why benchmarks lie, what modern AI eval actually looks like, and how to build the measurement layer your system deserves — RAGAS, G-Eval, cascade math, coverage matrices, and the Iron Triangle.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/tools/eval-proving-ground.html">
   <meta property="og:type" content="article">
@@ -19,7 +19,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Page accent: steel blue + amber gold -- */
+    /* ── Page accent: steel blue + amber gold ── */
     :root {
       --ac:     #2563eb;
       --ac-h:   #1d4ed8;
@@ -30,7 +30,7 @@
       --ac2-br: rgba(217,119,6,0.22);
     }
 
-    /* -- Hero -- */
+    /* ── Hero ── */
     .guide-hero {
       background: linear-gradient(135deg, #020817 0%, #071035 55%, #020c1f 100%);
       padding: 5rem 1.5rem 4rem;
@@ -94,7 +94,7 @@
       text-transform:uppercase; letter-spacing:0.05em; margin-top:0.25rem;
     }
 
-    /* -- Layout -- */
+    /* ── Layout ── */
     .guide-layout {
       display:grid; grid-template-columns:230px 1fr;
       gap:2.5rem; max-width:1200px;
@@ -117,7 +117,7 @@
       color:var(--ac); border-left-color:var(--ac); background:var(--ac-lt);
     }
 
-    /* -- Sections -- */
+    /* ── Sections ── */
     .guide-section { margin-bottom:3.5rem; }
     .guide-section h2 {
       font-family:var(--rw-font-display); font-size:1.55rem; font-weight:800;
@@ -131,7 +131,7 @@
     }
     .guide-section p { font-size:0.97rem; color:var(--rw-text-muted); line-height:1.75; margin-bottom:0.9rem; }
 
-    /* -- Cards -- */
+    /* ── Cards ── */
     .card-grid { display:grid; gap:1rem; margin:1.25rem 0; }
     .card-grid.cols-2 { grid-template-columns:repeat(2,1fr); }
     .card-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
@@ -149,7 +149,7 @@
     }
     .card p { font-size:0.8rem; color:var(--rw-text-muted); margin:0; line-height:1.55; }
 
-    /* -- Callouts -- */
+    /* ── Callouts ── */
     .callout {
       border-left:3px solid var(--ac); border-radius:0 8px 8px 0;
       background:var(--ac-lt); padding:0.9rem 1.1rem;
@@ -163,7 +163,7 @@
     }
     .callout-gold strong { color:var(--ac2); }
 
-    /* -- Badge -- */
+    /* ── Badge ── */
     .badge {
       display:inline-block; font-size:0.67rem; font-weight:700;
       text-transform:uppercase; letter-spacing:0.05em;
@@ -174,9 +174,9 @@
     .badge-green { background:rgba(34,197,94,0.1); color:#22c55e; }
     .badge-red   { background:rgba(239,68,68,0.1);  color:#ef4444; }
 
-    /* ----------------------------------------
-       SECTION 1 � Benchmark Limitations
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 1 — Benchmark Limitations
+    ════════════════════════════════════════ */
     .limit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:0.85rem; margin:1.25rem 0; }
     .limit-card {
       background:var(--rw-card); border:1px solid var(--rw-border);
@@ -220,9 +220,9 @@
       background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
     }
 
-    /* ----------------------------------------
-       SECTION 2 � RAGAS Metrics
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 2 — RAGAS Metrics
+    ════════════════════════════════════════ */
     .ragas-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.25rem 0; }
     .ragas-card {
       background:var(--rw-card); border:1px solid var(--rw-border);
@@ -264,9 +264,9 @@
     }
     .ragas-threshold strong { color:var(--ac2); }
 
-    /* ----------------------------------------
-       SECTION 3 � Bias Lab
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 3 — Bias Lab
+    ════════════════════════════════════════ */
     .bias-tabs { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:1rem; }
     .bias-tab {
       padding:0.4rem 0.9rem; border-radius:9999px;
@@ -323,9 +323,9 @@
     }
     .bias-fix strong { color:#22c55e; }
 
-    /* ----------------------------------------
-       SECTION 4 � Eval Method Wizard
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 4 — Eval Method Wizard
+    ════════════════════════════════════════ */
     .wizard-wrap {
       background:var(--rw-card); border:1px solid var(--rw-border);
       border-radius:12px; overflow:hidden; margin:1.25rem 0;
@@ -384,9 +384,9 @@
     }
     .wp-dot.done { background:var(--ac); }
 
-    /* ----------------------------------------
-       SECTION 5 � Coverage Matrix
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 5 — Coverage Matrix
+    ════════════════════════════════════════ */
     .coverage-tool {
       background:var(--rw-card); border:1px solid var(--rw-border);
       border-radius:12px; overflow:hidden; margin:1.25rem 0;
@@ -458,9 +458,9 @@
       background:rgba(217,119,6,0.08); border:1px solid rgba(217,119,6,0.25); color:var(--ac2);
     }
 
-    /* ----------------------------------------
-       SECTION 6 � Cascade Calculator
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 6 — Cascade Calculator
+    ════════════════════════════════════════ */
     .cascade-tool {
       background:var(--rw-card); border:1px solid var(--rw-border);
       border-radius:12px; padding:1.5rem; margin:1.25rem 0;
@@ -518,9 +518,9 @@
     }
     .step-arrow { color:var(--rw-text-subtle); font-size:0.75rem; }
 
-    /* ----------------------------------------
-       SECTION 7 � Eval vs Monitor vs Observe
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 7 — Eval vs Monitor vs Observe
+    ════════════════════════════════════════ */
     .trio-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.25rem 0; }
     .trio-card {
       background:var(--rw-card); border:1px solid var(--rw-border);
@@ -544,9 +544,9 @@
       line-height:1.8;
     }
 
-    /* ----------------------------------------
-       SECTION 8 � Maturity Path
-    ---------------------------------------- */
+    /* ════════════════════════════════════════
+       SECTION 8 — Maturity Path
+    ════════════════════════════════════════ */
     .maturity-track { position:relative; margin:1.5rem 0; }
     .maturity-line {
       position:absolute; top:20px; left:20px; right:20px; height:2px;
@@ -600,7 +600,7 @@
       text-align:center; margin-top:0.75rem; transition:all 0.3s;
     }
 
-    /* -- Comparison table -- */
+    /* ── Comparison table ── */
     .cmp-table { width:100%; border-collapse:collapse; margin:1.25rem 0; font-size:0.85rem; }
     .cmp-table th {
       background:var(--rw-bg-subtle); font-family:var(--rw-font-display);
@@ -616,7 +616,7 @@
     .no  { color:#ef4444; font-weight:700; }
     .par { color:var(--ac2); font-weight:700; }
 
-    /* -- Iron Triangle -- */
+    /* ── Iron Triangle ── */
     .triangle-wrap {
       display:flex; flex-direction:column; align-items:center;
       background:var(--rw-card); border:1px solid var(--rw-border);
@@ -637,7 +637,7 @@
       font-style:italic; margin-top:0.75rem; max-width:380px;
     }
 
-    /* -- Responsive -- */
+    /* ── Responsive ── */
     @media (max-width:1024px) {
       .guide-layout { grid-template-columns:1fr; }
       .guide-sidebar { display:none; }
@@ -662,7 +662,7 @@
 <script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_eval_proving_ground',
-  description: 'Returns an overview of The Proving Ground � covers AI evaluation frameworks, why benchmarks fail, RAGAS, G-Eval, and the Iron Triangle.',
+  description: 'Returns an overview of The Proving Ground — covers AI evaluation frameworks, why benchmarks fail, RAGAS, G-Eval, and the Iron Triangle.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3'))
@@ -675,7 +675,7 @@ window.RW_PAGE_TOOLS = [{
       sections: sections,
       frameworks_covered: ['RAGAS', 'G-Eval', 'LLM-as-judge', 'Human evaluation baselines', 'Cascade evaluation math'],
       key_concepts: ['Why benchmarks lie', 'Coverage matrices', 'The Iron Triangle (quality/speed/cost)', 'Eval-driven development', 'Hallucination detection metrics'],
-      learning_objective: 'Build a rigorous AI evaluation layer � understand what to measure, how to measure it, and the tradeoffs involved.'
+      learning_objective: 'Build a rigorous AI evaluation layer — understand what to measure, how to measure it, and the tradeoffs involved.'
     };
   }
 }];
@@ -683,18 +683,18 @@ window.RW_PAGE_TOOLS = [{
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- ------------------------------------------
+<!-- ══════════════════════════════════════════
      HERO
------------------------------------------- -->
+══════════════════════════════════════════ -->
 <header class="guide-hero">
   <div class="guide-hero-inner">
-    <div class="guide-hero-label">? Inspired by GenAcademy � My Field Notes</div>
+    <div class="guide-hero-label">✦ Inspired by GenAcademy · My Field Notes</div>
     <h1>The <span>Proving Ground</span></h1>
     <p class="guide-hero-sub">
       A manufacturer's spec sheet tells you the car does 200 mph. Your proving ground tells you if it handles your mountain roads in winter. Benchmarks are the spec sheet. Evals are the proving ground.
     </p>
     <p class="guide-hero-note">
-      Practitioner-level AI evaluation � RAGAS, G-Eval, cascade math, golden dataset coverage, the Iron Triangle, and the bias lab.
+      Practitioner-level AI evaluation — RAGAS, G-Eval, cascade math, golden dataset coverage, the Iron Triangle, and the bias lab.
     </p>
     <div class="hero-stat-row">
       <div class="hero-stat">
@@ -714,18 +714,18 @@ window.RW_PAGE_TOOLS = [{
         <div class="hero-stat-label">10-step agent success*</div>
       </div>
     </div>
-    <p style="font-size:0.72rem;color:rgba(240,244,255,0.3);margin-top:0.5rem;">*at 95% per-step reliability � see the calculator</p>
+    <p style="font-size:0.72rem;color:rgba(240,244,255,0.3);margin-top:0.5rem;">*at 95% per-step reliability — see the calculator</p>
   </div>
 </header>
 
 <div class="guide-layout">
 
-  <!-- -- Sidebar TOC -- -->
+  <!-- ── Sidebar TOC ── -->
   <aside class="guide-sidebar">
     <div class="guide-toc-label">On this page</div>
     <ul class="guide-toc">
       <li><a href="#section-benchmarks">The Benchmark Problem</a></li>
-      <li><a href="#section-ragas">RAGAS � Modern Metrics</a></li>
+      <li><a href="#section-ragas">RAGAS — Modern Metrics</a></li>
       <li><a href="#section-bias">The Bias Lab</a></li>
       <li><a href="#section-methods">Eval Method Selector</a></li>
       <li><a href="#section-coverage">The Coverage Matrix</a></li>
@@ -737,21 +737,21 @@ window.RW_PAGE_TOOLS = [{
     </ul>
   </aside>
 
-  <!-- -- Main content -- -->
+  <!-- ── Main content ── -->
   <main>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          1. BENCHMARK PROBLEM
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-benchmarks">
       <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-left:3px solid #f59e0b;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:1.5rem;max-width:680px;">
         <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.07em;color:#fbbf24;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
         <p style="margin:0 0 0.6rem;color:var(--rw-text-muted);font-style:italic;">"We buy cars knowing they've been crash tested. AI systems? Most get shipped on vibes."</p>
-        <p style="margin:0;color:var(--rw-text-subtle);font-size:0.875rem;">Two failure patterns I kept coming back to: a chatbot that passed every test and failed in production because nobody put out-of-scope inputs in the test set � and a bias fix that broke a different slice because only the repaired cases were re-tested. The root cause was the same: gaps in what was tested, and testing after building instead of before. That's the shift I now apply to every agentic project � define what success looks like before writing a single line of agent code.</p>
+        <p style="margin:0;color:var(--rw-text-subtle);font-size:0.875rem;">Two failure patterns I kept coming back to: a chatbot that passed every test and failed in production because nobody put out-of-scope inputs in the test set — and a bias fix that broke a different slice because only the repaired cases were re-tested. The root cause was the same: gaps in what was tested, and testing after building instead of before. That's the shift I now apply to every agentic project — define what success looks like before writing a single line of agent code.</p>
       </div>
       <h2>The Benchmark Problem</h2>
       <p>
-        Every model launch comes with a slide full of benchmark scores. They're not lies � but they're not the full truth either.
+        Every model launch comes with a slide full of benchmark scores. They're not lies — but they're not the full truth either.
         Benchmarks test the model in a controlled, standardised scenario.
         <strong style="color:var(--rw-text);">Your system is none of those things.</strong>
       </p>
@@ -759,34 +759,34 @@ window.RW_PAGE_TOOLS = [{
       <h3>What benchmarks actually measure</h3>
       <div class="card-grid cols-3">
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">🧠</div>
           <h4>General Knowledge</h4>
           <p>History, facts, relationships between concepts. MMLU is the canonical benchmark here.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">🔢</div>
           <h4>Math &amp; Reasoning</h4>
           <p>Equations, multi-step logic, word problems. GSM8K, MATH. Harder to game than trivia.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">💻</div>
           <h4>Coding</h4>
-          <p>HumanEval, SWE-Bench. Most-cited because coding ROI is largest � Cursor, Copilot, Devin.</p>
+          <p>HumanEval, SWE-Bench. Most-cited because coding ROI is largest — Cursor, Copilot, Devin.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">🔍</div>
           <h4>Retrieval / Context</h4>
           <p>Needle-in-haystack: hide a fact deep in a 100K-token document, ask the model to find it.</p>
         </div>
         <div class="card">
-          <div class="card-icon">???</div>
+          <div class="card-icon">🛠️</div>
           <h4>Tool Use / Agentic</h4>
-          <p>Does the model select the right tool, at the right time, without being prompted? ToolBench, t-bench.</p>
+          <p>Does the model select the right tool, at the right time, without being prompted? ToolBench, τ-bench.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">🎓</div>
           <h4>Humanity's Last Exam</h4>
-          <p>Expert-level questions across 100+ disciplines. Frontier models score ~8�30%. Designed to resist saturation.</p>
+          <p>Expert-level questions across 100+ disciplines. Frontier models score ~8–30%. Designed to resist saturation.</p>
         </div>
       </div>
 
@@ -795,18 +795,18 @@ window.RW_PAGE_TOOLS = [{
       <div class="limit-grid">
         <div class="limit-card" onclick="toggleLimit(this)">
           <div class="limit-header">
-            <div class="limit-title"><span class="limit-icon">??</span>Domain-specific use case</div>
-            <span class="limit-arrow">?</span>
+            <div class="limit-title"><span class="limit-icon">🏥</span>Domain-specific use case</div>
+            <span class="limit-arrow">▼</span>
           </div>
           <div class="limit-body">
             <p>Healthcare, legal, financial domains are not in benchmark datasets. A model scoring 90% on MMLU could score 40% on your clinical note summarisation task. The benchmark never saw your domain.</p>
-            <div class="example">"Model X scored highest on MMLU" ? still hallucinated drug interaction names in our hospital pilot</div>
+            <div class="example">"Model X scored highest on MMLU" → still hallucinated drug interaction names in our hospital pilot</div>
           </div>
         </div>
         <div class="limit-card" onclick="toggleLimit(this)">
           <div class="limit-header">
-            <div class="limit-title"><span class="limit-icon">??</span>Your proprietary data</div>
-            <span class="limit-arrow">?</span>
+            <div class="limit-title"><span class="limit-icon">🏢</span>Your proprietary data</div>
+            <span class="limit-arrow">▼</span>
           </div>
           <div class="limit-body">
             <p>The model has never seen your internal docs, product catalogues, or customer history. Benchmark tests what it was trained on. Your data is different.</p>
@@ -815,8 +815,8 @@ window.RW_PAGE_TOOLS = [{
         </div>
         <div class="limit-card" onclick="toggleLimit(this)">
           <div class="limit-header">
-            <div class="limit-title"><span class="limit-icon">??</span>Your system's plumbing</div>
-            <span class="limit-arrow">?</span>
+            <div class="limit-title"><span class="limit-icon">🔧</span>Your system's plumbing</div>
+            <span class="limit-arrow">▼</span>
           </div>
           <div class="limit-body">
             <p>Benchmarks test the model in isolation. Your agent wraps it in retrieval, memory, tool calls, and routing. The model's benchmark score says nothing about how those layers interact.</p>
@@ -825,11 +825,11 @@ window.RW_PAGE_TOOLS = [{
         </div>
         <div class="limit-card" onclick="toggleLimit(this)">
           <div class="limit-header">
-            <div class="limit-title"><span class="limit-icon">??</span>Benchmark contamination</div>
-            <span class="limit-arrow">?</span>
+            <div class="limit-title"><span class="limit-icon">☠️</span>Benchmark contamination</div>
+            <span class="limit-arrow">▼</span>
           </div>
           <div class="limit-body">
-            <p>MMLU, GSM8K, HumanEval � all public. LLMs train on the internet. The model may have memorised questions and answers during pre-training, inflating its score without genuine reasoning.</p>
+            <p>MMLU, GSM8K, HumanEval — all public. LLMs train on the internet. The model may have memorised questions and answers during pre-training, inflating its score without genuine reasoning.</p>
             <div class="example">One model scored 89% on HumanEval but 61% on an equivalent private code eval with novel problems. The gap was contamination.</div>
             <div style="margin-top:0.75rem">
               <div style="font-size:0.75rem;color:var(--rw-text-subtle);margin-bottom:0.25rem">Contamination risk spectrum</div>
@@ -840,8 +840,8 @@ window.RW_PAGE_TOOLS = [{
         </div>
         <div class="limit-card" onclick="toggleLimit(this)">
           <div class="limit-header">
-            <div class="limit-title"><span class="limit-icon">??</span>Multi-step agent tasks</div>
-            <span class="limit-arrow">?</span>
+            <div class="limit-title"><span class="limit-icon">🎯</span>Multi-step agent tasks</div>
+            <span class="limit-arrow">▼</span>
           </div>
           <div class="limit-body">
             <p>Benchmarks give the model one question, one shot. Real agents make sequential decisions over many steps. Compound error rates mean even a "97%-accurate" model fails end-to-end. See the cascade calculator below.</p>
@@ -850,11 +850,11 @@ window.RW_PAGE_TOOLS = [{
         </div>
         <div class="limit-card" onclick="toggleLimit(this)">
           <div class="limit-header">
-            <div class="limit-title"><span class="limit-icon">??</span>Saturation problem</div>
-            <span class="limit-arrow">?</span>
+            <div class="limit-title"><span class="limit-icon">📊</span>Saturation problem</div>
+            <span class="limit-arrow">▼</span>
           </div>
           <div class="limit-body">
-            <p>Most frontier models now cluster near the ceiling on popular benchmarks. The gap between model versions (4.1 ? 4.2 ? 4.3) is marginal on MMLU. Benchmarks stop differentiating precisely when you need them to.</p>
+            <p>Most frontier models now cluster near the ceiling on popular benchmarks. The gap between model versions (4.1 → 4.2 → 4.3) is marginal on MMLU. Benchmarks stop differentiating precisely when you need them to.</p>
             <div class="example">GPT-4 to GPT-4o to GPT-4o-mini: MMLU gap was &lt;2%. Task-specific evals found 18% gap on structured data extraction.</div>
           </div>
         </div>
@@ -867,15 +867,15 @@ window.RW_PAGE_TOOLS = [{
       <h3>Two real-world failures that changed how I think about this</h3>
       <div class="card-grid cols-2" style="margin-top:0.75rem;">
         <div class="card" style="border-left:3px solid var(--ac);">
-          <div class="card-icon">??</div>
-          <h4>The Input Gap � Chipotle's Chatbot</h4>
-          <p>Built to answer menu questions. Users asked Python coding questions � and it answered. Not because the model was broken. Because nobody put out-of-scope inputs in the test set. It passed every test. Failed in production.</p>
+          <div class="card-icon">🌯</div>
+          <h4>The Input Gap — Chipotle's Chatbot</h4>
+          <p>Built to answer menu questions. Users asked Python coding questions — and it answered. Not because the model was broken. Because nobody put out-of-scope inputs in the test set. It passed every test. Failed in production.</p>
           <p style="font-size:0.78rem;color:var(--rw-text-subtle);margin-top:0.5rem;"><strong>The lesson:</strong> What you test defines what you know. Gaps in test coverage are invisible until production finds them.</p>
         </div>
         <div class="card" style="border-left:3px solid var(--ac2);">
-          <div class="card-icon">???</div>
-          <h4>The Fix Trap � Google's Image Model</h4>
-          <p>Engineers fixed a racial bias problem. The fix made the model start generating people of color in historically wrong contexts. They tested only the repaired slice � never re-ran the full dataset. Fix one metric, break another.</p>
+          <div class="card-icon">🖼️</div>
+          <h4>The Fix Trap — Google's Image Model</h4>
+          <p>Engineers fixed a racial bias problem. The fix made the model start generating people of color in historically wrong contexts. They tested only the repaired slice — never re-ran the full dataset. Fix one metric, break another.</p>
           <p style="font-size:0.78rem;color:var(--rw-text-subtle);margin-top:0.5rem;"><strong>The lesson:</strong> Every fix needs a full regression run. Patch testing is how you swap one problem for another.</p>
         </div>
       </div>
@@ -884,11 +884,11 @@ window.RW_PAGE_TOOLS = [{
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          2. RAGAS
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-ragas">
-      <h2>RAGAS � What Practitioners Actually Use</h2>
+      <h2>RAGAS — What Practitioners Actually Use</h2>
       <p>
         ROUGE and BLEU measure word overlap between your answer and a reference string. Useful in 2015 for machine translation. For RAG systems in 2025, they miss the point: meaning matters, not word matching.
       </p>
@@ -904,18 +904,18 @@ window.RW_PAGE_TOOLS = [{
             <div class="ragas-desc">Guards against hallucination. Every sentence in the answer is checked against the context. Fails if the model invented facts not in the retrieved documents.</div>
           </div>
           <div class="ragas-detail">
-            <div class="ragas-scenario-title">Scored example � Return Policy Bot</div>
+            <div class="ragas-scenario-title">Scored example — Return Policy Bot</div>
             <div class="ragas-good">
-              <strong>? High faithfulness (0.95)</strong><br>
+              <strong>✓ High faithfulness (0.95)</strong><br>
               Context says: "Returns accepted within 30 days of purchase."<br>
               Answer: "You can return your order within 30 days."<br>
               Every claim in the answer traces directly to context.
             </div>
             <div class="ragas-bad">
-              <strong>? Low faithfulness (0.20)</strong><br>
+              <strong>✗ Low faithfulness (0.20)</strong><br>
               Context says: "Returns accepted within 30 days."<br>
               Answer: "You can return within 30 days and get a full refund including shipping."<br>
-              "Full refund including shipping" was not in context � hallucinated.
+              "Full refund including shipping" was not in context — hallucinated.
             </div>
             <div class="ragas-threshold"><strong>Production threshold:</strong> &gt;0.85. Below this, users are receiving invented facts.</div>
           </div>
@@ -924,21 +924,21 @@ window.RW_PAGE_TOOLS = [{
           <div class="ragas-header">
             <div class="ragas-q">Does the answer actually address the question?</div>
             <div class="ragas-name">Answer Relevance</div>
-            <div class="ragas-desc">Guards against topic drift. The model may produce a perfectly accurate, well-grounded answer � about the wrong topic. This catches that failure mode.</div>
+            <div class="ragas-desc">Guards against topic drift. The model may produce a perfectly accurate, well-grounded answer — about the wrong topic. This catches that failure mode.</div>
           </div>
           <div class="ragas-detail">
-            <div class="ragas-scenario-title">Scored example � E-commerce Support Bot</div>
+            <div class="ragas-scenario-title">Scored example — E-commerce Support Bot</div>
             <div class="ragas-good">
-              <strong>? High relevance (0.92)</strong><br>
+              <strong>✓ High relevance (0.92)</strong><br>
               Question: "Can I return my order after 30 days?"<br>
               Answer: "Our return policy allows returns within 30 days of delivery."<br>
               Directly answers what was asked.
             </div>
             <div class="ragas-bad">
-              <strong>? Low relevance (0.18)</strong><br>
+              <strong>✗ Low relevance (0.18)</strong><br>
               Question: "Can I return my order after 30 days?"<br>
               Answer: "You can track your order using the tracking number in your confirmation email."<br>
-              Accurate information � but about shipping, not returns.
+              Accurate information — but about shipping, not returns.
             </div>
             <div class="ragas-threshold"><strong>Production threshold:</strong> &gt;0.80. Below this, users are getting off-topic responses.</div>
           </div>
@@ -950,14 +950,14 @@ window.RW_PAGE_TOOLS = [{
             <div class="ragas-desc">Measures retrieval noise. If you retrieved 10 chunks but only 2 were relevant to the answer, precision is 0.20. High noise means wasted tokens, higher cost, and confused responses.</div>
           </div>
           <div class="ragas-detail">
-            <div class="ragas-scenario-title">Scored example � HR Policy Bot</div>
+            <div class="ragas-scenario-title">Scored example — HR Policy Bot</div>
             <div class="ragas-good">
-              <strong>? High precision (0.90)</strong><br>
+              <strong>✓ High precision (0.90)</strong><br>
               Retrieved 10 chunks. 9 were about "maternity leave policy."<br>
               Question was about maternity leave. Retrieval was focused and relevant.
             </div>
             <div class="ragas-bad">
-              <strong>? Low precision (0.20)</strong><br>
+              <strong>✗ Low precision (0.20)</strong><br>
               Retrieved 10 chunks: 2 about maternity leave, 8 about unrelated HR policies.<br>
               The retrieval pipeline is pulling noisy chunks. Chunk strategy needs work.
             </div>
@@ -968,19 +968,19 @@ window.RW_PAGE_TOOLS = [{
           <div class="ragas-header">
             <div class="ragas-q">Did retrieval find all the chunks needed to answer?</div>
             <div class="ragas-name">Context Recall</div>
-            <div class="ragas-desc">Guards against retrieval gaps. The right answer exists in your knowledge base � but was never retrieved. The model then either hallucinated or said it didn't know.</div>
+            <div class="ragas-desc">Guards against retrieval gaps. The right answer exists in your knowledge base — but was never retrieved. The model then either hallucinated or said it didn't know.</div>
           </div>
           <div class="ragas-detail">
-            <div class="ragas-scenario-title">Scored example � Legal Document Bot</div>
+            <div class="ragas-scenario-title">Scored example — Legal Document Bot</div>
             <div class="ragas-good">
-              <strong>? High recall (0.88)</strong><br>
+              <strong>✓ High recall (0.88)</strong><br>
               Question needed 4 clauses from a contract to answer fully.<br>
               Retrieval returned all 4 relevant clauses. Nothing important was missed.
             </div>
             <div class="ragas-bad">
-              <strong>? Low recall (0.25)</strong><br>
+              <strong>✗ Low recall (0.25)</strong><br>
               Question needed 4 clauses. Retrieval returned 1 of them.<br>
-              Model answered based on partial info � missed key limitations in clauses 2, 3, 4.
+              Model answered based on partial info — missed key limitations in clauses 2, 3, 4.
             </div>
             <div class="ragas-threshold"><strong>Production threshold:</strong> &gt;0.80. Low recall = increase top-K or improve embedding model.</div>
           </div>
@@ -988,13 +988,13 @@ window.RW_PAGE_TOOLS = [{
       </div>
 
       <div class="callout">
-        <strong>G-Eval:</strong> The same LLM-as-judge principle applied to any custom criteria. Instead of asking the model "rate this 1�5", you ask it to generate its own evaluation steps based on your rubric, then apply those steps before scoring. Chain-of-thought before the score dramatically reduces bias. This is how you build a judge for tasks RAGAS doesn't cover.
+        <strong>G-Eval:</strong> The same LLM-as-judge principle applied to any custom criteria. Instead of asking the model "rate this 1–5", you ask it to generate its own evaluation steps based on your rubric, then apply those steps before scoring. Chain-of-thought before the score dramatically reduces bias. This is how you build a judge for tasks RAGAS doesn't cover.
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          3. BIAS LAB
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-bias">
       <h2>The Bias Lab</h2>
       <p>
@@ -1008,19 +1008,19 @@ window.RW_PAGE_TOOLS = [{
       </div>
 
       <div class="bias-panel active" id="bias-position">
-        <p>When shown two answers (A and B), the judge tends to prefer whichever appears <strong style="color:var(--rw-text)">first</strong> � not because it's better, but because of how attention weights work in transformers.</p>
+        <p>When shown two answers (A and B), the judge tends to prefer whichever appears <strong style="color:var(--rw-text)">first</strong> — not because it's better, but because of how attention weights work in transformers.</p>
         <div class="bias-demo">
-          <div class="bias-demo-title">Judge Evaluation � Same Answers, Different Order</div>
+          <div class="bias-demo-title">Judge Evaluation — Same Answers, Different Order</div>
           <div class="judge-eval">
-            <div class="judge-eval-label">Run 1 � Answer A appears first</div>
+            <div class="judge-eval-label">Run 1 — Answer A appears first</div>
             <div class="judge-eval-text">Answer A: "The return window is 30 days from delivery."<br>Answer B: "You have 30 days after delivery to initiate a return."</div>
-            <div class="judge-score score-high">Answer A wins � Score: 4.2 / 5</div>
+            <div class="judge-score score-high">Answer A wins — Score: 4.2 / 5</div>
           </div>
-          <div class="bias-arrow">? swap order</div>
+          <div class="bias-arrow">↕ swap order</div>
           <div class="judge-eval">
-            <div class="judge-eval-label">Run 2 � Answer B appears first</div>
+            <div class="judge-eval-label">Run 2 — Answer B appears first</div>
             <div class="judge-eval-text">Answer B: "You have 30 days after delivery to initiate a return."<br>Answer A: "The return window is 30 days from delivery."</div>
-            <div class="judge-score score-high">Answer B wins � Score: 4.3 / 5</div>
+            <div class="judge-score score-high">Answer B wins — Score: 4.3 / 5</div>
           </div>
           <div class="bias-verdict" style="margin-top:0.75rem"><strong>The problem:</strong> The answers are semantically identical. The judge picked whichever came first both times. The "winner" is an artefact of ordering, not quality.</div>
           <div class="bias-fix"><strong>The fix:</strong> Run every comparison twice with the order swapped. Average both scores. If A beats B in order 1 but B beats A in order 2, they're effectively tied.</div>
@@ -1028,59 +1028,59 @@ window.RW_PAGE_TOOLS = [{
       </div>
 
       <div class="bias-panel" id="bias-verbosity">
-        <p>Longer answers consistently score higher � regardless of whether the extra length adds value. The judge conflates thoroughness with quality.</p>
+        <p>Longer answers consistently score higher — regardless of whether the extra length adds value. The judge conflates thoroughness with quality.</p>
         <div class="bias-demo">
-          <div class="bias-demo-title">Judge Evaluation � Length vs Accuracy</div>
+          <div class="bias-demo-title">Judge Evaluation — Length vs Accuracy</div>
           <div class="judge-eval">
             <div class="judge-eval-label">Short answer (accurate)</div>
             <div class="judge-eval-text">"The return window is 30 days from delivery date, as stated in section 4.2 of our policy."</div>
-            <div class="judge-score score-low">Score: 3.1 / 5 � "Could be more comprehensive"</div>
+            <div class="judge-score score-low">Score: 3.1 / 5 — "Could be more comprehensive"</div>
           </div>
           <div class="bias-arrow">vs</div>
           <div class="judge-eval">
             <div class="judge-eval-label">Long answer (same accuracy, padded)</div>
             <div class="judge-eval-text">"Great question! Our return policy is designed with the customer experience in mind. According to our guidelines, customers have a 30-day window from the date of delivery to initiate any return. This policy applies across all product categories. We value your satisfaction and are here to help throughout the process!"</div>
-            <div class="judge-score score-high">Score: 4.4 / 5 � "Thorough and customer-friendly"</div>
+            <div class="judge-score score-high">Score: 4.4 / 5 — "Thorough and customer-friendly"</div>
           </div>
-          <div class="bias-verdict"><strong>The problem:</strong> The second answer is objectively worse � it's padded, sycophantic, and harder to scan. But the judge rated it 42% higher.</div>
+          <div class="bias-verdict"><strong>The problem:</strong> The second answer is objectively worse — it's padded, sycophantic, and harder to scan. But the judge rated it 42% higher.</div>
           <div class="bias-fix"><strong>The fix:</strong> Explicitly instruct the judge: "Do not consider response length. A concise, precise answer is preferable to a verbose one. Rate only on accuracy, relevance, and faithfulness."</div>
         </div>
       </div>
 
       <div class="bias-panel" id="bias-selfenhance">
-        <p>A model used as judge subtly prefers outputs that resemble its own style and patterns � as if grading its own work. If you use Claude as both agent and judge, Claude-the-judge will favour Claude-style responses.</p>
+        <p>A model used as judge subtly prefers outputs that resemble its own style and patterns — as if grading its own work. If you use Claude as both agent and judge, Claude-the-judge will favour Claude-style responses.</p>
         <div class="bias-demo">
-          <div class="bias-demo-title">Judge Evaluation � Style Preference</div>
+          <div class="bias-demo-title">Judge Evaluation — Style Preference</div>
           <div class="judge-eval">
-            <div class="judge-eval-label">Answer A � Claude-like (structured, nuanced)</div>
-            <div class="judge-eval-text">"There are a few considerations here. First, the 30-day return window begins at delivery, not purchase. Second, items must be in original packaging. That said, exceptions may apply for defective items � I'd recommend contacting support for those cases."</div>
+            <div class="judge-eval-label">Answer A — Claude-like (structured, nuanced)</div>
+            <div class="judge-eval-text">"There are a few considerations here. First, the 30-day return window begins at delivery, not purchase. Second, items must be in original packaging. That said, exceptions may apply for defective items — I'd recommend contacting support for those cases."</div>
             <div class="judge-score score-high">Score: 4.6 / 5</div>
           </div>
           <div class="bias-arrow">vs</div>
           <div class="judge-eval">
-            <div class="judge-eval-label">Answer B � GPT-like (direct, bullet-forward)</div>
-            <div class="judge-eval-text">"Return window: 30 days from delivery. Condition: original packaging required. Exceptions: defective items � contact support."</div>
-            <div class="judge-score score-low">Score: 3.7 / 5 � "Lacks contextual depth"</div>
+            <div class="judge-eval-label">Answer B — GPT-like (direct, bullet-forward)</div>
+            <div class="judge-eval-text">"Return window: 30 days from delivery. Condition: original packaging required. Exceptions: defective items — contact support."</div>
+            <div class="judge-score score-low">Score: 3.7 / 5 — "Lacks contextual depth"</div>
           </div>
-          <div class="bias-verdict"><strong>The problem:</strong> Answer B is arguably better for a support bot � scannable, precise, fast. But the Claude judge penalised its style as "lacking depth."</div>
-          <div class="bias-fix"><strong>The fix:</strong> Use a different model family as judge than the one generating responses. Or anchor your rubric on explicit, measurable criteria rather than "quality" � criteria the judge can't reinterpret through a style lens.</div>
+          <div class="bias-verdict"><strong>The problem:</strong> Answer B is arguably better for a support bot — scannable, precise, fast. But the Claude judge penalised its style as "lacking depth."</div>
+          <div class="bias-fix"><strong>The fix:</strong> Use a different model family as judge than the one generating responses. Or anchor your rubric on explicit, measurable criteria rather than "quality" — criteria the judge can't reinterpret through a style lens.</div>
         </div>
       </div>
 
       <div class="bias-panel" id="bias-sycophancy">
-        <p>If you frame the evaluation prompt with a preference signal � even subtly � the judge agrees with it. The judge is optimised to please, and that optimisation contaminates evaluation.</p>
+        <p>If you frame the evaluation prompt with a preference signal — even subtly — the judge agrees with it. The judge is optimised to please, and that optimisation contaminates evaluation.</p>
         <div class="bias-demo">
-          <div class="bias-demo-title">Judge Evaluation � Framing Effect</div>
+          <div class="bias-demo-title">Judge Evaluation — Framing Effect</div>
           <div class="judge-eval">
             <div class="judge-eval-label">Neutral prompt</div>
             <div class="judge-eval-text">Judge prompt: "Evaluate the following response for accuracy."<br>Response: "Returns are accepted within 30 days."</div>
-            <div class="judge-score score-low" style="color:var(--ac2)">Score: 3.8 / 5 � "Acceptable but brief"</div>
+            <div class="judge-score score-low" style="color:var(--ac2)">Score: 3.8 / 5 — "Acceptable but brief"</div>
           </div>
           <div class="bias-arrow">vs</div>
           <div class="judge-eval">
             <div class="judge-eval-label">Biased prompt (framing effect)</div>
             <div class="judge-eval-text">Judge prompt: "Our best response so far. Evaluate for accuracy."<br>Same response: "Returns are accepted within 30 days."</div>
-            <div class="judge-score score-high">Score: 4.5 / 5 � "Clear, accurate, well-phrased"</div>
+            <div class="judge-score score-high">Score: 4.5 / 5 — "Clear, accurate, well-phrased"</div>
           </div>
           <div class="bias-verdict"><strong>The problem:</strong> "Our best response so far" primed the judge to agree. Identical answer, 18% score inflation, just from framing.</div>
           <div class="bias-fix"><strong>The fix:</strong> Judge prompt contains only: (1) the evaluation criteria, (2) the question, (3) the response. No framing, no metadata, no prior scores. Strip everything that could signal an expected outcome.</div>
@@ -1089,48 +1089,48 @@ window.RW_PAGE_TOOLS = [{
 
       <h3>Calibrating your judge (the actual process)</h3>
       <ol style="font-size:0.88rem;color:var(--rw-text-muted);line-height:2;margin-left:1.25rem;">
-        <li>Take 100�200 examples from your golden dataset</li>
-        <li>Have humans rate each response (1�5 or pass/fail)</li>
+        <li>Take 100–200 examples from your golden dataset</li>
+        <li>Have humans rate each response (1–5 or pass/fail)</li>
         <li>Run your LLM judge on the same examples</li>
         <li>Calculate Spearman rank correlation between human and judge scores</li>
-        <li><strong style="color:#22c55e;">Correlation &gt; 0.80</strong> � judge is calibrated, use at scale</li>
-        <li><strong style="color:#ef4444;">Correlation &lt; 0.80</strong> � adjust judge prompt, add scored examples to its system prompt, or try a different model</li>
+        <li><strong style="color:#22c55e;">Correlation &gt; 0.80</strong> — judge is calibrated, use at scale</li>
+        <li><strong style="color:#ef4444;">Correlation &lt; 0.80</strong> — adjust judge prompt, add scored examples to its system prompt, or try a different model</li>
       </ol>
-      <div class="callout"><strong>Rule of thumb:</strong> If your agent uses a 70B model, use a significantly larger model as judge (e.g. 300B+). The judge needs broader context to evaluate outputs it didn't produce. Smaller distilled judge models also work when cost matters � but validate with calibration first.</div>
+      <div class="callout"><strong>Rule of thumb:</strong> If your agent uses a 70B model, use a significantly larger model as judge (e.g. 300B+). The judge needs broader context to evaluate outputs it didn't produce. Smaller distilled judge models also work when cost matters — but validate with calibration first.</div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          4. EVAL METHOD SELECTOR
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-methods">
       <h2>Eval Method Selector</h2>
       <p>Four methods exist. Each is right for a different situation. Answer three questions to find yours.</p>
 
       <div class="card-grid cols-2" style="margin-bottom:1.5rem">
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">👥</div>
           <h4>Human Eval</h4>
           <p>Highest fidelity. Experts review each response. Catches nuance, tone, subtle errors. Slow, expensive, doesn't scale. <span class="badge badge-gold">Must-have</span> for any production system.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">👍</div>
           <h4>User Eval</h4>
-          <p>Real users rating real outputs in production. Thumbs up/down, preference between two outputs. Scale advantage � millions of data points. But delayed signal.</p>
+          <p>Real users rating real outputs in production. Thumbs up/down, preference between two outputs. Scale advantage — millions of data points. But delayed signal.</p>
         </div>
         <div class="card">
-          <div class="card-icon">???</div>
+          <div class="card-icon">🖥️</div>
           <h4>Code-Based Eval</h4>
           <p>For deterministic outputs. Write a function to check: did it return valid JSON? Is the intent label correct? Binary, cheap, instant, runs in CI. No LLM call needed.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">⚖️</div>
           <h4>LLM-as-Judge</h4>
           <p>A larger model reviews your agent's outputs. Scalable, affordable, but carries biases (see the Bias Lab above). Must be calibrated against human labels before trusting.</p>
         </div>
       </div>
 
       <div class="wizard-wrap">
-        <div class="wizard-head">? Method Selector � 3 Questions</div>
+        <div class="wizard-head">⚡ Method Selector — 3 Questions</div>
         <div class="wizard-body">
           <div class="wizard-progress" id="wiz-progress">
             <div class="wp-dot" id="wd0"></div>
@@ -1140,10 +1140,10 @@ window.RW_PAGE_TOOLS = [{
 
           <div class="wizard-step active" id="wstep-0">
             <div class="wizard-q">Is the expected output deterministic?</div>
-            <div class="wizard-hint">e.g., a specific intent label, a number, valid JSON, a classification � something with one correct answer</div>
+            <div class="wizard-hint">e.g., a specific intent label, a number, valid JSON, a classification — something with one correct answer</div>
             <div class="wizard-opts">
-              <button class="wizard-btn" onclick="wiz(0,'yes')">Yes � one right answer</button>
-              <button class="wizard-btn" onclick="wiz(0,'no')">No � qualitative / open-ended</button>
+              <button class="wizard-btn" onclick="wiz(0,'yes')">Yes — one right answer</button>
+              <button class="wizard-btn" onclick="wiz(0,'no')">No — qualitative / open-ended</button>
             </div>
           </div>
 
@@ -1167,77 +1167,77 @@ window.RW_PAGE_TOOLS = [{
 
           <div class="wizard-result" id="wres-code">
             <div class="result-method">Code-Based Eval</div>
-            <div class="result-why">The output is deterministic � write a function to check it. No LLM call, no bias, runs in your CI pipeline in milliseconds. If intent must match exactly, write an exact-match check. If JSON schema must be valid, run a schema validator.</div>
-            <div class="result-tip">?? Combine with LLM-as-judge for the parts of your output that aren't deterministic. Most real agents need both.</div>
-            <button class="wizard-reset" onclick="wizReset()">? Start again</button>
+            <div class="result-why">The output is deterministic — write a function to check it. No LLM call, no bias, runs in your CI pipeline in milliseconds. If intent must match exactly, write an exact-match check. If JSON schema must be valid, run a schema validator.</div>
+            <div class="result-tip">💡 Combine with LLM-as-judge for the parts of your output that aren't deterministic. Most real agents need both.</div>
+            <button class="wizard-reset" onclick="wizReset()">↺ Start again</button>
           </div>
           <div class="wizard-result" id="wres-user">
             <div class="result-method">User Eval (Online)</div>
-            <div class="result-why">You're live, users are interacting, and the output is qualitative � collect their feedback directly. Thumbs, stars, preference rankings between two responses, correction edits. This is your highest-signal production data and the seed of your next golden dataset.</div>
-            <div class="result-tip">?? Strip PII before storing. Every production failure you log becomes a regression test case.</div>
-            <button class="wizard-reset" onclick="wizReset()">? Start again</button>
+            <div class="result-why">You're live, users are interacting, and the output is qualitative — collect their feedback directly. Thumbs, stars, preference rankings between two responses, correction edits. This is your highest-signal production data and the seed of your next golden dataset.</div>
+            <div class="result-tip">💡 Strip PII before storing. Every production failure you log becomes a regression test case.</div>
+            <button class="wizard-reset" onclick="wizReset()">↺ Start again</button>
           </div>
           <div class="wizard-result" id="wres-human">
             <div class="result-method">Human Eval</div>
-            <div class="result-why">Pre-production, qualitative, and the stakes require human judgment � get expert reviewers to rate your outputs before you ship. This is also what you use to calibrate your LLM-as-judge (run 100 examples through both, check correlation).</div>
-            <div class="result-tip">?? This isn't one-and-done. Human eval seeds your golden dataset. Run it before every major version change.</div>
-            <button class="wizard-reset" onclick="wizReset()">? Start again</button>
+            <div class="result-why">Pre-production, qualitative, and the stakes require human judgment — get expert reviewers to rate your outputs before you ship. This is also what you use to calibrate your LLM-as-judge (run 100 examples through both, check correlation).</div>
+            <div class="result-tip">💡 This isn't one-and-done. Human eval seeds your golden dataset. Run it before every major version change.</div>
+            <button class="wizard-reset" onclick="wizReset()">↺ Start again</button>
           </div>
           <div class="wizard-result" id="wres-llm">
             <div class="result-method">LLM-as-Judge (G-Eval)</div>
-            <div class="result-why">Pre-production, qualitative, and you need coverage at scale � use a larger model as your judge with a chain-of-thought rubric (G-Eval). Calibrate it against 100�200 human-labelled examples first. Then let it run autonomously on your full golden dataset.</div>
-            <div class="result-tip">?? Use G-Eval: ask the judge to generate evaluation steps from your criteria before scoring. Reduces position and verbosity bias significantly.</div>
-            <button class="wizard-reset" onclick="wizReset()">? Start again</button>
+            <div class="result-why">Pre-production, qualitative, and you need coverage at scale — use a larger model as your judge with a chain-of-thought rubric (G-Eval). Calibrate it against 100–200 human-labelled examples first. Then let it run autonomously on your full golden dataset.</div>
+            <div class="result-tip">💡 Use G-Eval: ask the judge to generate evaluation steps from your criteria before scoring. Reduces position and verbosity bias significantly.</div>
+            <button class="wizard-reset" onclick="wizReset()">↺ Start again</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          5. COVERAGE MATRIX
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-coverage">
       <h2>The Coverage Matrix</h2>
       <p>
-        Your golden dataset is only as good as its distribution. A dataset that's 90% happy-path cases will make your eval look great � while your production system fails constantly on the edge cases real users throw at it.
+        Your golden dataset is only as good as its distribution. A dataset that's 90% happy-path cases will make your eval look great — while your production system fails constantly on the edge cases real users throw at it.
       </p>
       <p>Set how many examples you plan for each category. Watch the warnings.</p>
 
       <div class="coverage-tool">
         <div class="coverage-head">
-          <div class="coverage-head-label">?? Dataset Builder</div>
+          <div class="coverage-head-label">📊 Dataset Builder</div>
           <div class="coverage-total"><span id="cov-total">0</span> <span>total examples</span></div>
         </div>
         <div class="coverage-body">
           <div class="cov-row">
-            <div class="cov-label">?? Happy Path</div>
+            <div class="cov-label">😊 Happy Path</div>
             <input class="cov-input" type="range" min="0" max="60" value="20" id="cov-hp" oninput="updateCov()">
             <div class="cov-count" id="cnt-hp">20</div>
-            <div class="cov-pct" id="pct-hp">�</div>
+            <div class="cov-pct" id="pct-hp">—</div>
           </div>
           <div class="cov-row">
-            <div class="cov-label">?? Edge Cases</div>
+            <div class="cov-label">🔀 Edge Cases</div>
             <input class="cov-input" type="range" min="0" max="60" value="15" id="cov-ec" oninput="updateCov()">
             <div class="cov-count" id="cnt-ec">15</div>
-            <div class="cov-pct" id="pct-ec">�</div>
+            <div class="cov-pct" id="pct-ec">—</div>
           </div>
           <div class="cov-row">
-            <div class="cov-label">?? Adversarial</div>
+            <div class="cov-label">⚔️ Adversarial</div>
             <input class="cov-input" type="range" min="0" max="60" value="10" id="cov-ad" oninput="updateCov()">
             <div class="cov-count" id="cnt-ad">10</div>
-            <div class="cov-pct" id="pct-ad">�</div>
+            <div class="cov-pct" id="pct-ad">—</div>
           </div>
           <div class="cov-row">
-            <div class="cov-label">?? Out-of-Scope</div>
+            <div class="cov-label">🚫 Out-of-Scope</div>
             <input class="cov-input" type="range" min="0" max="60" value="8" id="cov-os" oninput="updateCov()">
             <div class="cov-count" id="cnt-os">8</div>
-            <div class="cov-pct" id="pct-os">�</div>
+            <div class="cov-pct" id="pct-os">—</div>
           </div>
           <div class="cov-row">
-            <div class="cov-label">? Ambiguous</div>
+            <div class="cov-label">❓ Ambiguous</div>
             <input class="cov-input" type="range" min="0" max="60" value="7" id="cov-am" oninput="updateCov()">
             <div class="cov-count" id="cnt-am">7</div>
-            <div class="cov-pct" id="pct-am">�</div>
+            <div class="cov-pct" id="pct-am">—</div>
           </div>
 
           <div class="dist-legend">
@@ -1256,10 +1256,10 @@ window.RW_PAGE_TOOLS = [{
           </div>
 
           <div class="coverage-warning warn-hp" id="warn-hp">
-            ?? <strong>Happy path over 60%.</strong> You're testing for success, not failure. Real users are disproportionately edge cases. Increase adversarial and out-of-scope coverage.
+            ⚠️ <strong>Happy path over 60%.</strong> You're testing for success, not failure. Real users are disproportionately edge cases. Increase adversarial and out-of-scope coverage.
           </div>
           <div class="coverage-warning warn-ad" id="warn-ad">
-            ?? <strong>Adversarial under 10%.</strong> You have no protection against prompt injection, off-topic queries, or adversarial inputs. This is how Chipotle's chatbot ended up answering Python questions.
+            ⚠️ <strong>Adversarial under 10%.</strong> You have no protection against prompt injection, off-topic queries, or adversarial inputs. This is how Chipotle's chatbot ended up answering Python questions.
           </div>
         </div>
       </div>
@@ -1268,8 +1268,8 @@ window.RW_PAGE_TOOLS = [{
       <table class="cmp-table">
         <thead><tr><th>Stage</th><th>Min examples</th><th>What it's good for</th></tr></thead>
         <tbody>
-          <tr><td>Early prototype</td><td>25�50</td><td>Catching obvious failures, initial prompt tuning</td></tr>
-          <tr><td>Development</td><td>100�200</td><td>Meaningful signal, iteration between versions</td></tr>
+          <tr><td>Early prototype</td><td>25–50</td><td>Catching obvious failures, initial prompt tuning</td></tr>
+          <tr><td>Development</td><td>100–200</td><td>Meaningful signal, iteration between versions</td></tr>
           <tr><td>Pre-production</td><td>500+</td><td>Statistical confidence (2% improvement is real, not noise)</td></tr>
           <tr><td>Production-grade</td><td>1,000+</td><td>Reliable regression detection, fine-grained metric tracking</td></tr>
         </tbody>
@@ -1280,9 +1280,9 @@ window.RW_PAGE_TOOLS = [{
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          6. CASCADE CALCULATOR
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-cascade">
       <h2>The Cascade Calculator</h2>
       <p>
@@ -1316,7 +1316,7 @@ window.RW_PAGE_TOOLS = [{
           <div class="cascade-metric">
             <div class="cascade-metric-num" id="cas-fail">26.5%</div>
             <div class="cascade-metric-label">Failure rate</div>
-            <div class="cascade-formula">1 - end-to-end</div>
+            <div class="cascade-formula">1 − end-to-end</div>
           </div>
           <div class="cascade-metric">
             <div class="cascade-metric-num" id="cas-req">99.1%</div>
@@ -1331,13 +1331,13 @@ window.RW_PAGE_TOOLS = [{
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          7. IRON TRIANGLE
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-triangle">
       <h2>The Iron Triangle</h2>
       <p>
-        Every production AI system is optimised across exactly three dimensions. Pull one vertex and the other two stretch. There is no free lunch � only the right tradeoff for your use case.
+        Every production AI system is optimised across exactly three dimensions. Pull one vertex and the other two stretch. There is no free lunch — only the right tradeoff for your use case.
       </p>
 
       <div class="triangle-wrap">
@@ -1356,9 +1356,9 @@ window.RW_PAGE_TOOLS = [{
           <circle cx="150" cy="167" r="6" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-dasharray="3,2"/>
           <text x="170" y="170" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui" font-style="italic">your sweet spot</text>
           <!-- edge labels -->
-          <text x="72" y="140" font-size="9.5" fill="rgba(255,255,255,0.3)" font-family="system-ui" text-anchor="middle" transform="rotate(-60,72,140)">quality ? cost</text>
-          <text x="228" y="140" font-size="9.5" fill="rgba(255,255,255,0.3)" font-family="system-ui" text-anchor="middle" transform="rotate(60,228,140)">quality ? speed</text>
-          <text x="150" y="252" font-size="9.5" fill="rgba(255,255,255,0.3)" font-family="system-ui" text-anchor="middle">cost ? speed</text>
+          <text x="72" y="140" font-size="9.5" fill="rgba(255,255,255,0.3)" font-family="system-ui" text-anchor="middle" transform="rotate(-60,72,140)">quality ↔ cost</text>
+          <text x="228" y="140" font-size="9.5" fill="rgba(255,255,255,0.3)" font-family="system-ui" text-anchor="middle" transform="rotate(60,228,140)">quality ↔ speed</text>
+          <text x="150" y="252" font-size="9.5" fill="rgba(255,255,255,0.3)" font-family="system-ui" text-anchor="middle">cost ↔ speed</text>
         </svg>
         <div class="triangle-note">Pull one vertex and the other two stretch. A bigger model improves accuracy but raises cost and latency. Caching cuts cost but adds complexity. Smaller models increase speed but may cut accuracy.</div>
       </div>
@@ -1367,12 +1367,12 @@ window.RW_PAGE_TOOLS = [{
       <table class="cmp-table">
         <thead><tr><th>Source</th><th>What it is</th><th>Optimise by</th></tr></thead>
         <tbody>
-          <tr><td>Output tokens</td><td>3�5� more expensive than input. Every intermediate step costs output tokens too.</td><td>Instruct model to be concise. Token budget in system prompt.</td></tr>
-          <tr><td>Repeated system prompts</td><td>Same prompt sent with every request burns tokens each time.</td><td><strong>Prompt caching</strong> � 90% discount on cached prefix tokens (Anthropic, OpenAI both offer this).</td></tr>
+          <tr><td>Output tokens</td><td>3–5× more expensive than input. Every intermediate step costs output tokens too.</td><td>Instruct model to be concise. Token budget in system prompt.</td></tr>
+          <tr><td>Repeated system prompts</td><td>Same prompt sent with every request burns tokens each time.</td><td><strong>Prompt caching</strong> — 90% discount on cached prefix tokens (Anthropic, OpenAI both offer this).</td></tr>
           <tr><td>External API calls</td><td>Search APIs (Exa, Tavily, Perplexity) charge per call.</td><td>Cache results. Don't call if context already has the answer.</td></tr>
-          <tr><td>Vector retrieval</td><td>Embedding, similarity search, re-ranking � none are free.</td><td>Right chunk size. Smaller top-K. Cache frequent queries.</td></tr>
+          <tr><td>Vector retrieval</td><td>Embedding, similarity search, re-ranking — none are free.</td><td>Right chunk size. Smaller top-K. Cache frequent queries.</td></tr>
           <tr><td>Retries</td><td>Failed steps get rerun. Each retry compounds cost.</td><td>Cap max retries. Early stopping. Timeout budgets.</td></tr>
-          <tr><td>LLM-as-judge calls</td><td>Running eval is itself an LLM call � often overlooked.</td><td>Use smaller distilled judge models. Batch non-realtime evals.</td></tr>
+          <tr><td>LLM-as-judge calls</td><td>Running eval is itself an LLM call — often overlooked.</td><td>Use smaller distilled judge models. Batch non-realtime evals.</td></tr>
         </tbody>
       </table>
 
@@ -1383,31 +1383,31 @@ window.RW_PAGE_TOOLS = [{
       <h3>What adds to latency</h3>
       <div class="card-grid cols-2">
         <div class="card">
-          <div class="card-icon">??</div>
-          <h4>TTFT � Time to First Token</h4>
+          <div class="card-icon">⏱️</div>
+          <h4>TTFT — Time to First Token</h4>
           <p>How long before the model starts generating. Includes retrieval, context assembly, and model thinking time. Users feel this as the "loading" gap.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
-          <h4>TPS � Tokens per Second</h4>
+          <div class="card-icon">🌊</div>
+          <h4>TPS — Tokens per Second</h4>
           <p>Generation speed. Smaller models are faster. Streaming output hides latency by showing tokens as they generate rather than waiting for completion.</p>
         </div>
         <div class="card">
-          <div class="card-icon">??</div>
+          <div class="card-icon">🔄</div>
           <h4>Sequential vs Parallel</h4>
           <p>Not every tool call needs to be sequential. Parallelise independent calls. A 3-second operation run in parallel with two others costs 3 seconds total, not 9.</p>
         </div>
         <div class="card">
-          <div class="card-icon">???</div>
+          <div class="card-icon">🛡️</div>
           <h4>Guardrailing overhead</h4>
           <p>Safety checks mid-processing add latency. The check itself may require an LLM call. Design guardrails as lightweight classifiers, not full inference calls.</p>
         </div>
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          8. EVAL vs MONITOR vs OBSERVE
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-trio">
       <h2>Eval vs Monitoring vs Observability</h2>
       <p>These three terms get used interchangeably. They're not the same. They live under the same umbrella but serve different purposes at different times.</p>
@@ -1428,27 +1428,27 @@ window.RW_PAGE_TOOLS = [{
           <span class="badge badge-green">Production</span>
           <h4 style="margin-top:0.5rem">Monitoring</h4>
           <div class="trio-timing">Eagle-eye view</div>
-          <p>Asking: "Is the system healthy right now?" A dashboard showing latency, cost, error rates, quality scores � all moving in real time. You're watching, not testing.</p>
+          <p>Asking: "Is the system healthy right now?" A dashboard showing latency, cost, error rates, quality scores — all moving in real time. You're watching, not testing.</p>
           <ul>
             <li>Continuous, always-on</li>
             <li>Alerts when metrics cross thresholds</li>
-            <li>Monitoring without alerts is useless � it's just a recording</li>
+            <li>Monitoring without alerts is useless — it's just a recording</li>
           </ul>
         </div>
         <div class="trio-card t-obs">
           <span class="badge badge-gold">On incident</span>
           <h4 style="margin-top:0.5rem">Observability</h4>
           <div class="trio-timing">Zoomed-in debugging</div>
-          <p>Asking: "What exactly went wrong and why?" Triggered when monitoring shows something off. Deep traces of every micro-step � input, output, tokens, tool calls, timing.</p>
+          <p>Asking: "What exactly went wrong and why?" Triggered when monitoring shows something off. Deep traces of every micro-step — input, output, tokens, tool calls, timing.</p>
           <ul>
             <li>Logs: "what happened" (tool failed, output sent)</li>
-            <li>Traces: "why it happened" (input ? model ? tool ? output with timing)</li>
-            <li>You need enough logged to debug � design for observability from day one</li>
+            <li>Traces: "why it happened" (input → model → tool → output with timing)</li>
+            <li>You need enough logged to debug — design for observability from day one</li>
           </ul>
         </div>
       </div>
 
-      <h3>Alerts � monitoring isn't enough without them</h3>
+      <h3>Alerts — monitoring isn't enough without them</h3>
       <p>A security camera that records but never sends an alert is near-useless. You only find out something went wrong after the damage is done. Same principle applies to AI monitoring.</p>
 
       <div class="card-grid cols-2" style="margin-top:0.75rem">
@@ -1465,22 +1465,22 @@ window.RW_PAGE_TOOLS = [{
         <div class="card">
           <h4>Where to look:</h4>
           <ul style="font-size:0.8rem;color:var(--rw-text-muted);line-height:2;margin-left:1rem">
-            <li><strong style="color:var(--rw-text)">LangSmith</strong> � best for LangChain ecosystem</li>
-            <li><strong style="color:var(--rw-text)">Arize / Phoenix</strong> � strong for model performance</li>
-            <li><strong style="color:var(--rw-text)">Langfuse</strong> � open source, self-hostable</li>
-            <li><strong style="color:var(--rw-text)">Braintrust</strong> � eval-first workflow</li>
+            <li><strong style="color:var(--rw-text)">LangSmith</strong> — best for LangChain ecosystem</li>
+            <li><strong style="color:var(--rw-text)">Arize / Phoenix</strong> — strong for model performance</li>
+            <li><strong style="color:var(--rw-text)">Langfuse</strong> — open source, self-hostable</li>
+            <li><strong style="color:var(--rw-text)">Braintrust</strong> — eval-first workflow</li>
           </ul>
         </div>
       </div>
 
       <div style="margin-top:1.5rem;border-left:3px solid var(--ac);background:var(--ac-lt);padding:1rem 1.25rem;border-radius:0 8px 8px 0;font-size:0.88rem;line-height:1.7;">
-        <strong style="color:#93c5fd;">Whack-a-mole in production:</strong> Google's image model was updated to generate more racially diverse outputs � a legitimate fix. But the change broke an adjacent behavior: the model started generating people of color in historical contexts where that was factually wrong, including Nazi soldiers. Monitoring caught the spike in complaints. The root cause was that the regression eval only re-tested the repaired subset, not the full golden dataset. Every system change must re-run the <em>complete</em> eval suite. Fix one metric without measuring the others and you're playing whack-a-mole � push one problem down, another pops up somewhere you weren't looking.
+        <strong style="color:#93c5fd;">Whack-a-mole in production:</strong> Google's image model was updated to generate more racially diverse outputs — a legitimate fix. But the change broke an adjacent behavior: the model started generating people of color in historical contexts where that was factually wrong, including Nazi soldiers. Monitoring caught the spike in complaints. The root cause was that the regression eval only re-tested the repaired subset, not the full golden dataset. Every system change must re-run the <em>complete</em> eval suite. Fix one metric without measuring the others and you're playing whack-a-mole — push one problem down, another pops up somewhere you weren't looking.
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          9. MATURITY PATH
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-maturity">
       <h2>Your Eval Maturity Level</h2>
       <p>Check every practice you currently have in place. Your level updates automatically.</p>
@@ -1489,23 +1489,23 @@ window.RW_PAGE_TOOLS = [{
         <div class="maturity-line"><div class="maturity-line-fill" id="mat-line"></div></div>
         <div class="maturity-nodes">
           <div class="mat-node" id="mnode-0">
-            <div class="mat-circle">??</div>
+            <div class="mat-circle">👀</div>
             <div class="mat-node-label">Vibe<br>Check</div>
           </div>
           <div class="mat-node" id="mnode-1">
-            <div class="mat-circle">??</div>
+            <div class="mat-circle">📋</div>
             <div class="mat-node-label">Golden<br>Dataset</div>
           </div>
           <div class="mat-node" id="mnode-2">
-            <div class="mat-circle">??</div>
+            <div class="mat-circle">⚖️</div>
             <div class="mat-node-label">Automated<br>Scoring</div>
           </div>
           <div class="mat-node" id="mnode-3">
-            <div class="mat-circle">??</div>
+            <div class="mat-circle">📡</div>
             <div class="mat-node-label">Production<br>Monitoring</div>
           </div>
           <div class="mat-node" id="mnode-4">
-            <div class="mat-circle">??</div>
+            <div class="mat-circle">🔄</div>
             <div class="mat-node-label">Continuous<br>Eval Loop</div>
           </div>
         </div>
@@ -1525,61 +1525,61 @@ window.RW_PAGE_TOOLS = [{
       </div>
 
       <div class="mat-result-box" id="mat-result" style="background:var(--rw-bg-subtle);color:var(--rw-text-muted)">
-        Check the practices you have in place ?
+        Check the practices you have in place ↑
       </div>
     </section>
 
-    <!-- --------------------------
+    <!-- ══════════════════════════
          10. ABBREVIATIONS
-    -------------------------- -->
+    ══════════════════════════ -->
     <section class="guide-section" id="section-glossary">
       <h2>Abbreviations</h2>
       <p>Every term used on this page, in one place.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.5rem 2rem;margin-top:1rem;">
         <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">DeepEval</span><span style="color:var(--rw-text-muted);">Pytest-style framework for LLM testing and regression evals</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">E2E</span><span style="color:var(--rw-text-muted);">End-to-End � measures the full pipeline from input to final output</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">EDD</span><span style="color:var(--rw-text-muted);">Eval-Driven Development � write evals before building, same as TDD</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">G-Eval</span><span style="color:var(--rw-text-muted);">Chain-of-thought judging � model generates rubric first, then scores</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">GSM8K</span><span style="color:var(--rw-text-muted);">Grade School Math 8K � math reasoning benchmark</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">HITL</span><span style="color:var(--rw-text-muted);">Human-in-the-Loop � human reviews or approves before action is taken</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">LLM</span><span style="color:var(--rw-text-muted);">Large Language Model � e.g. GPT-4, Claude, Gemini</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">LMSYS</span><span style="color:var(--rw-text-muted);">Large Model Systems � org behind Chatbot Arena; more contamination-resistant than fixed benchmarks</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">MMLU</span><span style="color:var(--rw-text-muted);">Massive Multitask Language Understanding � knowledge benchmark across 57 subjects</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">P95</span><span style="color:var(--rw-text-muted);">95th percentile latency � 95% of requests complete within this time</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">PII</span><span style="color:var(--rw-text-muted);">Personally Identifiable Information � must be stripped before logging production data</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">E2E</span><span style="color:var(--rw-text-muted);">End-to-End — measures the full pipeline from input to final output</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">EDD</span><span style="color:var(--rw-text-muted);">Eval-Driven Development — write evals before building, same as TDD</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">G-Eval</span><span style="color:var(--rw-text-muted);">Chain-of-thought judging — model generates rubric first, then scores</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">GSM8K</span><span style="color:var(--rw-text-muted);">Grade School Math 8K — math reasoning benchmark</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">HITL</span><span style="color:var(--rw-text-muted);">Human-in-the-Loop — human reviews or approves before action is taken</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">LLM</span><span style="color:var(--rw-text-muted);">Large Language Model — e.g. GPT-4, Claude, Gemini</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">LMSYS</span><span style="color:var(--rw-text-muted);">Large Model Systems — org behind Chatbot Arena; more contamination-resistant than fixed benchmarks</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">MMLU</span><span style="color:var(--rw-text-muted);">Massive Multitask Language Understanding — knowledge benchmark across 57 subjects</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">P95</span><span style="color:var(--rw-text-muted);">95th percentile latency — 95% of requests complete within this time</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">PII</span><span style="color:var(--rw-text-muted);">Personally Identifiable Information — must be stripped before logging production data</span></div>
         <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">Promptfoo</span><span style="color:var(--rw-text-muted);">Prompt regression testing and red-teaming tool</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">RAG</span><span style="color:var(--rw-text-muted);">Retrieval-Augmented Generation � retrieve relevant docs, then generate</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">RAGAS</span><span style="color:var(--rw-text-muted);">RAG Assessment � framework with 4 metrics: Faithfulness, Answer Relevance, Context Precision, Context Recall</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">Spearman</span><span style="color:var(--rw-text-muted);">Spearman rank correlation � used to calibrate LLM judges against human labels; target &gt;0.80</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">SWE-Bench</span><span style="color:var(--rw-text-muted);">Software Engineering Benchmark � real GitHub issues; tests agentic coding ability</span></div>
-        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">TDD</span><span style="color:var(--rw-text-muted);">Test-Driven Development � write tests before code; EDD applies the same principle to evals</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">RAG</span><span style="color:var(--rw-text-muted);">Retrieval-Augmented Generation — retrieve relevant docs, then generate</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">RAGAS</span><span style="color:var(--rw-text-muted);">RAG Assessment — framework with 4 metrics: Faithfulness, Answer Relevance, Context Precision, Context Recall</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">Spearman</span><span style="color:var(--rw-text-muted);">Spearman rank correlation — used to calibrate LLM judges against human labels; target &gt;0.80</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">SWE-Bench</span><span style="color:var(--rw-text-muted);">Software Engineering Benchmark — real GitHub issues; tests agentic coding ability</span></div>
+        <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--rw-border);font-size:0.875rem;"><span style="font-family:var(--rw-font-display);font-weight:700;color:var(--ac);min-width:100px;">TDD</span><span style="color:var(--rw-text-muted);">Test-Driven Development — write tests before code; EDD applies the same principle to evals</span></div>
       </div>
     </section>
 
-    <!-- -- SOURCES & ATTRIBUTION ------------------------------ -->
+    <!-- ══ SOURCES & ATTRIBUTION ══════════════════════════════ -->
     <section id="attribution" style="margin-top:2.5rem; border-top:1px solid var(--rw-border); padding-top:2rem;">
       <p style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--rw-text-muted); margin-bottom:0.9rem;">Public Sources &amp; Further Reading</p>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; margin-bottom:1.2rem; max-width:860px;">
         <a href="https://github.com/confident-ai/deepeval" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
           <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">DeepEval (Confident AI)</p>
-          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">Open-source LLM eval framework � LLM judge, RAGAS, red-teaming</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">Open-source LLM eval framework — LLM judge, RAGAS, red-teaming</p>
         </a>
         <a href="https://docs.ragas.io" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
           <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">RAGAS Documentation</p>
-          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">docs.ragas.io � RAG evaluation metrics and methodology</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">docs.ragas.io — RAG evaluation metrics and methodology</p>
         </a>
         <a href="https://www.promptfoo.dev/docs" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
           <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">PromptFoo Documentation</p>
-          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">promptfoo.dev � prompt regression testing and red-teaming</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">promptfoo.dev — prompt regression testing and red-teaming</p>
         </a>
         <a href="https://swebench.com" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
           <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">SWE-Bench</p>
-          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">swebench.com � real GitHub issue benchmark for coding agents</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">swebench.com — real GitHub issue benchmark for coding agents</p>
         </a>
       </div>
       <div style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:10px; padding:1rem 1.2rem; max-width:860px;">
         <p style="color:var(--rw-text-muted); font-size:0.74rem; line-height:1.7; margin:0;">
-          <span style="color:var(--rw-text); font-weight:600;">My workflow:</span> A GenAcademy session introduced me to the eval-driven development mindset � using evals as guardrails from day one, not an afterthought. From there I explored DeepEval, RAGAS, PromptFoo, and public benchmark research, then built this guide to make the decision tree concrete. This is my personal learning synthesis. A live session has far more depth and takeaways than any set of notes captures � for the full curriculum, reach out to GenAcademy directly.
+          <span style="color:var(--rw-text); font-weight:600;">My workflow:</span> A GenAcademy session introduced me to the eval-driven development mindset — using evals as guardrails from day one, not an afterthought. From there I explored DeepEval, RAGAS, PromptFoo, and public benchmark research, then built this guide to make the decision tree concrete. This is my personal learning synthesis. A live session has far more depth and takeaways than any set of notes captures — for the full curriculum, reach out to GenAcademy directly.
         </p>
       </div>
     </section>
@@ -1594,25 +1594,25 @@ window.RW_PAGE_TOOLS = [{
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    Benchmark Limitations
------------------------------------------- */
+────────────────────────────────────────── */
 function toggleLimit(card) {
   card.classList.toggle('open');
 }
 
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    RAGAS Cards
------------------------------------------- */
+────────────────────────────────────────── */
 function toggleRagas(card) {
   const wasActive = card.classList.contains('active');
   document.querySelectorAll('.ragas-card').forEach(c => c.classList.remove('active'));
   if (!wasActive) card.classList.add('active');
 }
 
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    Bias Lab
------------------------------------------- */
+────────────────────────────────────────── */
 function switchBias(id) {
   document.querySelectorAll('.bias-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bias-tab').forEach(t => t.classList.remove('active'));
@@ -1620,9 +1620,9 @@ function switchBias(id) {
   event.target.classList.add('active');
 }
 
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    Eval Method Wizard
------------------------------------------- */
+────────────────────────────────────────── */
 let wizState = { step: 0, q0: null };
 
 function wiz(step, answer) {
@@ -1662,9 +1662,9 @@ function wizReset() {
   [0,1,2].forEach(i => document.getElementById('wd'+i).classList.remove('done'));
 }
 
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    Coverage Matrix
------------------------------------------- */
+────────────────────────────────────────── */
 function updateCov() {
   const ids = ['hp','ec','ad','os','am'];
   const vals = ids.map(id => parseInt(document.getElementById('cov-' + id).value));
@@ -1674,7 +1674,7 @@ function updateCov() {
   ids.forEach((id, i) => {
     document.getElementById('cnt-' + id).textContent = vals[i];
     const pct = total > 0 ? Math.round(vals[i]/total*100) : 0;
-    document.getElementById('pct-' + id).textContent = total > 0 ? pct + '%' : '�';
+    document.getElementById('pct-' + id).textContent = total > 0 ? pct + '%' : '—';
     document.getElementById('seg-' + id).style.width = (total > 0 ? pct : 0) + '%';
   });
 
@@ -1689,14 +1689,14 @@ function updateCov() {
 
 updateCov();
 
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    Cascade Calculator
------------------------------------------- */
+────────────────────────────────────────── */
 function calcCascade() {
   const stepsEl = document.getElementById('cas-steps');
   const relEl   = document.getElementById('cas-rel');
   const n = parseInt(stepsEl.value);
-  const r = parseInt(relEl.value) / 1000; // 950 ? 0.95
+  const r = parseInt(relEl.value) / 1000; // 950 → 0.95
 
   const rDisplay = (r * 100).toFixed(1).replace(/\.0$/, '') + '%';
   document.getElementById('cas-steps-val').textContent = n;
@@ -1729,7 +1729,7 @@ function calcCascade() {
     if (i > 0) {
       const arrow = document.createElement('span');
       arrow.className = 'step-arrow';
-      arrow.textContent = '?';
+      arrow.textContent = '→';
       pillsEl.appendChild(arrow);
     }
     cumulative *= r;
@@ -1747,15 +1747,15 @@ function calcCascade() {
 
 calcCascade();
 
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    Eval Maturity
------------------------------------------- */
+────────────────────────────────────────── */
 const MAT_LEVELS = [
-  { min:1,  max:1, label:'Level 1 � Vibe Checking',      color:'#6b7280', node:0, fill:'0%' },
-  { min:2,  max:3, label:'Level 2 � Golden Dataset',     color:'#3b82f6', node:1, fill:'25%' },
-  { min:4,  max:5, label:'Level 3 � Automated Scoring',  color:'#2563eb', node:2, fill:'50%' },
-  { min:6,  max:8, label:'Level 4 � Production Monitor', color:'#7c3aed', node:3, fill:'75%' },
-  { min:9,  max:10,label:'Level 5 � Continuous Loop',    color:'#22c55e', node:4, fill:'100%' },
+  { min:1,  max:1, label:'Level 1 — Vibe Checking',      color:'#6b7280', node:0, fill:'0%' },
+  { min:2,  max:3, label:'Level 2 — Golden Dataset',     color:'#3b82f6', node:1, fill:'25%' },
+  { min:4,  max:5, label:'Level 3 — Automated Scoring',  color:'#2563eb', node:2, fill:'50%' },
+  { min:6,  max:8, label:'Level 4 — Production Monitor', color:'#7c3aed', node:3, fill:'75%' },
+  { min:9,  max:10,label:'Level 5 — Continuous Loop',    color:'#22c55e', node:4, fill:'100%' },
 ];
 
 function updateMaturity() {
@@ -1774,7 +1774,7 @@ function updateMaturity() {
     document.getElementById('mat-line').style.width = '0%';
     res.style.background = 'var(--rw-bg-subtle)';
     res.style.color = 'var(--rw-text-muted)';
-    res.textContent = 'Check the practices you have in place ?';
+    res.textContent = 'Check the practices you have in place ↑';
     return;
   }
 
@@ -1790,9 +1790,9 @@ function updateMaturity() {
   res.textContent = level.label + ' (' + count + '/10 practices)';
 }
 
-/* ------------------------------------------
+/* ──────────────────────────────────────────
    TOC Scrollspy
------------------------------------------- */
+────────────────────────────────────────── */
 (function () {
   const secs  = document.querySelectorAll('.guide-section[id]');
   const links = document.querySelectorAll('.guide-toc a');

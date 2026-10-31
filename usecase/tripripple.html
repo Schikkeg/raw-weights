@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TripRipple � Agent Memory Copilot | RawWeights</title>
+  <title>TripRipple — Agent Memory Copilot | RawWeights</title>
   <meta name="description" content="An AI agent that remembers why every travel decision was made, screens hotel replacements against those constraints, and notifies only the people whose plans depend on what changed. Built at the Mastra Agent Memory Hackathon 2026.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/usecase/tripripple.html">
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://rawweights.com/images/tripripple/Linkedin.png">
   <meta property="og:url" content="https://rawweights.com/usecase/tripripple.html">
-  <meta property="og:title" content="TripRipple � Agent Memory Copilot">
+  <meta property="og:title" content="TripRipple — Agent Memory Copilot">
   <meta property="og:description" content="32 messages in. 7 decisions extracted. 0 contacts sent before hotel rejection. Built for the Mastra Agent Memory Hackathon 2026.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -19,7 +19,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Hero split layout ------------------------- */
+    /* ── Hero split layout ───────────────────────── */
     .guide-hero {
       background: linear-gradient(135deg, #0a0e1a 0%, #0a1a20 50%, #0a1530 100%);
       padding: 4rem 2rem 3.5rem;
@@ -86,7 +86,7 @@
       font-family: var(--rw-font-mono); font-size: .68rem; color: #2dd4bf;
     }
 
-    /* -- Guide layout ----------------------------- */
+    /* ── Guide layout ───────────────────────────── */
     .guide-layout {
       display: grid; grid-template-columns: 230px 1fr;
       gap: 2.5rem; max-width: 1200px; margin: 3rem auto;
@@ -101,7 +101,7 @@
     .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
     .guide-toc .toc-h3 { padding-left: 1rem; font-size: .78rem; }
 
-    /* -- Sections --------------------------------- */
+    /* ── Sections ───────────────────────────────── */
     .guide-section { margin-bottom: 3.5rem; }
     .guide-section h2 {
       font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
@@ -113,7 +113,7 @@
     .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
     code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
 
-    /* -- Stat row --------------------------------- */
+    /* ── Stat row ───────────────────────────────── */
     .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
     .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
     .stat-cell:last-child { border-right: none; }
@@ -121,7 +121,7 @@
     .stat-val-green { color: #10b981; }
     .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
 
-    /* -- Use-case grid ---------------------------- */
+    /* ── Use-case grid ──────────────────────────── */
     .usecase-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
     .usecase-card {
       background: var(--rw-card); border: 1px solid var(--rw-border);
@@ -134,7 +134,7 @@
     .usecase-pain { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; margin-bottom: .6rem; }
     .usecase-win { font-size: .78rem; color: var(--rw-orange); font-family: var(--rw-font-mono); padding: .3rem .55rem; background: var(--rw-orange-light); border-radius: 4px; display: inline-block; }
 
-    /* -- Demo tabs -------------------------------- */
+    /* ── Demo tabs ──────────────────────────────── */
     .demo-tabs-wrap { margin: 1.5rem 0; }
     .demo-tab-bar {
       display: flex; gap: .5rem; flex-wrap: wrap; padding-bottom: .5rem;
@@ -169,27 +169,27 @@
     .tag-orange { background: rgba(240,114,53,.12); color: var(--rw-orange); border: 1px solid rgba(240,114,53,.2); }
     .tag-teal { background: rgba(20,184,166,.12); color: #2dd4bf; border: 1px solid rgba(20,184,166,.2); }
 
-    /* -- Feature grid ----------------------------- */
+    /* ── Feature grid ───────────────────────────── */
     .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
     .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
     .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
     .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .35rem; }
     .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; }
 
-    /* -- Step list -------------------------------- */
+    /* ── Step list ──────────────────────────────── */
     .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
     .step-item { display: flex; gap: .9rem; align-items: flex-start; }
     .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
     .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; }
 
-    /* -- Comparison table ------------------------- */
+    /* ── Comparison table ───────────────────────── */
     .comparison-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: .9rem; }
     .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .8rem; text-align: left; padding: .75rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
     .comparison-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
     .comparison-table tr:hover td { background: var(--rw-bg-alt); }
 
-    /* -- SVG diagrams ----------------------------- */
+    /* ── SVG diagrams ───────────────────────────── */
     .diagram-wrap {
       border: 1px solid var(--rw-border); border-radius: var(--rw-r-md);
       overflow: hidden; margin: 1.25rem 0; background: var(--rw-bg-subtle);
@@ -202,7 +202,7 @@
       letter-spacing: .04em;
     }
 
-    /* -- Learnings -------------------------------- */
+    /* ── Learnings ──────────────────────────────── */
     .learning-item {
       border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange);
       border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0;
@@ -213,7 +213,7 @@
     .learning-body { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.65; margin-bottom: .6rem; }
     .learning-quote { padding: .45rem .85rem; background: var(--rw-orange-light); border-left: 2px solid var(--rw-orange); font-size: .8rem; color: var(--rw-orange); font-style: italic; border-radius: 0 4px 4px 0; }
 
-    /* -- Team ------------------------------------- */
+    /* ── Team ───────────────────────────────────── */
     .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
     .team-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; }
     .team-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; font-family: var(--rw-font-display); flex-shrink: 0; }
@@ -224,7 +224,7 @@
     .team-role { font-size: .75rem; color: var(--rw-text-subtle); font-family: var(--rw-font-mono); margin-bottom: .4rem; }
     .team-contrib { font-size: .82rem; color: var(--rw-text-muted); line-height: 1.5; }
 
-    /* -- Before/After comparison ------------------ */
+    /* ── Before/After comparison ────────────────── */
     .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
     .ba-box { border-radius: var(--rw-r-md); padding: 1.1rem 1.25rem; }
     .ba-without { background: rgba(240,82,82,.06); border: 1px solid rgba(240,82,82,.2); }
@@ -234,13 +234,13 @@
     .ba-with .ba-label { color: #10b981; }
     .ba-text { font-size: .84rem; color: var(--rw-text-muted); line-height: 1.6; font-style: italic; }
 
-    /* -- Code block ------------------------------- */
+    /* ── Code block ─────────────────────────────── */
     .code-block { background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; font-family: var(--rw-font-mono); font-size: .82rem; color: var(--rw-indigo); overflow-x: auto; margin: 1rem 0; line-height: 1.75; }
     .code-block .cm { color: var(--rw-text-subtle); }
     .code-block .kw { color: var(--rw-orange); }
     .code-block .st { color: #4ecb87; }
 
-    /* -- Provenance badge ------------------------- */
+    /* ── Provenance badge ───────────────────────── */
     .prov-row { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0; }
     .prov-badge { font-family: var(--rw-font-mono); font-size: .7rem; padding: .2rem .55rem; border-radius: 4px; }
     .prov-live { background: rgba(16,185,129,.12); color: #10b981; border: 1px solid rgba(16,185,129,.2); }
@@ -249,10 +249,10 @@
     .prov-inferred { background: rgba(20,184,166,.12); color: #2dd4bf; border: 1px solid rgba(20,184,166,.2); }
     .prov-human { background: rgba(249,115,22,.12); color: #fb923c; border: 1px solid rgba(249,115,22,.2); }
 
-    /* -- Responsive ---------------------------------- */
+    /* ── Responsive ────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; }
     html, body { max-width: 100%; overflow-x: hidden; }
-    /* everything wraps � no cutoff */
+    /* everything wraps — no cutoff */
     * { word-break: break-word; overflow-wrap: break-word; }
     img, video, svg { max-width: 100%; height: auto; display: block; }
     /* code wraps on mobile; tables stay scrollable in their own container */
@@ -260,7 +260,7 @@
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.5rem 0; }
     .table-scroll .comparison-table { margin: 0; min-width: 480px; }
 
-    /* Demo step nav dropdown � hidden on desktop, shown on mobile */
+    /* Demo step nav dropdown — hidden on desktop, shown on mobile */
     .demo-tab-select {
       display: none; width: 100%;
       padding: .6rem .85rem; border-radius: 8px;
@@ -274,7 +274,7 @@
       position: sticky; top: calc(var(--rw-nav-height, 56px)); z-index: 10;
     }
 
-    /* Mobile stacked panels � each panel has its own heading + divider */
+    /* Mobile stacked panels — each panel has its own heading + divider */
     .demo-panel-heading {
       display: none; font-family: var(--rw-font-display); font-weight: 700;
       font-size: .82rem; color: var(--rw-text-subtle); text-transform: uppercase;
@@ -303,7 +303,7 @@
       .stat-cell { flex: 1 1 calc(33.333% - 1px); border-right: 1px solid var(--rw-border); border-bottom: 1px solid var(--rw-border); }
       .stat-cell:nth-child(3n) { border-right: none; }
       .stat-cell:nth-last-child(-n+3) { border-bottom: none; }
-      /* tab bar ? sticky dropdown; all panels shown stacked */
+      /* tab bar → sticky dropdown; all panels shown stacked */
       .demo-tab-bar { display: none; }
       .demo-tab-select { display: block; }
       .demo-panel { display: block !important; border-bottom: 1px solid var(--rw-border); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
@@ -331,7 +331,7 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- -- Hero --------------------------------------------------- -->
+<!-- ── Hero ─────────────────────────────────────────────────── -->
 <div class="guide-hero">
   <div class="hero-split">
     <div class="hero-text">
@@ -364,7 +364,7 @@
   </div>
 </div>
 
-<!-- -- Guide Content ------------------------------------------- -->
+<!-- ── Guide Content ─────────────────────────────────────────── -->
 <div class="guide-layout" id="guide-content">
 
   <aside class="guide-sidebar">
@@ -388,7 +388,7 @@
 
   <main>
 
-    <!-- -- WHAT IT DOES ----------------------------- -->
+    <!-- ── WHAT IT DOES ───────────────────────────── -->
     <section class="guide-section" id="section-what">
       <h2>What It Does</h2>
       <p>Most AI assistants tell you <em>what</em> was decided. TripRipple stores <em>why</em>. When something changes &mdash; a hotel cancels, a vendor pulls out, a budget shifts &mdash; the agent already knows the constraints behind every open plan. It screens replacements against those constraints, asks exactly the questions it doesn&rsquo;t already know, waits for a human to approve, and then notifies only the people whose plans depend on what changed.</p>
@@ -404,7 +404,7 @@
       </div>
     </section>
 
-    <!-- -- THE MEMORY LAYER ------------------------ -->
+    <!-- ── THE MEMORY LAYER ──────────────────────── -->
     <section class="guide-section" id="section-memory">
       <h2>The Memory Layer</h2>
       <p>Five Elasticsearch indexes hold everything the agent needs to reason about a trip:</p>
@@ -434,29 +434,29 @@
       <p style="font-size:.85rem;">Every piece of information in the UI carries a provenance badge showing where it came from. SYNTHETIC_EVENT means it was seeded demo data. INFERRED means the agent derived it from a message. HUMAN_CONFIRMED means a person verified it during the approval step. This matters for trust &mdash; you can see exactly how confident to be in any given fact.</p>
     </section>
 
-    <!-- -- USE CASES -------------------------------- -->
+    <!-- ── USE CASES ──────────────────────────────── -->
     <section class="guide-section" id="section-usecases">
       <h2>Who It Helps</h2>
       <p>The demo is travel planning. The pattern it demonstrates applies anywhere a decision has dependencies and those dependencies belong to different people.</p>
 
       <div class="usecase-grid">
         <div class="usecase-card">
-          <div class="usecase-card-top"><span class="usecase-emoji">??</span><span class="usecase-role">Trip Organizer</span></div>
+          <div class="usecase-card-top"><span class="usecase-emoji">🗺</span><span class="usecase-role">Trip Organizer</span></div>
           <div class="usecase-pain">Hotel cancels three days before the trip. Has to manually check all the original constraints, text eight people, and figure out who actually needs to know.</div>
           <span class="usecase-win">Agent already knows the constraints &rarr; screens candidates &rarr; you approve once</span>
         </div>
         <div class="usecase-card">
-          <div class="usecase-card-top"><span class="usecase-emoji">?</span><span class="usecase-role">Traveler with accessibility needs</span></div>
+          <div class="usecase-card-top"><span class="usecase-emoji">♿</span><span class="usecase-role">Traveler with accessibility needs</span></div>
           <div class="usecase-pain">Accessibility requirement was mentioned once in a group chat months ago. It might not get checked when things change under time pressure.</div>
           <span class="usecase-win">Constraint is in Elasticsearch &rarr; every screening run checks it automatically</span>
         </div>
         <div class="usecase-card">
-          <div class="usecase-card-top"><span class="usecase-emoji">??</span><span class="usecase-role">Project / Event Coordinator</span></div>
+          <div class="usecase-card-top"><span class="usecase-emoji">📋</span><span class="usecase-role">Project / Event Coordinator</span></div>
           <div class="usecase-pain">Vendor changes affect some team members but not others. Hard to know who depends on what without reading every plan manually.</div>
           <span class="usecase-win">Dependency graph &rarr; only affected people get notified, excluded plans are shown explicitly</span>
         </div>
         <div class="usecase-card">
-          <div class="usecase-card-top"><span class="usecase-emoji">??</span><span class="usecase-role">Enterprise (same pattern)</span></div>
+          <div class="usecase-card-top"><span class="usecase-emoji">🏢</span><span class="usecase-role">Enterprise (same pattern)</span></div>
           <div class="usecase-pain">Vendor decision changes. Some teams built their roadmap around it. No one knows who needs to be told or why the original choice was made.</div>
           <span class="usecase-win">Hotel &rarr; Vendor. Traveler &rarr; Stakeholder. Cancellation &rarr; Risk event. Same architecture.</span>
         </div>
@@ -465,7 +465,7 @@
       <p>The enterprise mapping is direct: hotel decision becomes a vendor or platform choice, accessibility constraint becomes a compliance rule, price cap becomes a budget constraint, trip plans become sprint items. The agent doesn&rsquo;t care about the domain &mdash; it operates on the decision graph.</p>
     </section>
 
-    <!-- -- DEMO ------------------------------------- -->
+    <!-- ── DEMO ───────────────────────────────────── -->
     <section class="guide-section" id="section-demo">
       <h2>See It In Action</h2>
       <p>Six steps from cancellation to targeted drafts. Each tab shows a different moment in the recovery flow.</p>
@@ -493,7 +493,7 @@
         <div class="demo-panel active" id="demo-workspace" data-demo-id="workspace">
           <div class="demo-panel-heading">1. Workspace</div>
           <div class="demo-img-frame">
-            <img src="../images/tripripple/step1.png" alt="TripRipple workspace � 32 source events, 7 decisions loaded" loading="lazy">
+            <img src="../images/tripripple/step1.png" alt="TripRipple workspace — 32 source events, 7 decisions loaded" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-teal">Step 1</span>
@@ -504,7 +504,7 @@
         <div class="demo-panel" id="demo-screening" data-demo-id="screening">
           <div class="demo-panel-heading">3. Screening</div>
           <div class="demo-img-frame">
-            <img src="../images/tripripple/step3.png" alt="Candidate screening � 0 contacts sent before rejection" loading="lazy">
+            <img src="../images/tripripple/step3.png" alt="Candidate screening — 0 contacts sent before rejection" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-orange">Step 3</span>
@@ -526,7 +526,7 @@
         <div class="demo-panel" id="demo-ripple" data-demo-id="ripple">
           <div class="demo-panel-heading">5. Ripple</div>
           <div class="demo-img-frame">
-            <img src="../images/tripripple/step5.png" alt="Dependency ripple � 4 affected, 3 excluded" loading="lazy">
+            <img src="../images/tripripple/step5.png" alt="Dependency ripple — 4 affected, 3 excluded" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-orange">Step 5</span>
@@ -537,7 +537,7 @@
         <div class="demo-panel" id="demo-drafts" data-demo-id="drafts">
           <div class="demo-panel-heading">6. Drafts</div>
           <div class="demo-img-frame">
-            <img src="../images/tripripple/step6.png" alt="5 targeted drafts � each person only hears what their plan depends on" loading="lazy">
+            <img src="../images/tripripple/step6.png" alt="5 targeted drafts — each person only hears what their plan depends on" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-teal">Step 6</span>
@@ -548,7 +548,7 @@
         <div class="demo-panel" id="demo-trace" data-demo-id="trace">
           <div class="demo-panel-heading">Agent Trace</div>
           <div class="demo-img-frame">
-            <img src="../images/tripripple/trace.png" alt="Mastra workflow trace � 7 steps with suspend/resume" loading="lazy">
+            <img src="../images/tripripple/trace.png" alt="Mastra workflow trace — 7 steps with suspend/resume" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-teal">Mastra Trace</span>
@@ -558,7 +558,7 @@
       </div>
     </section>
 
-    <!-- -- BEFORE / AFTER -------------------------- -->
+    <!-- ── BEFORE / AFTER ────────────────────────── -->
     <section class="guide-section" id="section-before-after">
       <h2>Before / After: Ask Memory</h2>
       <p>The &ldquo;Ask Memory&rdquo; feature in Step 1 shows two answers side by side for the same question: one from a raw AI with no context, one from the agent with Elasticsearch memory. The difference is what the memory layer actually does.</p>
@@ -579,24 +579,24 @@
       <p>The memory-grounded answer cites specific decision IDs and constraint IDs. It knows <em>why</em> Harbor View was the original choice, why it became unavailable, and which constraints the replacement had to satisfy. The generic answer guessed based on geography.</p>
     </section>
 
-    <!-- -- ALL FEATURES ----------------------------- -->
+    <!-- ── ALL FEATURES ───────────────────────────── -->
     <section class="guide-section" id="section-features">
       <h2>All Features</h2>
 
       <h3>Memory &amp; Search</h3>
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🧠</div>
           <h4>Decision Memory</h4>
           <p>Every decision is stored with its rationale, source event, author, and state. Decisions are never deleted &mdash; superseded ones stay in the index, linked to what replaced them.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📉</div>
           <h4>Decay Search</h4>
           <p>Elasticsearch <code>function_score</code> with exponential decay on <code>timestamp</code>. Recent events score higher. Scale: 7 days. Offset: 1 day. If someone changed their mind last week, the newer preference ranks above the older one.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔗</div>
           <h4>Dependency Graph</h4>
           <p>Every plan is tagged with which decisions it depends on. When a decision changes, the graph tells the agent which plans ripple and which are unaffected &mdash; and the UI shows both lists explicitly.</p>
         </div>
@@ -605,17 +605,17 @@
       <h3>Workflow</h3>
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">⚙️</div>
           <h4>Mastra Workflow (7 steps)</h4>
           <p>The <code>recover-trip</code> workflow in Mastra 1.60.0: Load Memory &rarr; Trigger Cancellation &rarr; Screen Hotels &rarr; Resolve Evidence &rarr; Approve Change &rarr; Map Ripples &rarr; Generate Drafts. All 7 steps with live status updates.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">?</div>
+          <div class="feature-card-icon">⏸</div>
           <h4>Suspend &amp; Resume</h4>
           <p>The Resolve Evidence step suspends the workflow and waits. When the hotel confirms room details, the workflow resumes from exactly where it paused. No polling loop, no state reconstruction.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">?</div>
+          <div class="feature-card-icon">✅</div>
           <h4>Approval Gate</h4>
           <p>The active decision does not change until a human approves. You see the evidence, you see the candidates, you approve. Only then does the supersede write happen in Elasticsearch.</p>
         </div>
@@ -624,24 +624,24 @@
       <h3>Interactive Features</h3>
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">?</div>
+          <div class="feature-card-icon">❓</div>
           <h4>Ask Memory</h4>
           <p>Ask any question about the trip. The agent searches Elasticsearch with decay, builds context from the top results, and answers. Shows the without-memory answer side by side for comparison.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📩</div>
           <h4>Inject Event</h4>
           <p>Paste any new message into the chat. The agent classifies the type (Cancellation, Update, Request, Confirmation), extracts who it affects, and adds it to the source event index.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🎛</div>
           <h4>Constraint Editor</h4>
           <p>In the screening step, adjust the price cap slider or change the room count. The agent re-evaluates all candidates against the new constraints without touching the stored decisions.</p>
         </div>
       </div>
     </section>
 
-    <!-- -- HOW IT WORKS ----------------------------- -->
+    <!-- ── HOW IT WORKS ───────────────────────────── -->
     <section class="guide-section" id="section-how">
       <h2>How It Works</h2>
       <p>A single Next.js app: API routes handle state transitions, Mastra orchestrates the workflow, Elasticsearch holds memory, and OpenRouter supplies the AI reasoning. In-memory fallback runs everything if no Elasticsearch URL is configured.</p>
@@ -698,7 +698,7 @@
   score_mode: <span class="st">'multiply'</span>
 }
 
-<span class="cm"># Mastra suspend/resume � workflow pauses, waits, continues</span>
+<span class="cm"># Mastra suspend/resume — workflow pauses, waits, continues</span>
 <span class="kw">if</span> (!state.evidenceConfirmed) {
   traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve Evidence'</span>, <span class="st">'suspended'</span>);
   <span class="kw">await</span> suspend?.({ question, targetHotel });  <span class="cm">// workflow sleeps here</span>
@@ -706,27 +706,27 @@
 traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve Evidence'</span>, <span class="st">'complete'</span>, confirmation);</div>
     </section>
 
-    <!-- -- ARCHITECTURE ----------------------------- -->
+    <!-- ── ARCHITECTURE ───────────────────────────── -->
     <section class="guide-section" id="section-arch">
       <h2>Architecture</h2>
       <p>Three layers: the Next.js UI and API routes on the left, the Mastra workflow and tool layer in the centre, and Elasticsearch plus external services on the right. Every memory read and write goes through Elasticsearch &mdash; in-memory arrays are a drop-in fallback for running without credentials.</p>
       <div class="diagram-wrap">
-        <img src="../images/tripripple/architecture.svg" alt="TripRipple architecture diagram � UI layer, Mastra workflow, Elasticsearch memory">
+        <img src="../images/tripripple/architecture.svg" alt="TripRipple architecture diagram — UI layer, Mastra workflow, Elasticsearch memory">
         <div class="diagram-label">System Architecture &mdash; Next.js UI &rarr; Mastra Workflow &rarr; Elasticsearch Memory</div>
       </div>
     </section>
 
-    <!-- -- COMPONENT MAP ---------------------------- -->
+    <!-- ── COMPONENT MAP ──────────────────────────── -->
     <section class="guide-section" id="section-components">
       <h2>Component Map</h2>
       <p>Each file in the project, its responsibility, and how they connect. The dashed arrows are paths that bypass the workflow &mdash; the constraint editor re-evaluates candidates directly without going through Mastra.</p>
       <div class="diagram-wrap">
-        <img src="../images/tripripple/components.svg" alt="TripRipple component map � file responsibilities and connections">
+        <img src="../images/tripripple/components.svg" alt="TripRipple component map — file responsibilities and connections">
         <div class="diagram-label">Component Map &mdash; file responsibilities and inter-module connections</div>
       </div>
     </section>
 
-    <!-- -- TECH STACK ------------------------------- -->
+    <!-- ── TECH STACK ─────────────────────────────── -->
     <section class="guide-section" id="section-stack">
       <h2>Tech Stack</h2>
 
@@ -743,7 +743,7 @@ traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve 
       </table></div>
     </section>
 
-    <!-- -- LEARNINGS -------------------------------- -->
+    <!-- ── LEARNINGS ──────────────────────────────── -->
     <section class="guide-section" id="section-learnings">
       <h2>What We Actually Learned</h2>
 
@@ -797,7 +797,7 @@ traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve 
       </div>
     </section>
 
-    <!-- -- TEAM ------------------------------------- -->
+    <!-- ── TEAM ───────────────────────────────────── -->
     <section class="guide-section" id="section-team">
       <h2>The Team</h2>
       <p>Three people. Built over one hackathon day. The travel scenario was deliberate &mdash; it&rsquo;s concrete enough to demo in two minutes and abstract enough that you can see the enterprise pattern underneath.</p>
@@ -830,7 +830,7 @@ traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve 
       </div>
     </section>
 
-    <!-- -- GET STARTED ------------------------------ -->
+    <!-- ── GET STARTED ────────────────────────────── -->
     <section class="guide-section" id="section-start">
       <h2>Get Started</h2>
       <p>Clone the repo, copy <code>.env.example</code> to <code>.env.local</code> and fill in your keys, then run the seed script to populate Elasticsearch. The app falls back to in-memory data if no Elasticsearch URL is set.</p>
@@ -839,13 +839,13 @@ traceStep(<span class="st">'resolve-evidence'</span>, <span class="st">'Resolve 
 git clone https://github.com/researchsite/TripRipple
 npm install
 
-<span class="cm"># 2. Configure � copy and fill in your keys</span>
+<span class="cm"># 2. Configure — copy and fill in your keys</span>
 cp .env.example .env.local
 <span class="cm"># OPENROUTER_API_KEY=sk-or-...</span>
 <span class="cm"># ELASTICSEARCH_URL=https://your-project.es.region.cloud.elastic.co:443</span>
 <span class="cm"># ELASTICSEARCH_API_KEY=...</span>
 
-<span class="cm"># 3. Seed Elasticsearch (safe to run multiple times � uses upserts)</span>
+<span class="cm"># 3. Seed Elasticsearch (safe to run multiple times — uses upserts)</span>
 npm run reset:elastic
 
 <span class="cm"># 4. Start</span>
@@ -864,7 +864,7 @@ npm run dev</div>
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-// -- Desktop tab switching ----------------------------------------------------
+// ── Desktop tab switching ────────────────────────────────────────────────────
 function showDemo(id, btn) {
   // Only do tab-switching on desktop (tab bar visible)
   if (window.innerWidth > 768) {
@@ -879,7 +879,7 @@ function showDemo(id, btn) {
   if (sel) sel.value = id;
 }
 
-// -- Mobile: dropdown ? scroll to panel --------------------------------------
+// ── Mobile: dropdown → scroll to panel ──────────────────────────────────────
 document.getElementById('demo-select').addEventListener('change', function() {
   var id = this.value;
   var panel = document.getElementById('demo-' + id);
@@ -897,7 +897,7 @@ document.getElementById('demo-select').addEventListener('change', function() {
   window.scrollTo({ top: top, behavior: 'smooth' });
 });
 
-// -- Mobile: scroll ? update dropdown (scrollspy on panels) ------------------
+// ── Mobile: scroll → update dropdown (scrollspy on panels) ──────────────────
 (function() {
   var panels = document.querySelectorAll('.demo-panel[data-demo-id]');
   if (!panels.length) return;
@@ -920,7 +920,7 @@ document.getElementById('demo-select').addEventListener('change', function() {
   panels.forEach(function(p) { demoObserver.observe(p); });
 })();
 
-// -- TOC scrollspy ------------------------------------------------------------
+// ── TOC scrollspy ────────────────────────────────────────────────────────────
 (function() {
   var sections = document.querySelectorAll('.guide-section[id]');
   var links = document.querySelectorAll('.guide-toc a');

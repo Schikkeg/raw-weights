@@ -769,15 +769,23 @@
     const mc = document.modelContext;
     if (!mc || typeof mc.registerTool !== 'function') return;
 
+    /* Pre-load Pagefind eagerly so it is ready before any tool call arrives */
+    var __rwPF = null;
+    var __rwPFReady = import('/pagefind/pagefind.js').then(function (pf) {
+      __rwPF = pf;
+      return pf;
+    }).catch(function () { return null; });
+
     mc.registerTool({
       name: 'search_rawweights',
       description: [
         'Search RawWeights for articles, guides, playgrounds, and use cases.',
-        'Always opens the visual search overlay so the user can browse results interactively.',
-        'Also returns up to 5 structured results with title, excerpt, page URL, and section-level anchor links (sub_results).',
-        'Use results[].url to navigate the user to a specific page.',
-        'Use results[].sub_results[].url to link directly to a heading inside a page, e.g. /guide/rag.html#chunking-strategies.',
-        'If no structured results come back (Pagefind not available), still direct the user to results_url.'
+        'Returns up to 5 structured results, each with: title, excerpt, page url, and sub_results (section-level anchor links inside that page).',
+        'Use results[].url to send the user to a specific page.',
+        'Use results[].sub_results[].url to deep-link directly to a section, e.g. https://rawweights.com/guide/rag.html#evaluation-metrics.',
+        'Always show the results as a list of clickable links — title as the link text, excerpt as context.',
+        'If sub_results exist, also show them as indented section links under the page.',
+        'If results is empty, send the user to results_url to browse visually.'
       ].join(' '),
       inputSchema: {
         type: 'object',
@@ -785,41 +793,38 @@
         required: ['query']
       },
       execute: function (p) {
-        var resultsUrl = 'https://rawweights.com/search/?q=' + encodeURIComponent(p.query);
+        var query = (p && p.query) ? p.query : '';
+        var resultsUrl = 'https://rawweights.com/search/?q=' + encodeURIComponent(query);
 
-        /* Open visual overlay for the user */
-        if (window.location.pathname.indexOf('/search') === 0) {
-          if (typeof window.__rw.fillHeroSearch === 'function') window.__rw.fillHeroSearch(p.query);
-        } else if (window.__rw && typeof window.__rw.searchFor === 'function') {
-          window.__rw.searchFor(p.query);
-        }
-
-        /* Also query Pagefind JS API to return structured results to the agent */
-        var base = 'https://rawweights.com';
-        return import(base + '/pagefind/pagefind.js').then(function (pf) {
-          return pf.search(p.query).then(function (res) {
-            var top = res.results.slice(0, 5);
+        function runSearch(pf) {
+          if (!pf) return Promise.resolve({ query: query, results_url: resultsUrl, results: [], error: 'Pagefind unavailable' });
+          return pf.search(query).then(function (res) {
+            var top = (res && res.results || []).slice(0, 5);
+            if (top.length === 0) return { query: query, results_url: resultsUrl, results: [] };
             return Promise.all(top.map(function (r) { return r.data(); })).then(function (items) {
               return {
-                status: 'opened',
-                query: p.query,
+                query: query,
                 results_url: resultsUrl,
                 results: items.map(function (d) {
+                  var pageUrl = /^https?:\/\//.test(d.url) ? d.url : 'https://rawweights.com' + d.url;
                   return {
-                    url: d.url,
-                    title: (d.meta && d.meta.title) || '',
+                    url: pageUrl,
+                    title: (d.meta && d.meta.title) ? d.meta.title : pageUrl,
                     excerpt: d.excerpt || '',
                     sub_results: (d.sub_results || []).map(function (s) {
-                      return { title: s.title, url: d.url + s.anchor, anchor: s.anchor };
+                      return { title: s.title || '', url: pageUrl.replace(/#.*$/, '') + (s.anchor || '') };
                     })
                   };
                 })
               };
             });
+          }).catch(function (err) {
+            return { query: query, results_url: resultsUrl, results: [], error: String(err) };
           });
-        }).catch(function () {
-          return { status: 'opened', query: p.query, results_url: resultsUrl, results: [] };
-        });
+        }
+
+        /* Use cached module if ready, otherwise wait for the pre-load promise */
+        return __rwPF ? runSearch(__rwPF) : __rwPFReady.then(runSearch);
       }
     });
 
@@ -877,11 +882,15 @@
     mc.registerTool({
       name: 'get_page_sections',
       description: [
-        'Returns h2/h3 section headings with deep-link anchor URLs.',
+        'Returns all h2/h3 section headings on a page as objects with: text (heading text), url (full deep-link anchor URL), level (h2 or h3).',
         'Two modes:',
-        '(1) No url argument — returns sections of the page currently open in the browser. Use this when the user is already on a page and wants to jump to a specific section.',
-        '(2) url argument provided (e.g. "/guide/rag.html") — fetches that RawWeights page and returns its sections without navigating away. Use this after search_rawweights to inspect the internal structure of a result and produce section-level links like "https://rawweights.com/guide/rag.html#evaluation-metrics".',
-        'Always prefer mode (2) when the user asks about a specific page by name or after a search.'
+        '(1) No url argument — inspects the page currently open in the browser.',
+        '(2) url argument (e.g. "/guide/rag.html") — fetches that page and returns its sections without navigating away.',
+        'After receiving sections: to find a specific section, do a case-insensitive keyword match on sections[].text.',
+        'For example, if the user asks for the "evaluation section", match against "evaluation" and return the sections[].url of the match as a clickable link.',
+        'Partial matches count — "Evaluation & Metrics" matches the keyword "evaluation".',
+        'Always return sections[].url (not just the anchor) as the direct link the user can click.',
+        'Always prefer mode (2) when the user asks about a specific page by name or after a search_rawweights call.'
       ].join(' '),
       inputSchema: {
         type: 'object',
@@ -896,10 +905,20 @@
       execute: function (p) {
         function extractSections(doc, pageUrl) {
           var base = pageUrl.replace(/#.*$/, '');
+          var body = doc.body || doc;
           return Array.from(doc.querySelectorAll('h2, h3')).map(function (h) {
-            var slug = h.id || h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-            if (!h.id) h.id = slug;
-            return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + slug, url: base + '#' + slug };
+            var id = h.id;
+            /* If heading has no id, check closest ancestor section/div/article with one */
+            if (!id && typeof h.closest === 'function') {
+              var anc = h.closest('section[id], article[id], div[id]');
+              if (anc && anc !== body) id = anc.id;
+            }
+            /* Fall back to a slug generated from the heading text */
+            if (!id) {
+              id = h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+              h.id = id;
+            }
+            return { level: h.tagName.toLowerCase(), text: h.textContent.trim(), anchor: '#' + id, url: base + '#' + id };
           });
         }
 

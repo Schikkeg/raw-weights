@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Master Guide: Sequence Models to Transformers | RawWeights</title>
-    <meta name="description" content="Explore the evolution of sequence models. Understand the math and mechanics behind modern AI�from RNNs to Transformers�with 13 hands-on interactive visualizers.">
+    <meta name="description" content="Explore the evolution of sequence models. Understand the math and mechanics behind modern AI—from RNNs to Transformers—with 13 hands-on interactive visualizers.">
 
       <script>document.documentElement.setAttribute('data-theme','light');</script>
   <link rel="stylesheet" href="../includes/brand.css">
@@ -31,7 +31,7 @@
 	<script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_sequence_hub',
-  description: 'Returns an overview of the Sequence Models to Transformers guide � all 13 interactive visualizers and the progression from RNNs to modern attention.',
+  description: 'Returns an overview of the Sequence Models to Transformers guide — all 13 interactive visualizers and the progression from RNNs to modern attention.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3, [id]'))
@@ -45,10 +45,10 @@ window.RW_PAGE_TOOLS = [{
       url: window.location.href,
       sections: sections,
       visualizers: [
-        'Vanilla RNN � sequential hidden state passing',
+        'Vanilla RNN — sequential hidden state passing',
         'Vanishing gradient problem visualization',
-        'LSTM � forget, input, output gate mechanics',
-        'GRU � simplified gating',
+        'LSTM — forget, input, output gate mechanics',
+        'GRU — simplified gating',
         'Seq2Seq encoder-decoder',
         'Bahdanau attention mechanism',
         'Self-attention and query/key/value',
@@ -192,7 +192,7 @@ window.RW_PAGE_TOOLS = [{
 				
 				    <div class="controls">
 				        <input type="text" id="t2-input" value="The movie is great" placeholder="Enter sequence...">
-				        <button onclick="T2.runInference()">? Run Math Forward Pass</button>
+				        <button onclick="T2.runInference()">▶ Run Math Forward Pass</button>
 				    </div>
 				
 				    <div class="svg-stage" id="t2-vis" style="flex-wrap: wrap; align-items: flex-end; gap: 10px;">
@@ -212,7 +212,7 @@ window.RW_PAGE_TOOLS = [{
 				    <p>Imagine reading a book, but after every single word, your memory is completely wiped. You read "The", then forget it. You read "movie", then forget it. You read "is", then forget it. By the time you read "great", you have absolutely no idea what is great. This is exactly how a <strong>Standard Feedforward Network</strong> works. It processes each piece of data in total isolation, completely ignoring the element of time.</p>
 				    
 				    <h3>The Solution: A Memory Pad (The Hidden State)</h3>
-				    <p>To fix this, we give the network a scratchpad. When it reads the first word, it writes down some notes. When it moves to the second word, it doesn't just read the word�it reads the word <strong>AND</strong> the notes from the previous step. It combines them, makes a new prediction, and updates the notes for the next step.</p>
+				    <p>To fix this, we give the network a scratchpad. When it reads the first word, it writes down some notes. When it moves to the second word, it doesn't just read the word—it reads the word <strong>AND</strong> the notes from the previous step. It combines them, makes a new prediction, and updates the notes for the next step.</p>
 				    <p>This running memory pad is called the <span class="highlight">Hidden State ($h_t$)</span>. Passing this memory forward is what creates the <strong>Recurrence Relation</strong>, allowing the AI to understand sentences, time-series, and context.</p>
 				</div>
 				
@@ -223,7 +223,7 @@ window.RW_PAGE_TOOLS = [{
 				
 				    <div class="controls" style="margin-top: 15px;">
 				        <input type="text" id="t3-input" value="The movie is great" placeholder="Type a sentence here...">
-				        <button id="t3-btn" onclick="T3.startSimulation()">? Start Animation</button>
+				        <button id="t3-btn" onclick="T3.startSimulation()">▶ Start Animation</button>
 				    </div>
 				
 				    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-family: monospace; font-weight: bold;">
@@ -315,11 +315,11 @@ window.RW_PAGE_TOOLS = [{
 				<div class="engine">
 				    <div class="engine-header">
 				        <h4>Computational Graph: <span id="t4-graph-label" style="color: white;">Rolled Network</span></h4>
-				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Shared Parameters</span>
+				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Shared Parameters</span>
 				    </div>
 				    
 				    <div class="controls" style="margin-bottom: 25px;">
-				        <button id="t4-btn-toggle" style="background:#3b82f6;" onclick="T4.toggleGraph()">? Unroll Computational Graph Across Time</button>
+				        <button id="t4-btn-toggle" style="background:#3b82f6;" onclick="T4.toggleGraph()">▶ Unroll Computational Graph Across Time</button>
 				    </div>
 				
 				    <div class="svg-stage" id="t4-svg-stage">
@@ -385,12 +385,12 @@ window.RW_PAGE_TOOLS = [{
 				<div class="engine">
 				    <div class="engine-header">
 				        <h4>Interactive Engine: <span>Loss Computation Graph</span></h4>
-				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Next-Word Prediction Task</span>
+				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Next-Word Prediction Task</span>
 				    </div>
 				    
 				    <div class="controls" style="margin-bottom: 25px;">
 				        <input type="text" id="t5-input" value="The cat sat on the mat" placeholder="Type a sentence...">
-				        <button id="t5-btn-calc" style="background:#f43f5e;" onclick="T5.runLossCalculation()">? Compute Sequence Loss</button>
+				        <button id="t5-btn-calc" style="background:#f43f5e;" onclick="T5.runLossCalculation()">▶ Compute Sequence Loss</button>
 				    </div>
 				
 				    <div class="svg-stage" id="t5-svg-stage" style="justify-content: flex-start;">
@@ -418,14 +418,14 @@ window.RW_PAGE_TOOLS = [{
 				<div class="engine">
 				    <div class="engine-header">
 				        <h4>The Embedding Pipeline</h4>
-				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Task: Next Word Prediction</span>
+				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Task: Next Word Prediction</span>
 				    </div>
 				    
 				    <p style="margin-top: 0; color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px;">Type a sentence below to see how a model extracts the vocabulary, indexes it, and generates a dense vector embedding for the neural network to process.</p>
 				
 				    <div class="controls" style="margin-bottom: 25px;">
 				        <input type="text" id="t6-input" value="This morning I took my cat for a" placeholder="Type a sentence...">
-				        <button style="background:#8b5cf6;" onclick="T6.processEmbeddings()">? Encode Sequence</button>
+				        <button style="background:#8b5cf6;" onclick="T6.processEmbeddings()">▶ Encode Sequence</button>
 				    </div>
 				
 				    <div id="t6-stage1" style="display: none; background: #020617; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
@@ -505,12 +505,12 @@ window.RW_PAGE_TOOLS = [{
 					<div class="engine">
 					    <div class="engine-header">
 					        <h4>BPTT Simulator: Gradient Clipping</h4>
-					        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? 3-Phase Animation</span>
+					        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● 3-Phase Animation</span>
 					    </div>
 					    
 					    <div class="controls" style="margin-bottom: 25px;">
 					        <input type="text" id="t8-input" value="The quick brown fox jumped" placeholder="Type a sentence...">
-					        <button id="t8-btn" style="background:#f97316;" onclick="T8.runBPTT()">? Run BPTT & Gradient Clipping</button>
+					        <button id="t8-btn" style="background:#f97316;" onclick="T8.runBPTT()">▶ Run BPTT & Gradient Clipping</button>
 					    </div>
 					
 					    <div class="svg-stage" id="t8-svg-stage" style="justify-content: flex-start; padding-top: 30px;">
@@ -540,7 +540,7 @@ window.RW_PAGE_TOOLS = [{
 				<div class="engine">
 				    <div class="engine-header">
 				        <h4>Interactive LSTM Cell Architecture</h4>
-				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Click gates to explore</span>
+				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Click gates to explore</span>
 				    </div>
 				    
 				    <div class="controls" style="margin-bottom: 25px;">
@@ -624,7 +624,7 @@ window.RW_PAGE_TOOLS = [{
 				<div class="engine">
 				    <div class="engine-header">
 				        <h4>Architecture Evaluator</h4>
-				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Can we eliminate recurrence?</span>
+				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Can we eliminate recurrence?</span>
 				    </div>
 				    
 				    <div class="controls" style="margin-bottom: 25px;">
@@ -684,7 +684,7 @@ window.RW_PAGE_TOOLS = [{
 				<div class="engine">
 				    <div class="engine-header">
 				        <h4>Interactive Self-Attention Visualizer</h4>
-				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Hover over any word to view its "Search" results</span>
+				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Hover over any word to view its "Search" results</span>
 				    </div>
 				    
 				    <div class="controls" style="margin-bottom: 15px;">
@@ -741,7 +741,7 @@ window.RW_PAGE_TOOLS = [{
 				<div class="engine">
 				    <div class="engine-header">
 				        <h4>Interactive Q, K, V Visualizer</h4>
-				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Select a scenario to see how the math adapts</span>
+				        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Select a scenario to see how the math adapts</span>
 				    </div>
 				    
 				    <div class="controls" style="margin-bottom: 15px;">
@@ -944,7 +944,7 @@ window.RW_PAGE_TOOLS = [{
 					<div class="engine">
 					    <div class="engine-header">
 					        <h4>The Attention Matrix "Chessboard"</h4>
-					        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">? Visualizing $\text{Softmax}(Q \cdot K^T)$</span>
+					        <span style="font-size: 0.85rem; color: #facc15; font-family: monospace; font-weight: bold;">● Visualizing $\text{Softmax}(Q \cdot K^T)$</span>
 					    </div>
 					    
 					    <div class="controls" style="margin-bottom: 25px;">
@@ -1244,14 +1244,14 @@ window.RW_PAGE_TOOLS = [{
 		        let html = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px;">`;
 		        
 		        // Output Block
-		        if(outTxt) html += `<div style="background:#f59e0b; color:#fff; padding:6px 12px; border-radius:6px; font-weight:bold; min-width:50px; text-align:center;">${outTxt}</div><div style="color:#94a3b8; font-weight:bold;">?</div>`;
+		        if(outTxt) html += `<div style="background:#f59e0b; color:#fff; padding:6px 12px; border-radius:6px; font-weight:bold; min-width:50px; text-align:center;">${outTxt}</div><div style="color:#94a3b8; font-weight:bold;">↑</div>`;
 		        else html += `<div style="height:32px;"></div><div style="height:20px;"></div>`;
 		        
 		        // Hidden Block
 		        if(hidTxt) html += `<div style="background:${hidCol}; color:#fff; padding:12px 12px; border-radius:6px; font-weight:bold; min-width:40px; text-align:center;">${hidTxt}</div>`;
 		        
 		        // Input Block
-		        if(inTxt) html += `<div style="color:#94a3b8; font-weight:bold;">?</div><div style="background:#3b82f6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:bold; min-width:50px; text-align:center;">${inTxt}</div>`;
+		        if(inTxt) html += `<div style="color:#94a3b8; font-weight:bold;">↑</div><div style="background:#3b82f6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:bold; min-width:50px; text-align:center;">${inTxt}</div>`;
 		        else html += `<div style="height:20px;"></div><div style="height:32px;"></div>`;
 		        
 		        html += `</div>`;
@@ -1269,7 +1269,7 @@ window.RW_PAGE_TOOLS = [{
 		
 		        const Whx = 1.2, Whh = 0.5, b = 0.0;
 		        let h_prev = 0.0;
-		        const arrowRt = `<div style="color:#94a3b8; font-weight:bold; align-self:center; font-size:1.2rem; margin:0 5px; transform:translateY(10px);">?</div>`;
+		        const arrowRt = `<div style="color:#94a3b8; font-weight:bold; align-self:center; font-size:1.2rem; margin:0 5px; transform:translateY(10px);">→</div>`;
 		
 		        if (this.currentFormulation === 'ManyToOne') {
 		            words.forEach((word, t) => {
@@ -1481,7 +1481,7 @@ window.RW_PAGE_TOOLS = [{
 		
 		            const btn = document.getElementById('t3-btn');
 		            btn.disabled = false;
-		            btn.innerText = "? Change Text & Run Again";
+		            btn.innerText = "↻ Change Text & Run Again";
 		            return;
 		        }
 		
@@ -1526,10 +1526,10 @@ window.RW_PAGE_TOOLS = [{
 		        ffText.innerHTML = `<strong style="color:#f87171;">Standard Network [FAIL]:</strong> Processing "<span style="color:#38bdf8">${this.words[this.currentStep]}</span>". I have absolutely no idea what the previous words were.`;
 		        
 		        if (this.currentStep === 0) {
-		            rnnText.innerHTML = `<strong style="color:#10b981;">Recurrent Network [PASS]:</strong> Processing "<span style="color:#38bdf8">${this.words[this.currentStep]}</span>". Creating new memory state: <br><br>? <code>h1 = tanh( W_hx * "${this.words[this.currentStep]}" + 0 )</code>`;
+		            rnnText.innerHTML = `<strong style="color:#10b981;">Recurrent Network [PASS]:</strong> Processing "<span style="color:#38bdf8">${this.words[this.currentStep]}</span>". Creating new memory state: <br><br>➔ <code>h₁ = tanh( W_hx * "${this.words[this.currentStep]}" + 0 )</code>`;
 		        } else {
 		            let contextStr = this.words.slice(0, this.currentStep).join(" ");
-		            rnnText.innerHTML = `<strong style="color:#10b981;">Recurrent Network [PASS]:</strong> Processing "<span style="color:#38bdf8">${this.words[this.currentStep]}</span>". Blending this word with memory of [<em style="color:#facc15;">"${contextStr}"</em>] passed from previous step! <br><br>? <code>h_${this.currentStep+1} = tanh( W_hx * "${this.words[this.currentStep]}" + W_hh * h_${this.currentStep} )</code>`;
+		            rnnText.innerHTML = `<strong style="color:#10b981;">Recurrent Network [PASS]:</strong> Processing "<span style="color:#38bdf8">${this.words[this.currentStep]}</span>". Blending this word with memory of [<em style="color:#facc15;">"${contextStr}"</em>] passed from previous step! <br><br>➔ <code>h_${this.currentStep+1} = tanh( W_hx * "${this.words[this.currentStep]}" + W_hh * h_${this.currentStep} )</code>`;
 		        }
 		
 		        this.currentStep++;
@@ -1650,7 +1650,7 @@ window.RW_PAGE_TOOLS = [{
 		            // Unroll Action
 		            nodes.forEach(id => document.getElementById(id).classList.add('show'));
 		            
-		            btn.innerText = "� Reset to Rolled Graph";
+		            btn.innerText = "■ Reset to Rolled Graph";
 		            btn.style.background = "#eab308"; // Gold warning state
 		            label.innerText = "Unrolled Network (Across Time)";
 		            
@@ -1659,7 +1659,7 @@ window.RW_PAGE_TOOLS = [{
 		            // Roll back Action
 		            nodes.forEach(id => document.getElementById(id).classList.remove('show'));
 		            
-		            btn.innerText = "? Unroll Computational Graph Across Time";
+		            btn.innerText = "▶ Unroll Computational Graph Across Time";
 		            btn.style.background = "#3b82f6"; // Primary blue state
 		            label.innerText = "Rolled Network";
 		            
@@ -1735,7 +1735,7 @@ const T5 = {
 
                 <rect x="${cx-35}" y="100" width="70" height="30" rx="4" fill="#f59e0b" />
                 <text x="${cx}" y="120" fill="#fff" font-weight="bold" font-family="sans-serif" text-anchor="middle">${this.sequence[i].pred}</text>
-                <text x="${cx}" y="145" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="middle">Pred (y)</text>
+                <text x="${cx}" y="145" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="middle">Pred (ŷ)</text>
 
                 <circle cx="${cx}" cy="65" r="16" fill="#ef4444" />
                 <text x="${cx}" y="70" fill="#fff" font-weight="bold" font-family="sans-serif" text-anchor="middle" font-size="12">L${i+1}</text>
@@ -1797,7 +1797,7 @@ const T5 = {
         if (this.step >= this.sequence.length) {
             clearInterval(this.simInterval);
             document.getElementById('t5-btn-calc').disabled = false;
-            document.getElementById('t5-btn-calc').innerText = "? Calculate Sequence Loss";
+            document.getElementById('t5-btn-calc').innerText = "↻ Calculate Sequence Loss";
             
             trace.innerHTML += `\n<span style="color:#ef4444;">--------------------------------</span>\n`;
             trace.innerHTML += `<span style="color:#facc15; font-weight:bold; font-size:1.1rem;">FINAL TOTAL LOSS (L) = &Sigma; L_t = ${this.totalLoss.toFixed(2)}</span>\n`;
@@ -1815,7 +1815,7 @@ const T5 = {
         const statusText = data.isCorrect ? "MATCH (Low Loss)" : "MISS (High Loss)";
 
         let logStr = `<span style="color:#94a3b8;">Step t=${data.t}: Read "${data.x}"</span>\n`;
-        logStr += ` y_${data.t} (Pred)   = "${data.pred}"\n`;
+        logStr += ` ŷ_${data.t} (Pred)   = "${data.pred}"\n`;
         logStr += ` y_${data.t} (Target) = "${data.target}"\n`;
         logStr += ` <span style="color:${statusColor}; font-weight:bold;">-> ${statusText}</span>\n`;
         logStr += ` L_${data.t} = ${data.loss.toFixed(2)}\n\n`;
@@ -2168,7 +2168,7 @@ const T8 = {
                 
                 const btn = document.getElementById('t8-btn');
                 btn.disabled = false;
-                btn.innerText = "? Change Text & Run Again";
+                btn.innerText = "↻ Change Text & Run Again";
             }
         }
         
@@ -2317,8 +2317,8 @@ const T10 = {
         const memory = document.getElementById('t10-chk-memory');
         const desc = document.getElementById('t10-desc-text');
 
-        const passHTML = '<span style="color:#10b981;">? Yes</span>';
-        const failHTML = '<span style="color:#ef4444;">? No</span>';
+        const passHTML = '<span style="color:#10b981;">✔ Yes</span>';
+        const failHTML = '<span style="color:#ef4444;">✖ No</span>';
 
         if (view === 'rnn') {
             vis.innerHTML = `
@@ -2326,11 +2326,11 @@ const T10 = {
                 
                 <div style="display: flex; align-items: center; gap: 10px; font-family: monospace; font-size: 1.1rem; font-weight: bold;">
                     <div style="padding: 12px 18px; background: #1e293b; border: 2px solid #334155; border-radius: 8px; color: #64748b;">x_1</div>
-                    <div style="color: #475569; font-size: 1.5rem;">?</div>
+                    <div style="color: #475569; font-size: 1.5rem;">→</div>
                     <div style="padding: 12px 18px; background: #1e293b; border: 2px solid #334155; border-radius: 8px; color: #64748b;">x_2</div>
-                    <div style="color: #475569; font-size: 1.5rem;">?</div>
+                    <div style="color: #475569; font-size: 1.5rem;">→</div>
                     <div style="padding: 12px 18px; background: #3b82f6; border-radius: 8px; color: #fff; box-shadow: 0 4px 10px rgba(59,130,246,0.4);">x_3</div>
-                    <div style="color: #3b82f6; font-size: 1.5rem;">?</div>
+                    <div style="color: #3b82f6; font-size: 1.5rem;">→</div>
                     <div style="padding: 12px 18px; background: #ef4444; border-radius: 8px; color: #fff; box-shadow: 0 4px 10px rgba(239,68,68,0.4);">Bottleneck</div>
                 </div>
 
@@ -2340,8 +2340,8 @@ const T10 = {
                 </div>
             `;
             stream.innerHTML = passHTML;
-            parallel.innerHTML = '<span style="color:#ef4444;">? No (Slow)</span>';
-            memory.innerHTML = '<span style="color:#ef4444;">? No (Decays)</span>';
+            parallel.innerHTML = '<span style="color:#ef4444;">✖ No (Slow)</span>';
+            memory.innerHTML = '<span style="color:#ef4444;">✖ No (Decays)</span>';
             desc.innerHTML = "<strong style='color:#f8fafc;'>RNNs fail</strong> because they cannot parallelize feature vectors (must wait for previous steps), and their sequential nature destroys <strong style='color:#f8fafc;'>Long Memory</strong>, creating an encoding bottleneck.";
         } 
         else if (view === 'dense') {
@@ -2355,7 +2355,7 @@ const T10 = {
                     <div style="padding: 12px 18px; background: #3b82f6; border-radius: 8px; color: #fff; box-shadow: 0 4px 10px rgba(59,130,246,0.3);">x_4</div>
                 </div>
 
-                <div style="color:#475569; margin-top: 15px; font-size: 1.5rem; letter-spacing: 11px; margin-left: 11px;">????</div>
+                <div style="color:#475569; margin-top: 15px; font-size: 1.5rem; letter-spacing: 11px; margin-left: 11px;">↓↓↓↓</div>
                 
                 <div style="margin-top: 10px; width: 80%; padding: 20px; background: #8b5cf6; border-radius: 12px; color: white; font-weight: bold; text-align: center; box-shadow: 0 4px 15px rgba(139,92,246,0.4);">
                     Standard Dense Layers
@@ -2386,7 +2386,7 @@ const T10 = {
                 </div>
 
                 <div style="margin-top: 45px; font-family: monospace; color: #facc15; background: rgba(250,204,21,0.1); padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(250,204,21,0.3);">
-                    Direct Long-Memory Link: x_1 ? x_4
+                    Direct Long-Memory Link: x_1 ↔ x_4
                 </div>
             `;
             stream.innerHTML = passHTML;

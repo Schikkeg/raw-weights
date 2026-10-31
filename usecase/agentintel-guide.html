@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgentIntel: I Built a Multi-Agent Swarm to Diagnose AI Visibility | RawWeights</title>
-  <meta name="description" content="How I built a 7-agent swarm at a hackathon that scrapes websites, benchmarks competitors, and generates AEO/GEO recommendations � with Band, Guild, and Actian wired in.">
+  <meta name="description" content="How I built a 7-agent swarm at a hackathon that scrapes websites, benchmarks competitors, and generates AEO/GEO recommendations — with Band, Guild, and Actian wired in.">
   <meta name="author" content="Sham Sundar HC">
   <link rel="canonical" href="https://rawweights.com/usecase/agentintel-guide.html">
 
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/usecase/agentintel-guide.html">
   <meta property="og:title" content="AgentIntel: I Built a Multi-Agent Swarm to Diagnose AI Visibility">
-  <meta property="og:description" content="A 7-agent swarm that finds why your website doesn't show up in AI answers � built at a hackathon with real sponsor integrations.">
+  <meta property="og:description" content="A 7-agent swarm that finds why your website doesn't show up in AI answers — built at a hackathon with real sponsor integrations.">
   <meta property="og:image" content="https://rawweights.com/images/agentintel-og.jpeg">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -20,7 +20,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Hero: two-column split --------------------------------- */
+    /* ── Hero: two-column split ───────────────────────────────── */
     .guide-hero {
       background: linear-gradient(135deg, #060612 0%, #0d0a1f 50%, #080f1e 100%);
       padding: 4.5rem 1.5rem 3.5rem;
@@ -170,7 +170,7 @@
     }
     .video-placeholder-sub { font-size: 0.75rem; color: rgba(240,244,255,0.28); }
 
-    /* -- Guide layout -------------------------------------------- */
+    /* ── Guide layout ──────────────────────────────────────────── */
     .guide-layout {
       display: grid;
       grid-template-columns: 240px 1fr;
@@ -540,25 +540,25 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- --- HERO ----------------------------------------------------------- -->
+<!-- ═══ HERO ═══════════════════════════════════════════════════════════ -->
 <div class="guide-hero">
   <div class="hero-split">
 
     <div class="hero-left">
-      <span class="guide-hero-label">?? Build Log � Hackathon � Multi-Agent</span>
+      <span class="guide-hero-label">🤖 Build Log · Hackathon · Multi-Agent</span>
       <h1>I Built a <span>7-Agent Swarm</span> to Find Why Your Site Is Invisible to AI</h1>
       <p class="hero-desc">
-        AgentIntel is a multi-agent system that scrapes your website and competitors, scores AI discoverability, finds content gaps, and generates ranked recommendations � built at a hackathon in about 6 hours.
+        AgentIntel is a multi-agent system that scrapes your website and competitors, scores AI discoverability, finds content gaps, and generates ranked recommendations — built at a hackathon in about 6 hours.
       </p>
 
       <div class="hero-meta">
         <span><strong>Sham Sundar HC</strong></span>
-        <span>�</span>
+        <span>·</span>
         <span>July 2026</span>
-        <span>�</span>
+        <span>·</span>
         <span>15 min read</span>
-        <span>�</span>
-        <span><strong>Hackathon project � Open source</strong></span>
+        <span>·</span>
+        <span><strong>Hackathon project · Open source</strong></span>
       </div>
 
       <div class="hero-stats">
@@ -581,8 +581,8 @@
       </div>
 
       <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the build log ?</a>
-        <a href="https://github.com/researchsite/AgentIntel" class="rw-btn rw-btn-primary" target="_blank">GitHub ?</a>
+        <a href="#guide-content" class="rw-btn rw-btn-primary">Read the build log ↓</a>
+        <a href="https://github.com/researchsite/AgentIntel" class="rw-btn rw-btn-primary" target="_blank">GitHub →</a>
       </div>
     </div>
 
@@ -590,7 +590,7 @@
     <div class="hero-right">
       <!--
         SELF-HOSTED VIDEO: drop your .mp4 next to this file and update the src below.
-        The poster image is optional � a frame from the video works well.
+        The poster image is optional — a frame from the video works well.
       -->
       <div class="video-embed">
         <video
@@ -606,7 +606,7 @@
       </div>
       <!-- If the video file is not placed yet, swap the above block with:
       <div class="video-placeholder">
-        <div class="video-placeholder-icon">?</div>
+        <div class="video-placeholder-icon">▶</div>
         <div class="video-placeholder-text">Demo video</div>
         <div class="video-placeholder-sub">Place agentintel-demo.mp4 next to this file</div>
       </div>
@@ -616,7 +616,7 @@
   </div>
 </div>
 
-<!-- --- GUIDE CONTENT -------------------------------------------------- -->
+<!-- ═══ GUIDE CONTENT ══════════════════════════════════════════════════ -->
 <div class="guide-layout" id="guide-content">
 
   <!-- Sidebar TOC -->
@@ -639,11 +639,11 @@
   <!-- Main content -->
   <main>
 
-    <!-- -- THE PROBLEM ------------------------------------------- -->
+    <!-- ── THE PROBLEM ─────────────────────────────────────────── -->
     <section class="guide-section" id="problem">
       <h2>The AI visibility gap nobody's measuring</h2>
       <p>
-        When someone asks ChatGPT, Claude, or Gemini to recommend an agent framework, a SaaS tool, or a vendor � the model answers from its training data and retrieved context. Companies that show up are cited. Companies that don't, aren't. And there's currently no clear way to know which category you're in, or why.
+        When someone asks ChatGPT, Claude, or Gemini to recommend an agent framework, a SaaS tool, or a vendor — the model answers from its training data and retrieved context. Companies that show up are cited. Companies that don't, aren't. And there's currently no clear way to know which category you're in, or why.
       </p>
       <p>
         This is sometimes called AEO (AI Engine Optimization) or GEO (Generative Engine Optimization). The names are new but the underlying problem is straightforward: AI models favour content that is structured, factually dense, and directly answers likely questions. Most websites aren't built for that. Most aren't even measured against it.
@@ -653,22 +653,22 @@
         <div style="background:var(--rw-bg-subtle);padding:0.6rem 1rem;font-family:var(--rw-font-display);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--rw-text-subtle);">What most teams currently do</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);">
           <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
-            <div style="font-size:1.5rem;margin-bottom:0.4rem;">??</div>
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔍</div>
             <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Guess</div>
             <div style="font-size:0.75rem;color:var(--rw-text-muted);">Assume Google SEO applies to AI. It mostly doesn't.</div>
           </div>
           <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
-            <div style="font-size:1.5rem;margin-bottom:0.4rem;">??</div>
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">📊</div>
             <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">No baseline</div>
             <div style="font-size:0.75rem;color:var(--rw-text-muted);">No score, no benchmark, no comparison to competitors.</div>
           </div>
           <div style="padding:1rem;border-right:1px solid var(--rw-border);text-align:center;">
-            <div style="font-size:1.5rem;margin-bottom:0.4rem;">??</div>
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🤷</div>
             <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Blind spots</div>
             <div style="font-size:0.75rem;color:var(--rw-text-muted);">Competitor content gaps are invisible until users switch.</div>
           </div>
           <div style="padding:1rem;text-align:center;">
-            <div style="font-size:1.5rem;margin-bottom:0.4rem;">??</div>
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔁</div>
             <div style="font-family:var(--rw-font-display);font-size:0.8rem;font-weight:700;color:var(--rw-text);margin-bottom:0.2rem;">Reactive</div>
             <div style="font-size:0.75rem;color:var(--rw-text-muted);">Changes made after AI citations drop, not before.</div>
           </div>
@@ -676,33 +676,33 @@
       </div>
 
       <div class="callout-cyan">
-        <strong>The specific gap AgentIntel tries to fill:</strong> an automated way to scrape a target site, benchmark it against competitors, score AI discoverability, identify content gaps, and produce prioritised recommendations � without a human doing all of it manually.
+        <strong>The specific gap AgentIntel tries to fill:</strong> an automated way to scrape a target site, benchmark it against competitors, score AI discoverability, identify content gaps, and produce prioritised recommendations — without a human doing all of it manually.
       </div>
     </section>
 
-    <!-- -- WHAT IT IS -------------------------------------------- -->
+    <!-- ── WHAT IT IS ──────────────────────────────────────────── -->
     <section class="guide-section" id="what-it-is">
       <h2>What AgentIntel actually is</h2>
       <p>
         AgentIntel is a hackathon project. It's a multi-agent system with a FastAPI backend, a Next.js frontend, and seven specialised agents that run in parallel to analyse a website. The output is a structured JSON report with GEO scores, knowledge gaps, and ranked recommendations.
       </p>
       <p>
-        It's not a product and it's not a SaaS. The codebase is on GitHub, the sponsors are integrated and live, and the results are real � but there's plenty that doesn't work cleanly yet and the limitations section is honest about that.
+        It's not a product and it's not a SaaS. The codebase is on GitHub, the sponsors are integrated and live, and the results are real — but there's plenty that doesn't work cleanly yet and the limitations section is honest about that.
       </p>
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">???</div>
+          <div class="feature-card-icon">🕷️</div>
           <h4>Scrape</h4>
           <p>Fetches target and competitor URLs via httpx with a disk cache. Subsequent runs skip the network entirely.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🤖</div>
           <h4>Analyse</h4>
           <p>7 agents run in parallel. Each has a narrow job: knowledge extraction, GEO scoring, gap detection, or recommendation generation.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📋</div>
           <h4>Report</h4>
           <p>Structured JSON result: GEO scores per page, knowledge graph, competitor gaps, and up to 5 ranked recommendations with citations.</p>
         </div>
@@ -721,7 +721,7 @@
       </figure>
     </section>
 
-    <!-- -- ARCHITECTURE ------------------------------------------ -->
+    <!-- ── ARCHITECTURE ────────────────────────────────────────── -->
     <section class="guide-section" id="architecture">
       <h2>Architecture overview</h2>
       <p>
@@ -735,23 +735,23 @@
           <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
             <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">UI</div>
             <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
-              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">Next.js 15 � App Router</span>
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">Next.js 15 · App Router</span>
               <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">SSE EventSource</span>
-              <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">Tailwind CSS � TypeScript</span>
+              <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">Tailwind CSS · TypeScript</span>
               <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">Port 3000</span>
             </div>
           </div>
-          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">?</div>
+          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">↕</div>
           <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
             <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">API</div>
             <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
-              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">FastAPI � Uvicorn</span>
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">FastAPI · Uvicorn</span>
               <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.18);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">/analyze SSE stream</span>
               <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">ThreadPoolExecutor</span>
               <span style="background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--rw-text-muted);font-family:var(--rw-font-display);font-weight:600;">Port 8000</span>
             </div>
           </div>
-          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">?</div>
+          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">↕</div>
           <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
             <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">Agents</div>
             <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
@@ -764,24 +764,24 @@
               <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Recommendation</span>
             </div>
           </div>
-          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">?</div>
+          <div style="text-align:center;font-size:0.85rem;color:var(--rw-text-subtle);padding:2px;">↕</div>
           <div style="display:grid;grid-template-columns:100px 1fr;border-radius:6px;overflow:hidden;border:1px solid var(--rw-border);">
             <div style="background:var(--rw-bg-alt);padding:0.8rem 0.75rem;font-family:var(--rw-font-display);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--rw-text-subtle);display:flex;align-items:center;">Sponsors</div>
             <div style="padding:0.8rem 1rem;background:var(--rw-card);display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
-              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">Band.ai � Chat Events</span>
-              <span style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Guild.ai � Sessions</span>
-              <span style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#fbbf24;font-family:var(--rw-font-display);font-weight:600;">Actian VectorAI � REST</span>
+              <span style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#22d3ee;font-family:var(--rw-font-display);font-weight:600;">Band.ai · Chat Events</span>
+              <span style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#a78bfa;font-family:var(--rw-font-display);font-weight:600;">Guild.ai · Sessions</span>
+              <span style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:6px;padding:0.2rem 0.6rem;font-size:0.75rem;color:#fbbf24;font-family:var(--rw-font-display);font-weight:600;">Actian VectorAI · REST</span>
             </div>
           </div>
         </div>
       </div>
 
       <p>
-        The SSE pattern was a deliberate choice. The swarm takes 30�90 seconds and a blocking HTTP request would either time out or leave the user with a blank screen. With SSE, the frontend gets a <code>step</code> event for every agent completion and renders progress in real time. When the <code>done</code> event fires, the frontend fetches the full result from <code>GET /result</code>.
+        The SSE pattern was a deliberate choice. The swarm takes 30–90 seconds and a blocking HTTP request would either time out or leave the user with a blank screen. With SSE, the frontend gets a <code>step</code> event for every agent completion and renders progress in real time. When the <code>done</code> event fires, the frontend fetches the full result from <code>GET /result</code>.
       </p>
     </section>
 
-    <!-- -- HOW THE SWARM WORKS ----------------------------------- -->
+    <!-- ── HOW THE SWARM WORKS ─────────────────────────────────── -->
     <section class="guide-section" id="swarm">
       <h2>How the swarm works</h2>
       <p>
@@ -791,37 +791,37 @@
       <!-- Agent nodes -->
       <div class="agent-grid">
         <div class="agent-node primary">
-          <div class="agent-node-icon">??</div>
+          <div class="agent-node-icon">🧭</div>
           <div class="agent-node-name">Planner</div>
           <div class="agent-node-desc">Task breakdown and routing</div>
         </div>
         <div class="agent-node">
-          <div class="agent-node-icon">??</div>
+          <div class="agent-node-icon">🌐</div>
           <div class="agent-node-name">Website</div>
           <div class="agent-node-desc">Scrapes target URLs</div>
         </div>
         <div class="agent-node">
-          <div class="agent-node-icon">??</div>
+          <div class="agent-node-icon">🎯</div>
           <div class="agent-node-name">Competitor</div>
           <div class="agent-node-desc">Scrapes rival sites in parallel</div>
         </div>
         <div class="agent-node">
-          <div class="agent-node-icon">??</div>
+          <div class="agent-node-icon">📚</div>
           <div class="agent-node-name">Knowledge</div>
           <div class="agent-node-desc">Extracts citable facts</div>
         </div>
         <div class="agent-node">
-          <div class="agent-node-icon">??</div>
+          <div class="agent-node-icon">📍</div>
           <div class="agent-node-name">GEO</div>
           <div class="agent-node-desc">Scores AI discoverability</div>
         </div>
         <div class="agent-node">
-          <div class="agent-node-icon">??</div>
+          <div class="agent-node-icon">🔬</div>
           <div class="agent-node-name">Gap</div>
           <div class="agent-node-desc">Compares vs competitors</div>
         </div>
         <div class="agent-node output">
-          <div class="agent-node-icon">??</div>
+          <div class="agent-node-icon">💡</div>
           <div class="agent-node-name">Recommend</div>
           <div class="agent-node-desc">Ranked improvements</div>
         </div>
@@ -830,94 +830,94 @@
       <!-- Phase flow -->
       <div class="phase-flow">
         <div class="phase-col">
-          <div class="phase-label">Phase 1 � Ingest</div>
+          <div class="phase-label">Phase 1 · Ingest</div>
           <div class="phase-item"><strong>Planner</strong>Breaks the query into tasks, assigns agents, sets priority order</div>
-          <div class="phase-item"><strong>Website + Competitor</strong>Run in parallel threads. Content cached to disk � subsequent runs skip the network</div>
+          <div class="phase-item"><strong>Website + Competitor</strong>Run in parallel threads. Content cached to disk — subsequent runs skip the network</div>
         </div>
-        <div class="phase-arrow">?</div>
+        <div class="phase-arrow">→</div>
         <div class="phase-col">
-          <div class="phase-label">Phase 2 � Analyse</div>
+          <div class="phase-label">Phase 2 · Analyse</div>
           <div class="phase-item"><strong>Knowledge Agent</strong>Extracts entities, facts, citation candidates, and concept density</div>
-          <div class="phase-item"><strong>GEO Agent</strong>Scores each page 0�10 on direct answers, FAQs, examples, and citability</div>
+          <div class="phase-item"><strong>GEO Agent</strong>Scores each page 0–10 on direct answers, FAQs, examples, and citability</div>
           <div class="phase-item"><strong>Gap Agent</strong>Finds topics competitors cover that the target site doesn't</div>
         </div>
-        <div class="phase-arrow">?</div>
+        <div class="phase-arrow">→</div>
         <div class="phase-col">
-          <div class="phase-label">Phase 3 � Deliver</div>
+          <div class="phase-label">Phase 3 · Deliver</div>
           <div class="phase-item"><strong>Recommendation Agent</strong>Generates up to 5 ranked, cited improvements with effort and expected GEO impact</div>
           <div class="phase-item"><strong>Orchestrator</strong>Assembles the full result, streams it to the frontend, logs to sponsors</div>
         </div>
       </div>
 
       <div class="callout-cyan">
-        <strong>On the LLM calls:</strong> every agent sends one structured JSON request via <code>_llm_openai()</code>. The <code>max_tokens</code> was initially 512 � which silently truncated the JSON output of the knowledge, gap, and recommendation agents, returning empty objects. Raised to 2048 and the problem disappeared. The parser also uses <code>json.JSONDecoder().raw_decode()</code> to handle trailing text after valid JSON, which models produce fairly often.
+        <strong>On the LLM calls:</strong> every agent sends one structured JSON request via <code>_llm_openai()</code>. The <code>max_tokens</code> was initially 512 — which silently truncated the JSON output of the knowledge, gap, and recommendation agents, returning empty objects. Raised to 2048 and the problem disappeared. The parser also uses <code>json.JSONDecoder().raw_decode()</code> to handle trailing text after valid JSON, which models produce fairly often.
       </div>
     </section>
 
-    <!-- -- SPONSOR INTEGRATIONS ---------------------------------- -->
+    <!-- ── SPONSOR INTEGRATIONS ────────────────────────────────── -->
     <section class="guide-section" id="sponsors">
       <h2>Sponsor integrations</h2>
       <p>
-        All three sponsor integrations are live. Each took a meaningful amount of debugging to get working � the docs were incomplete in all three cases, and the API behaviour wasn't what I expected.
+        All three sponsor integrations are live. Each took a meaningful amount of debugging to get working — the docs were incomplete in all three cases, and the API behaviour wasn't what I expected.
       </p>
 
       <div class="sponsor-grid">
         <div class="sponsor-card">
-          <div class="sponsor-logo">??</div>
+          <div class="sponsor-logo">🎸</div>
           <div>
             <div class="sponsor-name">Band.ai</div>
             <div class="sponsor-role">Agent-to-agent messaging</div>
             <div class="sponsor-detail">
               Every agent step is broadcast as a typed <code>thought</code> event to a Band chat room. The swarm registers itself as an external agent, creates a chat room on startup, and posts to it throughout the run.
             </div>
-            <div class="sponsor-tag">X-API-Key � /me/agents/register � /agent/chats/{id}/events</div>
+            <div class="sponsor-tag">X-API-Key · /me/agents/register · /agent/chats/{id}/events</div>
           </div>
         </div>
         <div class="sponsor-card">
-          <div class="sponsor-logo">???</div>
+          <div class="sponsor-logo">🏛️</div>
           <div>
             <div class="sponsor-name">Guild.ai</div>
             <div class="sponsor-role">Session observability</div>
             <div class="sponsor-detail">
               Each swarm run creates a Guild workspace session. Agent steps are posted as user messages for a full audit trail. Auth via device-flow token.
             </div>
-            <div class="sponsor-tag">Bearer token � /workspaces/{ws}/sessions � /sessions/{id}/events</div>
+            <div class="sponsor-tag">Bearer token · /workspaces/{ws}/sessions · /sessions/{id}/events</div>
           </div>
         </div>
         <div class="sponsor-card">
-          <div class="sponsor-logo">???</div>
+          <div class="sponsor-logo">🗄️</div>
           <div>
             <div class="sponsor-name">Actian VectorAI</div>
             <div class="sponsor-role">Knowledge persistence</div>
             <div class="sponsor-detail">
               Scraped page content is chunked and stored as vector embeddings in Actian's Qdrant-compatible REST API. The knowledge and GEO agents do semantic search over this store rather than re-reading raw HTML each time.
             </div>
-            <div class="sponsor-tag">Qdrant-compatible � PUT /collections � POST /points/search</div>
+            <div class="sponsor-tag">Qdrant-compatible · PUT /collections · POST /points/search</div>
           </div>
         </div>
         <div class="sponsor-card">
-          <div class="sponsor-logo">??</div>
+          <div class="sponsor-logo">🧠</div>
           <div>
             <div class="sponsor-name">OpenAI (+ Ollama fallback)</div>
             <div class="sponsor-role">LLM reasoning</div>
             <div class="sponsor-detail">
-              All 7 agents use <code>gpt-4.1-nano</code> via the OpenAI API. A single env variable switches to local Ollama � same prompts, same output structure, roughly 3�4x slower.
+              All 7 agents use <code>gpt-4.1-nano</code> via the OpenAI API. A single env variable switches to local Ollama — same prompts, same output structure, roughly 3–4x slower.
             </div>
-            <div class="sponsor-tag">gpt-4.1-nano � Chat Completions � Ollama fallback</div>
+            <div class="sponsor-tag">gpt-4.1-nano · Chat Completions · Ollama fallback</div>
           </div>
         </div>
       </div>
 
       <div class="callout-indigo">
-        <strong>Auth discovery note:</strong> Band uses <code>X-API-Key</code> not Bearer, and request bodies are nested under a key (<code>{"agent": {...}}</code>, not flat). Guild's base URL is <code>https://app.guild.ai/api</code> � the documented <code>https://api.guild.ai/v1</code> doesn't resolve. Both were found by reading CLI source code, not documentation.
+        <strong>Auth discovery note:</strong> Band uses <code>X-API-Key</code> not Bearer, and request bodies are nested under a key (<code>{"agent": {...}}</code>, not flat). Guild's base URL is <code>https://app.guild.ai/api</code> — the documented <code>https://api.guild.ai/v1</code> doesn't resolve. Both were found by reading CLI source code, not documentation.
       </div>
     </section>
 
-    <!-- -- LIVE RESULTS ------------------------------------------- -->
+    <!-- ── LIVE RESULTS ─────────────────────────────────────────── -->
     <section class="guide-section" id="results">
       <h2>What a real run produces</h2>
       <p>
-        This is from iteration 14, run against OpenAI's agent docs compared with LangChain and CrewAI. The numbers aren't particularly surprising � OpenAI scores well on its own docs � but the gap analysis is where the value is.
+        This is from iteration 14, run against OpenAI's agent docs compared with LangChain and CrewAI. The numbers aren't particularly surprising — OpenAI scores well on its own docs — but the gap analysis is where the value is.
       </p>
 
       <h3>GEO scores by page</h3>
@@ -937,7 +937,7 @@
           <div class="score-track"><div class="score-fill" style="width:58%;background:#f59e0b;"></div></div>
           <div class="score-val" style="color:#f59e0b;">5.8</div>
         </div>
-        <div style="font-size:0.75rem;color:var(--rw-text-subtle);margin-top:0.75rem;">Score 0�10: direct answer density, FAQ presence, example coverage, citability. Averaged across 5 OpenAI pages.</div>
+        <div style="font-size:0.75rem;color:var(--rw-text-subtle);margin-top:0.75rem;">Score 0–10: direct answer density, FAQ presence, example coverage, citability. Averaged across 5 OpenAI pages.</div>
       </div>
 
       <h3>Content gaps found</h3>
@@ -978,73 +978,73 @@
         <li class="step-item">
           <div class="step-num">1</div>
           <div class="step-body">
-            <h4>Multi-step workflow tutorial � High impact, Medium effort</h4>
+            <h4>Multi-step workflow tutorial — High impact, Medium effort</h4>
             <p>A step-by-step guide with runnable code showing how to compose multi-step agent workflows. LangChain and CrewAI both have this; the absence is a measurable gap in AI citation coverage.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">2</div>
           <div class="step-body">
-            <h4>Vector store + RAG integration guide � High impact, Medium effort</h4>
+            <h4>Vector store + RAG integration guide — High impact, Medium effort</h4>
             <p>How to connect retrieval systems to agents. Currently a blind spot in the docs despite being one of the most common agent patterns in practice.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">3</div>
           <div class="step-body">
-            <h4>Architecture diagrams � Medium impact, Low effort</h4>
+            <h4>Architecture diagrams — Medium impact, Low effort</h4>
             <p>Visual diagrams of agent flow and internal structure. LangChain's diagrams appear frequently in AI model answers about agent architecture. OpenAI has none in the current docs.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">4</div>
           <div class="step-body">
-            <h4>Troubleshooting FAQ � High impact, Low effort</h4>
+            <h4>Troubleshooting FAQ — High impact, Low effort</h4>
             <p>Common errors, debugging tips, and definitions of key terms. Low effort to write, directly addresses AI citability (models favour structured Q&amp;A content).</p>
           </div>
         </li>
       </ul>
     </section>
 
-    <!-- -- TECH STACK -------------------------------------------- -->
+    <!-- ── TECH STACK ──────────────────────────────────────────── -->
     <section class="guide-section" id="stack">
       <h2>Tech stack</h2>
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">?</div>
+          <div class="feature-card-icon">⚡</div>
           <h4>FastAPI + SSE</h4>
           <p>Backend API with Server-Sent Events for real-time agent progress streaming. Uvicorn, Python 3.11+.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">???</div>
+          <div class="feature-card-icon">🖥️</div>
           <h4>Next.js 15</h4>
           <p>App Router, TypeScript, Tailwind CSS. Connects to the SSE stream via the browser's native <code>EventSource</code> API.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🧵</div>
           <h4>ThreadPoolExecutor</h4>
-          <p>Website and competitor agents run in parallel threads. The SSE generator is a Python generator on the main thread � thread-safe step callbacks feed it.</p>
+          <p>Website and competitor agents run in parallel threads. The SSE generator is a Python generator on the main thread — thread-safe step callbacks feed it.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">💾</div>
           <h4>Disk cache</h4>
           <p>Scraped HTML is hashed and cached to <code>data/scrape_cache/</code>. Re-running the swarm skips all network calls if the cache is warm.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🦙</div>
           <h4>Ollama fallback</h4>
-          <p><code>USE_OPENAI=False</code> routes all LLM calls through local Ollama. Same prompt structure, same output format � useful for offline development.</p>
+          <p><code>USE_OPENAI=False</code> routes all LLM calls through local Ollama. Same prompt structure, same output format — useful for offline development.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔄</div>
           <h4>Evolution loop</h4>
           <p>Optional: <code>POST /loop/start</code> re-runs the swarm every N seconds autonomously, accumulating results across iterations.</p>
         </div>
       </div>
 
       <div class="code-block">
-<span class="cm"># Health endpoint � shows live sponsor status</span>
+<span class="cm"># Health endpoint — shows live sponsor status</span>
 GET /health
 
 {
@@ -1070,7 +1070,7 @@ GET /health
       </figure>
     </section>
 
-    <!-- -- LIMITATIONS ------------------------------------------- -->
+    <!-- ── LIMITATIONS ─────────────────────────────────────────── -->
     <section class="guide-section" id="limitations">
       <h2>What doesn't work well yet</h2>
       <p>
@@ -1084,7 +1084,7 @@ GET /health
       <div class="learning-grid">
         <div class="learning-card discovery">
           <div class="learning-card-label">Data Quality</div>
-          <h4>Scraper is basic � JavaScript-heavy sites return empty content</h4>
+          <h4>Scraper is basic — JavaScript-heavy sites return empty content</h4>
           <p>httpx fetches raw HTML only. SPAs and sites that render content in the browser return near-empty pages. A Playwright or Puppeteer integration would fix this but adds complexity.</p>
         </div>
         <div class="learning-card discovery">
@@ -1105,7 +1105,7 @@ GET /health
       </div>
     </section>
 
-    <!-- -- LEARNING LOG ------------------------------------------- -->
+    <!-- ── LEARNING LOG ─────────────────────────────────────────── -->
     <section class="guide-section" id="learnings">
       <h2>Learning log</h2>
       <p>
@@ -1115,90 +1115,90 @@ GET /health
       <div class="learning-grid">
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � Band.ai</div>
-          <h4>X-API-Key, not Bearer � and nested JSON bodies</h4>
+          <div class="learning-card-label">Gotcha · Band.ai</div>
+          <h4>X-API-Key, not Bearer — and nested JSON bodies</h4>
           <p><code>Authorization: Bearer band_u_*</code> returns 401 every time. The correct header is <code>X-API-Key: band_u_*</code>. Request bodies are nested: <code>{"agent": {"name": "..."}}</code>, not flat. Found by reading the OpenAPI spec at <code>docs.band.ai/openapi.json</code>.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � Guild.ai</div>
-          <h4>api.guild.ai doesn't resolve � use app.guild.ai/api</h4>
-          <p>Every call to <code>https://api.guild.ai/v1</code> fails with a DNS error � the host doesn't exist. Correct base URL is <code>https://app.guild.ai/api</code> with no version prefix. Found by searching the <code>@guildai/cli</code> JavaScript source in the npx cache.</p>
+          <div class="learning-card-label">Gotcha · Guild.ai</div>
+          <h4>api.guild.ai doesn't resolve — use app.guild.ai/api</h4>
+          <p>Every call to <code>https://api.guild.ai/v1</code> fails with a DNS error — the host doesn't exist. Correct base URL is <code>https://app.guild.ai/api</code> with no version prefix. Found by searching the <code>@guildai/cli</code> JavaScript source in the npx cache.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � OpenAI</div>
+          <div class="learning-card-label">Gotcha · OpenAI</div>
           <h4>max_tokens=512 silently truncates JSON output</h4>
           <p>Knowledge, gap, and recommendation agents returned empty <code>{}</code> with no error. The LLM was cutting off mid-JSON at 512 tokens. Raised to 2048 and added <code>json.JSONDecoder().raw_decode()</code> to handle trailing text after valid JSON.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � Band.ai</div>
-          <h4>Band agent key must be persisted � 409 on every restart</h4>
+          <div class="learning-card-label">Gotcha · Band.ai</div>
+          <h4>Band agent key must be persisted — 409 on every restart</h4>
           <p>Band issues the <code>band_a_*</code> key once on registration. Re-registering the same name returns 409 with no key in the response. Fixed by writing <code>BAND_AGENT_KEY</code> to <code>.env</code> immediately after first registration and reusing it on restarts.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � PowerShell</div>
+          <div class="learning-card-label">Gotcha · PowerShell</div>
           <h4>$pid is a reserved automatic variable in PowerShell</h4>
-          <p><code>$pid</code> always holds the current PowerShell session's own process ID. Assigning <code>$pid = $conn.OwningProcess</code> silently fails � the variable snaps back. <code>Stop-Process -Id $pid</code> was trying to kill the shell itself. Renamed to <code>$processId</code>.</p>
+          <p><code>$pid</code> always holds the current PowerShell session's own process ID. Assigning <code>$pid = $conn.OwningProcess</code> silently fails — the variable snaps back. <code>Stop-Process -Id $pid</code> was trying to kill the shell itself. Renamed to <code>$processId</code>.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � Windows</div>
-          <h4>localhost resolves to IPv6 on Windows � use 127.0.0.1</h4>
+          <div class="learning-card-label">Gotcha · Windows</div>
+          <h4>localhost resolves to IPv6 on Windows — use 127.0.0.1</h4>
           <p>Windows 10/11 resolves <code>localhost</code> to <code>::1</code> (IPv6) first. If uvicorn or Actian listens on <code>0.0.0.0</code> (IPv4 only), the connection fails silently even though the service is running. Hardcoded <code>127.0.0.1</code> everywhere in startup scripts.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � PowerShell 5.1</div>
+          <div class="learning-card-label">Gotcha · PowerShell 5.1</div>
           <h4>?? null-coalescing operator doesn't exist in PowerShell 5.1</h4>
           <p>Windows ships with PowerShell 5.1 by default and never auto-upgrades. <code>??</code> was introduced in 7.0. The startup script silently failed on first run. Replaced with <code>if ($x) { $x } else { $default }</code>.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � Startup</div>
+          <div class="learning-card-label">Gotcha · Startup</div>
           <h4>20s backend startup timeout too short when sponsors connect at init</h4>
-          <p>Band, Guild, and Actian each make outbound HTTP calls in <code>__init__</code>. On a cold start this totals 30�45 seconds. The startup script was reporting "backend not ready" and launching the frontend before the backend finished initialising. Extended wait to 60 seconds.</p>
+          <p>Band, Guild, and Actian each make outbound HTTP calls in <code>__init__</code>. On a cold start this totals 30–45 seconds. The startup script was reporting "backend not ready" and launching the frontend before the backend finished initialising. Extended wait to 60 seconds.</p>
         </div>
 
         <div class="learning-card gotcha">
-          <div class="learning-card-label">Gotcha � Python</div>
-          <h4>Don't access private attributes � use return values</h4>
+          <div class="learning-card-label">Gotcha · Python</div>
+          <h4>Don't access private attributes — use return values</h4>
           <p>The orchestrator called <code>guild.start_run()</code> then later read <code>guild._current_run_id</code> directly. After the guild.py rewrite, that attribute could hold a stale ID from a previous run. Fixed by capturing the return value: <code>guild_run_id = guild.start_run(...)</code>.</p>
         </div>
 
         <div class="learning-card discovery">
-          <div class="learning-card-label">Discovery � Git</div>
+          <div class="learning-card-label">Discovery · Git</div>
           <h4>.gitignore inline comments silently break pattern matching</h4>
           <p>Writing <code>.env  # API keys</code> makes the whole string including the comment part of the pattern. <code>.env</code> was never ignored and appeared in every <code>git add</code>. Git only supports comments on their own dedicated line.</p>
         </div>
 
         <div class="learning-card discovery">
-          <div class="learning-card-label">Discovery � Git</div>
+          <div class="learning-card-label">Discovery · Git</div>
           <h4>A nested .git directory causes submodule confusion</h4>
           <p>The Next.js frontend was scaffolded with its own <code>.git/</code>. The root repo treated <code>frontend/</code> as an unregistered submodule and refused to track files inside it. Fixed by deleting <code>frontend/.git</code>, then <code>git rm --cached -f frontend</code>, then re-staging.</p>
         </div>
 
         <div class="learning-card win">
-          <div class="learning-card-label">Win � Architecture</div>
+          <div class="learning-card-label">Win · Architecture</div>
           <h4>SSE streaming is the right pattern for long-running agent jobs</h4>
-          <p>A blocking HTTP request times out or leaves the user with nothing for 90 seconds. SSE lets the backend push each agent completion event as it happens. Pattern: run in thread ? stream events ? client fetches full result on <code>done</code>. Works cleanly in the browser with no WebSocket complexity.</p>
+          <p>A blocking HTTP request times out or leaves the user with nothing for 90 seconds. SSE lets the backend push each agent completion event as it happens. Pattern: run in thread → stream events → client fetches full result on <code>done</code>. Works cleanly in the browser with no WebSocket complexity.</p>
         </div>
 
         <div class="learning-card win">
-          <div class="learning-card-label">Win � API Discovery</div>
+          <div class="learning-card-label">Win · API Discovery</div>
           <h4>When docs are incomplete, read the CLI source code</h4>
-          <p>Both Band and Guild had incomplete or wrong documentation. The definitive source was the CLI JavaScript bundles in the npx cache � they contain the exact endpoint paths, request shapes, and auth headers used in production. <code>grep -r "X-API-Key\|/sessions" ~/.npm/_npx/</code> saved hours.</p>
+          <p>Both Band and Guild had incomplete or wrong documentation. The definitive source was the CLI JavaScript bundles in the npx cache — they contain the exact endpoint paths, request shapes, and auth headers used in production. <code>grep -r "X-API-Key\|/sessions" ~/.npm/_npx/</code> saved hours.</p>
         </div>
 
       </div>
     </section>
 
-    <!-- -- GET STARTED ------------------------------------------- -->
+    <!-- ── GET STARTED ─────────────────────────────────────────── -->
     <section class="guide-section" id="get-started">
       <h2>Get started</h2>
-      <p>Prerequisites: Python 3.11+, Node 18+, and an OpenAI API key. The sponsor integrations are optional � the swarm runs without them.</p>
+      <p>Prerequisites: Python 3.11+, Node 18+, and an OpenAI API key. The sponsor integrations are optional — the swarm runs without them.</p>
 
       <ul class="step-list">
         <li class="step-item">
@@ -1216,21 +1216,21 @@ GET /health
           <div class="step-num">2</div>
           <div class="step-body">
             <h4>Configure .env</h4>
-            <p>Copy <code>.env.example</code> to <code>.env</code>. The only required key is <code>OPENAI_API_KEY</code>. Everything else � Ollama fallback, Band, Guild, Actian � is optional and the system runs without any of them.</p>
+            <p>Copy <code>.env.example</code> to <code>.env</code>. The only required key is <code>OPENAI_API_KEY</code>. Everything else — Ollama fallback, Band, Guild, Actian — is optional and the system runs without any of them.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">3</div>
           <div class="step-body">
             <h4>Ingest content</h4>
-            <p><code>python ingest.py</code> � scrapes the configured target and competitor URLs and stores content. Takes ~30 seconds on a cold cache.</p>
+            <p><code>python ingest.py</code> — scrapes the configured target and competitor URLs and stores content. Takes ~30 seconds on a cold cache.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">4</div>
           <div class="step-body">
             <h4>Start all services</h4>
-            <p>Windows: <code>.\start_all.ps1</code> � starts Actian if installed, waits for the backend to be ready (up to 60s), then starts the Next.js frontend. Or start each manually: <code>uvicorn main:app --port 8000</code> and <code>cd frontend && npm run dev</code>.</p>
+            <p>Windows: <code>.\start_all.ps1</code> — starts Actian if installed, waits for the backend to be ready (up to 60s), then starts the Next.js frontend. Or start each manually: <code>uvicorn main:app --port 8000</code> and <code>cd frontend && npm run dev</code>.</p>
           </div>
         </li>
         <li class="step-item">
@@ -1247,8 +1247,8 @@ GET /health
       </div>
 
       <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.75rem;">
-        <a href="https://github.com/researchsite/AgentIntel" class="rw-btn rw-btn-primary" target="_blank">View on GitHub ?</a>
-        <a href="#learnings" class="rw-btn rw-btn-ghost">Learning log ?</a>
+        <a href="https://github.com/researchsite/AgentIntel" class="rw-btn rw-btn-primary" target="_blank">View on GitHub →</a>
+        <a href="#learnings" class="rw-btn rw-btn-ghost">Learning log ↑</a>
       </div>
     </section>
 
@@ -1258,9 +1258,9 @@ GET /health
 <div id="rw-footer"
      data-linkedin=""
      data-related='[
-       {"label":"CareerWiki � Local AI Career Knowledge Base","url":"/usecase/careerwiki-guide.html"},
-       {"label":"SentTriage � AI Email Triage","url":"/usecase/sent-triage.html"},
-       {"label":"ShadowShield AI � Security Research","url":"/usecase/shadowshield-ai.html"}
+       {"label":"CareerWiki — Local AI Career Knowledge Base","url":"/usecase/careerwiki-guide.html"},
+       {"label":"SentTriage — AI Email Triage","url":"/usecase/sent-triage.html"},
+       {"label":"ShadowShield AI — Security Research","url":"/usecase/shadowshield-ai.html"}
      ]'
 ></div>
 <script src="../includes/rw-footer.js?v=20261030"></script>

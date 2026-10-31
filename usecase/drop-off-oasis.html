@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drop-Off Oasis � Built with Google ADK | Raw Weights</title>
+  <title>Drop-Off Oasis — Built with Google ADK | Raw Weights</title>
   <meta name="description" content="How I built an AI walk concierge so my mom and I could make the most of the 45 minutes between school drop-off and pickup.">
   <meta property="og:title" content="Drop-Off Oasis: An AI Concierge for the 45-Minute Wait">
   <meta property="og:description" content="My mom flew in from India. The only time we get together is after I drop my son at class. I built an app for that.">
@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="../includes/brand.css">
 
   <style>
-    /* -- Brand tokens -------------------------------------------- */
+    /* ── Brand tokens ──────────────────────────────────────────── */
     :root {
       --g: #2D6A4F;
       --g-hover: #245a42;
@@ -31,7 +31,7 @@
       --g-text: #6ee7a0;
     }
 
-    /* -- Layout -------------------------------------------------- */
+    /* ── Layout ────────────────────────────────────────────────── */
     .guide-layout {
       display: grid;
       grid-template-columns: 230px 1fr;
@@ -85,7 +85,7 @@
     }
     .guide-section:last-child { margin-bottom: 2rem; }
 
-    /* -- Section labels ------------------------------------------ */
+    /* ── Section labels ────────────────────────────────────────── */
     .sec-label {
       font-family: var(--rw-font-display);
       font-size: 0.7rem;
@@ -112,7 +112,7 @@
     }
     .sec-body strong { color: var(--rw-text); font-weight: 600; }
 
-    /* -- Hero ---------------------------------------------------- */
+    /* ── Hero ──────────────────────────────────────────────────── */
     .doo-hero {
       background: linear-gradient(135deg,#0b1f15 0%,#1a3a27 55%,#0c2419 100%);
       padding: 5rem 0 4rem;
@@ -200,7 +200,7 @@
       padding:.3rem .8rem;border-radius:100px;
     }
 
-    /* -- Stat bar ------------------------------------------------ */
+    /* ── Stat bar ──────────────────────────────────────────────── */
     .stat-row {
       display:grid;grid-template-columns:repeat(3,1fr);
       border-top:1px solid var(--rw-border);
@@ -219,7 +219,7 @@
       text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem;
     }
 
-    /* -- Journey timeline strip ---------------------------------- */
+    /* ── Journey timeline strip ────────────────────────────────── */
     .journey-strip {
       display:grid;
       grid-template-columns:repeat(4,1fr);
@@ -238,7 +238,7 @@
     }
     .journey-step:last-child { border-right:none; }
     .journey-step::after {
-      content:'?';
+      content:'→';
       position:absolute;
       right:-14px;top:50%;transform:translateY(-50%);
       color:var(--g);font-size:1rem;font-weight:700;
@@ -253,7 +253,7 @@
     }
     .journey-step-text { font-size:.82rem;color:var(--rw-text-muted);line-height:1.4; }
 
-    /* -- Pull quote ---------------------------------------------- */
+    /* ── Pull quote ────────────────────────────────────────────── */
     .pull-quote {
       margin:2rem 0;
       padding:1.5rem 1.75rem 1.5rem 2.25rem;
@@ -271,7 +271,7 @@
       line-height:1;pointer-events:none;
     }
 
-    /* -- Before / After ------------------------------------------ */
+    /* ── Before / After ────────────────────────────────────────── */
     .before-after {
       display:grid;grid-template-columns:1fr 1fr;
       gap:1.15rem;margin:2rem 0;
@@ -292,7 +292,7 @@
     }
     .ba-icon { flex-shrink:0; }
 
-    /* -- App Mockup ---------------------------------------------- */
+    /* ── App Mockup ────────────────────────────────────────────── */
     .app-mockup-wrap {
       margin:2rem 0;
       border:1px solid var(--rw-border);
@@ -451,7 +451,7 @@
       border:none;border-radius:8px;cursor:pointer;font-size:.85rem;
     }
 
-    /* -- Feature grid -------------------------------------------- */
+    /* ── Feature grid ──────────────────────────────────────────── */
     .feature-grid {
       display:grid;grid-template-columns:repeat(3,1fr);
       gap:1rem;margin:1.75rem 0 0;
@@ -473,7 +473,7 @@
     }
     .feature-desc { font-size:.82rem;color:var(--rw-text-muted);line-height:1.55; }
 
-    /* -- Architecture flow visual -------------------------------- */
+    /* ── Architecture flow visual ──────────────────────────────── */
     .arch-flow {
       background:var(--rw-bg-alt);border:1px solid var(--rw-border);
       border-radius:12px;padding:2rem;margin:1.75rem 0;
@@ -483,7 +483,7 @@
       color:var(--rw-text-subtle);margin-bottom:1.5rem;
       text-transform:uppercase;letter-spacing:.07em;
     }
-    /* Top row: user ? frontend ? agent ? gemini */
+    /* Top row: user → frontend → agent → gemini */
     .arch-top-row {
       display:flex;align-items:center;gap:0;margin-bottom:1.5rem;
     }
@@ -544,7 +544,7 @@
     }
     .store-tech { font-family:var(--rw-font-mono);font-size:.6rem;color:var(--rw-text-subtle); }
 
-    /* -- Arch cards ----------------------------------------------- */
+    /* ── Arch cards ─────────────────────────────────────────────── */
     .arch-grid {
       display:flex;flex-direction:column;gap:.85rem;margin:1.5rem 0;
     }
@@ -571,7 +571,7 @@
     }
     .arch-desc { font-size:.85rem;color:var(--rw-text-muted);line-height:1.6; }
 
-    /* -- Technical section --------------------------------------- */
+    /* ── Technical section ─────────────────────────────────────── */
     .code-block {
       background:#0d1117;border-radius:10px;overflow:hidden;
       margin:1.5rem 0;border:1px solid rgba(255,255,255,.07);
@@ -623,7 +623,7 @@
     }
     .tech-card-body { font-size:.84rem;color:var(--rw-text-muted);line-height:1.6; }
 
-    /* -- Learnings � 2�2 grid ------------------------------------ */
+    /* ── Learnings — 2×2 grid ──────────────────────────────────── */
     .learnings-grid {
       display:grid;grid-template-columns:repeat(2,1fr);
       gap:1.1rem;margin:2rem 0;
@@ -658,7 +658,7 @@
       border-left:2px solid var(--g);
     }
 
-    /* -- Team grid ----------------------------------------------- */
+    /* ── Team grid ─────────────────────────────────────────────── */
     .team-grid {
       display:grid;grid-template-columns:repeat(3,1fr);
       gap:1rem;margin:2rem 0;
@@ -693,7 +693,7 @@
       font-family:var(--rw-font-mono);
     }
 
-    /* -- Event badge ---------------------------------------------- */
+    /* ── Event badge ────────────────────────────────────────────── */
     .event-banner {
       display:flex;align-items:center;gap:1rem;
       padding:1.1rem 1.4rem;
@@ -707,7 +707,7 @@
     }
     .event-sub { font-size:.82rem;color:var(--rw-text-muted); }
 
-    /* -- CTA ------------------------------------------------------ */
+    /* ── CTA ────────────────────────────────────────────────────── */
     .doo-cta {
       background:linear-gradient(135deg,#0b1f15 0%,#1a3a27 100%);
       padding:4.5rem 2.5rem;text-align:center;
@@ -745,7 +745,7 @@
     }
     .btn-ghost:hover { background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.4); }
 
-    /* -- Responsive ----------------------------------------------- */
+    /* ── Responsive ─────────────────────────────────────────────── */
     @media (max-width:1050px) {
       .guide-layout { grid-template-columns:1fr; }
       .guide-sidebar { display:none; }
@@ -771,13 +771,13 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- ----------------------------------------------------------------
+<!-- ════════════════════════════════════════════════════════════════
      HERO
--------------------------------------------------------------------- -->
+════════════════════════════════════════════════════════════════════ -->
 <section class="doo-hero">
   <div class="hero-split">
     <div>
-      <div class="hero-label">?? Built with Google ADK � #BuildWithGemini</div>
+      <div class="hero-label">🌿 Built with Google ADK · #BuildWithGemini</div>
       <h1 class="hero-title">
         Finding walks so my <span class="accent">mom and I</span> actually use those 45 minutes
       </h1>
@@ -802,16 +802,16 @@
                style="aspect-ratio:16/9;object-fit:cover;">
           <source src="../images/videos/Dropoasis.mp4" type="video/mp4">
         </video>
-        <span class="hero-video-label">Live demo � Drop-Off Oasis</span>
+        <span class="hero-video-label">Live demo — Drop-Off Oasis</span>
         <span class="hero-video-badge">Watch 2 min demo</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
+<!-- ════════════════════════════════════════════════════════════════
      STATS
--------------------------------------------------------------------- -->
+════════════════════════════════════════════════════════════════════ -->
 <div class="stat-row">
   <div class="stat-cell">
     <span class="stat-val">45 min</span>
@@ -827,9 +827,9 @@
   </div>
 </div>
 
-<!-- ----------------------------------------------------------------
+<!-- ════════════════════════════════════════════════════════════════
      MAIN LAYOUT
--------------------------------------------------------------------- -->
+════════════════════════════════════════════════════════════════════ -->
 <div class="guide-layout">
 
   <aside class="guide-sidebar">
@@ -845,7 +845,7 @@
 
   <main class="guide-main">
 
-    <!-- -- STORY ------------------------------------------------- -->
+    <!-- ── STORY ───────────────────────────────────────────────── -->
     <section class="guide-section" id="story">
       <div class="sec-label">The story</div>
       <h2 class="sec-title">She came 8,000 miles. We had 45 minutes.</h2>
@@ -853,44 +853,44 @@
       <!-- Visual journey strip -->
       <div class="journey-strip">
         <div class="journey-step">
-          <span class="journey-emoji">????</span>
+          <span class="journey-emoji">🇮🇳</span>
           <div class="journey-step-label">Arrival</div>
           <div class="journey-step-text">Mom flies in from India. 3 month visit.</div>
         </div>
         <div class="journey-step">
-          <span class="journey-emoji">??</span>
+          <span class="journey-emoji">🚗</span>
           <div class="journey-step-label">The gap</div>
           <div class="journey-step-text">45 min after son's drop-off. No plan.</div>
         </div>
         <div class="journey-step">
-          <span class="journey-emoji">??</span>
+          <span class="journey-emoji">📱</span>
           <div class="journey-step-label">The wake-up</div>
           <div class="journey-step-text">Both on phones. Same car. Completely separate.</div>
         </div>
         <div class="journey-step">
-          <span class="journey-emoji">??</span>
+          <span class="journey-emoji">🌿</span>
           <div class="journey-step-label">The build</div>
           <div class="journey-step-text">Built at #BuildWithGemini in a single day.</div>
         </div>
       </div>
 
       <p class="sec-body">
-        My mom doesn't visit often. A trip this far takes planning, money, and convincing herself to leave home. Three months sounds like a lot of time � but I work, my wife works, our son has school and activities. She's in America but mostly watching it from the kitchen window.
+        My mom doesn't visit often. A trip this far takes planning, money, and convincing herself to leave home. Three months sounds like a lot of time — but I work, my wife works, our son has school and activities. She's in America but mostly watching it from the kitchen window.
       </p>
 
       <div class="pull-quote">
-        One evening we sat in the parking lot � both on our phones. She was watching YouTube, I was scrolling news. Same car, completely separate. That felt like a waste.
+        One evening we sat in the parking lot — both on our phones. She was watching YouTube, I was scrolling news. Same car, completely separate. That felt like a waste.
       </div>
 
       <p class="sec-body">
         I started searching for parks nearby. Every time I'd find something, I had to answer a dozen questions first: Too long? Make it back in time? Weather okay? It took more mental energy than the walk itself. Most days we stayed in the car.
       </p>
       <p class="sec-body">
-        So I built an app to do that thinking for me. Not for everyone � just for us, for this window.
+        So I built an app to do that thinking for me. Not for everyone — just for us, for this window.
       </p>
     </section>
 
-    <!-- -- PROBLEM ------------------------------------------------ -->
+    <!-- ── PROBLEM ──────────────────────────────────────────────── -->
     <section class="guide-section" id="problem">
       <div class="sec-label">The problem</div>
       <h2 class="sec-title">Not a lack of parks. Too many decisions.</h2>
@@ -901,25 +901,25 @@
 
       <div class="before-after">
         <div class="ba-card ba-without">
-          <div class="ba-label">? Without the app</div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>"Parks near me" returns a list with zero useful context</span></div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>Manually estimate if you can walk there and back in time</span></div>
-          <div class="ba-item"><span class="ba-icon">???</span><span>Open a separate app to check weather</span></div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>Default to the same spot every time � the only one you know</span></div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>Give up and wait in the car</span></div>
+          <div class="ba-label">❌ Without the app</div>
+          <div class="ba-item"><span class="ba-icon">😰</span><span>"Parks near me" returns a list with zero useful context</span></div>
+          <div class="ba-item"><span class="ba-icon">🕐</span><span>Manually estimate if you can walk there and back in time</span></div>
+          <div class="ba-item"><span class="ba-icon">🌧️</span><span>Open a separate app to check weather</span></div>
+          <div class="ba-item"><span class="ba-icon">🔄</span><span>Default to the same spot every time — the only one you know</span></div>
+          <div class="ba-item"><span class="ba-icon">🚗</span><span>Give up and wait in the car</span></div>
         </div>
         <div class="ba-card ba-with">
-          <div class="ba-label">? With Drop-Off Oasis</div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>Tell the AI your pickup time � it handles all the decisions</span></div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>Walk sized to your window with a buffer built in</span></div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>Live weather included � temperature, UV, rain chance</span></div>
-          <div class="ba-item"><span class="ba-icon">???</span><span>Fresh spots every visit � remembers where you've been</span></div>
-          <div class="ba-item"><span class="ba-icon">??</span><span>Walking soundtrack in any language, mood-matched</span></div>
+          <div class="ba-label">✅ With Drop-Off Oasis</div>
+          <div class="ba-item"><span class="ba-icon">💬</span><span>Tell the AI your pickup time — it handles all the decisions</span></div>
+          <div class="ba-item"><span class="ba-icon">⏱️</span><span>Walk sized to your window with a buffer built in</span></div>
+          <div class="ba-item"><span class="ba-icon">☀️</span><span>Live weather included — temperature, UV, rain chance</span></div>
+          <div class="ba-item"><span class="ba-icon">🗺️</span><span>Fresh spots every visit — remembers where you've been</span></div>
+          <div class="ba-item"><span class="ba-icon">🎵</span><span>Walking soundtrack in any language, mood-matched</span></div>
         </div>
       </div>
     </section>
 
-    <!-- -- APP IN ACTION ------------------------------------------ -->
+    <!-- ── APP IN ACTION ────────────────────────────────────────── -->
     <section class="guide-section" id="app">
       <div class="sec-label">What it does</div>
       <h2 class="sec-title">One conversation. Walk plan ready.</h2>
@@ -932,18 +932,18 @@
           <div class="mockup-dot d-red"></div>
           <div class="mockup-dot d-yel"></div>
           <div class="mockup-dot d-grn"></div>
-          <span class="mockup-url">drop-off-oasis � AI Walk Concierge</span>
+          <span class="mockup-url">drop-off-oasis · AI Walk Concierge</span>
         </div>
         <div class="app-mockup">
           <!-- Left sidebar with quick actions -->
           <div class="mockup-sidebar">
             <div class="mockup-sidebar-title">Quick Actions</div>
-            <div class="chip active-chip">??? Find walks nearby</div>
-            <div class="chip">??? Check weather</div>
-            <div class="chip">?? Plan my time</div>
-            <div class="chip">?? Play music</div>
-            <div class="chip">?? Find walk buddy</div>
-            <div class="chip">?? Leave a review</div>
+            <div class="chip active-chip">🗺️ Find walks nearby</div>
+            <div class="chip">🌤️ Check weather</div>
+            <div class="chip">⏱️ Plan my time</div>
+            <div class="chip">🎵 Play music</div>
+            <div class="chip">👥 Find walk buddy</div>
+            <div class="chip">📸 Leave a review</div>
           </div>
           <!-- Chat area -->
           <div class="mockup-chat">
@@ -952,41 +952,41 @@
               <div class="msg-user">Pickup at 5:30pm near Rengstorff Park. We have about 40 min. What can we do?</div>
               <!-- AI response -->
               <div class="msg-ai">
-                <div class="msg-ai-text">Perfect � 42 minutes to work with. Found a spot you haven't been to yet ??</div>
+                <div class="msg-ai-text">Perfect — 42 minutes to work with. Found a spot you haven't been to yet 🌿</div>
                 <!-- Walk card -->
                 <div class="walk-result">
-                  <div class="walk-result-img">??</div>
+                  <div class="walk-result-img">🌊</div>
                   <div class="walk-result-body">
                     <div class="walk-result-name">Shoreline at Mountain View</div>
                     <div class="walk-result-meta">
-                      <span class="walk-tag">? 25 min walk</span>
+                      <span class="walk-tag">⏱ 25 min walk</span>
                       <span class="walk-tag">1.2 miles</span>
                       <span class="walk-tag">Easy trail</span>
-                      <span class="walk-tag">? 4.7</span>
+                      <span class="walk-tag">⭐ 4.7</span>
                     </div>
                   </div>
                 </div>
                 <!-- Weather -->
                 <div class="weather-row">
-                  <span class="wx-badge">??? 74�F</span>
-                  <span class="wx-badge">?? Sunny</span>
-                  <span class="wx-badge">?? UV 3 � sunscreen advised</span>
-                  <span class="wx-badge">?? Walk score 8/10</span>
+                  <span class="wx-badge">🌡️ 74°F</span>
+                  <span class="wx-badge">☀️ Sunny</span>
+                  <span class="wx-badge">🧴 UV 3 — sunscreen advised</span>
+                  <span class="wx-badge">🌟 Walk score 8/10</span>
                 </div>
                 <!-- Schedule -->
                 <div class="schedule-mini">
-                  <div class="sch-row"><span class="sch-time">4:45 PM</span> Drop-off done � head out</div>
-                  <div class="sch-row active-sch"><span class="sch-time">4:50 PM</span> ?? Arrive at trailhead � walk starts</div>
-                  <div class="sch-row"><span class="sch-time">5:15 PM</span> Turnaround point � head back</div>
-                  <div class="sch-row"><span class="sch-time">5:25 PM</span> ? Back to car � 5 min buffer</div>
-                  <div class="sch-row"><span class="sch-time">5:30 PM</span> ?? Pickup � right on time</div>
+                  <div class="sch-row"><span class="sch-time">4:45 PM</span> Drop-off done — head out</div>
+                  <div class="sch-row active-sch"><span class="sch-time">4:50 PM</span> 🌿 Arrive at trailhead · walk starts</div>
+                  <div class="sch-row"><span class="sch-time">5:15 PM</span> Turnaround point — head back</div>
+                  <div class="sch-row"><span class="sch-time">5:25 PM</span> ☕ Back to car · 5 min buffer</div>
+                  <div class="sch-row"><span class="sch-time">5:30 PM</span> 🎒 Pickup — right on time</div>
                 </div>
                 <!-- Audio player -->
                 <div class="audio-row">
-                  <div class="play-circle">?</div>
+                  <div class="play-circle">▶</div>
                   <div class="audio-info">
-                    <div class="audio-track">?? Kannada Walk Soundtrack � Calm mood</div>
-                    <div class="audio-sub">Generated � 3:40 � AI-composed lyrics</div>
+                    <div class="audio-track">🎵 Kannada Walk Soundtrack · Calm mood</div>
+                    <div class="audio-sub">Generated · 3:40 · AI-composed lyrics</div>
                   </div>
                   <div class="audio-waveform">
                     <div class="wv" style="height:4px"></div>
@@ -1003,8 +1003,8 @@
             </div>
             <!-- Input bar -->
             <div class="chat-input-bar">
-              <input class="chat-input" placeholder="Ask anything � 'play a calm Hindi song'�" readonly>
-              <button class="chat-send">?</button>
+              <input class="chat-input" placeholder="Ask anything — 'play a calm Hindi song'…" readonly>
+              <button class="chat-send">→</button>
             </div>
           </div>
         </div>
@@ -1013,115 +1013,115 @@
       <!-- Feature grid below mockup -->
       <div class="feature-grid">
         <div class="feature-card">
-          <span class="feature-icon">???</span>
+          <span class="feature-icon">🗺️</span>
           <div class="feature-name">Scenic Walk Finder</div>
-          <div class="feature-desc">Never suggests the same spot twice � remembers your history via Firestore.</div>
+          <div class="feature-desc">Never suggests the same spot twice — remembers your history via Firestore.</div>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">???</span>
+          <span class="feature-icon">🌤️</span>
           <div class="feature-name">Live Weather</div>
           <div class="feature-desc">Real-time temperature, UV, rain chance. Walk suitability score out of 10.</div>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">??</span>
+          <span class="feature-icon">⏱️</span>
           <div class="feature-name">Time Budget</div>
-          <div class="feature-desc">Give it pickup time � get a minute-by-minute schedule with a safety buffer.</div>
+          <div class="feature-desc">Give it pickup time — get a minute-by-minute schedule with a safety buffer.</div>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">??</span>
+          <span class="feature-icon">🎵</span>
           <div class="feature-name">Walk Soundtrack</div>
           <div class="feature-desc">AI-generated lyrics in English, Hindi, Kannada, Spanish. Mood-matched beats.</div>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">??</span>
+          <span class="feature-icon">👥</span>
           <div class="feature-name">Walk Buddy</div>
           <div class="feature-desc">Find another parent doing the same drop-off. Walk together, not alone.</div>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">??</span>
+          <span class="feature-icon">📸</span>
           <div class="feature-name">Community Reviews</div>
           <div class="feature-desc">Upload photos, leave trail notes. Suggestions improve as the community grows.</div>
         </div>
       </div>
     </section>
 
-    <!-- -- HOW IT WORKS -------------------------------------------- -->
+    <!-- ── HOW IT WORKS ──────────────────────────────────────────── -->
     <section class="guide-section" id="architecture">
       <div class="sec-label">How it works</div>
       <h2 class="sec-title">The tech, explained without jargon</h2>
 
       <p class="sec-body">
-        Think of the app as a small team. The AI agent coordinates specialists � each one does one job well. You send a message, the agent decides which specialists to call, and they all work together to send back one answer.
+        Think of the app as a small team. The AI agent coordinates specialists — each one does one job well. You send a message, the agent decides which specialists to call, and they all work together to send back one answer.
       </p>
 
       <!-- Visual architecture diagram -->
       <div class="arch-flow">
-        <div class="arch-flow-title">System architecture � how one message becomes a walk plan</div>
+        <div class="arch-flow-title">System architecture — how one message becomes a walk plan</div>
 
         <!-- Top row: data flow -->
         <div class="arch-top-row">
           <div class="arch-node">
-            <span class="arch-node-icon">??</span>
+            <span class="arch-node-icon">👤</span>
             <span class="arch-node-name">You</span>
             <span class="arch-node-sub">Browser</span>
           </div>
-          <div class="arch-conn">?</div>
+          <div class="arch-conn">→</div>
           <div class="arch-node">
-            <span class="arch-node-icon">?</span>
+            <span class="arch-node-icon">⚡</span>
             <span class="arch-node-name">Frontend</span>
-            <span class="arch-node-sub">FastAPI � A2A</span>
+            <span class="arch-node-sub">FastAPI · A2A</span>
           </div>
-          <div class="arch-conn">?</div>
+          <div class="arch-conn">→</div>
           <div class="arch-node highlight">
-            <span class="arch-node-icon">??</span>
+            <span class="arch-node-icon">🧠</span>
             <span class="arch-node-name">ADK Agent</span>
             <span class="arch-node-sub">Vertex AI Cloud</span>
           </div>
-          <div class="arch-conn">?</div>
+          <div class="arch-conn">↔</div>
           <div class="arch-node">
-            <span class="arch-node-icon">??</span>
+            <span class="arch-node-icon">💬</span>
             <span class="arch-node-name">Gemini 2.5</span>
-            <span class="arch-node-sub">Flash � Language</span>
+            <span class="arch-node-sub">Flash · Language</span>
           </div>
         </div>
 
         <!-- Tools strip -->
         <div class="arch-tools-label">7 specialist tools the agent can call</div>
         <div class="arch-tools-strip">
-          <div class="tool-pill">??? Walk Finder</div>
-          <div class="tool-pill">??? Weather</div>
-          <div class="tool-pill">?? Time Budget</div>
-          <div class="tool-pill">?? Soundtrack</div>
-          <div class="tool-pill">?? Walk Buddy</div>
-          <div class="tool-pill">?? Walk Streak</div>
-          <div class="tool-pill">?? Reviews</div>
+          <div class="tool-pill">🗺️ Walk Finder</div>
+          <div class="tool-pill">🌤️ Weather</div>
+          <div class="tool-pill">⏱️ Time Budget</div>
+          <div class="tool-pill">🎵 Soundtrack</div>
+          <div class="tool-pill">👥 Walk Buddy</div>
+          <div class="tool-pill">📊 Walk Streak</div>
+          <div class="tool-pill">📸 Reviews</div>
         </div>
 
         <!-- Data stores -->
         <div class="arch-stores" style="margin-top:1.25rem;">
           <div class="store-node">
-            <div class="store-icon">???</div>
+            <div class="store-icon">🗄️</div>
             <div>
               <div class="store-name">Memory</div>
               <div class="store-tech">Cloud Firestore</div>
             </div>
           </div>
           <div class="store-node">
-            <div class="store-icon">???</div>
+            <div class="store-icon">🌤️</div>
             <div>
               <div class="store-name">Weather</div>
               <div class="store-tech">Open-Meteo API</div>
             </div>
           </div>
           <div class="store-node">
-            <div class="store-icon">???</div>
+            <div class="store-icon">🗣️</div>
             <div>
               <div class="store-name">Voice + Music</div>
-              <div class="store-tech">Cloud TTS � FFmpeg</div>
+              <div class="store-tech">Cloud TTS · FFmpeg</div>
             </div>
           </div>
           <div class="store-node">
-            <div class="store-icon">??</div>
+            <div class="store-icon">☁️</div>
             <div>
               <div class="store-name">Audio Storage</div>
               <div class="store-tech">Cloud Storage (GCS)</div>
@@ -1133,7 +1133,7 @@
       <!-- Individual piece explanations -->
       <div class="arch-grid">
         <div class="arch-card">
-          <div class="arch-icon-box">??</div>
+          <div class="arch-icon-box">🧠</div>
           <div>
             <div class="arch-name">The Coordinator</div>
             <span class="arch-tech">Google Agent Development Kit (ADK)</span>
@@ -1141,7 +1141,7 @@
           </div>
         </div>
         <div class="arch-card">
-          <div class="arch-icon-box">??</div>
+          <div class="arch-icon-box">💬</div>
           <div>
             <div class="arch-name">The Language Brain</div>
             <span class="arch-tech">Gemini 2.5 Flash</span>
@@ -1149,47 +1149,47 @@
           </div>
         </div>
         <div class="arch-card">
-          <div class="arch-icon-box">??</div>
+          <div class="arch-icon-box">☁️</div>
           <div>
             <div class="arch-name">Where It Lives</div>
             <span class="arch-tech">Vertex AI Agent Runtime (Reasoning Engine)</span>
-            <div class="arch-desc">The agent runs in Google's cloud � always on, no install needed. Your browser contacts it, it thinks, you get an answer. Fast without needing a server or any local setup.</div>
+            <div class="arch-desc">The agent runs in Google's cloud — always on, no install needed. Your browser contacts it, it thinks, you get an answer. Fast without needing a server or any local setup.</div>
           </div>
         </div>
         <div class="arch-card">
-          <div class="arch-icon-box">???</div>
+          <div class="arch-icon-box">🗄️</div>
           <div>
             <div class="arch-name">The Memory</div>
             <span class="arch-tech">Google Cloud Firestore</span>
-            <div class="arch-desc">Stores which spots you've already visited � so you never get the same suggestion twice. Also tracks walk streaks and community reviews. Persists across sessions automatically.</div>
+            <div class="arch-desc">Stores which spots you've already visited — so you never get the same suggestion twice. Also tracks walk streaks and community reviews. Persists across sessions automatically.</div>
           </div>
         </div>
         <div class="arch-card">
-          <div class="arch-icon-box">???</div>
+          <div class="arch-icon-box">🌤️</div>
           <div>
-            <div class="arch-name">Weather � No Account Needed</div>
+            <div class="arch-name">Weather — No Account Needed</div>
             <span class="arch-tech">Open-Meteo API</span>
-            <div class="arch-desc">Free, open weather data with no API key required. The agent calls it with your coordinates and gets live temperature, UV index, and rain chance � then computes a "walk suitability score."</div>
+            <div class="arch-desc">Free, open weather data with no API key required. The agent calls it with your coordinates and gets live temperature, UV index, and rain chance — then computes a "walk suitability score."</div>
           </div>
         </div>
         <div class="arch-card">
-          <div class="arch-icon-box">??</div>
+          <div class="arch-icon-box">🎵</div>
           <div>
             <div class="arch-name">Voice + Music Pipeline</div>
-            <span class="arch-tech">Cloud TTS � FFmpeg � Cloud Storage</span>
+            <span class="arch-tech">Cloud TTS · FFmpeg · Cloud Storage</span>
             <div class="arch-desc">Gemini writes the lyrics. Cloud TTS speaks them with a natural voice. FFmpeg generates a rhythmic background beat and mixes the two. Result: an MP3 walk soundtrack uploaded to GCS and playable directly in the app.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- -- TECHNICAL ----------------------------------------------- -->
+    <!-- ── TECHNICAL ─────────────────────────────────────────────── -->
     <section class="guide-section" id="technical">
       <div class="sec-label">The code</div>
       <h2 class="sec-title">How agent-first development actually feels</h2>
 
       <p class="sec-body">
-        With Google ADK, you write Python functions and the agent figures out when to call them. That's it. You don't build routing logic or decision trees � you describe what a tool does and let the model orchestrate.
+        With Google ADK, you write Python functions and the agent figures out when to call them. That's it. You don't build routing logic or decision trees — you describe what a tool does and let the model orchestrate.
       </p>
 
       <!-- Code: one tool definition -->
@@ -1198,7 +1198,7 @@
           <div class="code-dot" style="background:#ff5f56"></div>
           <div class="code-dot" style="background:#ffbd2e"></div>
           <div class="code-dot" style="background:#27c93f"></div>
-          <span class="code-filename">app/agent.py � one tool, plain Python</span>
+          <span class="code-filename">app/agent.py — one tool, plain Python</span>
         </div>
         <pre class="code-body"><span class="deco">@tool</span>
 <span class="kw">def</span> <span class="fn">get_nearby_scenic_walks</span>(user_location_coords: <span class="st">str</span>) -> dict:
@@ -1221,7 +1221,7 @@
           <div class="code-dot" style="background:#ff5f56"></div>
           <div class="code-dot" style="background:#ffbd2e"></div>
           <div class="code-dot" style="background:#27c93f"></div>
-          <span class="code-filename">app/agent.py � wiring 7 tools to one agent</span>
+          <span class="code-filename">app/agent.py — wiring 7 tools to one agent</span>
         </div>
         <pre class="code-body"><span class="kw">from</span> google.adk.agents <span class="kw">import</span> Agent
 <span class="kw">from</span> google.adk.models <span class="kw">import</span> Gemini
@@ -1229,13 +1229,13 @@
 <span class="fn">agent</span> = Agent(
     model=Gemini(<span class="st">"gemini-2.5-flash"</span>),
     tools=[
-        get_nearby_scenic_walks,   <span class="cm"># ???  finds fresh spots</span>
-        get_weather,               <span class="cm"># ???  live conditions</span>
-        calculate_time_budget,     <span class="cm"># ??  minute-by-minute plan</span>
-        generate_walk_soundtrack,  <span class="cm"># ??  AI-composed music</span>
-        find_walk_buddy,           <span class="cm"># ??  connect parents</span>
-        log_walk_streak,           <span class="cm"># ??  track progress</span>
-        submit_place_review,       <span class="cm"># ??  community notes</span>
+        get_nearby_scenic_walks,   <span class="cm"># 🗺️  finds fresh spots</span>
+        get_weather,               <span class="cm"># 🌤️  live conditions</span>
+        calculate_time_budget,     <span class="cm"># ⏱️  minute-by-minute plan</span>
+        generate_walk_soundtrack,  <span class="cm"># 🎵  AI-composed music</span>
+        find_walk_buddy,           <span class="cm"># 👥  connect parents</span>
+        log_walk_streak,           <span class="cm"># 📊  track progress</span>
+        submit_place_review,       <span class="cm"># 📸  community notes</span>
     ],
     system_prompt=SYSTEM_PROMPT,
 )</pre>
@@ -1267,14 +1267,14 @@
         <div class="tech-card">
           <div class="tech-card-head">
             <span class="tech-tag tag-purple">Audio</span>
-            <div class="tech-card-title">Lyrics ? voice ? beat ? mix</div>
+            <div class="tech-card-title">Lyrics → voice → beat → mix</div>
           </div>
-          <div class="tech-card-body">Gemini writes lyrics ? Cloud TTS voices them ? FFmpeg generates a mood-matched rhythm using amplitude-modulated <code style="font-family:var(--rw-font-mono);font-size:.78em;color:var(--g)">aevalsrc</code> ? FFmpeg mixes both into one MP3.</div>
+          <div class="tech-card-body">Gemini writes lyrics → Cloud TTS voices them → FFmpeg generates a mood-matched rhythm using amplitude-modulated <code style="font-family:var(--rw-font-mono);font-size:.78em;color:var(--g)">aevalsrc</code> → FFmpeg mixes both into one MP3.</div>
         </div>
       </div>
     </section>
 
-    <!-- -- LEARNINGS ----------------------------------------------- -->
+    <!-- ── LEARNINGS ─────────────────────────────────────────────── -->
     <section class="guide-section" id="learnings">
       <div class="sec-label">What I learned</div>
       <h2 class="sec-title">Four things building this taught me</h2>
@@ -1289,7 +1289,7 @@
         <div class="learning-card" data-num="2">
           <div class="learning-num">02</div>
           <div class="learning-title">ADK changes how you think about features</div>
-          <div class="learning-body">In a traditional app, features are screens or buttons. With ADK, each feature is a tool � a function the agent calls when it decides it's needed. Adding walk buddy finder was writing one Python function.</div>
+          <div class="learning-body">In a traditional app, features are screens or buttons. With ADK, each feature is a tool — a function the agent calls when it decides it's needed. Adding walk buddy finder was writing one Python function.</div>
           <div class="learning-quote">You write what the feature does. AI figures out when.</div>
         </div>
         <div class="learning-card" data-num="3">
@@ -1307,16 +1307,16 @@
       </div>
     </section>
 
-    <!-- -- THANK YOU ----------------------------------------------- -->
+    <!-- ── THANK YOU ─────────────────────────────────────────────── -->
     <section class="guide-section" id="thanks">
       <div class="sec-label">Thank you</div>
       <h2 class="sec-title">The people who made the room work</h2>
 
       <div class="event-banner">
-        <div class="event-icon">???</div>
+        <div class="event-icon">🏗️</div>
         <div>
-          <div class="event-title">Build with Gemini � Mountain View</div>
-          <div class="event-sub">Track 3: App Builders � "Building Applications with Agent-First Workflows." I walked in without a project idea. The problem found me once we started building.</div>
+          <div class="event-title">Build with Gemini · Mountain View</div>
+          <div class="event-sub">Track 3: App Builders — "Building Applications with Agent-First Workflows." I walked in without a project idea. The problem found me once we started building.</div>
         </div>
       </div>
 
@@ -1349,9 +1349,9 @@
   </main>
 </div>
 
-<!-- ----------------------------------------------------------------
+<!-- ════════════════════════════════════════════════════════════════
      CTA
--------------------------------------------------------------------- -->
+════════════════════════════════════════════════════════════════════ -->
 <div class="doo-cta">
   <div class="doo-cta-inner">
     <h2 class="doo-cta-title">Built in a day. Still taking walks.</h2>

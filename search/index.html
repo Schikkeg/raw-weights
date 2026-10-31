@@ -19,11 +19,11 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Page shell -------------------------------------------- */
+    /* ── Page shell ──────────────────────────────────────────── */
     .rw-sp { min-height: 100vh; display: flex; flex-direction: column; background: var(--rw-bg); }
     .rw-sp-results-section { flex: 1; }
 
-    /* -- Hero -------------------------------------------------- */
+    /* ── Hero ────────────────────────────────────────────────── */
     .rw-sp-hero {
       background: linear-gradient(160deg, #0a0e1a 0%, #160e28 50%, #0a1530 100%);
       padding: 3.75rem 1.5rem 3.25rem;
@@ -72,7 +72,7 @@
       margin: 0 0 2.5rem;
     }
 
-    /* -- Hero search input ------------------------------------- */
+    /* ── Hero search input ───────────────────────────────────── */
     .rw-sp-input-wrap {
       position: relative;
       max-width: 680px;
@@ -145,7 +145,7 @@
       color: rgba(255,255,255,0.38);
     }
 
-    /* -- Results section --------------------------------------- */
+    /* ── Results section ─────────────────────────────────────── */
     .rw-sp-results-section {
       background: var(--rw-bg, #fff);
       min-height: 50vh;
@@ -156,7 +156,7 @@
       padding: 2.5rem 1.5rem 5rem;
     }
 
-    /* -- Empty / suggested topics ------------------------------ */
+    /* ── Empty / suggested topics ────────────────────────────── */
     #rw-sp-empty { padding-top: 0.25rem; }
     .rw-sp-empty-label {
       font-size: 0.78rem;
@@ -185,7 +185,7 @@
     .rw-sp-cat:hover { border-color: var(--rw-orange, #f97316); color: var(--rw-orange, #f97316); background: rgba(249,115,22,0.05); }
     .rw-sp-cat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
-    /* -- Status / count / error -------------------------------- */
+    /* ── Status / count / error ──────────────────────────────── */
     .rw-sp-status {
       font-size: 0.85rem;
       color: var(--rw-text-subtle, #94a3b8);
@@ -196,7 +196,7 @@
     .rw-sp-no-results { font-size: 0.95rem; color: var(--rw-text-muted); padding: 0.5rem 0 0 0.25rem; }
     .rw-sp-no-results strong { color: var(--rw-text); }
 
-    /* -- Result list ------------------------------------------- */
+    /* ── Result list ─────────────────────────────────────────── */
     .rw-sp-result-list { list-style: none; padding: 0; margin: 0; }
     .rw-sp-result { margin-bottom: 0.75rem; }
     .rw-sp-result:last-child { margin-bottom: 0; }
@@ -278,7 +278,7 @@
       padding: 0 2px;
     }
 
-    /* -- Nav search button hidden ------------------------------ */
+    /* ── Nav search button hidden ────────────────────────────── */
     #rw-search-btn, #rw-mobile-search-btn { display: none !important; }
 
     @media (max-width: 640px) {
@@ -301,12 +301,12 @@
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
       <input id="rw-sp-q" type="search" autocomplete="off" spellcheck="false"
-             placeholder="Search guides, blogs, playgrounds�" aria-label="Search RawWeights">
+             placeholder="Search guides, blogs, playgrounds…" aria-label="Search RawWeights">
       <button id="rw-sp-clear" aria-label="Clear search" type="button">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
-    <p class="rw-sp-hint">Press <kbd>? Enter</kbd> to search &nbsp;�&nbsp; <kbd>Ctrl K</kbd> opens search anywhere</p>
+    <p class="rw-sp-hint">Press <kbd>↵ Enter</kbd> to search &nbsp;·&nbsp; <kbd>Ctrl K</kbd> opens search anywhere</p>
   </section>
 
   <section class="rw-sp-results-section">
@@ -341,7 +341,7 @@
     var timer    = null;
     var pf       = null;
 
-    /* -- SVG icons for default thumbnails -- */
+    /* ── SVG icons for default thumbnails ── */
     var ICONS = {
       blog:       '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
       guide:      '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
@@ -366,7 +366,7 @@
     function renderResults(data, query) {
       listEl.innerHTML = '';
       if (!data.length) {
-        statusEl.innerHTML = 'No results for <strong>"' + esc(query) + '"</strong> � try different keywords.';
+        statusEl.innerHTML = 'No results for <strong>"' + esc(query) + '"</strong> — try different keywords.';
         return;
       }
       statusEl.innerHTML = data.length + ' result' + (data.length !== 1 ? 's' : '') + ' for <strong>"' + esc(query) + '"</strong>';
@@ -396,14 +396,14 @@
         return;
       }
       emptyEl.style.display = 'none';
-      statusEl.textContent = 'Searching�';
-      if (!pf) { statusEl.textContent = 'Loading search�'; return; }
+      statusEl.textContent = 'Searching…';
+      if (!pf) { statusEl.textContent = 'Loading search…'; return; }
       try {
         var search = await pf.search(query);
         var data   = await Promise.all(search.results.slice(0, 12).map(function (r) { return r.data(); }));
         renderResults(data, query);
       } catch (e) {
-        statusEl.textContent = 'Search unavailable � try reloading the page.';
+        statusEl.textContent = 'Search unavailable — try reloading the page.';
       }
     }
 

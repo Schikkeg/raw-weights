@@ -97,7 +97,7 @@
 <script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_regression_tool',
-  description: 'Returns an overview of the Simple Regression Tool — interactive gradient descent and linear regression visualizer.',
+  description: 'Returns an overview of the Simple Regression Tool â€” interactive gradient descent and linear regression visualizer.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3'))
@@ -110,7 +110,7 @@ window.RW_PAGE_TOOLS = [{
       sections: sections,
       topics: ['Linear regression from scratch', 'Gradient descent step-by-step', 'Cost function / MSE minimization', 'Learning rate effects on convergence', 'Loss landscape visualization'],
       features: ['Adjustable learning rate slider', 'Live loss curve update', 'Visual gradient arrows on cost surface', 'Step-through or continuous descent mode'],
-      learning_objective: 'Develop intuition for how gradient descent minimizes a loss function — the core optimization loop behind all neural network training.'
+      learning_objective: 'Develop intuition for how gradient descent minimizes a loss function â€” the core optimization loop behind all neural network training.'
     };
   }
 }];
@@ -165,7 +165,7 @@ window.RW_PAGE_TOOLS = [{
             <label>Bias (Intercept): <span id="valB" class="highlight">0</span></label>
             <input type="range" id="slideB" min="-500" max="2000" step="10" value="0" oninput="manualTune()">
 
-            <button class="btn-yellow" onclick="saveSnapshot()">?? Save Comparison Line</button>
+            <button class="btn-yellow" onclick="saveSnapshot()">ðŸ“¸ Save Comparison Line</button>
             <ul id="savedList"></ul>
         </div>
     </div>
@@ -188,7 +188,7 @@ window.RW_PAGE_TOOLS = [{
 </div>
 
 <div class="edu-container">
-    <h2 style="text-align:center; color:#2d3436; margin-bottom:30px;">?? How the Machine Learns (The Concepts)</h2>
+    <h2 style="text-align:center; color:#2d3436; margin-bottom:30px;">ðŸ§  How the Machine Learns (The Concepts)</h2>
     
     <div class="concept-grid">
         
@@ -197,8 +197,8 @@ window.RW_PAGE_TOOLS = [{
             <p>This is the model's guess. We assume the relationship between Input (X) and Output (Y) is a straight line.</p>
             <div class="formula-box">y = mx + b</div>
             <p>
-                • <span class="variable">m (Slope):</span> The Weight. How much Y changes for every 1 unit of X.<br>
-                • <span class="variable">b (Bias):</span> The Intercept. Where the line starts if X is 0.
+                â€¢ <span class="variable">m (Slope):</span> The Weight. How much Y changes for every 1 unit of X.<br>
+                â€¢ <span class="variable">b (Bias):</span> The Intercept. Where the line starts if X is 0.
             </p>
         </div>
 
@@ -206,7 +206,7 @@ window.RW_PAGE_TOOLS = [{
             <h4 style="color:#e17055;">2. The Cost Function (Loss)</h4>
             <p>How does the AI know if the line is wrong? It measures the distance between the line and the dots.</p>
             
-            <div class="formula-box">Error = Average(Difference²)</div>
+            <div class="formula-box">Error = Average(DifferenceÂ²)</div>
             <p>If the error is high, the model is bad. The AI's only goal is to make this number <strong>Zero</strong>.</p>
         </div>
 
@@ -222,8 +222,8 @@ window.RW_PAGE_TOOLS = [{
             <p>When walking down that mountain, how big are your steps?</p>
             <div class="formula-box">New_Weight = Old_Weight - (Step_Size * Gradient)</div>
             <p>
-                • <strong>Too Big:</strong> You jump over the valley (Overshoot).<br>
-                • <strong>Too Small:</strong> You take forever to get there.
+                â€¢ <strong>Too Big:</strong> You jump over the valley (Overshoot).<br>
+                â€¢ <strong>Too Small:</strong> You take forever to get there.
             </p>
         </div>
 

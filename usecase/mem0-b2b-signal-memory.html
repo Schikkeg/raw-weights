@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Signal Memory Problem | RawWeights</title>
-  <meta name="description" content="Why B2B AI agents forget everything between sessions � and how Mem0 fixes deduplication, contradiction management, and graph retrieval without you rebuilding it from scratch.">
+  <meta name="description" content="Why B2B AI agents forget everything between sessions — and how Mem0 fixes deduplication, contradiction management, and graph retrieval without you rebuilding it from scratch.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/usecase/mem0-b2b-signal-memory.html">
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://rawweights.com/images/memo.png">
   <meta property="og:url" content="https://rawweights.com/usecase/mem0-b2b-signal-memory.html">
   <meta property="og:title" content="The Signal Memory Problem | RawWeights">
-  <meta property="og:description" content="Why B2B AI agents forget everything between sessions � and how Mem0 fixes it without rebuilding from scratch.">
+  <meta property="og:description" content="Why B2B AI agents forget everything between sessions — and how Mem0 fixes it without rebuilding from scratch.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
 
@@ -19,7 +19,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Page accent: violet + cyan -- */
+    /* ── Page accent: violet + cyan ── */
     :root {
       --ac: #7c3aed;
       --ac-h: #6d28d9;
@@ -30,7 +30,7 @@
       --ac2-br: rgba(6,182,212,0.25);
     }
 
-    /* -- Hero -- */
+    /* ── Hero ── */
     .guide-hero {
       background: linear-gradient(135deg, #060614 0%, #0c0620 55%, #060e1a 100%);
       padding: 5rem 1.5rem 4rem;
@@ -79,7 +79,7 @@
       line-height: 1.6; font-style: italic;
     }
 
-    /* -- Persona bar -- */
+    /* ── Persona bar ── */
     .persona-bar { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem; }
     .persona-btn {
       padding: 0.45rem 1rem; border-radius: 9999px;
@@ -93,7 +93,7 @@
     [data-theme="light"] .persona-btn:hover,
     [data-theme="light"] .persona-btn.active { background:#7c3aed; border-color:#7c3aed; color:#fff; }
 
-    /* -- Layout -- */
+    /* ── Layout ── */
     .guide-layout {
       display: grid; grid-template-columns: 240px 1fr;
       gap: 2.5rem; max-width: 1200px;
@@ -117,7 +117,7 @@
     }
     .guide-toc .toc-sub { padding-left: 1rem; font-size: 0.78rem; }
 
-    /* -- Sections -- */
+    /* ── Sections ── */
     .guide-section { margin-bottom: 3.5rem; }
     .guide-section h2 {
       font-family: var(--rw-font-display); font-size: 1.6rem; font-weight: 800;
@@ -132,7 +132,7 @@
     }
     .guide-section p { font-size: 1rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
 
-    /* -- Feature grid -- */
+    /* ── Feature grid ── */
     .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
     .feature-card {
       background: var(--rw-card); border: 1px solid var(--rw-border);
@@ -144,11 +144,11 @@
     .feature-card h4 { font-family: var(--rw-font-display); font-size: 0.9rem; font-weight: 700; color: var(--rw-text); margin-bottom: 0.35rem; }
     .feature-card p { font-size: 0.82rem; color: var(--rw-text-muted); margin: 0; line-height: 1.55; }
 
-    /* -- Persona blocks -- */
+    /* ── Persona blocks ── */
     .persona-content { display: none; }
     .persona-content.active { display: block; }
 
-    /* -- Step list -- */
+    /* ── Step list ── */
     .step-list { list-style:none; display:flex; flex-direction:column; gap:1.25rem; margin:1.5rem 0; }
     .step-item { display:flex; gap:1rem; align-items:flex-start; }
     .step-num {
@@ -162,7 +162,7 @@
     .step-body ul { margin: 0.5rem 0 0 1rem; font-size: 0.85rem; color: var(--rw-text-muted); line-height: 1.8; }
     .step-body ul li strong { color: var(--rw-text); }
 
-    /* -- Comparison table -- */
+    /* ── Comparison table ── */
     .comparison-table { width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:0.875rem; }
     .comparison-table th {
       background: var(--rw-bg-subtle); font-family: var(--rw-font-display);
@@ -178,7 +178,7 @@
     .no { color: #ef4444; font-weight: 700; }
     .partial { color: #f59e0b; font-weight: 700; }
 
-    /* -- Callouts -- */
+    /* ── Callouts ── */
     .callout-v {
       background: var(--ac-lt); border-left: 3px solid var(--ac);
       border-radius: 0 var(--rw-r) var(--rw-r) 0;
@@ -192,7 +192,7 @@
     }
     .callout-c strong { color: var(--ac2); }
 
-    /* -- Retrieval trinity -- */
+    /* ── Retrieval trinity ── */
     .trinity-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
     .trinity-card {
       background: var(--rw-card); border: 1px solid var(--rw-border);
@@ -218,7 +218,7 @@
       padding: 0.55rem 0.75rem; font-style: italic; line-height: 1.5;
     }
 
-    /* -- Performance triangle -- */
+    /* ── Performance triangle ── */
     .perf-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
     .perf-card {
       background: var(--rw-card); border: 1px solid var(--rw-border);
@@ -236,7 +236,7 @@
     }
     .perf-desc { font-size: 0.78rem; color: var(--rw-text-muted); line-height: 1.5; }
 
-    /* -- Scoping chain -- */
+    /* ── Scoping chain ── */
     .scope-chain {
       display: flex; align-items: center; justify-content: center;
       flex-wrap: wrap; gap: 0; margin: 1.75rem 0;
@@ -253,7 +253,7 @@
     .scope-node .sc-eg { font-size: 0.7rem; color: var(--rw-text-subtle); }
     .scope-arrow { color: var(--rw-text-subtle); font-size: 1rem; padding: 0 0.4rem; }
 
-    /* -- Credit card -- */
+    /* ── Credit card ── */
     .credit-card {
       display: flex; gap: 1.25rem; align-items: flex-start;
       background: var(--ac-lt); border: 1px solid var(--ac-br);
@@ -265,9 +265,9 @@
     .credit-card a { color: var(--ac); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
     .credit-card a:hover { text-decoration: underline; }
 
-    /* ------------------------------------------------
+    /* ════════════════════════════════════════════════
        INTERACTIVE MEMORY BUILDER
-    ------------------------------------------------ */
+    ════════════════════════════════════════════════ */
     .mem-builder {
       background: var(--rw-card); border: 1px solid var(--rw-border);
       border-radius: var(--rw-r-xl); overflow: hidden; margin: 1.5rem 0;
@@ -404,7 +404,7 @@
     .qr-highlight { color: #22c55e; font-weight: 600; }
     .qr-urgent { color: var(--rw-orange); font-weight: 600; }
 
-    /* -- Responsive -- */
+    /* ── Responsive ── */
     @media (max-width: 1024px) {
       .guide-layout { grid-template-columns: 1fr; }
       .guide-sidebar { position: static; }
@@ -425,22 +425,22 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- -- HERO -- -->
+<!-- ══ HERO ══ -->
 <div class="guide-hero">
   <div class="guide-hero-inner">
-    <span class="guide-hero-label">?? B2B Intelligence</span>
+    <span class="guide-hero-label">📡 B2B Intelligence</span>
     <h1>The <span>Signal Memory</span> Problem</h1>
-    <p class="guide-hero-sub">Your B2B AI agent runs a perfect discovery call � extracts pain points, budget signals, stakeholder dynamics. Then the session ends, and it forgets everything.</p>
-    <p class="guide-hero-note">RAG retrieves documents. Claude reasons about them. Neither remembers what your prospect said last Tuesday. Here's the architecture that fixes that � without rebuilding deduplication, contradiction management, or graph retrieval from scratch.</p>
+    <p class="guide-hero-sub">Your B2B AI agent runs a perfect discovery call — extracts pain points, budget signals, stakeholder dynamics. Then the session ends, and it forgets everything.</p>
+    <p class="guide-hero-note">RAG retrieves documents. Claude reasons about them. Neither remembers what your prospect said last Tuesday. Here's the architecture that fixes that — without rebuilding deduplication, contradiction management, or graph retrieval from scratch.</p>
 
     <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-      <a href="#section-problem" class="rw-btn rw-btn-primary">Explore the Problem ?</a>
-      <a href="#section-demo" class="rw-btn rw-btn-ghost" style="border-color:rgba(167,139,250,0.4);color:#a78bfa;">Try the Demo ?</a>
+      <a href="#section-problem" class="rw-btn rw-btn-primary">Explore the Problem ↓</a>
+      <a href="#section-demo" class="rw-btn rw-btn-ghost" style="border-color:rgba(167,139,250,0.4);color:#a78bfa;">Try the Demo →</a>
     </div>
   </div>
 </div>
 
-<!-- -- CONTENT -- -->
+<!-- ══ CONTENT ══ -->
 <div class="guide-layout">
   <!-- Sidebar -->
   <aside class="guide-sidebar">
@@ -462,37 +462,37 @@
   <!-- Main -->
   <main>
 
-    <!-- -- 1. AMNESIA TAX -- -->
+    <!-- ── 1. AMNESIA TAX ── -->
     <section class="guide-section" id="section-problem">
       <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-left:3px solid #818cf8;border-radius:0.75rem;padding:1.1rem 1.4rem;margin-bottom:1.5rem;max-width:680px;">
         <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.07em;color:#a5b4fc;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
-        <p style="margin:0 0 0.6rem;color:var(--rw-text-muted);font-style:italic;">"In B2B work, 'memory' isn't just about recalling facts � it's about preventing context from poisoning the next decision."</p>
-        <p style="margin:0;color:var(--rw-text-subtle);font-size:0.875rem;">What started as a question about cross-session continuity in multi-agent systems turned into a deeper problem: even with RAG and a capable model, three signal gaps kept surfacing in longitudinal B2B workflows. This page is a working architecture for closing all three � qualification signals that compound across touchpoints, stakeholder context that persists, and memory namespacing when a single user carries two contexts that must never cross-contaminate.</p>
+        <p style="margin:0 0 0.6rem;color:var(--rw-text-muted);font-style:italic;">"In B2B work, 'memory' isn't just about recalling facts — it's about preventing context from poisoning the next decision."</p>
+        <p style="margin:0;color:var(--rw-text-subtle);font-size:0.875rem;">What started as a question about cross-session continuity in multi-agent systems turned into a deeper problem: even with RAG and a capable model, three signal gaps kept surfacing in longitudinal B2B workflows. This page is a working architecture for closing all three — qualification signals that compound across touchpoints, stakeholder context that persists, and memory namespacing when a single user carries two contexts that must never cross-contaminate.</p>
       </div>
       <h2>The Amnesia Tax</h2>
-      <p>Every time your B2B AI agent starts a new session � a follow-up call, a CRM update, a renewal check-in � it starts from zero. The qualification signals from last month's discovery call are gone. The stakeholder dynamics from the technical deep-dive? Gone. The budget signal the prospect dropped in passing? Gone.</p>
+      <p>Every time your B2B AI agent starts a new session — a follow-up call, a CRM update, a renewal check-in — it starts from zero. The qualification signals from last month's discovery call are gone. The stakeholder dynamics from the technical deep-dive? Gone. The budget signal the prospect dropped in passing? Gone.</p>
       <p>This isn't a model quality problem. It's a memory architecture problem. And it compounds across every account in your pipeline.</p>
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📉</div>
           <h4>Qualification Signal Loss</h4>
-          <p>Pain points, budget cycles, tech stack preferences � re-discovered from scratch every session instead of compounding across touchpoints.</p>
+          <p>Pain points, budget cycles, tech stack preferences — re-discovered from scratch every session instead of compounding across touchpoints.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">👥</div>
           <h4>Stakeholder Blindness</h4>
-          <p>Who's the technical veto? Who controls budget sign-off? B2B deals involve 5�8 decision-makers. Your agent greets them fresh every time.</p>
+          <p>Who's the technical veto? Who controls budget sign-off? B2B deals involve 5–8 decision-makers. Your agent greets them fresh every time.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔄</div>
           <h4>Context Reconstruction Cost</h4>
-          <p>Reps spend 20�30 minutes per call re-reading CRM notes doing what a memory layer should do automatically � rebuilding account context.</p>
+          <p>Reps spend 20–30 minutes per call re-reading CRM notes doing what a memory layer should do automatically — rebuilding account context.</p>
         </div>
       </div>
 
       <div class="callout-v">
-        <strong>The core framing:</strong> B2B AI isn't a single-session problem. It's a longitudinal intelligence problem across weeks of prospect interactions, months of onboarding, and years of account management. Long context windows don't fix this � you need a memory layer that persists, deduplicates, and resolves contradictions between sessions.
+        <strong>The core framing:</strong> B2B AI isn't a single-session problem. It's a longitudinal intelligence problem across weeks of prospect interactions, months of onboarding, and years of account management. Long context windows don't fix this — you need a memory layer that persists, deduplicates, and resolves contradictions between sessions.
       </div>
 
       <div style="background:var(--rw-card);border:1px solid var(--ac-br);border-radius:var(--rw-r-md);padding:1.25rem 1.5rem;margin-top:1.25rem;">
@@ -508,23 +508,23 @@
           </div>
           <div style="background:rgba(124,58,237,0.06);border:1px solid var(--ac-br);border-radius:8px;padding:0.85rem;">
             <p style="font-weight:700;color:var(--rw-text);font-size:0.85rem;margin-bottom:0.3rem;">No entity graph</p>
-            <p style="color:var(--rw-text-muted);font-size:0.78rem;margin:0;">Knowing Sarah is the engineering veto, she's at TechVision, and TechVision is expanding to APAC in Q3 � those relationships need to be traversable, not flat stored text.</p>
+            <p style="color:var(--rw-text-muted);font-size:0.78rem;margin:0;">Knowing Sarah is the engineering veto, she's at TechVision, and TechVision is expanding to APAC in Q3 — those relationships need to be traversable, not flat stored text.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- -- 2. MEMORY ENGINE -- -->
+    <!-- ── 2. MEMORY ENGINE ── -->
     <section class="guide-section" id="section-engine">
       <h2>The Memory Engine: 3 Phases</h2>
-      <p>A proper memory algorithm runs three distinct phases for every interaction. Each phase has a clear job � and each is where naive approaches break down at B2B scale.</p>
+      <p>A proper memory algorithm runs three distinct phases for every interaction. Each phase has a clear job — and each is where naive approaches break down at B2B scale.</p>
 
       <ul class="step-list">
         <li class="step-item">
           <div class="step-num">1</div>
           <div class="step-body">
             <h4>Extraction</h4>
-            <p>After each conversation turn, an LLM pass identifies what's worth persisting. Not the full transcript � distilled facts: <em>"Marcus confirmed $120K budget,"</em> <em>"Sarah is the engineering veto,"</em> <em>"APAC expansion targeted Q3."</em> Custom instructions let you tune what gets extracted: prioritise tech-stack signals over personal preferences, never store names but always store timelines.</p>
+            <p>After each conversation turn, an LLM pass identifies what's worth persisting. Not the full transcript — distilled facts: <em>"Marcus confirmed $120K budget,"</em> <em>"Sarah is the engineering veto,"</em> <em>"APAC expansion targeted Q3."</em> Custom instructions let you tune what gets extracted: prioritise tech-stack signals over personal preferences, never store names but always store timelines.</p>
           </div>
         </li>
         <li class="step-item">
@@ -533,7 +533,7 @@
             <h4>Storage & Consolidation</h4>
             <p>This is the hard part that CLAUDE.md files and naive file-system approaches get wrong. Three sub-problems run simultaneously on every write:</p>
             <ul>
-              <li><strong>Deduplication:</strong> Marcus mentioned LangChain across 3 sessions. Store it once � don't pile up redundant entries.</li>
+              <li><strong>Deduplication:</strong> Marcus mentioned LangChain across 3 sessions. Store it once — don't pile up redundant entries.</li>
               <li><strong>Contradiction management:</strong> Budget was $80K in session 1, confirmed $120K in session 3. The newer signal wins and the old one is retired.</li>
               <li><strong>Temporal decay:</strong> A tech-stack preference from 8 months ago that was never retrieved again scores lower than one from last week.</li>
             </ul>
@@ -543,7 +543,7 @@
           <div class="step-num">3</div>
           <div class="step-body">
             <h4>Retrieval</h4>
-            <p>When the agent needs context for a new session, three parallel searches run against the memory store, results are fused and re-ranked, and the top 3�5 most relevant memories are injected. This is the difference between a sharp pre-call brief and a 25K-token context dump that costs a fortune and buries the signal.</p>
+            <p>When the agent needs context for a new session, three parallel searches run against the memory store, results are fused and re-ranked, and the top 3–5 most relevant memories are injected. This is the difference between a sharp pre-call brief and a 25K-token context dump that costs a fortune and buries the signal.</p>
           </div>
         </li>
       </ul>
@@ -553,10 +553,10 @@
       </div>
     </section>
 
-    <!-- -- 3. RAG GAP -- -->
+    <!-- ── 3. RAG GAP ── -->
     <section class="guide-section" id="section-rag">
       <h2>What RAG &amp; Claude Won't Save You From</h2>
-      <p>If you've already built a RAG pipeline, you might think you're close. You're not � for longitudinal B2B memory specifically. Here's exactly where the gaps are, and why each one is a rebuild project if you go alone:</p>
+      <p>If you've already built a RAG pipeline, you might think you're close. You're not — for longitudinal B2B memory specifically. Here's exactly where the gaps are, and why each one is a rebuild project if you go alone:</p>
 
       <table class="comparison-table">
         <thead>
@@ -570,55 +570,55 @@
         <tbody>
           <tr>
             <td><strong>Cross-session persistence</strong></td>
-            <td><span class="no">?</span> Wiped each session</td>
-            <td><span class="no">?</span> Documents � not conversations</td>
-            <td><span class="ok">?</span> Persistent memory store</td>
+            <td><span class="no">✗</span> Wiped each session</td>
+            <td><span class="no">✗</span> Documents — not conversations</td>
+            <td><span class="ok">✓</span> Persistent memory store</td>
           </tr>
           <tr>
             <td><strong>Deduplication</strong></td>
-            <td><span class="no">?</span> Piles up on every write</td>
-            <td><span class="no">?</span> No dedup layer on write</td>
-            <td><span class="ok">?</span> Semantic dedup on every write</td>
+            <td><span class="no">✗</span> Piles up on every write</td>
+            <td><span class="no">✗</span> No dedup layer on write</td>
+            <td><span class="ok">✓</span> Semantic dedup on every write</td>
           </tr>
           <tr>
             <td><strong>Contradiction management</strong></td>
-            <td><span class="no">?</span> Both versions stored forever</td>
-            <td><span class="no">?</span> No conflict detection</td>
-            <td><span class="ok">?</span> Newer signals supersede old</td>
+            <td><span class="no">✗</span> Both versions stored forever</td>
+            <td><span class="no">✗</span> No conflict detection</td>
+            <td><span class="ok">✓</span> Newer signals supersede old</td>
           </tr>
           <tr>
             <td><strong>Memory decay &amp; staleness</strong></td>
-            <td><span class="no">?</span> Everything lives forever</td>
-            <td><span class="no">?</span> No time-weighted scoring</td>
-            <td><span class="ok">?</span> Decay scoring + auto-pruning</td>
+            <td><span class="no">✗</span> Everything lives forever</td>
+            <td><span class="no">✗</span> No time-weighted scoring</td>
+            <td><span class="ok">✓</span> Decay scoring + auto-pruning</td>
           </tr>
           <tr>
             <td><strong>Entity relationship hops</strong></td>
-            <td><span class="no">?</span> No graph structure</td>
+            <td><span class="no">✗</span> No graph structure</td>
             <td><span class="partial">~</span> Metadata filters only</td>
-            <td><span class="ok">?</span> Knowledge graph with multi-hop</td>
+            <td><span class="ok">✓</span> Knowledge graph with multi-hop</td>
           </tr>
           <tr>
             <td><strong>Token cost at scale</strong></td>
-            <td><span class="no">?</span> Full context dump</td>
-            <td><span class="no">?</span> High chunk overhead</td>
-            <td><span class="ok">?</span> ~7K tokens vs ~25K full-context</td>
+            <td><span class="no">✗</span> Full context dump</td>
+            <td><span class="no">✗</span> High chunk overhead</td>
+            <td><span class="ok">✓</span> ~7K tokens vs ~25K full-context</td>
           </tr>
           <tr>
             <td><strong>Multi-user isolation</strong></td>
-            <td><span class="no">?</span> Manual file management</td>
+            <td><span class="no">✗</span> Manual file management</td>
             <td><span class="partial">~</span> Namespace filters only</td>
-            <td><span class="ok">?</span> First-class scoping primitives</td>
+            <td><span class="ok">✓</span> First-class scoping primitives</td>
           </tr>
         </tbody>
       </table>
 
       <div class="callout-v">
-        <strong>The compounding problem:</strong> Each gap is independently solvable. But solving all seven for a production B2B agent at 40K DAUs and 2M events/month is 6�9 months of infrastructure work. Mem0 ships them as a single API call.
+        <strong>The compounding problem:</strong> Each gap is independently solvable. But solving all seven for a production B2B agent at 40K DAUs and 2M events/month is 6–9 months of infrastructure work. Mem0 ships them as a single API call.
       </div>
     </section>
 
-    <!-- -- 4. RETRIEVAL TRINITY -- -->
+    <!-- ── 4. RETRIEVAL TRINITY ── -->
     <section class="guide-section" id="section-retrieval">
       <h2>The Retrieval Trinity</h2>
       <p>When your agent prepares for a call with Marcus at TechVision, three searches run in parallel against the memory store. Results are fused and re-ranked before anything touches the LLM.</p>
@@ -628,43 +628,43 @@
           <span class="trinity-badge">Vector</span>
           <h4>Semantic Similarity</h4>
           <p>"APAC expansion" also surfaces regional compliance notes, multi-timezone stakeholder preferences, budget approval chains. Catches the contextually relevant signal that keyword search misses.</p>
-          <div class="trinity-example">"Prepare for Marcus" ? surfaces APAC timeline, Q2 urgency, $120K budget confirmation � without exact keywords</div>
+          <div class="trinity-example">"Prepare for Marcus" → surfaces APAC timeline, Q2 urgency, $120K budget confirmation — without exact keywords</div>
         </div>
         <div class="trinity-card t-keyword">
           <span class="trinity-badge">Keyword</span>
           <h4>Exact Match Recall</h4>
-          <p>When accuracy of specific facts matters � product names, contract numbers, competitor references. Prevents semantic drift from surfacing vaguely related but wrong memories.</p>
-          <div class="trinity-example">"LangChain" ? retrieves exact tech-stack notes, not just "AI orchestration" adjacent memories</div>
+          <p>When accuracy of specific facts matters — product names, contract numbers, competitor references. Prevents semantic drift from surfacing vaguely related but wrong memories.</p>
+          <div class="trinity-example">"LangChain" → retrieves exact tech-stack notes, not just "AI orchestration" adjacent memories</div>
         </div>
         <div class="trinity-card t-graph">
           <span class="trinity-badge">Graph / Entity</span>
           <h4>Relationship Hops</h4>
-          <p>Fills in implicit context. Marcus ? TechVision ? APAC expansion ? Q3 timeline ? multi-region compliance. The downstream nodes surface without explicit queries.</p>
-          <div class="trinity-example">"Marcus" ? hops to Sarah (eng veto), Dev (arch veto), TechVision ? all linked memories scored higher</div>
+          <p>Fills in implicit context. Marcus → TechVision → APAC expansion → Q3 timeline → multi-region compliance. The downstream nodes surface without explicit queries.</p>
+          <div class="trinity-example">"Marcus" → hops to Sarah (eng veto), Dev (arch veto), TechVision → all linked memories scored higher</div>
         </div>
       </div>
 
       <h3>Re-ranking: From 100 Candidates to 5 Injected</h3>
-      <p>After parallel search you might have 50�100 candidate memories. You can't inject all of them � that defeats the purpose and blows the token budget. A re-ranking pass fuses scores from all three searches into a single relevance number per memory. <strong style="color:var(--rw-text);">Top 3�5 injected per turn</strong> captures the signal in production. Beyond 10�20 you're paying for noise.</p>
+      <p>After parallel search you might have 50–100 candidate memories. You can't inject all of them — that defeats the purpose and blows the token budget. A re-ranking pass fuses scores from all three searches into a single relevance number per memory. <strong style="color:var(--rw-text);">Top 3–5 injected per turn</strong> captures the signal in production. Beyond 10–20 you're paying for noise.</p>
 
       <div class="callout-c">
-        <strong>Voice agent constraint:</strong> If your B2B agent handles live sales calls or real-time customer success calls, the retrieval budget is tight. Mem0's full pipeline runs at ~200�300ms � fast enough to inject context before the agent speaks its first sentence.
+        <strong>Voice agent constraint:</strong> If your B2B agent handles live sales calls or real-time customer success calls, the retrieval budget is tight. Mem0's full pipeline runs at ~200–300ms — fast enough to inject context before the agent speaks its first sentence.
       </div>
     </section>
 
-    <!-- -- 5. INTERACTIVE DEMO -- -->
+    <!-- ── 5. INTERACTIVE DEMO ── -->
     <section class="guide-section" id="section-demo">
       <h2>Prospect Memory Builder</h2>
-      <p>Three sales sessions with Marcus Chen, CTO of TechVision Inc., evaluating an AI orchestration layer. Process each session to extract memories into the pool � then query it to see what a memory-powered agent knows before the next call.</p>
+      <p>Three sales sessions with Marcus Chen, CTO of TechVision Inc., evaluating an AI orchestration layer. Process each session to extract memories into the pool — then query it to see what a memory-powered agent knows before the next call.</p>
 
       <div class="mem-builder">
         <!-- Header -->
         <div class="mem-header">
           <div>
-            <p class="mem-header-title">TechVision Inc � Account Intelligence</p>
-            <p class="mem-header-sub">Marcus Chen � CTO � AI Orchestration Evaluation � $120K opportunity</p>
+            <p class="mem-header-title">TechVision Inc — Account Intelligence</p>
+            <p class="mem-header-sub">Marcus Chen · CTO · AI Orchestration Evaluation · $120K opportunity</p>
           </div>
-          <button class="reset-btn" onclick="resetDemo()">? Reset</button>
+          <button class="reset-btn" onclick="resetDemo()">↺ Reset</button>
         </div>
 
         <!-- Sessions + Pool -->
@@ -679,19 +679,19 @@
             </div>
 
             <div class="spanel active" id="sp-0">
-              <div class="spanel-date">?? Discovery Call � March 12, 2026</div>
-              <div class="spanel-notes">Marcus Chen (CTO) joined with two engineers. Current stack: LangChain + Pinecone. Core pain: agents lose context between customer touchpoints � they lost a real deal last month because the agent forgot a key stakeholder had changed roles. Budget cycle closes end of Q2. Three engineers available for integration. One other vendor being evaluated. Hard requirement: GDPR compliance, EU data must stay in-region.</div>
-              <button class="extract-btn" id="ebtn-0" onclick="processSession(0)">? Extract Memories</button>
+              <div class="spanel-date">📞 Discovery Call — March 12, 2026</div>
+              <div class="spanel-notes">Marcus Chen (CTO) joined with two engineers. Current stack: LangChain + Pinecone. Core pain: agents lose context between customer touchpoints — they lost a real deal last month because the agent forgot a key stakeholder had changed roles. Budget cycle closes end of Q2. Three engineers available for integration. One other vendor being evaluated. Hard requirement: GDPR compliance, EU data must stay in-region.</div>
+              <button class="extract-btn" id="ebtn-0" onclick="processSession(0)">⚡ Extract Memories</button>
             </div>
             <div class="spanel" id="sp-1">
-              <div class="spanel-date">?? Technical Deep-Dive � March 26, 2026</div>
-              <div class="spanel-notes">Full committee joined: Sarah (Head of Engineering) and Dev (AI Architect). Scale confirmed: 40K daily active users, ~2M conversation events per month. Six months ago they built an in-house memory layer � it failed specifically at deduplication when users repeated the same preferences. Sarah asked about Neo4j graph integration. Budget officially confirmed at $120K annual (up from initial $80K estimate). Competitor: custom Redis-based solution.</div>
-              <button class="extract-btn" id="ebtn-1" onclick="processSession(1)">? Extract Memories</button>
+              <div class="spanel-date">🔬 Technical Deep-Dive — March 26, 2026</div>
+              <div class="spanel-notes">Full committee joined: Sarah (Head of Engineering) and Dev (AI Architect). Scale confirmed: 40K daily active users, ~2M conversation events per month. Six months ago they built an in-house memory layer — it failed specifically at deduplication when users repeated the same preferences. Sarah asked about Neo4j graph integration. Budget officially confirmed at $120K annual (up from initial $80K estimate). Competitor: custom Redis-based solution.</div>
+              <button class="extract-btn" id="ebtn-1" onclick="processSession(1)">⚡ Extract Memories</button>
             </div>
             <div class="spanel" id="sp-2">
-              <div class="spanel-date">?? Objection Handling � April 9, 2026</div>
-              <div class="spanel-notes">Marcus raised a hard ceiling: voice sales agent cannot tolerate more than 300ms memory overhead � breaks conversation flow. Sarah pushed on token cost impact at their 2M events/month volume. Dev (AI Architect) is the integration-complexity veto � he decides build vs buy. Marcus mentioned APAC office expansion in Q3 2026, which will require multi-region memory scoping with per-country data residency rules.</div>
-              <button class="extract-btn" id="ebtn-2" onclick="processSession(2)">? Extract Memories</button>
+              <div class="spanel-date">🎯 Objection Handling — April 9, 2026</div>
+              <div class="spanel-notes">Marcus raised a hard ceiling: voice sales agent cannot tolerate more than 300ms memory overhead — breaks conversation flow. Sarah pushed on token cost impact at their 2M events/month volume. Dev (AI Architect) is the integration-complexity veto — he decides build vs buy. Marcus mentioned APAC office expansion in Q3 2026, which will require multi-region memory scoping with per-country data residency rules.</div>
+              <button class="extract-btn" id="ebtn-2" onclick="processSession(2)">⚡ Extract Memories</button>
             </div>
           </div>
 
@@ -710,24 +710,24 @@
         <div class="query-section">
           <div class="query-row">
             <input class="query-input" id="q-input" type="text" value="Prepare me for tomorrow's call with Marcus at TechVision" readonly>
-            <button class="query-btn" onclick="runQuery()">Query Memory ?</button>
+            <button class="query-btn" onclick="runQuery()">Query Memory →</button>
           </div>
           <div id="q-results" style="display:none;" class="query-results">
             <div class="qr-box without">
-              <div class="qr-head">? WITHOUT MEM0</div>
+              <div class="qr-head">✗ WITHOUT MEM0</div>
               <div class="qr-body">
                 Here are some tips for your upcoming call with Marcus Chen. In enterprise sales it's important to understand the prospect's technical stack, budget timeline, and key stakeholders. Make sure to ask about their current pain points and any compliance requirements they may have. Building genuine rapport is important for advancing the deal.
               </div>
             </div>
             <div class="qr-box with">
-              <div class="qr-head">? WITH MEM0</div>
+              <div class="qr-head">✓ WITH MEM0</div>
               <div class="qr-body">
-                <strong style="color:var(--rw-text);display:block;margin-bottom:0.6rem;">Pre-call brief � Marcus Chen, CTO � TechVision Inc</strong>
-                <span class="qr-highlight">Hard requirements first:</span> Voice agent latency ceiling is 300ms � confirm Mem0 runs 200�300ms. GDPR EU data residency is non-negotiable, prepare regional deployment overview.<br><br>
-                <span class="qr-highlight">Navigate the committee:</span> Dev (AI Architect) is the integration-complexity veto � lead with API simplicity. Sarah (Eng Head) is focused on token cost at 2M events/month � bring the 7K vs 25K token comparison. Marcus holds emotional buy-in from the lost deal (agent forgot a stakeholder role change).<br><br>
-                <span class="qr-highlight">Pre-empt the objection:</span> Their in-house attempt failed at deduplication. Open by showing dedup working live � it's the reason they stopped building.<br><br>
-                <span class="qr-highlight">APAC signal:</span> Q3 2026 expansion � prepare multi-region scoping overview before they ask.<br><br>
-                <span class="qr-urgent">? Timeline:</span> Q2 budget close is ~6 weeks away. Push for technical pilot commitment this session.
+                <strong style="color:var(--rw-text);display:block;margin-bottom:0.6rem;">Pre-call brief · Marcus Chen, CTO · TechVision Inc</strong>
+                <span class="qr-highlight">Hard requirements first:</span> Voice agent latency ceiling is 300ms — confirm Mem0 runs 200–300ms. GDPR EU data residency is non-negotiable, prepare regional deployment overview.<br><br>
+                <span class="qr-highlight">Navigate the committee:</span> Dev (AI Architect) is the integration-complexity veto — lead with API simplicity. Sarah (Eng Head) is focused on token cost at 2M events/month — bring the 7K vs 25K token comparison. Marcus holds emotional buy-in from the lost deal (agent forgot a stakeholder role change).<br><br>
+                <span class="qr-highlight">Pre-empt the objection:</span> Their in-house attempt failed at deduplication. Open by showing dedup working live — it's the reason they stopped building.<br><br>
+                <span class="qr-highlight">APAC signal:</span> Q3 2026 expansion — prepare multi-region scoping overview before they ask.<br><br>
+                <span class="qr-urgent">⏱ Timeline:</span> Q2 budget close is ~6 weeks away. Push for technical pilot commitment this session.
               </div>
             </div>
           </div>
@@ -735,71 +735,71 @@
       </div>
     </section>
 
-    <!-- -- 6. PERFORMANCE TRIANGLE -- -->
+    <!-- ── 6. PERFORMANCE TRIANGLE ── -->
     <section class="guide-section" id="section-perf">
       <h2>The Performance Triangle</h2>
-      <p>Memory systems have three levers � and you cannot maximize all three simultaneously. Production B2B agents learned this the hard way: chasing accuracy at the cost of latency and token spend destroys unit economics.</p>
+      <p>Memory systems have three levers — and you cannot maximize all three simultaneously. Production B2B agents learned this the hard way: chasing accuracy at the cost of latency and token spend destroys unit economics.</p>
 
       <div class="perf-grid">
         <div class="perf-card">
-          <div class="perf-icon">??</div>
+          <div class="perf-icon">🎯</div>
           <div class="perf-label">Accuracy</div>
           <div class="perf-val">98%+</div>
-          <div class="perf-desc">Benchmarked on LoCoMo, LongMemEval, BEAM 1M &amp; 10M. Improving iteratively � the other two levers matter more in production at scale.</div>
+          <div class="perf-desc">Benchmarked on LoCoMo, LongMemEval, BEAM 1M &amp; 10M. Improving iteratively — the other two levers matter more in production at scale.</div>
         </div>
         <div class="perf-card">
-          <div class="perf-icon">?</div>
+          <div class="perf-icon">⚡</div>
           <div class="perf-label">Latency</div>
-          <div class="perf-val">200�300ms</div>
-          <div class="perf-desc">Full retrieval pipeline end-to-end. Clears the voice-agent budget � the hardest real-time constraint in B2B AI.</div>
+          <div class="perf-val">200–300ms</div>
+          <div class="perf-desc">Full retrieval pipeline end-to-end. Clears the voice-agent budget — the hardest real-time constraint in B2B AI.</div>
         </div>
         <div class="perf-card">
-          <div class="perf-icon">??</div>
+          <div class="perf-icon">💰</div>
           <div class="perf-label">Token Cost</div>
-          <div class="perf-val">3�4� cheaper</div>
+          <div class="perf-val">3–4× cheaper</div>
           <div class="perf-desc">~7K tokens per turn vs ~25K full-context. At 2M events/month, this single lever determines whether the unit economics work at all.</div>
         </div>
       </div>
 
-      <p>The practical production rule: <strong style="color:var(--rw-text);">top 3�5 memories per turn</strong> captures the signal without collapsing token efficiency. Aggressive cases push to top 10�20. Beyond 20, you're funding noise that dilutes the signal you worked to extract.</p>
+      <p>The practical production rule: <strong style="color:var(--rw-text);">top 3–5 memories per turn</strong> captures the signal without collapsing token efficiency. Aggressive cases push to top 10–20. Beyond 20, you're funding noise that dilutes the signal you worked to extract.</p>
 
       <div class="callout-v">
-        <strong>Why this matters for B2B specifically:</strong> At 40K users � 10 call sessions/week, the gap between 7K and 25K tokens per call is the difference between a profitable product and an account you'd rather drop. Token cost is where B2B AI economics are won or lost.
+        <strong>Why this matters for B2B specifically:</strong> At 40K users × 10 call sessions/week, the gap between 7K and 25K tokens per call is the difference between a profitable product and an account you'd rather drop. Token cost is where B2B AI economics are won or lost.
       </div>
     </section>
 
-    <!-- -- 7. ENTERPRISE SCOPING -- -->
+    <!-- ── 7. ENTERPRISE SCOPING ── -->
     <section class="guide-section" id="section-scoping">
       <h2>Enterprise Memory Scoping</h2>
-      <p>In B2B, memory isolation isn't a nice-to-have � it's a compliance requirement. TechVision's account memories must never surface in a query about another prospect. A sales rep's private call notes can't reach their manager without explicit permission. Memory scoping is the architecture that makes enterprise deployment possible.</p>
+      <p>In B2B, memory isolation isn't a nice-to-have — it's a compliance requirement. TechVision's account memories must never surface in a query about another prospect. A sales rep's private call notes can't reach their manager without explicit permission. Memory scoping is the architecture that makes enterprise deployment possible.</p>
 
       <div class="scope-chain">
         <div class="scope-node">
-          <div class="sc-icon">??</div>
+          <div class="sc-icon">🏢</div>
           <div class="sc-label">Org</div>
           <div class="sc-eg">Your company</div>
         </div>
-        <div class="scope-arrow">?</div>
+        <div class="scope-arrow">→</div>
         <div class="scope-node">
-          <div class="sc-icon">??</div>
+          <div class="sc-icon">📁</div>
           <div class="sc-label">Project</div>
           <div class="sc-eg">CRM Agent</div>
         </div>
-        <div class="scope-arrow">?</div>
+        <div class="scope-arrow">→</div>
         <div class="scope-node">
-          <div class="sc-icon">??</div>
+          <div class="sc-icon">👤</div>
           <div class="sc-label">User</div>
           <div class="sc-eg">Marcus Chen</div>
         </div>
-        <div class="scope-arrow">?</div>
+        <div class="scope-arrow">→</div>
         <div class="scope-node">
-          <div class="sc-icon">??</div>
+          <div class="sc-icon">🔁</div>
           <div class="sc-label">Run ID</div>
           <div class="sc-eg">Session #14</div>
         </div>
-        <div class="scope-arrow">?</div>
+        <div class="scope-arrow">→</div>
         <div class="scope-node">
-          <div class="sc-icon">??</div>
+          <div class="sc-icon">📱</div>
           <div class="sc-label">App</div>
           <div class="sc-eg">Mobile / Web</div>
         </div>
@@ -810,50 +810,50 @@
           <div class="step-num">A</div>
           <div class="step-body">
             <h4>User-level walls are absolute</h4>
-            <p>TechVision's memories never surface in a query about a different account. This isn't a filter you implement � it's a first-class primitive in the memory architecture enforced at write time.</p>
+            <p>TechVision's memories never surface in a query about a different account. This isn't a filter you implement — it's a first-class primitive in the memory architecture enforced at write time.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">B</div>
           <div class="step-body">
             <h4>Run IDs for session-level filtering</h4>
-            <p>Need to query only last week's sessions? Pass the Run ID filter. Want full longitudinal history across all sessions? Query without the filter. Same memory store, different retrieval scope � no schema changes.</p>
+            <p>Need to query only last week's sessions? Pass the Run ID filter. Want full longitudinal history across all sessions? Query without the filter. Same memory store, different retrieval scope — no schema changes.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">C</div>
           <div class="step-body">
             <h4>Shared team memory is configuration, not a feature request</h4>
-            <p>A sales manager needs visibility into their team's account memories. Scope those signals at the project level rather than user level. Hierarchical access is configurable � you define the boundary, the memory system enforces it.</p>
+            <p>A sales manager needs visibility into their team's account memories. Scope those signals at the project level rather than user level. Hierarchical access is configurable — you define the boundary, the memory system enforces it.</p>
           </div>
         </li>
       </ul>
 
       <div style="background:rgba(124,58,237,0.06);border:1px solid var(--ac-br);border-left:3px solid var(--ac);border-radius:0 var(--rw-r-sm) var(--rw-r-sm) 0;padding:1rem 1.25rem;margin-top:1.25rem;">
         <p style="font-weight:700;color:var(--rw-text);font-size:0.88rem;margin-bottom:0.4rem;">The edge case nobody writes about in courses</p>
-        <p style="color:var(--rw-text-muted);font-size:0.83rem;line-height:1.65;margin-bottom:0.5rem;">What if the same user ID carries memories from two contexts that must never cross-contaminate � a seller and a buyer on the same platform, or a patient and a caregiver in healthcare? One memory set poisoning the other.</p>
-        <p style="color:var(--rw-text-muted);font-size:0.83rem;line-height:1.65;margin:0;">The honest answer: there's no fully automated way to handle this right now. The practical solution is namespace isolation at the Run ID level, context-specific extraction instructions that exclude cross-context signals, and deliberately promoted shared signals only. You define the boundary manually � and the memory system enforces it reliably once defined.</p>
+        <p style="color:var(--rw-text-muted);font-size:0.83rem;line-height:1.65;margin-bottom:0.5rem;">What if the same user ID carries memories from two contexts that must never cross-contaminate — a seller and a buyer on the same platform, or a patient and a caregiver in healthcare? One memory set poisoning the other.</p>
+        <p style="color:var(--rw-text-muted);font-size:0.83rem;line-height:1.65;margin:0;">The honest answer: there's no fully automated way to handle this right now. The practical solution is namespace isolation at the Run ID level, context-specific extraction instructions that exclude cross-context signals, and deliberately promoted shared signals only. You define the boundary manually — and the memory system enforces it reliably once defined.</p>
       </div>
     </section>
 
-    <!-- -- 8. CDP COMPLEMENTARY -- -->
+    <!-- ── 8. CDP COMPLEMENTARY ── -->
     <section class="guide-section" id="section-cdp">
       <h2>CDP Is Complementary, Not Competing</h2>
-      <p>A natural question: if we already have a Customer Data Platform � Segment, Salesforce CDP, Adobe � do we need Mem0? They solve genuinely different problems and run at different latency profiles. They belong together, not as alternatives.</p>
+      <p>A natural question: if we already have a Customer Data Platform — Segment, Salesforce CDP, Adobe — do we need Mem0? They solve genuinely different problems and run at different latency profiles. They belong together, not as alternatives.</p>
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📊</div>
           <h4>CDP captures what you observe</h4>
-          <p>Clicks, page visits, email opens, product usage, purchase events � structured behavioral signals ingested from your tech stack, unified into a customer identity record.</p>
+          <p>Clicks, page visits, email opens, product usage, purchase events — structured behavioral signals ingested from your tech stack, unified into a customer identity record.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">💬</div>
           <h4>Mem0 captures what users disclose</h4>
-          <p>Conversational intelligence extracted from AI dialogue � "Marcus confirmed $120K budget," "APAC expansion is Q3," "voice latency is a hard ceiling." Facts your CDP will never see.</p>
+          <p>Conversational intelligence extracted from AI dialogue — "Marcus confirmed $120K budget," "APAC expansion is Q3," "voice latency is a hard ceiling." Facts your CDP will never see.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔗</div>
           <h4>Together: full account context</h4>
           <p>CDP tells your agent Marcus hit the pricing page 4 times this week. Mem0 tells your agent what Marcus said privately about his timeline and the deal he lost. Both layers, one agent.</p>
         </div>
@@ -871,8 +871,8 @@
           </tr>
           <tr>
             <td><strong>Data type</strong></td>
-            <td>Events, attributes, traits � structured and queryable</td>
-            <td>Natural-language facts, entities, relationships � unstructured</td>
+            <td>Events, attributes, traits — structured and queryable</td>
+            <td>Natural-language facts, entities, relationships — unstructured</td>
           </tr>
           <tr>
             <td><strong>Primary use</strong></td>
@@ -891,25 +891,25 @@
           </tr>
           <tr>
             <td><strong>Memory decay</strong></td>
-            <td>Not applicable � events are immutable records</td>
+            <td>Not applicable — events are immutable records</td>
             <td>Staleness scoring and auto-pruning of unused memories</td>
           </tr>
         </tbody>
       </table>
 
       <div class="callout-c">
-        <strong>The architecture decision:</strong> Don't replace your CDP with Mem0. Pipe your CDP's behavioral signals into the agent's system prompt as structured context, and let Mem0 handle the conversational memory layer. Two different signal types, two different retrieval patterns � one agent that knows everything.
+        <strong>The architecture decision:</strong> Don't replace your CDP with Mem0. Pipe your CDP's behavioral signals into the agent's system prompt as structured context, and let Mem0 handle the conversational memory layer. Two different signal types, two different retrieval patterns — one agent that knows everything.
       </div>
     </section>
 
-    <!-- -- 9. EDGE CASE: DUAL CONTEXT -- -->
+    <!-- ── 9. EDGE CASE: DUAL CONTEXT ── -->
     <section class="guide-section" id="section-edgecase">
       <h2>Edge Case: One User, Two Memory Contexts</h2>
       <p>An open architectural challenge in any multi-role platform: what happens when the same user ID carries memories from two contexts that must never cross-contaminate?</p>
       <p>The B2B version of this: a platform where the same person is both a <em>seller</em> (CRM agent, deal strategy, competitor positioning) and a <em>buyer</em> (procurement agent, vendor evaluation, internal budget). Their seller memories cannot leak into their buyer context, and vice versa.</p>
 
       <div class="callout-v">
-        <strong>Current state of the tooling:</strong> There's no dynamic way to handle this automatically right now. Today it requires deliberate builder architecture � the memory system won't detect which context a fact belongs to unless you design the namespace separation explicitly.
+        <strong>Current state of the tooling:</strong> There's no dynamic way to handle this automatically right now. Today it requires deliberate builder architecture — the memory system won't detect which context a fact belongs to unless you design the namespace separation explicitly.
       </div>
 
       <h3>How to think about building this today</h3>
@@ -918,84 +918,84 @@
           <div class="step-num">1</div>
           <div class="step-body">
             <h4>Treat each context as a separate Run ID namespace</h4>
-            <p>Prefix Run IDs by context � <code class="rw-code">seller-{userId}</code> vs <code class="rw-code">buyer-{userId}</code>. Retrieval scoped to the active context's namespace won't surface the other side's memories. Simple, manual, works today.</p>
+            <p>Prefix Run IDs by context — <code class="rw-code">seller-{userId}</code> vs <code class="rw-code">buyer-{userId}</code>. Retrieval scoped to the active context's namespace won't surface the other side's memories. Simple, manual, works today.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">2</div>
           <div class="step-body">
             <h4>Write context-specific extraction instructions</h4>
-            <p>Tell the seller context's extraction layer: "never extract pricing strategy or competitor intelligence." Tell the buyer context's extraction: "never extract procurement budget or internal scoring criteria." Siloed at write time � not just at retrieval.</p>
+            <p>Tell the seller context's extraction layer: "never extract pricing strategy or competitor intelligence." Tell the buyer context's extraction: "never extract procurement budget or internal scoring criteria." Siloed at write time — not just at retrieval.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">3</div>
           <div class="step-body">
             <h4>Explicitly promote shared signals to a global namespace</h4>
-            <p>Some signals are legitimately cross-context � name, timezone, communication preferences. These need explicit tagging as "global" and retrieval by both contexts, rather than being auto-extracted into either silo and then duplicated.</p>
+            <p>Some signals are legitimately cross-context — name, timezone, communication preferences. These need explicit tagging as "global" and retrieval by both contexts, rather than being auto-extracted into either silo and then duplicated.</p>
           </div>
         </li>
       </ul>
 
       <div class="callout-c">
-        <strong>Worth whiteboarding before you build:</strong> If your use case has genuinely conflicting memory contexts for the same user � multi-role platforms, healthcare (patient vs caregiver perspective), regulated industries with role separation � design the scoping boundaries before you configure the memory layer. Retrofitting isolation is significantly harder than designing for it from the start.
+        <strong>Worth whiteboarding before you build:</strong> If your use case has genuinely conflicting memory contexts for the same user — multi-role platforms, healthcare (patient vs caregiver perspective), regulated industries with role separation — design the scoping boundaries before you configure the memory layer. Retrofitting isolation is significantly harder than designing for it from the start.
       </div>
     </section>
 
-    <!-- -- 10. CREDIT -- -->
+    <!-- ── 10. CREDIT ── -->
     <section class="guide-section" id="section-credit">
       <h2>Source &amp; Credit</h2>
 
       <div class="credit-card">
-        <div class="credit-icon">??</div>
+        <div class="credit-icon">📚</div>
         <div>
           <strong>Sources: Mem0 Public Documentation &amp; GitHub</strong>
           <p>The memory architecture on this page is synthesized from Mem0's public documentation (<a href="https://mem0.ai/docs" target="_blank" rel="noopener">mem0.ai/docs</a>), the <a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener">mem0ai/mem0 GitHub repository</a>, and the research paper <em>"Mem0: Building Production-Ready AI Agents with Memory"</em>. A GenAcademy guest session introduced me to Mem0 and sparked the B2B angle explored here.</p>
-          <p>The B2B lead-enrichment and CRM-agent framing is my own interpretation � applied to where enterprise builders actually spend their time rather than the consumer-facing examples in the public docs. Performance figures referenced are from Mem0's published benchmarks.</p>
-          <a href="https://mem0.ai" target="_blank" rel="noopener">Explore Mem0 at mem0.ai ?</a>
+          <p>The B2B lead-enrichment and CRM-agent framing is my own interpretation — applied to where enterprise builders actually spend their time rather than the consumer-facing examples in the public docs. Performance figures referenced are from Mem0's published benchmarks.</p>
+          <a href="https://mem0.ai" target="_blank" rel="noopener">Explore Mem0 at mem0.ai →</a>
         </div>
       </div>
 
       <h3>B2B Use Cases Where This Architecture Applies</h3>
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🎯</div>
           <h4>Lead Enrichment Agents</h4>
-          <p>Accumulate qualification signals across outbound sequences. Every touchpoint adds to the prospect profile � pain points, tech stack, budget cycle, stakeholder map.</p>
+          <p>Accumulate qualification signals across outbound sequences. Every touchpoint adds to the prospect profile — pain points, tech stack, budget cycle, stakeholder map.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🤝</div>
           <h4>CRM Intelligence Agents</h4>
           <p>Auto-enrich records after every call. No manual notes. Contradiction management handles when deal stage, stakeholders, or budget figures change mid-cycle.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔄</div>
           <h4>Customer Success Agents</h4>
           <p>Longitudinal account health memory across months of interactions. Surface renewal signals, feature adoption gaps, and relationship risk before the QBR.</p>
         </div>
       </div>
     </section>
 
-    <!-- -- Sources & Attribution -------------------------------- -->
+    <!-- ── Sources & Attribution ──────────────────────────────── -->
     <section class="guide-section" id="attribution" style="border-top:1px solid var(--rw-border); padding-top:1.5rem; margin-top:0.5rem;">
       <h2 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--rw-text-muted); margin-bottom:1rem;">Public Sources &amp; Further Reading</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.75rem; margin-bottom:1rem; max-width:860px;">
         <a href="https://docs.mem0.ai" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
           <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Mem0 Documentation</p>
-          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">docs.mem0.ai � memory layers, contradiction management, search</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">docs.mem0.ai — memory layers, contradiction management, search</p>
         </a>
         <a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
           <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Mem0 GitHub</p>
-          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">github.com/mem0ai/mem0 � open-source memory for AI agents</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">github.com/mem0ai/mem0 — open-source memory for AI agents</p>
         </a>
         <a href="https://arxiv.org/abs/2504.19413" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:8px; padding:0.85rem 1rem; text-decoration:none; display:block;">
           <p style="color:var(--ac); font-weight:700; font-size:0.78rem; margin:0 0 0.15rem;">Mem0 Research Paper</p>
-          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">arXiv � mem0 architecture and memory consolidation research</p>
+          <p style="color:var(--rw-text-muted); font-size:0.7rem; margin:0;">arXiv — mem0 architecture and memory consolidation research</p>
         </a>
       </div>
       <div style="background:rgba(255,255,255,0.03); border:1px solid var(--rw-border); border-radius:10px; padding:1rem 1.2rem; max-width:860px;">
         <p style="color:var(--rw-text-muted); font-size:0.74rem; line-height:1.7; margin:0;">
-          <span style="color:var(--rw-text); font-weight:600;">My workflow:</span> A GenAcademy guest session introduced me to Mem0 and sparked the B2B signal angle. The reframing � applying persistent memory architecture to enterprise sales intelligence � is my own interpretation. From there I explored the public documentation, GitHub repo, and research paper, then built this use case by working through the architecture against a real account management workflow. This is my personal synthesis. A live session has far more depth � for the full curriculum, reach out to GenAcademy directly.
+          <span style="color:var(--rw-text); font-weight:600;">My workflow:</span> A GenAcademy guest session introduced me to Mem0 and sparked the B2B signal angle. The reframing — applying persistent memory architecture to enterprise sales intelligence — is my own interpretation. From there I explored the public documentation, GitHub repo, and research paper, then built this use case by working through the architecture against a real account management workflow. This is my personal synthesis. A live session has far more depth — for the full curriculum, reach out to GenAcademy directly.
         </p>
       </div>
     </section>
@@ -1010,7 +1010,7 @@
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-// -- TOC scrollspy ---------------------------------------------
+// ── TOC scrollspy ─────────────────────────────────────────────
 (function() {
   const secs = document.querySelectorAll('.guide-section[id]');
   const links = document.querySelectorAll('.guide-toc a');
@@ -1026,33 +1026,33 @@
   secs.forEach(s => obs.observe(s));
 })();
 
-// -- Memory Builder --------------------------------------------
+// ── Memory Builder ────────────────────────────────────────────
 const SESSIONS = [
   {
     memories: [
-      { icon:'???', label:'Tech Stack',      text:'LangChain + Pinecone � current AI orchestration layer' },
-      { icon:'??', label:'Core Pain',        text:'Agents lose context between customer touchpoints � lost a deal when agent forgot a stakeholder role change' },
-      { icon:'??', label:'Budget Cycle',     text:'Decision required before Q2 end � time pressure high' },
-      { icon:'??', label:'Hard Requirement', text:'GDPR compliance � EU data must stay in-region, non-negotiable' },
-      { icon:'??', label:'Team Size',        text:'3 engineers available for integration work' }
+      { icon:'🏗️', label:'Tech Stack',      text:'LangChain + Pinecone — current AI orchestration layer' },
+      { icon:'😣', label:'Core Pain',        text:'Agents lose context between customer touchpoints — lost a deal when agent forgot a stakeholder role change' },
+      { icon:'📅', label:'Budget Cycle',     text:'Decision required before Q2 end — time pressure high' },
+      { icon:'🔐', label:'Hard Requirement', text:'GDPR compliance — EU data must stay in-region, non-negotiable' },
+      { icon:'🔢', label:'Team Size',        text:'3 engineers available for integration work' }
     ]
   },
   {
     memories: [
-      { icon:'??', label:'Scale Confirmed',  text:'40K DAUs � ~2M conversation events/month' },
-      { icon:'??', label:'New Stakeholders', text:'Sarah (Head of Engineering) + Dev (AI Architect) now in buying committee' },
-      { icon:'??', label:'Prior Failure',    text:'In-house memory layer failed specifically at deduplication � the primary emotional driver for buying vs building' },
-      { icon:'??', label:'Budget Locked',    text:'$120K annual confirmed (revised up from initial $80K estimate)' },
-      { icon:'??', label:'Competition',      text:'Evaluating custom Redis-based solution as alternative' }
+      { icon:'📊', label:'Scale Confirmed',  text:'40K DAUs · ~2M conversation events/month' },
+      { icon:'👥', label:'New Stakeholders', text:'Sarah (Head of Engineering) + Dev (AI Architect) now in buying committee' },
+      { icon:'⚠️', label:'Prior Failure',    text:'In-house memory layer failed specifically at deduplication — the primary emotional driver for buying vs building' },
+      { icon:'💰', label:'Budget Locked',    text:'$120K annual confirmed (revised up from initial $80K estimate)' },
+      { icon:'🔄', label:'Competition',      text:'Evaluating custom Redis-based solution as alternative' }
     ]
   },
   {
     memories: [
-      { icon:'?', label:'Latency Ceiling',  text:'Voice agent hard limit: <300ms memory overhead � make-or-break requirement' },
-      { icon:'??', label:'Token Cost Focus', text:'Sarah specifically asked about token cost impact at 2M events/month scale' },
-      { icon:'??', label:'Technical Veto',   text:'Dev (AI Architect) decides build vs buy � integration complexity is his primary concern' },
-      { icon:'??', label:'Lost Deal Story',  text:'Lost deal because agent forgot prospect\'s job change � Marcus has strong emotional buy-in for this problem' },
-      { icon:'??', label:'Expansion Signal', text:'APAC office launch Q3 2026 � needs multi-region memory scoping with per-country data residency' }
+      { icon:'⚡', label:'Latency Ceiling',  text:'Voice agent hard limit: <300ms memory overhead — make-or-break requirement' },
+      { icon:'💸', label:'Token Cost Focus', text:'Sarah specifically asked about token cost impact at 2M events/month scale' },
+      { icon:'🔑', label:'Technical Veto',   text:'Dev (AI Architect) decides build vs buy — integration complexity is his primary concern' },
+      { icon:'📉', label:'Lost Deal Story',  text:'Lost deal because agent forgot prospect\'s job change — Marcus has strong emotional buy-in for this problem' },
+      { icon:'🌏', label:'Expansion Signal', text:'APAC office launch Q3 2026 — needs multi-region memory scoping with per-country data residency' }
     ]
   }
 ];
@@ -1071,7 +1071,7 @@ function processSession(i) {
 
   const btn = document.getElementById('ebtn-' + i);
   btn.disabled = true;
-  btn.textContent = '? Extracted';
+  btn.textContent = '✓ Extracted';
 
   document.getElementById('stab-' + i).classList.add('done');
 
@@ -1111,7 +1111,7 @@ function resetDemo() {
   [0,1,2].forEach(i => {
     const btn = document.getElementById('ebtn-' + i);
     btn.disabled = false;
-    btn.textContent = '? Extract Memories';
+    btn.textContent = '⚡ Extract Memories';
     document.getElementById('stab-' + i).classList.remove('done');
   });
   showSession(0);

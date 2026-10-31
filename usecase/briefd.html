@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Briefd � Personal Reply Agent | RawWeights</title>
+  <title>Briefd — Personal Reply Agent | RawWeights</title>
   <meta name="description" content="A message arrives. Briefd searches your knowledge base, briefs you if it's a new topic, drafts a reply, and holds it for your approval before anything sends. Built solo for the TrueFoundry Agent Harness Hackathon 2026.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/usecase/briefd.html">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/usecase/briefd.html">
   <meta property="og:image" content="https://rawweights.com/images/briefd/briefd-linkedin.png">
-  <meta property="og:title" content="Briefd � Personal Reply Agent">
+  <meta property="og:title" content="Briefd — Personal Reply Agent">
   <meta property="og:description" content="Message in. Briefed. Draft ready. You approve. It sends. Built for the TrueFoundry Agent Harness Hackathon 2026.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -18,7 +18,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Accent tokens ----------------------------- */
+    /* ── Accent tokens ───────────────────────────── */
     :root {
       --ac:      #6366f1;
       --ac2:     #818cf8;
@@ -32,7 +32,7 @@
       --red-lt:  rgba(239,68,68,0.08);
     }
 
-    /* -- Hero ------------------------------------- */
+    /* ── Hero ───────────────────────────────────── */
     .guide-hero {
       background: linear-gradient(135deg, #07101f 0%, #0f0b28 50%, #071530 100%);
       padding: 4rem 2rem 3.5rem;
@@ -78,7 +78,7 @@
     .hero-tags { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.75rem; }
     .hero-tag { font-size:.72rem; font-family:var(--rw-font-mono); color:rgba(240,244,255,.5); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:.2rem .6rem; }
 
-    /* -- Hero slideshow --------------------------- */
+    /* ── Hero slideshow ─────────────────────────── */
     .hero-slides-wrap {
       position:relative; border-radius:14px; overflow:hidden;
       border:1px solid rgba(99,102,241,.3);
@@ -127,7 +127,7 @@
     .slide-play-btn:hover { color:var(--ac-bright); }
     .slide-counter-txt { font-family:var(--rw-font-mono); font-size:.68rem; color:rgba(255,255,255,.35); }
 
-    /* -- Guide layout ----------------------------- */
+    /* ── Guide layout ───────────────────────────── */
     .guide-layout {
       display:grid; grid-template-columns:230px 1fr;
       gap:2.5rem; max-width:1200px; margin:3rem auto;
@@ -141,7 +141,7 @@
     .guide-toc a:hover, .guide-toc a.active { color:var(--ac2); border-left-color:var(--ac); background:var(--ac-lt); }
     .guide-toc .toc-h3 { padding-left:1rem; font-size:.78rem; }
 
-    /* -- Sections --------------------------------- */
+    /* ── Sections ───────────────────────────────── */
     .guide-section { margin-bottom:3.5rem; }
     .guide-section h2 {
       font-family:var(--rw-font-display); font-size:1.5rem; font-weight:800;
@@ -153,7 +153,7 @@
     .guide-section p { font-size:.97rem; color:var(--rw-text-muted); line-height:1.75; margin-bottom:1rem; }
     code { font-family:var(--rw-font-mono); font-size:.84em; background:var(--rw-bg-subtle); border:1px solid var(--rw-border); border-radius:4px; padding:.1em .35em; color:var(--ac2); }
 
-    /* -- Stat row --------------------------------- */
+    /* ── Stat row ───────────────────────────────── */
     .stat-row { display:flex; border:1px solid var(--rw-border); border-radius:var(--rw-r-md); overflow:hidden; margin:1.5rem 0; }
     .stat-cell { flex:1; padding:1.1rem; text-align:center; border-right:1px solid var(--rw-border); }
     .stat-cell:last-child { border-right:none; }
@@ -162,14 +162,14 @@
     .stat-val-yellow { color:var(--yellow); }
     .stat-label { font-size:.73rem; color:var(--rw-text-subtle); margin-top:.3rem; }
 
-    /* -- Feature grid ----------------------------- */
+    /* ── Feature grid ───────────────────────────── */
     .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.5rem 0; }
     .feature-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.25rem; }
     .feature-card-icon { font-size:1.5rem; margin-bottom:.5rem; }
     .feature-card h4 { font-family:var(--rw-font-display); font-size:.9rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; }
     .feature-card p { font-size:.82rem; color:var(--rw-text-muted); margin:0; }
 
-    /* -- Before / After -------------------------- */
+    /* ── Before / After ────────────────────────── */
     .before-after { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.25rem 0; }
     .ba-box { border-radius:var(--rw-r-md); padding:1.1rem 1.25rem; }
     .ba-without { background:var(--red-lt); border:1px solid rgba(239,68,68,.2); }
@@ -179,10 +179,10 @@
     .ba-with .ba-label { color:var(--green); }
     .ba-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.5rem; }
     .ba-list li { font-size:.84rem; color:var(--rw-text-muted); line-height:1.5; display:flex; gap:.6rem; }
-    .ba-list li::before { content:'?'; color:#f05252; flex-shrink:0; }
-    .ba-with .ba-list li::before { content:'?'; color:var(--green); }
+    .ba-list li::before { content:'✗'; color:#f05252; flex-shrink:0; }
+    .ba-with .ba-list li::before { content:'✓'; color:var(--green); }
 
-    /* -- Architecture diagram --------------------- */
+    /* ── Architecture diagram ───────────────────── */
     .arch-diagram {
       background:var(--rw-bg-subtle); border:1px solid var(--rw-border);
       border-radius:var(--rw-r-md); padding:1.75rem 1.5rem;
@@ -210,20 +210,20 @@
     .arch-legend-item { display:flex; align-items:center; gap:.4rem; font-size:.7rem; color:var(--rw-text-muted); }
     .arch-legend-dot { width:8px; height:8px; border-radius:2px; }
 
-    /* -- Step list -------------------------------- */
+    /* ── Step list ──────────────────────────────── */
     .step-list { list-style:none; display:flex; flex-direction:column; gap:1rem; margin:1.25rem 0; }
     .step-item { display:flex; gap:.9rem; align-items:flex-start; }
     .step-num { width:26px; height:26px; border-radius:50%; background:var(--ac); color:#fff; font-family:var(--rw-font-display); font-weight:800; font-size:.78rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .step-body h4 { font-family:var(--rw-font-display); font-weight:700; font-size:.9rem; color:var(--rw-text); margin-bottom:.2rem; }
     .step-body p { font-size:.84rem; color:var(--rw-text-muted); margin:0; }
 
-    /* -- Comparison table ------------------------- */
+    /* ── Comparison table ───────────────────────── */
     .comparison-table { width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:.9rem; }
     .comparison-table th { background:var(--rw-bg-subtle); font-family:var(--rw-font-display); font-weight:700; font-size:.8rem; text-align:left; padding:.75rem 1rem; border-bottom:2px solid var(--rw-border); color:var(--rw-text); }
     .comparison-table td { padding:.7rem 1rem; border-bottom:1px solid var(--rw-border); color:var(--rw-text-muted); vertical-align:top; }
     .comparison-table tr:hover td { background:var(--rw-bg-alt); }
 
-    /* -- Demo tabs -------------------------------- */
+    /* ── Demo tabs ──────────────────────────────── */
     .demo-tabs-wrap { margin:1.5rem 0; }
     .demo-tab-bar {
       display:flex; gap:.5rem; flex-wrap:wrap; padding-bottom:.5rem;
@@ -265,7 +265,7 @@
     .tag-indigo { background:rgba(99,102,241,.12); color:var(--ac2); border:1px solid rgba(99,102,241,.2); }
     .tag-gray { background:rgba(100,116,139,.12); color:#94a3b8; border:1px solid rgba(100,116,139,.2); }
 
-    /* -- Learnings -------------------------------- */
+    /* ── Learnings ──────────────────────────────── */
     .learning-item {
       border:1px solid var(--rw-border); border-left:3px solid var(--ac);
       border-radius:0 var(--rw-r-sm) var(--rw-r-sm) 0;
@@ -276,14 +276,14 @@
     .learning-body { font-size:.84rem; color:var(--rw-text-muted); line-height:1.65; margin-bottom:.6rem; }
     .learning-quote { padding:.45rem .85rem; background:var(--ac-lt); border-left:2px solid var(--ac); font-size:.8rem; color:var(--ac2); font-style:italic; border-radius:0 4px 4px 0; }
 
-    /* -- Moments ---------------------------------- */
+    /* ── Moments ────────────────────────────────── */
     .moments-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin:1.25rem 0; }
     .moment-card { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.2rem; }
     .moment-icon { font-size:1.4rem; margin-bottom:.5rem; }
     .moment-card h4 { font-family:var(--rw-font-display); font-size:.88rem; font-weight:700; color:var(--rw-text); margin-bottom:.35rem; }
     .moment-card p { font-size:.82rem; color:var(--rw-text-muted); line-height:1.55; margin:0; }
 
-    /* -- Platform review -------------------------- */
+    /* ── Platform review ────────────────────────── */
     .platform-cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.25rem 0; }
     .platform-box { border-radius:var(--rw-r-md); padding:1.1rem 1.25rem; }
     .platform-liked { background:var(--green-lt); border:1px solid rgba(16,185,129,.2); }
@@ -293,10 +293,10 @@
     .platform-gotcha .platform-label { color:#f05252; }
     .platform-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.65rem; }
     .platform-list li { font-size:.83rem; color:var(--rw-text-muted); line-height:1.5; display:flex; gap:.6rem; }
-    .platform-list li::before { content:'?'; color:var(--green); flex-shrink:0; font-weight:700; }
+    .platform-list li::before { content:'✓'; color:var(--green); flex-shrink:0; font-weight:700; }
     .platform-gotcha .platform-list li::before { content:'!'; color:#f05252; }
 
-    /* -- Team ------------------------------------- */
+    /* ── Team ───────────────────────────────────── */
     .team-solo { background:var(--rw-card); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1.5rem; display:flex; gap:1.25rem; align-items:flex-start; max-width:480px; }
     .team-avatar { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:800; font-family:var(--rw-font-display); flex-shrink:0; background:linear-gradient(135deg,#6366f1,#4338ca); color:#fff; }
     .team-name { font-family:var(--rw-font-display); font-weight:700; font-size:1rem; color:var(--rw-text); }
@@ -307,18 +307,18 @@
     .mentor-name { font-family:var(--rw-font-display); font-size:.88rem; font-weight:700; color:var(--rw-text); margin-bottom:.2rem; }
     .mentor-org { font-size:.75rem; color:var(--ac2); font-family:var(--rw-font-mono); }
 
-    /* -- Code block ------------------------------- */
+    /* ── Code block ─────────────────────────────── */
     .code-block { background:var(--rw-bg-subtle); border:1px solid var(--rw-border); border-radius:var(--rw-r-md); padding:1rem 1.25rem; font-family:var(--rw-font-mono); font-size:.82rem; color:var(--ac2); overflow-x:auto; margin:1rem 0; line-height:1.75; white-space:pre-wrap; word-break:break-all; }
     .code-block .cm { color:var(--rw-text-subtle); }
     .code-block .kw { color:var(--ac-bright); }
     .code-block .st { color:#4ecb87; }
 
-    /* -- Callout ---------------------------------- */
+    /* ── Callout ────────────────────────────────── */
     .callout { background:var(--ac-lt); border:1px solid var(--ac-mid); border-radius:var(--rw-r-md); padding:1rem 1.25rem; margin:1.25rem 0; }
     .callout p { font-size:.88rem; color:var(--rw-text-muted); margin:0; line-height:1.65; }
     .callout strong { color:var(--ac-bright); }
 
-    /* -- Responsive ------------------------------- */
+    /* ── Responsive ─────────────────────────────── */
     *, *::before, *::after { box-sizing:border-box; }
     html, body { max-width:100%; overflow-x:hidden; }
     * { word-break:break-word; overflow-wrap:break-word; }
@@ -362,7 +362,7 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- -- Hero --------------------------------------------------- -->
+<!-- ── Hero ─────────────────────────────────────────────────── -->
 <div class="guide-hero">
   <div class="hero-split">
     <div class="hero-text">
@@ -387,26 +387,26 @@
     <div class="hero-slides-wrap">
       <span class="slide-badge">&#9654; Product Screenshots</span>
       <div class="hero-slides-track">
-        <div class="hero-slide active" data-caption="Session open � Slack message received, agent processing">
-          <img src="../images/briefd/demo1-session-open.png" alt="Briefd session open � Slack message received" loading="eager">
+        <div class="hero-slide active" data-caption="Session open — Slack message received, agent processing">
+          <img src="../images/briefd/demo1-session-open.png" alt="Briefd session open — Slack message received" loading="eager">
         </div>
-        <div class="hero-slide" data-caption="Mode A � knowledge base hit, reply drafted with citations">
-          <img src="../images/briefd/demo1-mode-a-kb-hit.png" alt="Mode A � KB hit, draft ready" loading="lazy">
+        <div class="hero-slide" data-caption="Mode A — knowledge base hit, reply drafted with citations">
+          <img src="../images/briefd/demo1-mode-a-kb-hit.png" alt="Mode A — KB hit, draft ready" loading="lazy">
         </div>
-        <div class="hero-slide" data-caption="Mode B � new topic, 3 subagents research in parallel">
-          <img src="../images/briefd/demo2-mode-b-briefing.png" alt="Mode B � briefing from 3 parallel subagents" loading="lazy">
+        <div class="hero-slide" data-caption="Mode B — new topic, 3 subagents research in parallel">
+          <img src="../images/briefd/demo2-mode-b-briefing.png" alt="Mode B — briefing from 3 parallel subagents" loading="lazy">
         </div>
-        <div class="hero-slide" data-caption="Mode B � 5-point briefing complete, draft generated">
-          <img src="../images/briefd/demo2-mode-b-draft.png" alt="Mode B � draft ready after research" loading="lazy">
+        <div class="hero-slide" data-caption="Mode B — 5-point briefing complete, draft generated">
+          <img src="../images/briefd/demo2-mode-b-draft.png" alt="Mode B — draft ready after research" loading="lazy">
         </div>
-        <div class="hero-slide" data-caption="Slack approval gate � draft held, waiting for human review">
+        <div class="hero-slide" data-caption="Slack approval gate — draft held, waiting for human review">
           <img src="../images/briefd/demo3-slack-draft.png" alt="Slack draft approval gate" loading="lazy">
         </div>
-        <div class="hero-slide" data-caption="Discord MCP � checking for unread messages">
+        <div class="hero-slide" data-caption="Discord MCP — checking for unread messages">
           <img src="../images/briefd/demo4-discord-check.png" alt="Discord MCP integration" loading="lazy">
         </div>
-        <div class="hero-slide" data-caption="Paste mode � drop any message directly into the agent">
-          <img src="../images/briefd/demo5-paste-mode.png" alt="Paste mode � drop any message in" loading="lazy">
+        <div class="hero-slide" data-caption="Paste mode — drop any message directly into the agent">
+          <img src="../images/briefd/demo5-paste-mode.png" alt="Paste mode — drop any message in" loading="lazy">
         </div>
       </div>
       <div class="slide-controls">
@@ -418,7 +418,7 @@
   </div>
 </div>
 
-<!-- -- Guide Content ------------------------------------------- -->
+<!-- ── Guide Content ─────────────────────────────────────────── -->
 <div class="guide-layout" id="guide-content">
 
   <aside class="guide-sidebar">
@@ -440,7 +440,7 @@
 
   <main>
 
-    <!-- -- WHAT IT DOES ----------------------------- -->
+    <!-- ── WHAT IT DOES ───────────────────────────── -->
     <section class="guide-section" id="section-what">
       <h2>What It Does</h2>
       <p>Every professional gets messages on topics they&rsquo;re supposed to know. Sometimes they do. Sometimes the topic is new. The gap between message received and reply sent is either a weak response or 20 minutes of research you didn&rsquo;t have.</p>
@@ -457,32 +457,32 @@
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
-          <h4>Mode A � Known Topic</h4>
+          <div class="feature-card-icon">🔍</div>
+          <h4>Mode A — Known Topic</h4>
           <p>Vector similarity above threshold. Pulls sources from your KB, drafts with citations, shows source panel. Fast path &mdash; no external calls, no subagents.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
-          <h4>Mode B � New Topic</h4>
+          <div class="feature-card-icon">🧠</div>
+          <h4>Mode B — New Topic</h4>
           <p>Three subagents run concurrently: web, Wikipedia/domain, recent news. Results synthesized into a 5-point briefing. Draft uses the fresh research. Everything saved to KB after.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">?</div>
+          <div class="feature-card-icon">✋</div>
           <h4>Approval Gate</h4>
           <p>Both Slack and Discord reply tools are configured with <code>approval_required: true</code>. TrueForge shows the draft card. You read, edit if needed, and approve &mdash; then it sends.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">💾</div>
           <h4>Self-Learning KB</h4>
           <p>Every Mode B research result is saved to Supabase pgvector. Next message on the same topic hits Mode A. The agent gets smarter every session without you lifting a finger.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">💬</div>
           <h4>Slack + Discord</h4>
           <p>Two separate MCP servers. Polls on a 5-minute TrueForge schedule. Handles both platforms from one agent session. Switch or combine &mdash; same routing logic either way.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📋</div>
           <h4>Paste Mode</h4>
           <p>No bot set up yet? Paste any message directly into the TrueForge chat. Same routing logic, same approval gate, same KB. Works on day one with zero integration.</p>
         </div>
@@ -493,7 +493,7 @@
       </div>
     </section>
 
-    <!-- -- BEFORE / AFTER -------------------------- -->
+    <!-- ── BEFORE / AFTER ────────────────────────── -->
     <section class="guide-section" id="section-before-after">
       <h2>Before / After</h2>
       <p>The same scenario: you get a Slack message about the EU AI Act enforcement timeline. You&rsquo;re not a compliance expert. Without Briefd, two options. With Briefd, one.</p>
@@ -520,7 +520,7 @@
       </div>
     </section>
 
-    <!-- -- ARCHITECTURE ----------------------------- -->
+    <!-- ── ARCHITECTURE ───────────────────────────── -->
     <section class="guide-section" id="section-arch">
       <h2>Architecture</h2>
       <p>The full path from message to reply. TrueFoundry orchestrates everything &mdash; the routing decision, subagent lifecycle, Code Mode sandbox, approval pause, and context compaction across long sessions.</p>
@@ -528,37 +528,37 @@
       <div class="arch-diagram">
         <div class="arch-row">
           <span class="arch-box arch-box-gray">Slack / Discord</span>
-          <span class="arch-arrow">?</span>
+          <span class="arch-arrow">→</span>
           <span class="arch-box arch-box-blue">TrueForge Schedule (5-min)</span>
-          <span class="arch-arrow">?</span>
+          <span class="arch-arrow">→</span>
           <span class="arch-box arch-box-blue">Agent Session</span>
-          <span class="arch-arrow">?</span>
+          <span class="arch-arrow">→</span>
           <span class="arch-box arch-box-blue">briefd-reply Skill</span>
         </div>
         <div class="arch-row" style="margin:.35rem 0;">
-          <span class="arch-arrow" style="margin:0 auto;">?</span>
+          <span class="arch-arrow" style="margin:0 auto;">↓</span>
         </div>
         <div class="arch-row">
           <span class="arch-box arch-box-blue">search_knowledge_base() via MCP</span>
-          <span class="arch-arrow">?</span>
-          <span class="arch-box arch-box-blue">similarity = 0.78?</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-box arch-box-blue">similarity ≥ 0.78?</span>
         </div>
         <div class="arch-fork" style="margin:.85rem 0;">
           <div class="arch-fork-box arch-fork-a">
-            <div class="arch-fork-label">Mode A � Yes</div>
-            <div class="arch-fork-body">Draft from KB sources � Source citations panel � Fast path, no external calls</div>
+            <div class="arch-fork-label">Mode A — Yes</div>
+            <div class="arch-fork-body">Draft from KB sources · Source citations panel · Fast path, no external calls</div>
           </div>
           <div class="arch-fork-box arch-fork-b">
-            <div class="arch-fork-label">Mode B � No</div>
-            <div class="arch-fork-body">Spawn 3 subagents in parallel: Exa web � Wikipedia/domain � Recent news � Code Mode Python combines results � 5-point briefing � Draft from research � Save to KB</div>
+            <div class="arch-fork-label">Mode B — No</div>
+            <div class="arch-fork-body">Spawn 3 subagents in parallel: Exa web · Wikipedia/domain · Recent news · Code Mode Python combines results · 5-point briefing · Draft from research · Save to KB</div>
           </div>
         </div>
         <div class="arch-row">
           <span class="arch-box arch-box-blue">Draft ready</span>
-          <span class="arch-arrow">?</span>
-          <span class="arch-box arch-box-yellow">? Approval gate (TrueForge UI card)</span>
-          <span class="arch-arrow">?</span>
-          <span class="arch-box arch-box-green">? Send via MCP</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-box arch-box-yellow">⏸ Approval gate (TrueForge UI card)</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-box arch-box-green">✓ Send via MCP</span>
         </div>
         <div class="arch-legend">
           <span class="arch-legend-item"><span class="arch-legend-dot" style="background:var(--ac-bright)"></span> TrueFoundry layer</span>
@@ -569,7 +569,7 @@
       </div>
     </section>
 
-    <!-- -- HOW IT WORKS ----------------------------- -->
+    <!-- ── HOW IT WORKS ───────────────────────────── -->
     <section class="guide-section" id="section-how">
       <h2>How It Works</h2>
 
@@ -619,7 +619,7 @@
       </ul>
     </section>
 
-    <!-- -- DEMO ------------------------------------- -->
+    <!-- ── DEMO ───────────────────────────────────── -->
     <section class="guide-section" id="section-demo">
       <h2>See It In Action</h2>
       <p>Five demo flows covering Mode A, Mode B, Slack approval, Discord check, and paste mode. Each tab is a real session captured from the live app.</p>
@@ -627,9 +627,9 @@
       <div class="demo-tabs-wrap">
         <select class="demo-tab-select" id="demo-select" onchange="showDemo(this.value)">
           <option value="session">1. Session Open</option>
-          <option value="mode-a">2. Mode A � KB Hit</option>
-          <option value="mode-b-brief">3. Mode B � Briefing</option>
-          <option value="mode-b-draft">4. Mode B � Draft</option>
+          <option value="mode-a">2. Mode A — KB Hit</option>
+          <option value="mode-b-brief">3. Mode B — Briefing</option>
+          <option value="mode-b-draft">4. Mode B — Draft</option>
           <option value="slack">5. Slack Approval</option>
           <option value="discord">6. Discord Check</option>
           <option value="paste">7. Paste Mode</option>
@@ -647,7 +647,7 @@
         <div class="demo-panel active" id="demo-session" data-demo-id="session">
           <div class="demo-panel-heading">1. Session Open</div>
           <div class="demo-img-frame">
-            <img src="../images/briefd/demo1-session-open.png" alt="Briefd � agent session opens on Slack message received" loading="lazy">
+            <img src="../images/briefd/demo1-session-open.png" alt="Briefd — agent session opens on Slack message received" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-indigo">Step 1</span>
@@ -656,9 +656,9 @@
         </div>
 
         <div class="demo-panel" id="demo-mode-a" data-demo-id="mode-a">
-          <div class="demo-panel-heading">2. Mode A � KB Hit</div>
+          <div class="demo-panel-heading">2. Mode A — KB Hit</div>
           <div class="demo-img-frame">
-            <img src="../images/briefd/demo1-mode-a-kb-hit.png" alt="Mode A � knowledge base hit, draft ready with citations" loading="lazy">
+            <img src="../images/briefd/demo1-mode-a-kb-hit.png" alt="Mode A — knowledge base hit, draft ready with citations" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-green">Mode A</span>
@@ -667,9 +667,9 @@
         </div>
 
         <div class="demo-panel" id="demo-mode-b-brief" data-demo-id="mode-b-brief">
-          <div class="demo-panel-heading">3. Mode B � Briefing</div>
+          <div class="demo-panel-heading">3. Mode B — Briefing</div>
           <div class="demo-img-frame">
-            <img src="../images/briefd/demo2-mode-b-briefing.png" alt="Mode B � 3 subagents researching in parallel, briefing panel" loading="lazy">
+            <img src="../images/briefd/demo2-mode-b-briefing.png" alt="Mode B — 3 subagents researching in parallel, briefing panel" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-yellow">Mode B</span>
@@ -678,9 +678,9 @@
         </div>
 
         <div class="demo-panel" id="demo-mode-b-draft" data-demo-id="mode-b-draft">
-          <div class="demo-panel-heading">4. Mode B � Draft</div>
+          <div class="demo-panel-heading">4. Mode B — Draft</div>
           <div class="demo-img-frame">
-            <img src="../images/briefd/demo2-mode-b-draft.png" alt="Mode B � draft generated from fresh research" loading="lazy">
+            <img src="../images/briefd/demo2-mode-b-draft.png" alt="Mode B — draft generated from fresh research" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-yellow">Mode B</span>
@@ -691,7 +691,7 @@
         <div class="demo-panel" id="demo-slack" data-demo-id="slack">
           <div class="demo-panel-heading">5. Slack Approval Gate</div>
           <div class="demo-img-frame">
-            <img src="../images/briefd/demo3-slack-draft.png" alt="Slack draft held at approval gate � TrueForge approval card" loading="lazy">
+            <img src="../images/briefd/demo3-slack-draft.png" alt="Slack draft held at approval gate — TrueForge approval card" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-indigo">Approval Gate</span>
@@ -702,7 +702,7 @@
         <div class="demo-panel" id="demo-discord" data-demo-id="discord">
           <div class="demo-panel-heading">6. Discord Check</div>
           <div class="demo-img-frame">
-            <img src="../images/briefd/demo4-discord-check.png" alt="Discord MCP � checking for unread messages" loading="lazy">
+            <img src="../images/briefd/demo4-discord-check.png" alt="Discord MCP — checking for unread messages" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-indigo">Discord MCP</span>
@@ -713,7 +713,7 @@
         <div class="demo-panel" id="demo-paste" data-demo-id="paste">
           <div class="demo-panel-heading">7. Paste Mode</div>
           <div class="demo-img-frame">
-            <img src="../images/briefd/demo5-paste-mode.png" alt="Paste mode � drop any message directly into the agent" loading="lazy">
+            <img src="../images/briefd/demo5-paste-mode.png" alt="Paste mode — drop any message directly into the agent" loading="lazy">
           </div>
           <div class="demo-caption">
             <span class="tag tag-gray">Paste Mode</span>
@@ -724,7 +724,7 @@
       </div>
     </section>
 
-    <!-- -- COMPONENT MAP ---------------------------- -->
+    <!-- ── COMPONENT MAP ──────────────────────────── -->
     <section class="guide-section" id="section-components">
       <h2>Component Map</h2>
       <p>Everything in the repo and what each piece does. Three MCP servers, the TrueForge skill, the Next.js frontend, and supporting scripts.</p>
@@ -749,7 +749,7 @@
       </table></div>
     </section>
 
-    <!-- -- TECH STACK ------------------------------- -->
+    <!-- ── TECH STACK ─────────────────────────────── -->
     <section class="guide-section" id="section-stack">
       <h2>Tech Stack</h2>
 
@@ -767,7 +767,7 @@
       </table></div>
     </section>
 
-    <!-- -- LEARNINGS -------------------------------- -->
+    <!-- ── LEARNINGS ──────────────────────────────── -->
     <section class="guide-section" id="section-learnings">
       <h2>Real Learnings</h2>
 
@@ -780,7 +780,7 @@
 
       <div class="learning-item">
         <div class="learning-num">02</div>
-        <div class="learning-title">Deferred tool loading is not a performance trick � it&rsquo;s a correctness decision</div>
+        <div class="learning-title">Deferred tool loading is not a performance trick — it&rsquo;s a correctness decision</div>
         <div class="learning-body">With 4 MCP servers connected, preloading all tools at session start consumed significant context tokens before any work began. The fix: preload only <code>search_knowledge_base</code> &mdash; the one tool guaranteed to be called first. Everything else loads on demand. Across a long session (many messages in a day), this is what kept the context coherent. It&rsquo;s not optimization, it&rsquo;s architecture.</div>
         <div class="learning-quote">In agentic systems, what you don't load is as important as what you do.</div>
       </div>
@@ -821,47 +821,47 @@
       </div>
     </section>
 
-    <!-- -- MOMENTS ---------------------------------- -->
+    <!-- ── MOMENTS ────────────────────────────────── -->
     <section class="guide-section" id="section-moments">
       <h2>Moments In Between</h2>
 
       <div class="moments-grid">
         <div class="moment-card">
-          <div class="moment-icon">?</div>
+          <div class="moment-icon">⚡</div>
           <h4>The first Mode B briefing that landed</h4>
           <p>The EU AI Act topic went through the full pipeline for the first time. Three subagents came back, the Python script combined them, and the 5-point briefing appeared. It was accurate, sourced, and faster than I could have done the research myself. That was the moment it felt like a product, not a prototype.</p>
         </div>
         <div class="moment-card">
-          <div class="moment-icon">??</div>
+          <div class="moment-icon">🔇</div>
           <h4>The silent Mode B that looked like a crash</h4>
           <p>Subagents running concurrently meant 8&ndash;12 seconds of silence in the UI. Every time, it looked stalled. The fix took 5 minutes: root agent emits a status message first. The user experience went from &ldquo;is it broken?&rdquo; to &ldquo;I can see it working.&rdquo; Status messages matter more than speed.</p>
         </div>
         <div class="moment-card">
-          <div class="moment-icon">??</div>
+          <div class="moment-icon">🧠</div>
           <h4>Watching Mode B become Mode A overnight</h4>
           <p>Tested the EU AI Act topic the following day. It routed Mode A. The KB entry from the previous session was there, similarity above threshold, draft in seconds. The self-learning loop worked exactly as designed. It was small, and it was exactly right.</p>
         </div>
         <div class="moment-card">
-          <div class="moment-icon">??</div>
+          <div class="moment-icon">🤝</div>
           <h4>Time with the TrueFoundry team</h4>
           <p>Real access to the people building the platform changed what was possible to ship in a day. Nikunj Bajaj, Sai Krishna, Kashish Kumar, and Adam Chan were on the floor. Questions that would have taken days to answer from docs took minutes in person.</p>
         </div>
         <div class="moment-card">
-          <div class="moment-icon">??</div>
+          <div class="moment-icon">📸</div>
           <h4>The Playwright runner that named its errors</h4>
           <p>After the TrueForge 0.2.0 UI update, all five demo screenshots needed recapture. The runner had been silently capturing success states for all runs, including ones where the UI showed an error. Adding <code>demo1-ERROR.png</code> naming for failure states made the bad screenshots impossible to miss.</p>
         </div>
         <div class="moment-card">
-          <div class="moment-icon">??</div>
+          <div class="moment-icon">🙋</div>
           <h4>Started the day volunteering</h4>
           <p>First half of the day was volunteering. Spent it helping other teams get set up, talking through their ideas. By midday, watching everyone building made sitting still feel impossible. Switched to hacker. The context from the morning made the build clearer &mdash; you see the common problems.</p>
         </div>
       </div>
     </section>
 
-    <!-- -- PLATFORM REVIEW -------------------------- -->
+    <!-- ── PLATFORM REVIEW ────────────────────────── -->
     <section class="guide-section" id="section-platform">
-      <h2>TrueFoundry � Honest Review</h2>
+      <h2>TrueFoundry — Honest Review</h2>
       <p>An entire agentic orchestration layer: scheduling, subagents, approval gates, Code Mode, context compaction, MCP connector management. Here&rsquo;s what worked and what to watch for.</p>
 
       <div class="platform-cols">
@@ -889,7 +889,7 @@
       </div>
     </section>
 
-    <!-- -- GET STARTED ------------------------------ -->
+    <!-- ── GET STARTED ────────────────────────────── -->
     <section class="guide-section" id="section-start">
       <h2>Get Started</h2>
       <p>Clone the repo, run the setup script, fill in your keys, and load demo data. Paste mode works immediately &mdash; no Slack or Discord connection required to try the full routing logic.</p>
@@ -909,7 +909,7 @@ cp .env.example .env
 <span class="cm"># 4. Start TrueForge</span>
 npx @truefoundry/trueforge@latest
 
-<span class="cm"># 5. Import agent config ? copy agent ID ? add to .env</span>
+<span class="cm"># 5. Import agent config → copy agent ID → add to .env</span>
 <span class="cm"># NEXT_PUBLIC_BRIEFD_AGENT_ID=&lt;from TrueForge UI&gt;</span>
 
 <span class="cm"># 6. Start MCP servers</span>
@@ -920,7 +920,7 @@ npm run load-demo
 npm run schedule
 
 <span class="cm"># 8. Start frontend</span>
-cd frontend &amp;&amp; npm run dev   <span class="cm"># ? http://localhost:3000</span></div>
+cd frontend &amp;&amp; npm run dev   <span class="cm"># → http://localhost:3000</span></div>
 
       <p>To test without any MCP setup: open TrueForge at <code>localhost:7770</code>, paste a message into the chat, and the routing logic runs immediately via paste mode.</p>
     </section>
@@ -930,12 +930,12 @@ cd frontend &amp;&amp; npm run dev   <span class="cm"># ? http://localhost:3000<
 
 <div id="rw-footer"
      data-linkedin="shassanchi"
-     data-related='[{"label":"TripRipple � Agent Memory","url":"/usecase/tripripple.html"},{"label":"BuildBridge � Article to Repo","url":"/usecase/buildbridge-ai.html"},{"label":"DebateCast � Multi-Agent Debate","url":"/usecase/debatecast.html"}]'
+     data-related='[{"label":"TripRipple — Agent Memory","url":"/usecase/tripripple.html"},{"label":"BuildBridge — Article to Repo","url":"/usecase/buildbridge-ai.html"},{"label":"DebateCast — Multi-Agent Debate","url":"/usecase/debatecast.html"}]'
 ></div>
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-// -- Hero slideshow -----------------------------------------------------------
+// ── Hero slideshow ───────────────────────────────────────────────────────────
 (function() {
   var slides = document.querySelectorAll('.hero-slide');
   var dotsWrap = document.getElementById('slide-dots');
@@ -984,7 +984,7 @@ cd frontend &amp;&amp; npm run dev   <span class="cm"># ? http://localhost:3000<
   startTimer();
 })();
 
-// -- Demo tab switching -------------------------------------------------------
+// ── Demo tab switching ───────────────────────────────────────────────────────
 function showDemo(id, btn) {
   if (window.innerWidth > 768) {
     document.querySelectorAll('.demo-tab').forEach(function(t) { t.classList.remove('active'); });
@@ -1023,7 +1023,7 @@ document.getElementById('demo-select').addEventListener('change', function() {
   panels.forEach(function(p) { obs.observe(p); });
 })();
 
-// -- TOC scrollspy ------------------------------------------------------------
+// ── TOC scrollspy ────────────────────────────────────────────────────────────
 (function() {
   var sections = document.querySelectorAll('.guide-section[id]');
   var links = document.querySelectorAll('.guide-toc a');

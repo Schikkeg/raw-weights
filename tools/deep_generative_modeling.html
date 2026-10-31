@@ -108,7 +108,7 @@
     <script>
 window.RW_PAGE_TOOLS = [{
   name: 'describe_generative_models',
-  description: 'Returns an overview of the Deep Generative Modeling playground � model types, interactive architectures, and what each section visualizes.',
+  description: 'Returns an overview of the Deep Generative Modeling playground — model types, interactive architectures, and what each section visualizes.',
   inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   execute: function () {
     var sections = Array.from(document.querySelectorAll('h2, h3'))
@@ -120,10 +120,10 @@ window.RW_PAGE_TOOLS = [{
       url: window.location.href,
       sections: sections,
       models_covered: [
-        'Autoencoders � compress and reconstruct',
-        'Variational Autoencoders (VAEs) � reparameterization trick, latent space continuity',
-        'Generative Adversarial Networks (GANs) � generator vs discriminator',
-        'CycleGAN � unpaired image-to-image translation',
+        'Autoencoders — compress and reconstruct',
+        'Variational Autoencoders (VAEs) — reparameterization trick, latent space continuity',
+        'Generative Adversarial Networks (GANs) — generator vs discriminator',
+        'CycleGAN — unpaired image-to-image translation',
         'Anomaly detection with generative models'
       ],
       key_concepts: ['Latent space', 'KL divergence', 'Reparameterization trick', 'Mode collapse', 'Training stability', 'Style transfer', 'Unsupervised learning'],
@@ -169,12 +169,12 @@ window.RW_PAGE_TOOLS = [{
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center"><span class="text-2xl mr-2">??</span> Generative Modeling (The "Creator")</h3>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center"><span class="text-2xl mr-2">🎨</span> Generative Modeling (The "Creator")</h3>
                                 <p class="text-gray-600 leading-relaxed mb-6">
                                     Instead of just looking at pictures and learning to slap a label on them, this AI studies thousands of examples to learn the actual "recipe" of the data. Once it knows the recipe, it can generate brand-new, realistic examples that have never existed before.
                                 </p>
 
-                                <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center"><span class="text-2xl mr-2">???</span> Unsupervised Learning</h3>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center"><span class="text-2xl mr-2">🕵️</span> Unsupervised Learning</h3>
                                 <p class="text-gray-600 leading-relaxed">
                                     Learning without an Answer Key! The model does not use human-provided labels to learn. It figures out the hidden rules and structures entirely on its own just by observing the raw data.
                                 </p>
@@ -249,7 +249,7 @@ window.RW_PAGE_TOOLS = [{
                                     <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-white border-2 border-emerald-500 rounded-xl shadow-sm flex flex-col items-center justify-center text-center p-2 relative">
                                         <div class="absolute top-1 right-2 text-[10px] text-brand-600 font-bold bg-brand-50 px-1 rounded border border-brand-100">Click to View</div>
                                         <strong class="text-emerald-700 text-base">2. Variational Autoencoder (VAE)</strong>
-                                        <span class="text-xs text-gray-600 mt-1 leading-tight">Probabilistic latent space (�, s).<br/><strong>Goal:</strong> Reconstruction + Generating New Samples.</span>
+                                        <span class="text-xs text-gray-600 mt-1 leading-tight">Probabilistic latent space (μ, σ).<br/><strong>Goal:</strong> Reconstruction + Generating New Samples.</span>
                                     </div>
                                 </foreignObject>
 
@@ -344,11 +344,11 @@ window.RW_PAGE_TOOLS = [{
                                 <text x="1075" y="145" font-size="18" font-weight="bold" fill="#b45309" text-anchor="middle">Core Applications</text>
 
                                 <circle cx="120" cy="600" r="50" fill="url(#gradDev)" stroke="#3b82f6" stroke-width="4" filter="url(#drop-shadow)"/>
-                                <text x="120" y="615" font-size="45" text-anchor="middle">?????</text>
+                                <text x="120" y="615" font-size="45" text-anchor="middle">👨‍💻</text>
                                 <text x="120" y="680" font-size="16" font-weight="bold" fill="#1e293b" text-anchor="middle">AI Developer</text>
 
                                 <circle cx="1480" cy="600" r="50" fill="url(#gradUser)" stroke="#10b981" stroke-width="4" filter="url(#drop-shadow)"/>
-                                <text x="1480" y="615" font-size="45" text-anchor="middle">??</text>
+                                <text x="1480" y="615" font-size="45" text-anchor="middle">🤖</text>
                                 <text x="1480" y="680" font-size="16" font-weight="bold" fill="#1e293b" text-anchor="middle">Downstream System</text>
 
                                 <path d="M 170 600 C 250 600, 250 185, 340 185" fill="none" stroke="#94a3b8" stroke-width="3"/>
@@ -379,69 +379,69 @@ window.RW_PAGE_TOOLS = [{
                                 <g class="svg-tooltip-trigger">
                                     <title>Isolate randomness into a dice roll to allow predictable math for backprop.</title>
                                     <rect x="340" y="150" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
-                                    <text x="500" y="190" class="uc-text" fill="#6b21a8">UC9: ?? Reparameterization Trick</text>
+                                    <text x="500" y="190" class="uc-text" fill="#6b21a8">UC9: 🎲 Reparameterization Trick</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Keep the latent space organized with continuity and completeness.</title>
                                     <rect x="340" y="240" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
-                                    <text x="500" y="280" class="uc-text" fill="#6b21a8">UC8: ?? Apply KL Divergence</text>
+                                    <text x="500" y="280" class="uc-text" fill="#6b21a8">UC8: 📐 Apply KL Divergence</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Train by checking how different the redrawn picture is from the original.</title>
                                     <rect x="340" y="330" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
-                                    <text x="500" y="370" class="uc-text" fill="#6b21a8">UC7: ?? Minimize Recon Loss</text>
+                                    <text x="500" y="370" class="uc-text" fill="#6b21a8">UC7: 📉 Minimize Recon Loss</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Compress input data into a tiny bottleneck representation.</title>
                                     <rect x="340" y="420" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
-                                    <text x="500" y="460" class="uc-text" fill="#6b21a8">UC5: ??? Encode to Latent Space</text>
+                                    <text x="500" y="460" class="uc-text" fill="#6b21a8">UC5: 🗜️ Encode to Latent Space</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Redraw the original data from the compressed latent summary.</title>
                                     <rect x="340" y="510" width="320" height="70" rx="35" class="uc-rect" stroke="#a855f7"/>
-                                    <text x="500" y="550" class="uc-text" fill="#6b21a8">UC6: ??? Decode from Latent</text>
+                                    <text x="500" y="550" class="uc-text" fill="#6b21a8">UC6: 🖼️ Decode from Latent</text>
                                 </g>
 
                                 <g class="svg-tooltip-trigger">
                                     <title>Endless cat-and-mouse game between forger and detective.</title>
                                     <rect x="340" y="700" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
-                                    <text x="500" y="740" class="uc-text" fill="#be123c">UC12: ?? Optimize Competing Obj.</text>
+                                    <text x="500" y="740" class="uc-text" fill="#be123c">UC12: ⚔️ Optimize Competing Obj.</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Look at fake and real pictures to guess which is which.</title>
                                     <rect x="340" y="790" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
-                                    <text x="500" y="830" class="uc-text" fill="#be123c">UC11: ??? Classify Real vs. Fake</text>
+                                    <text x="500" y="830" class="uc-text" fill="#be123c">UC11: 🕵️ Classify Real vs. Fake</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Start with random noise and paint a fake picture.</title>
                                     <rect x="340" y="880" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
-                                    <text x="500" y="920" class="uc-text" fill="#be123c">UC10: ?? Generate Fake Data</text>
+                                    <text x="500" y="920" class="uc-text" fill="#be123c">UC10: 🎭 Generate Fake Data</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Translate data directly from one style to another without matched pairs.</title>
                                     <rect x="340" y="970" width="320" height="70" rx="35" class="uc-rect" stroke="#fb7185"/>
-                                    <text x="500" y="1010" class="uc-text" fill="#be123c">UC13: ?? Translate Style (Cycle)</text>
+                                    <text x="500" y="1010" class="uc-text" fill="#be123c">UC13: 🔄 Translate Style (Cycle)</text>
                                 </g>
 
                                 <g class="svg-tooltip-trigger">
                                     <title>Spot highly unusual or rare events by knowing what normal looks like.</title>
                                     <rect x="910" y="200" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
-                                    <text x="1075" y="240" class="uc-text" fill="#b45309">UC3: ?? Detect Outliers</text>
+                                    <text x="1075" y="240" class="uc-text" fill="#b45309">UC3: 🎯 Detect Outliers</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Identify under-represented features to build fairer AI systems.</title>
                                     <rect x="910" y="400" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
-                                    <text x="1075" y="440" class="uc-text" fill="#b45309">UC4: ?? Debias Data</text>
+                                    <text x="1075" y="440" class="uc-text" fill="#b45309">UC4: ⚖️ Debias Data</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Learn the overall shape and spread of the data distribution.</title>
                                     <rect x="910" y="600" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
-                                    <text x="1075" y="640" class="uc-text" fill="#b45309">UC1: ?? Density Estimation</text>
+                                    <text x="1075" y="640" class="uc-text" fill="#b45309">UC1: 📊 Density Estimation</text>
                                 </g>
                                 <g class="svg-tooltip-trigger">
                                     <title>Use the learned recipe to create brand-new, realistic data instances.</title>
                                     <rect x="910" y="800" width="330" height="70" rx="35" class="uc-rect" stroke="#fbbf24"/>
-                                    <text x="1075" y="840" class="uc-text" fill="#b45309">UC2: ?? Generate New Samples</text>
+                                    <text x="1075" y="840" class="uc-text" fill="#b45309">UC2: 🎨 Generate New Samples</text>
                                 </g>
                             </svg>
                         </div>
@@ -454,7 +454,7 @@ window.RW_PAGE_TOOLS = [{
                         <h2 class="text-4xl font-serif font-bold text-gray-900 mb-6">The Foundation: Autoencoders</h2>
 
                         <div class="bg-gray-900 text-white rounded-xl p-6 mb-8 shadow-inner flex flex-col md:flex-row items-center">
-                            <div class="text-4xl md:mr-6 mb-4 md:mb-0">??</div>
+                            <div class="text-4xl md:mr-6 mb-4 md:mb-0">🦇</div>
                             <div>
                                 <h3 class="text-xl font-bold text-brand-400 mb-2">Latent Variables (Plato's Cave)</h3>
                                 <p class="text-gray-300 text-sm leading-relaxed">Imagine you are in a cave and can only see shadows moving on the wall. The shadows are the data we observe (like pixels in an image), but the latent variables are the actual, hidden 3D objects casting those shadows.</p>
@@ -494,7 +494,7 @@ window.RW_PAGE_TOOLS = [{
                             </foreignObject>
 
                             <foreignObject x="400" y="140" width="320" height="50">
-                                <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded shadow-sm flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-red-700 leading-tight">Reconstruction Loss<br/><span class="font-normal text-[10px]">Mean Squared Error = (X - Output)�</span></span></div>
+                                <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded shadow-sm flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-red-700 leading-tight">Reconstruction Loss<br/><span class="font-normal text-[10px]">Mean Squared Error = (X - Output)²</span></span></div>
                             </foreignObject>
 
                             <path d="M 180 90 L 210 90" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow)" />
@@ -517,15 +517,15 @@ window.RW_PAGE_TOOLS = [{
 
                         <div class="space-y-6 mb-8">
                             <div class="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-5 rounded-lg border border-gray-200">
-                                <div class="text-4xl mr-4 mb-2 md:mb-0">??</div>
+                                <div class="text-4xl mr-4 mb-2 md:mb-0">🎲</div>
                                 <div><h4 class="text-lg font-bold text-gray-900">Stochasticity (Adding "Wiggle Room")</h4><p class="text-gray-600 mt-1 text-sm md:text-base">Instead of a single, rigid summary, it learns a flexible range defined by a <em>mean</em> and a <em>standard deviation</em>.</p></div>
                             </div>
                             <div class="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-5 rounded-lg border border-gray-200">
-                                <div class="text-4xl mr-4 mb-2 md:mb-0">???</div>
+                                <div class="text-4xl mr-4 mb-2 md:mb-0">🗂️</div>
                                 <div><h4 class="text-lg font-bold text-gray-900">Regularization (The Organizer)</h4><p class="text-gray-600 mt-1 text-sm md:text-base">Forces the latent space to have <strong>Continuity</strong> and <strong>Completeness</strong> (KL Divergence).</p></div>
                             </div>
                             <div class="flex flex-col md:flex-row items-start md:items-center bg-brand-50 border border-brand-100 p-5 rounded-lg">
-                                <div class="text-4xl mr-4 mb-2 md:mb-0">??</div>
+                                <div class="text-4xl mr-4 mb-2 md:mb-0">🧮</div>
                                 <div><h4 class="text-lg font-bold text-brand-900">The Reparameterization Trick</h4><p class="text-brand-800 mt-1 text-sm md:text-base">Isolates randomness into a "dice roll" constant (epsilon), keeping calculations smooth for backpropagation.</p></div>
                             </div>
                         </div>
@@ -540,13 +540,13 @@ window.RW_PAGE_TOOLS = [{
                             
                             <foreignObject x="40" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-300 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800">Input Data (X)</span></div></foreignObject>
                             <foreignObject x="220" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-emerald-50 border-2 border-emerald-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-emerald-800">Encoder Network</span></div></foreignObject>
-                            <foreignObject x="400" y="320" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-indigo-50 border border-indigo-300 rounded flex items-center justify-center text-center"><span class="text-xs font-bold text-indigo-800">Mean (�)</span></div></foreignObject>
-                            <foreignObject x="400" y="400" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-indigo-50 border border-indigo-300 rounded flex items-center justify-center text-center"><span class="text-xs font-bold text-indigo-800">Std Dev (s)</span></div></foreignObject>
-                            <foreignObject x="400" y="240" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-slate-100 border-2 border-slate-400 rounded-full flex items-center justify-center text-center"><span class="text-xs font-bold text-slate-700 leading-tight">Random Constant<br/><span class="font-normal text-[10px]">Epsilon (e)</span></span></div></foreignObject>
-                            <foreignObject x="580" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-amber-50 border-2 border-amber-400 rounded-full flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-amber-800 leading-tight">Latent Variable (Z)<br/><span class="font-normal text-[10px]">Z = � + (s � e)</span></span></div></foreignObject>
+                            <foreignObject x="400" y="320" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-indigo-50 border border-indigo-300 rounded flex items-center justify-center text-center"><span class="text-xs font-bold text-indigo-800">Mean (μ)</span></div></foreignObject>
+                            <foreignObject x="400" y="400" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-indigo-50 border border-indigo-300 rounded flex items-center justify-center text-center"><span class="text-xs font-bold text-indigo-800">Std Dev (σ)</span></div></foreignObject>
+                            <foreignObject x="400" y="240" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-slate-100 border-2 border-slate-400 rounded-full flex items-center justify-center text-center"><span class="text-xs font-bold text-slate-700 leading-tight">Random Constant<br/><span class="font-normal text-[10px]">Epsilon (ε)</span></span></div></foreignObject>
+                            <foreignObject x="580" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-amber-50 border-2 border-amber-400 rounded-full flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-amber-800 leading-tight">Latent Variable (Z)<br/><span class="font-normal text-[10px]">Z = μ + (σ × ε)</span></span></div></foreignObject>
                             <foreignObject x="760" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-emerald-50 border-2 border-emerald-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-emerald-800">Decoder Network</span></div></foreignObject>
                             <foreignObject x="940" y="360" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-300 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800">Reconstructed Output</span></div></foreignObject>
-                            <foreignObject x="580" y="240" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-red-700 leading-tight">Regularization Term<br/><span class="font-normal text-[9px]">KL Divergence vs Prior (�=0, s=1)</span></span></div></foreignObject>
+                            <foreignObject x="580" y="240" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-red-700 leading-tight">Regularization Term<br/><span class="font-normal text-[9px]">KL Divergence vs Prior (μ=0, σ=1)</span></span></div></foreignObject>
                             <foreignObject x="760" y="450" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-50 border border-red-300 rounded flex items-center justify-center text-center p-1"><span class="text-xs font-bold text-red-700">Reconstruction Loss</span></div></foreignObject>
                             <foreignObject x="940" y="450" width="140" height="50"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-red-100 border-2 border-red-400 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-red-800">Total Loss = Recon Loss + Reg Term</span></div></foreignObject>
                             <path d="M 180 390 L 210 390" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#flow-arrow2)" />
@@ -573,7 +573,7 @@ window.RW_PAGE_TOOLS = [{
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                             <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
-                                <div class="absolute top-0 right-0 -mt-4 -mr-4 text-8xl opacity-10">??</div>
+                                <div class="absolute top-0 right-0 -mt-4 -mr-4 text-8xl opacity-10">🎭</div>
                                 <h3 class="text-2xl font-bold text-white mb-4">GANs</h3>
                                 <p class="text-gray-300 font-medium mb-6">The Forger vs. The Detective</p>
                                 <ul class="space-y-4">
@@ -582,12 +582,12 @@ window.RW_PAGE_TOOLS = [{
                                 </ul>
                             </div>
                             <div class="bg-gradient-to-br from-brand-50 to-white border-2 border-brand-100 rounded-xl p-6 text-gray-800 shadow-sm relative overflow-hidden">
-                                <div class="absolute top-0 right-0 -mt-2 -mr-2 text-8xl opacity-10">??</div>
+                                <div class="absolute top-0 right-0 -mt-2 -mr-2 text-8xl opacity-10">🦓</div>
                                 <h3 class="text-2xl font-bold text-brand-900 mb-4">Cycle GANs</h3>
                                 <p class="text-brand-600 font-medium mb-4">The Unpaired Translators</p>
                                 <p class="text-sm text-gray-600 mb-4">Two pairs of generators/discriminators working together to translate data directly from one style to another (e.g. horses to zebras).</p>
                                 <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex items-center justify-center space-x-4">
-                                    <span class="text-2xl">??</span><span class="text-brand-400 font-bold">&lrarr;</span><span class="text-2xl">??</span>
+                                    <span class="text-2xl">🐎</span><span class="text-brand-400 font-bold">&lrarr;</span><span class="text-2xl">🦓</span>
                                 </div>
                             </div>
                         </div>
@@ -621,16 +621,16 @@ window.RW_PAGE_TOOLS = [{
                             <text x="40" y="825" font-weight="bold" fill="#334155" font-size="14">4. Cycle GAN Architecture (Unpaired Translation)</text>
                             
                             <foreignObject x="40" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-50 border-2 border-blue-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-800 leading-tight">Domain A<br/><span class="font-normal text-[10px]">(e.g., Horse)</span></span></div></foreignObject>
-                            <foreignObject x="220" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator A?B</span></div></foreignObject>
+                            <foreignObject x="220" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator A→B</span></div></foreignObject>
                             <foreignObject x="400" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-pink-50 border-2 border-pink-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-pink-700">Fake Domain B</span></div></foreignObject>
-                            <foreignObject x="580" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator B?A</span></div></foreignObject>
+                            <foreignObject x="580" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator B→A</span></div></foreignObject>
                             <foreignObject x="760" y="860" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-blue-100 border-2 border-blue-500 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-blue-900 leading-tight">Reconstructed<br/>Domain A</span></div></foreignObject>
                             <foreignObject x="400" y="940" width="140" height="40"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-orange-50 border border-orange-400 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-orange-800">Discriminator B</span></div></foreignObject>
                             
                             <foreignObject x="40" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-cyan-50 border-2 border-cyan-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-cyan-800 leading-tight">Domain B<br/><span class="font-normal text-[10px]">(e.g., Zebra)</span></span></div></foreignObject>
-                            <foreignObject x="220" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator B?A</span></div></foreignObject>
+                            <foreignObject x="220" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator B→A</span></div></foreignObject>
                             <foreignObject x="400" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-pink-50 border-2 border-pink-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-pink-700">Fake Domain A</span></div></foreignObject>
-                            <foreignObject x="580" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator A?B</span></div></foreignObject>
+                            <foreignObject x="580" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-purple-100 border-2 border-purple-400 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-purple-800">Generator A→B</span></div></foreignObject>
                             <foreignObject x="760" y="1080" width="140" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-cyan-100 border-2 border-cyan-500 rounded-lg flex items-center justify-center text-center p-2"><span class="text-xs font-bold text-cyan-900 leading-tight">Reconstructed<br/>Domain B</span></div></foreignObject>
                             <foreignObject x="400" y="1020" width="140" height="40"><div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full bg-orange-50 border border-orange-400 rounded flex items-center justify-center text-center p-1"><span class="text-[11px] font-bold text-orange-800">Discriminator A</span></div></foreignObject>
                             
@@ -710,22 +710,22 @@ window.RW_PAGE_TOOLS = [{
                                 <path d="M 100 290 L 530 290" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
                                 <text x="110" y="280" fill="#334155" font-size="13" font-weight="600">3. Introduce Autoencoders (Deterministic)</text>
                                 <rect x="550" y="265" width="200" height="55" rx="4" fill="#eef2ff" stroke="#818cf8" stroke-width="1"/>
-                                <text x="560" y="285" fill="#3730a3" font-size="12"><tspan font-weight="bold">Encoder:</tspan> maps X ? Z (Bottleneck)</text>
-                                <text x="560" y="300" fill="#3730a3" font-size="12"><tspan font-weight="bold">Decoder:</tspan> maps Z ? Recon X</text>
+                                <text x="560" y="285" fill="#3730a3" font-size="12"><tspan font-weight="bold">Encoder:</tspan> maps X → Z (Bottleneck)</text>
+                                <text x="560" y="300" fill="#3730a3" font-size="12"><tspan font-weight="bold">Decoder:</tspan> maps Z → Recon X</text>
 
                                 <path d="M 100 380 L 530 380" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
                                 <text x="110" y="370" fill="#334155" font-size="13" font-weight="600">4. Define Reconstruction Loss</text>
                                 <rect x="550" y="355" width="200" height="65" rx="4" fill="#eef2ff" stroke="#818cf8" stroke-width="1"/>
                                 <text x="560" y="375" fill="#3730a3" font-size="12">Train by minimizing distance:</text>
                                 <text x="560" y="390" fill="#3730a3" font-size="12" font-weight="bold">Mean Squared Error =</text>
-                                <text x="560" y="405" fill="#3730a3" font-size="12" font-weight="bold">(Input - Reconstructed Output)�</text>
+                                <text x="560" y="405" fill="#3730a3" font-size="12" font-weight="bold">(Input - Reconstructed Output)²</text>
 
                                 <path d="M 100 480 L 750 480" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
                                 <text x="110" y="470" fill="#334155" font-size="13" font-weight="600">5. Add Stochasticity for Generation (VAEs)</text>
                                 <rect x="770" y="455" width="200" height="65" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
                                 <text x="780" y="475" fill="#5b21b6" font-size="12">Parameterize Z as a probability</text>
-                                <text x="780" y="490" fill="#5b21b6" font-size="12">distribution defined by mean (�)</text>
-                                <text x="780" y="505" fill="#5b21b6" font-size="12">and standard deviation (s)</text>
+                                <text x="780" y="490" fill="#5b21b6" font-size="12">distribution defined by mean (μ)</text>
+                                <text x="780" y="505" fill="#5b21b6" font-size="12">and standard deviation (σ)</text>
 
                                 <path d="M 100 580 L 750 580" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
                                 <text x="110" y="570" fill="#334155" font-size="13" font-weight="600">6. Define Full VAE Loss Function</text>
@@ -737,7 +737,7 @@ window.RW_PAGE_TOOLS = [{
                                 <path d="M 100 680 L 750 680" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
                                 <text x="110" y="670" fill="#334155" font-size="13" font-weight="600">7. Explain Regularization</text>
                                 <rect x="770" y="655" width="200" height="70" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
-                                <text x="780" y="675" fill="#5b21b6" font-size="12">Compare to a normal prior (�=0, s=1)</text>
+                                <text x="780" y="675" fill="#5b21b6" font-size="12">Compare to a normal prior (μ=0, σ=1)</text>
                                 <text x="780" y="690" fill="#5b21b6" font-size="12"><tspan font-weight="bold">Formula:</tspan> KL Divergence</text>
                                 <text x="780" y="705" fill="#5b21b6" font-size="12">(Ensures Continuity &amp; Completeness)</text>
 
@@ -751,13 +751,13 @@ window.RW_PAGE_TOOLS = [{
                                 <text x="110" y="850" fill="#334155" font-size="13" font-weight="600">9. Introduce Reparameterization Trick</text>
                                 <rect x="770" y="835" width="200" height="55" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
                                 <text x="780" y="855" fill="#5b21b6" font-size="12">Isolate randomness into</text>
-                                <text x="780" y="870" fill="#5b21b6" font-size="12">constant epsilon (e).</text>
-                                <text x="780" y="885" fill="#5b21b6" font-size="12"><tspan font-weight="bold">Formula:</tspan> Z = � + (s � e)</text>
+                                <text x="780" y="870" fill="#5b21b6" font-size="12">constant epsilon (ε).</text>
+                                <text x="780" y="885" fill="#5b21b6" font-size="12"><tspan font-weight="bold">Formula:</tspan> Z = μ + (σ × ε)</text>
 
                                 <path d="M 100 960 L 970 960" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#seq-arrow)"/>
                                 <text x="110" y="950" fill="#334155" font-size="13" font-weight="600">10. Introduce GANs</text>
                                 <rect x="990" y="935" width="200" height="55" rx="4" fill="#fff1f2" stroke="#fb7185" stroke-width="1"/>
-                                <text x="1000" y="955" fill="#be123c" font-size="12"><tspan font-weight="bold">Generator:</tspan> Maps Noise ? Fake</text>
+                                <text x="1000" y="955" fill="#be123c" font-size="12"><tspan font-weight="bold">Generator:</tspan> Maps Noise → Fake</text>
                                 <text x="1000" y="970" fill="#be123c" font-size="12"><tspan font-weight="bold">Discriminator:</tspan> Classifies Real</text>
                                 <text x="1000" y="985" fill="#be123c" font-size="12">vs. Fake X</text>
 
@@ -794,7 +794,7 @@ window.RW_PAGE_TOOLS = [{
 
                             <div class="space-y-12">
                                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">??</div>
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">📜</div>
                                     <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
                                         <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition">
                                             <span class="text-brand-600 font-bold block mb-1">Pre-1980s</span>
@@ -805,7 +805,7 @@ window.RW_PAGE_TOOLS = [{
                                 </div>
 
                                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(3)">
-                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">???</div>
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">🗜️</div>
                                     <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
                                         <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
                                             <span class="text-brand-600 font-bold block mb-1">1986</span>
@@ -816,7 +816,7 @@ window.RW_PAGE_TOOLS = [{
                                 </div>
 
                                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(4)">
-                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">??</div>
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">🎲</div>
                                     <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
                                         <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
                                             <span class="text-brand-600 font-bold block mb-1">2013</span>
@@ -827,7 +827,7 @@ window.RW_PAGE_TOOLS = [{
                                 </div>
 
                                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(5)">
-                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">??</div>
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">⚔️</div>
                                     <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
                                         <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
                                             <span class="text-brand-600 font-bold block mb-1">2014</span>
@@ -838,7 +838,7 @@ window.RW_PAGE_TOOLS = [{
                                 </div>
 
                                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer" onclick="goToSlide(5)">
-                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">??</div>
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-brand-600 border-4 border-white shadow text-white font-bold z-10 md:absolute md:left-1/2 md:-ml-6 flex-shrink-0">🔄</div>
                                     <div class="w-[calc(100%-4rem)] md:w-5/12 pl-6 md:pl-0 md:pr-12 md:text-right group-odd:md:pl-12 group-odd:md:pr-0 group-odd:md:text-left">
                                         <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-brand-300 transition">
                                             <span class="text-brand-600 font-bold block mb-1">2017</span>
@@ -895,34 +895,34 @@ window.RW_PAGE_TOOLS = [{
 
         <div class="mt-16 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             <h2 class="text-2xl font-serif font-bold text-gray-900 mb-6 flex items-center">
-                <span class="mr-2">??</span> Frequently Asked Questions (Generative Modeling)
+                <span class="mr-2">💡</span> Frequently Asked Questions (Generative Modeling)
             </h2>
             <div class="space-y-4">
                 <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
-                    <summary class="font-semibold text-gray-800 flex justify-between items-center">What is the main difference between supervised and unsupervised learning?<span class="text-brand-600 transition group-open:rotate-180">?</span></summary>
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">What is the main difference between supervised and unsupervised learning?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
                     <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">Supervised learning relies on a dataset where data comes with explicit human-provided labels. Unsupervised learning uses raw data without any labels. Generative modeling is unsupervised.</div>
                 </details>
                 <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
-                    <summary class="font-semibold text-gray-800 flex justify-between items-center">How does the "Plato's Cave" analogy explain latent variables?<span class="text-brand-600 transition group-open:rotate-180">?</span></summary>
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">How does the "Plato's Cave" analogy explain latent variables?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
                     <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">Prisoners can only see shadows moving on a wall (the observable data we see, like pixels). The true 3D objects casting shadows represent the latent variables, the hidden features governing the data distribution.</div>
                 </details>
                 <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
-                    <summary class="font-semibold text-gray-800 flex justify-between items-center">Why do Variational Autoencoders (VAEs) use the Reparameterization Trick?<span class="text-brand-600 transition group-open:rotate-180">?</span></summary>
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">Why do Variational Autoencoders (VAEs) use the Reparameterization Trick?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
                     <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">VAEs introduce randomness. This pure randomness breaks the predictable math required for backpropagation. The trick solves this by isolating randomness into a separate constant called epsilon.</div>
                 </details>
                 <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
-                    <summary class="font-semibold text-gray-800 flex justify-between items-center">How do Generative Adversarial Networks (GANs) learn to create realistic data?<span class="text-brand-600 transition group-open:rotate-180">?</span></summary>
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">How do Generative Adversarial Networks (GANs) learn to create realistic data?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
                     <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">GANs employ a Generator (the "forger") and a Discriminator (the "detective"). The competing objective forces the generator to continuously improve its fakes until it can completely fool the discriminator.</div>
                 </details>
                 <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
-                    <summary class="font-semibold text-gray-800 flex justify-between items-center">If the GAN "Discriminator" judges real vs. fake, isn't that just supervised learning? How does it get its knowledge?<span class="text-brand-600 transition group-open:rotate-180">?</span></summary>
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">If the GAN "Discriminator" judges real vs. fake, isn't that just supervised learning? How does it get its knowledge?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
                     <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">
                         It feels like supervised learning because the Discriminator acts as a classifier, but the key difference is that <strong>no human had to manually label the data</strong>. The Discriminator gets its knowledge automatically by comparing two distinct buckets: the raw training dataset (which the network automatically tags as "Real") and the output coming from the Generator (which the network automatically tags as "Fake"). It is a clever trick that pits two neural networks against each other to achieve an unsupervised goal without needing a human "Watchman" .
                     </div>
                 </details>
 
                 <details class="group bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer">
-                    <summary class="font-semibold text-gray-800 flex justify-between items-center">Does training stop when the fake data perfectly matches the real data and fools the Discriminator?<span class="text-brand-600 transition group-open:rotate-180">?</span></summary>
+                    <summary class="font-semibold text-gray-800 flex justify-between items-center">Does training stop when the fake data perfectly matches the real data and fools the Discriminator?<span class="text-brand-600 transition group-open:rotate-180">▼</span></summary>
                     <div class="mt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-200 pt-3">
                         Yes! In the lecture, this is referred to as the <strong>"Global Optimum"</strong>. The two networks compete in a loop until the Generator perfectly reproduces the true data distribution. Visually, this means the generated fake data exactly overlaps the locations of the real data. At this point, the Discriminator is completely fooled and can no longer tell the difference, meaning the Generator has successfully learned how to create perfect new samples and training has achieved its goal.
                     </div>
@@ -1028,19 +1028,19 @@ window.RW_PAGE_TOOLS = [{
                 title: "6. VAEs",
                 text: "Introduces Stochasticity. The Encoder outputs a fuzzy Probability Distribution instead of a rigid point.",
                 example: "<b>Example:</b> By randomly sampling a point from the cloud, it generates a brand-new face.",
-                svg: `<use href="#left-wall" /><use href="#prisoners" /><use href="#fire-source" /><path d="M 200 250 L 450 250" stroke="#00d2ff" stroke-width="4" marker-end="url(#arrow)" /><ellipse cx="600" cy="250" rx="90" ry="60" class="cloud-pulse" /><text x="520" y="160" fill="#00d2ff" font-weight="bold" font-size="18" font-family="sans-serif">Probabilistic Cloud (Z)</text><text x="560" y="240" fill="#fff" font-weight="bold" font-family="sans-serif">Mean (�)</text><text x="540" y="270" fill="#fff" font-weight="bold" font-family="sans-serif">Std Dev (s)</text><path d="M 500 250 L 220 150" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-purp)" /><path d="M 500 250 L 220 350" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-purp)" /><rect x="40" y="130" width="40" height="40" fill="#000" opacity="0.6" filter="blur(6px)" /><polygon points="40,330 80,350 40,370" fill="#000" opacity="0.7" filter="blur(4px)" /><text x="110" y="150" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Brand New Shadow</text><text x="110" y="360" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Brand New Shadow</text>`
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><use href="#fire-source" /><path d="M 200 250 L 450 250" stroke="#00d2ff" stroke-width="4" marker-end="url(#arrow)" /><ellipse cx="600" cy="250" rx="90" ry="60" class="cloud-pulse" /><text x="520" y="160" fill="#00d2ff" font-weight="bold" font-size="18" font-family="sans-serif">Probabilistic Cloud (Z)</text><text x="560" y="240" fill="#fff" font-weight="bold" font-family="sans-serif">Mean (μ)</text><text x="540" y="270" fill="#fff" font-weight="bold" font-family="sans-serif">Std Dev (σ)</text><path d="M 500 250 L 220 150" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-purp)" /><path d="M 500 250 L 220 350" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-purp)" /><rect x="40" y="130" width="40" height="40" fill="#000" opacity="0.6" filter="blur(6px)" /><polygon points="40,330 80,350 40,370" fill="#000" opacity="0.7" filter="blur(4px)" /><text x="110" y="150" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Brand New Shadow</text><text x="110" y="360" fill="#9b59b6" font-weight="bold" font-family="sans-serif">Brand New Shadow</text>`
             },
             reparam: {
                 title: "7. Reparameterization Trick",
-                text: "Isolates the randomness into an external 'dice roll' constant, Epsilon (e), saving the math.",
+                text: "Isolates the randomness into an external 'dice roll' constant, Epsilon (ε), saving the math.",
                 example: "<b>Example:</b> Putting the unpredictable dice roll in a separate box so the neural network can still run backwards smoothly.",
-                svg: `<rect x="250" y="100" width="500" height="250" fill="#2a2a35" rx="15" stroke="#00d2ff" stroke-width="2" /><rect x="280" y="150" width="100" height="60" fill="#3498db" rx="8" /><text x="300" y="185" fill="#fff" font-weight="bold" font-family="sans-serif">Mean (�)</text><rect x="280" y="250" width="100" height="60" fill="#9b59b6" rx="8" /><text x="290" y="285" fill="#fff" font-weight="bold" font-family="sans-serif">Std Dev (s)</text><circle cx="500" cy="350" r="30" fill="#f1c40f" /><text x="475" y="355" fill="#000" font-weight="bold" font-family="sans-serif">Dice (e)</text><path d="M 500 320 L 500 280" stroke="#f1c40f" stroke-width="3" marker-end="url(#arrow)" /><circle cx="500" cy="220" r="40" fill="#e74c3c" /><text x="480" y="225" fill="#fff" font-weight="bold" font-size="20" font-family="sans-serif">Z =</text><text x="470" y="245" fill="#fff" font-size="14" font-family="sans-serif">� + (s � e)</text><path d="M 380 180 L 460 210" stroke="#fff" stroke-width="3" marker-end="url(#arrow)" /><path d="M 380 280 L 460 230" stroke="#fff" stroke-width="3" marker-end="url(#arrow)" /><path d="M 540 220 L 650 220" stroke="#2ecc71" stroke-width="4" marker-end="url(#arrow)" /><text x="560" y="200" fill="#2ecc71" font-weight="bold" font-family="sans-serif">Smooth Gradients</text>`
+                svg: `<rect x="250" y="100" width="500" height="250" fill="#2a2a35" rx="15" stroke="#00d2ff" stroke-width="2" /><rect x="280" y="150" width="100" height="60" fill="#3498db" rx="8" /><text x="300" y="185" fill="#fff" font-weight="bold" font-family="sans-serif">Mean (μ)</text><rect x="280" y="250" width="100" height="60" fill="#9b59b6" rx="8" /><text x="290" y="285" fill="#fff" font-weight="bold" font-family="sans-serif">Std Dev (σ)</text><circle cx="500" cy="350" r="30" fill="#f1c40f" /><text x="475" y="355" fill="#000" font-weight="bold" font-family="sans-serif">Dice (ε)</text><path d="M 500 320 L 500 280" stroke="#f1c40f" stroke-width="3" marker-end="url(#arrow)" /><circle cx="500" cy="220" r="40" fill="#e74c3c" /><text x="480" y="225" fill="#fff" font-weight="bold" font-size="20" font-family="sans-serif">Z =</text><text x="470" y="245" fill="#fff" font-size="14" font-family="sans-serif">μ + (σ × ε)</text><path d="M 380 180 L 460 210" stroke="#fff" stroke-width="3" marker-end="url(#arrow)" /><path d="M 380 280 L 460 230" stroke="#fff" stroke-width="3" marker-end="url(#arrow)" /><path d="M 540 220 L 650 220" stroke="#2ecc71" stroke-width="4" marker-end="url(#arrow)" /><text x="560" y="200" fill="#2ecc71" font-weight="bold" font-family="sans-serif">Smooth Gradients</text>`
             },
             regularization: {
                 title: "8. Regularization",
                 text: "Forces the latent space to have Continuity and Completeness via KL Divergence.",
                 example: "<b>Example:</b> Organizing the 'Square' shadows and 'Triangle' shadows neatly so you don't get broken blobs.",
-                svg: `<use href="#left-wall" /><use href="#prisoners" /><circle cx="700" cy="250" r="140" fill="none" stroke="#f1c40f" stroke-width="3" stroke-dasharray="10,5" /><text x="610" y="100" fill="#f1c40f" font-weight="bold" font-size="18" font-family="sans-serif">Normal Prior (�=0, s=1)</text><circle cx="650" cy="200" r="40" fill="#e74c3c" class="cloud-pulse" /><text x="630" y="205" fill="#fff" font-weight="bold" font-family="sans-serif">Birds</text><circle cx="750" cy="300" r="50" fill="#3498db" class="cloud-pulse" /><text x="730" y="305" fill="#fff" font-weight="bold" font-family="sans-serif">Bats</text><path d="M 450 150 L 550 200" stroke="#f1c40f" stroke-width="3" marker-end="url(#arrow)" /><text x="300" y="140" fill="#f1c40f" font-weight="bold" font-size="18" font-family="sans-serif">KL Divergence</text><text x="290" y="160" fill="#ccc" font-size="14" font-family="sans-serif">Pulls clouds to the center grid</text>`
+                svg: `<use href="#left-wall" /><use href="#prisoners" /><circle cx="700" cy="250" r="140" fill="none" stroke="#f1c40f" stroke-width="3" stroke-dasharray="10,5" /><text x="610" y="100" fill="#f1c40f" font-weight="bold" font-size="18" font-family="sans-serif">Normal Prior (μ=0, σ=1)</text><circle cx="650" cy="200" r="40" fill="#e74c3c" class="cloud-pulse" /><text x="630" y="205" fill="#fff" font-weight="bold" font-family="sans-serif">Birds</text><circle cx="750" cy="300" r="50" fill="#3498db" class="cloud-pulse" /><text x="730" y="305" fill="#fff" font-weight="bold" font-family="sans-serif">Bats</text><path d="M 450 150 L 550 200" stroke="#f1c40f" stroke-width="3" marker-end="url(#arrow)" /><text x="300" y="140" fill="#f1c40f" font-weight="bold" font-size="18" font-family="sans-serif">KL Divergence</text><text x="290" y="160" fill="#ccc" font-size="14" font-family="sans-serif">Pulls clouds to the center grid</text>`
             },
             debias: {
                 title: "9. Data Debiasing",

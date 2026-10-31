@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Builder's Map: Practical Decisions for Voice AI with ElevenLabs | RawWeights</title>
-  <meta name="description" content="Five decisions that shape every voice agent deployment � from which build path to choose, through the real enterprise questions nobody covers in a demo.">
+  <meta name="description" content="Five decisions that shape every voice agent deployment — from which build path to choose, through the real enterprise questions nobody covers in a demo.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/guide/elevenlabs-builders-map.html">
   <meta property="og:image" content="https://rawweights.com/images/elevenlabs.png">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/blog/elevenlabs-builders-map.html">
-  <meta property="og:title" content="The Builder's Map � ElevenLabs Voice AI | RawWeights">
+  <meta property="og:title" content="The Builder's Map — ElevenLabs Voice AI | RawWeights">
   <meta property="og:description" content="Speech Engine or full agent? IVC or PVC? How do you ship safely? Five practical decisions for anyone building with ElevenLabs.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -18,7 +18,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Page tokens: warm orange + violet ----------------------- */
+    /* ── Page tokens: warm orange + violet ─────────────────────── */
     :root {
       --pg:          #f97316;
       --pg-hover:    #ea580c;
@@ -29,7 +29,7 @@
       --pg2-hover:   #6d28d9;
     }
 
-    /* -- Hero ---------------------------------------------------- */
+    /* ── Hero ──────────────────────────────────────────────────── */
     .hero {
       background: linear-gradient(135deg, #0f0700 0%, #0c0814 55%, #080808 100%);
       padding: 4.5rem 1.5rem 3.5rem;
@@ -111,7 +111,7 @@
     }
     [data-theme="light"] .stat-lbl { color: rgba(30,27,75,0.40); }
 
-    /* -- Layout -------------------------------------------------- */
+    /* ── Layout ────────────────────────────────────────────────── */
     .guide-layout {
       display: grid; grid-template-columns: 210px 1fr;
       gap: 2.5rem; max-width: 1200px;
@@ -137,7 +137,7 @@
     [data-theme="light"] .toc-list a:hover,
     [data-theme="light"] .toc-list a.toc-active { color: #c2410c; border-left-color: #f97316; }
 
-    /* -- Sections ------------------------------------------------ */
+    /* ── Sections ──────────────────────────────────────────────── */
     .section { margin-bottom: 4rem; scroll-margin-top: calc(var(--rw-nav-height) + 1rem); }
     .sec-label {
       display: inline-block; font-family: var(--rw-font-display);
@@ -158,7 +158,7 @@
     }
     .section p { font-size: 0.97rem; color: var(--rw-text-muted); line-height: 1.78; margin-bottom: 1rem; }
 
-    /* -- Signal row (static) ------------------------------------- */
+    /* ── Signal row (static) ───────────────────────────────────── */
     .signal-row {
       display: flex; align-items: stretch; gap: 0; margin: 1.5rem 0;
       border: 1px solid rgba(249,115,22,0.18); border-radius: 14px;
@@ -225,7 +225,7 @@
     .callout-vio strong { color: var(--pg2); }
     [data-theme="light"] .callout-vio strong { color: #5b21b6; }
 
-    /* -- Build decision matrix ----------------------------------- */
+    /* ── Build decision matrix ─────────────────────────────────── */
     .decision-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 1rem; margin-top: 1.25rem;
@@ -260,7 +260,7 @@
     .dec-use.vio { color: var(--pg2); }
     [data-theme="light"] .dec-use.vio { color: #5b21b6; }
 
-    /* -- Use case tabs ------------------------------------------- */
+    /* ── Use case tabs ─────────────────────────────────────────── */
     .uc-tabs {
       display: flex; border-bottom: 1px solid var(--rw-border);
       margin-bottom: 0; overflow-x: auto; gap: 0;
@@ -283,7 +283,7 @@
     }
     .uc-panel p { font-size: 0.88rem; color: var(--rw-text-muted); line-height: 1.72; margin-bottom: 0.85rem; }
 
-    /* -- Flow diagrams ------------------------------------------- */
+    /* ── Flow diagrams ─────────────────────────────────────────── */
     .flow-wrap {
       background: var(--rw-surface); border: 1px solid var(--rw-border);
       border-radius: 12px; padding: 1.1rem 1.25rem; margin: 0.85rem 0;
@@ -320,7 +320,7 @@
     .flow-arr { color: var(--rw-text-subtle); font-size: 0.85rem; }
     .flow-note { font-size: 0.7rem; color: var(--rw-text-subtle); font-style: italic; }
 
-    /* -- Status pills -------------------------------------------- */
+    /* ── Status pills ──────────────────────────────────────────── */
     .s-pill {
       display: inline-block; border-radius: 5px; padding: 0.14rem 0.48rem;
       font-size: 0.65rem; font-weight: 700; font-family: var(--rw-font-display);
@@ -351,7 +351,7 @@
     .a-card h5 { font-family: var(--rw-font-display); font-size: 0.8rem; font-weight: 700; color: var(--rw-text); margin-bottom: 0.3rem; }
     .a-card p { font-size: 0.75rem; color: var(--rw-text-muted); line-height: 1.55; margin: 0; }
 
-    /* -- Ship checklist ------------------------------------------ */
+    /* ── Ship checklist ────────────────────────────────────────── */
     .ship-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 1.25rem; }
     .ship-card {
       border-radius: 12px; padding: 1.2rem;
@@ -369,7 +369,7 @@
     .ship-tip { font-size: 0.72rem; color: var(--pg); font-weight: 600; font-family: var(--rw-font-display); margin-top: 0.5rem; }
     [data-theme="light"] .ship-tip { color: #c2410c; }
 
-    /* -- Voice + LLM choices ------------------------------------- */
+    /* ── Voice + LLM choices ───────────────────────────────────── */
     .choice-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.25rem; }
     .choice-card {
       border-radius: 12px; padding: 1.2rem;
@@ -399,7 +399,7 @@
     .llm-label { font-family: var(--rw-font-display); font-size: 0.75rem; font-weight: 800; color: var(--rw-text); margin-bottom: 0.2rem; }
     .llm-note { font-size: 0.7rem; color: var(--rw-text-muted); line-height: 1.5; }
 
-    /* -- Responsive ---------------------------------------------- */
+    /* ── Responsive ────────────────────────────────────────────── */
     @media (max-width: 1024px) {
       .guide-layout { grid-template-columns: 1fr; }
       .guide-sidebar { position: static; }
@@ -412,7 +412,7 @@
       .sig-arrow { transform: rotate(90deg); padding: 0.25rem 0; border-right: none; border-bottom: 1px solid var(--rw-border); }
     }
 
-    /* -- Get Started journey ------------------------------------- */
+    /* ── Get Started journey ───────────────────────────────────── */
     .journey {
       display: grid; grid-template-columns: repeat(2, 1fr);
       gap: 1rem; margin-top: 1.25rem; position: relative;
@@ -444,7 +444,7 @@
       position: relative; line-height: 1.5;
     }
     .j-items li::before {
-      content: '?'; position: absolute; left: 0;
+      content: '→'; position: absolute; left: 0;
       color: var(--pg); font-size: 0.7rem;
     }
     [data-theme="light"] .j-items li::before { color: #c2410c; }
@@ -455,7 +455,7 @@
     }
     [data-theme="light"] .j-tip { color: #5b21b6; }
 
-    /* -- Abbreviations ------------------------------------------- */
+    /* ── Abbreviations ─────────────────────────────────────────── */
     .abbr-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 0.6rem; margin-top: 1.25rem;
@@ -488,23 +488,23 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- ------------------------------------------------------------
+<!-- ════════════════════════════════════════════════════════════
      HERO
----------------------------------------------------------------- -->
+════════════════════════════════════════════════════════════════ -->
 <div class="hero">
   <div class="hero-inner">
-    <span class="hero-label">?? Companion Guide � ElevenLabs Voice AI</span>
+    <span class="hero-label">🗺 Companion Guide · ElevenLabs Voice AI</span>
     <h1>The <em>Builder's Map</em></h1>
     <p class="hero-sub">
       Five practical decisions shape every voice agent deployment.
-      This is the companion to The Emotion Engine � less theory, more choices.
+      This is the companion to The Emotion Engine — less theory, more choices.
       What to build, how to voice it, and how to ship it without breaking anything.
     </p>
     <div class="hero-meta">
-      <span>? Inspired by GenAcademy � My Field Notes</span>
-      <span>?? 5 Key Decisions</span>
-      <span>?? One Use Case, Deep</span>
-      <span>? Companion to The Emotion Engine</span>
+      <span>✦ Inspired by GenAcademy · My Field Notes</span>
+      <span>🧭 5 Key Decisions</span>
+      <span>🔍 One Use Case, Deep</span>
+      <span>⚡ Companion to The Emotion Engine</span>
     </div>
     <div class="stat-strip">
       <div class="stat-cell"><span class="stat-val">3</span><span class="stat-lbl">Build Paths</span></div>
@@ -515,9 +515,9 @@
   </div>
 </div>
 
-<!-- ------------------------------------------------------------
+<!-- ════════════════════════════════════════════════════════════
      LAYOUT
----------------------------------------------------------------- -->
+════════════════════════════════════════════════════════════════ -->
 <div class="guide-layout">
   <aside class="guide-sidebar">
     <div class="toc-label">Contents</div>
@@ -534,51 +534,51 @@
 
   <main>
 
-    <!-- -- PERSONAL OPENING NOTE ------------------------------ -->
+    <!-- ══ PERSONAL OPENING NOTE ══════════════════════════════ -->
     <div style="background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);border-left:3px solid #f97316;border-radius:0.75rem;padding:1.25rem 1.5rem;margin-bottom:2rem;">
       <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;color:#fb923c;text-transform:uppercase;margin-bottom:0.6rem;">My field notes</p>
       <p style="margin:0 0 0.75rem;color:#cbd5e1;font-style:italic;">"Short talks are dangerous. Just enough to make a decision. Not always enough to make a good one."</p>
       <p style="margin:0 0 0.75rem;color:#94a3b8;font-size:0.9rem;">The ElevenLabs session (Angelo Giacco) was 20 minutes. The demo was clean: audio tags flowing through the pipeline, the voice model switching accents mid-sentence, a live agent that genuinely felt human. The Q&A was where it got interesting.</p>
-      <p style="margin:0;color:#94a3b8;font-size:0.9rem;">Nathan Bhasker was building a voice agent on top of LangGraph for a regulated industry and asked four questions back to back � async approvals, identity verification, dialect coverage, audit logs. Each answer revealed something the demos never show: real production constraints for industries where a misstep has legal weight. That depth is what this builder's map is built around.</p>
+      <p style="margin:0;color:#94a3b8;font-size:0.9rem;">Nathan Bhasker was building a voice agent on top of LangGraph for a regulated industry and asked four questions back to back — async approvals, identity verification, dialect coverage, audit logs. Each answer revealed something the demos never show: real production constraints for industries where a misstep has legal weight. That depth is what this builder's map is built around.</p>
     </div>
 
-    <!-- -- THE CORE SIGNAL ------------------------------------ -->
+    <!-- ══ THE CORE SIGNAL ════════════════════════════════════ -->
     <section class="section" id="signal">
       <span class="sec-label">The Key Idea</span>
       <h2>The Signal That Makes It Human</h2>
-      <p>One concept unlocks everything else about voice AI. Agents used to sound robotic because emotion got lost at every stage handoff. The fix � documented in ElevenLabs' public architecture � is a small token called an <strong>audio tag</strong> that carries feeling through the entire pipeline as plain text.</p>
+      <p>One concept unlocks everything else about voice AI. Agents used to sound robotic because emotion got lost at every stage handoff. The fix — documented in ElevenLabs' public architecture — is a small token called an <strong>audio tag</strong> that carries feeling through the entire pipeline as plain text.</p>
 
       <div class="signal-row">
         <div class="sig-stage">
-          <span class="sig-icon">??</span>
+          <span class="sig-icon">👂</span>
           <span class="sig-abbr">STT</span>
           <span class="sig-name">Speech-to-Text</span>
-          <span class="sig-tag">Detects emotion ? outputs tags</span>
+          <span class="sig-tag">Detects emotion → outputs tags</span>
         </div>
-        <div class="sig-arrow">?</div>
+        <div class="sig-arrow">→</div>
         <div class="sig-stage">
-          <span class="sig-icon">??</span>
+          <span class="sig-icon">🧠</span>
           <span class="sig-abbr">LLM</span>
           <span class="sig-name">Language Model</span>
           <span class="sig-tag">Reads tags, generates new ones</span>
         </div>
-        <div class="sig-arrow">?</div>
+        <div class="sig-arrow">→</div>
         <div class="sig-stage">
-          <span class="sig-icon">??</span>
+          <span class="sig-icon">🔊</span>
           <span class="sig-abbr vio">TTS</span>
           <span class="sig-name">Text-to-Speech</span>
-          <span class="sig-tag vio">Tags ? sounds like a human</span>
+          <span class="sig-tag vio">Tags → sounds like a human</span>
         </div>
       </div>
 
-      <p>The STT model doesn't just transcribe words � it adds tags like <span class="tag-pill">[ laughing ]</span> <span class="tag-pill">[ background music ]</span> when it detects them. The LLM learns to pass those tags through and generate new ones in its response. The TTS V3 model reads <span class="tag-pill vio">[ excited ]</span> <span class="tag-pill vio">[ whispering ]</span> <span class="tag-pill vio">[ French accent ]</span> and changes how it sounds accordingly. No extra code at any step � the signal is just text.</p>
+      <p>The STT model doesn't just transcribe words — it adds tags like <span class="tag-pill">[ laughing ]</span> <span class="tag-pill">[ background music ]</span> when it detects them. The LLM learns to pass those tags through and generate new ones in its response. The TTS V3 model reads <span class="tag-pill vio">[ excited ]</span> <span class="tag-pill vio">[ whispering ]</span> <span class="tag-pill vio">[ French accent ]</span> and changes how it sounds accordingly. No extra code at any step — the signal is just text.</p>
 
       <div class="callout-orange">
         <strong>Why this matters for builders:</strong> LLMs are naturally good at copying patterns. Once you understand that audio tags are just text tokens in the prompt, you can instruct your agent to generate them, suppress them, or mirror them from the user's input. Emotion becomes a first-class parameter in your system prompt, not an afterthought.
       </div>
     </section>
 
-    <!-- -- BUILD PATH ---------------------------------------- -->
+    <!-- ══ BUILD PATH ════════════════════════════════════════ -->
     <section class="section" id="build-path">
       <span class="sec-label">Decision 1</span>
       <h2>Which Build Path Is Right for You?</h2>
@@ -588,33 +588,33 @@
         <div class="dec-card">
           <span class="dec-badge neutral">Existing Agent</span>
           <div class="dec-name">Speech Engine</div>
-          <div class="dec-desc">You already have a chatbot or RAG pipeline and just need voice added on top. You keep your LLM. ElevenLabs handles STT, TTS, and turn-taking. When a response is needed, ElevenLabs sends you the transcript � you reply with text � ElevenLabs speaks it.</div>
+          <div class="dec-desc">You already have a chatbot or RAG pipeline and just need voice added on top. You keep your LLM. ElevenLabs handles STT, TTS, and turn-taking. When a response is needed, ElevenLabs sends you the transcript — you reply with text — ElevenLabs speaks it.</div>
           <div class="dec-use vio">Best for: teams with working RAG agents, LangGraph pipelines, or existing LLMs who want voice without rebuilding.</div>
         </div>
         <div class="dec-card recommended">
           <span class="dec-badge">Starting Fresh</span>
           <div class="dec-name">Full Agent</div>
-          <div class="dec-desc">Build natively inside the ElevenLabs agent platform. You get the full dashboard: system prompt, voice, LLM choice, procedures, tools, branching, topic discovery, and coaching � all in one place. Turn-taking and audio tag routing happen automatically.</div>
+          <div class="dec-desc">Build natively inside the ElevenLabs agent platform. You get the full dashboard: system prompt, voice, LLM choice, procedures, tools, branching, topic discovery, and coaching — all in one place. Turn-taking and audio tag routing happen automatically.</div>
           <div class="dec-use">Best for: new voice agent projects where you want the full ops layer (procedures, branching, testing) out of the box.</div>
         </div>
         <div class="dec-card">
           <span class="dec-badge neutral">Targeted Use</span>
           <div class="dec-name">TTS / STT APIs</div>
-          <div class="dec-desc">You only need one direction � either speaking text or transcribing audio. Call the TTS or STT API directly. Useful for podcast enrichment, audio generation pipelines, or transcription workflows where you don't need a full conversational agent.</div>
-          <div class="dec-use vio">Best for: audio production pipelines, content enrichment, batch transcription � not real-time voice agents.</div>
+          <div class="dec-desc">You only need one direction — either speaking text or transcribing audio. Call the TTS or STT API directly. Useful for podcast enrichment, audio generation pipelines, or transcription workflows where you don't need a full conversational agent.</div>
+          <div class="dec-use vio">Best for: audio production pipelines, content enrichment, batch transcription — not real-time voice agents.</div>
         </div>
       </div>
 
       <div class="callout-vio" style="margin-top:1.25rem;">
-        <strong>The SDK options:</strong> Python, JavaScript, WebSocket, WebRTC, React Native, Kotlin. If your platform runs any of these, you can embed an ElevenLabs voice layer. For platforms like Salesforce, an active partnership exists but the native integration is still developing � WebSocket is the current path.
+        <strong>The SDK options:</strong> Python, JavaScript, WebSocket, WebRTC, React Native, Kotlin. If your platform runs any of these, you can embed an ElevenLabs voice layer. For platforms like Salesforce, an active partnership exists but the native integration is still developing — WebSocket is the current path.
       </div>
     </section>
 
-    <!-- -- USE CASE ------------------------------------------- -->
+    <!-- ══ USE CASE ═══════════════════════════════════════════ -->
     <section class="section" id="use-case">
       <span class="sec-label vio">Real World</span>
       <h2>One Use Case, Four Questions</h2>
-      <p>Nathan Bhasker's use case � a voice layer on top of a multi-agent LangGraph system in a regulated industry � surfaced four questions that production demos never show. Each one peels back a different layer of enterprise deployment reality.</p>
+      <p>Nathan Bhasker's use case — a voice layer on top of a multi-agent LangGraph system in a regulated industry — surfaced four questions that production demos never show. Each one peels back a different layer of enterprise deployment reality.</p>
 
       <div class="uc-tabs">
         <button class="uc-btn active" onclick="switchUC('async', this)">Async Approval</button>
@@ -626,193 +626,193 @@
       <!-- Async Approval -->
       <div class="uc-panel active" id="ucp-async">
         <h4>The problem: your backend needs a human to approve before the agent can act</h4>
-        <p>A common multi-agent pattern � especially in LangGraph � is to pause before any write action and wait for a human to click Approve. In a chat interface, the user just sees a loading state. In a live voice call, that same pause creates dead silence on the line, and the webhook times out.</p>
+        <p>A common multi-agent pattern — especially in LangGraph — is to pause before any write action and wait for a human to click Approve. In a chat interface, the user just sees a loading state. In a live voice call, that same pause creates dead silence on the line, and the webhook times out.</p>
 
         <div class="flow-wrap">
-          <div class="flow-label">What breaks � the naive approach</div>
+          <div class="flow-label">What breaks — the naive approach</div>
           <div class="flow-row">
             <div class="flow-box">User speaks</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box">Agent calls tool</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box neutral">Webhook waits for human click</div>
-            <span class="flow-arr">?</span>
-            <div class="flow-box fail">? Timeout � call drops</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box fail">⏱ Timeout — call drops</div>
           </div>
         </div>
 
         <div class="flow-wrap">
-          <div class="flow-label">What works � async tool calls</div>
+          <div class="flow-label">What works — async tool calls</div>
           <div class="flow-row" style="margin-bottom:0.4rem;">
             <div class="flow-box">Agent fires tool</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box neutral">Agent keeps chatting</div>
             <span class="flow-note">&nbsp;No blocking. No silence.</span>
           </div>
           <div class="flow-row">
             <div class="flow-box neutral">Human approves (whenever)</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box">Backend returns</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box vio">New tools / knowledge unlock live</div>
           </div>
         </div>
 
-        <p>ElevenLabs supports <strong>asynchronous tool calls</strong> � the agent fires the webhook and carries on the conversation without waiting. When the backend eventually returns, the platform injects new capabilities into the live call: new tools become available, a knowledge-base entry gets added to context. The agent picks it up naturally � "I can now see your account details" � with no awkward pause.</p>
+        <p>ElevenLabs supports <strong>asynchronous tool calls</strong> — the agent fires the webhook and carries on the conversation without waiting. When the backend eventually returns, the platform injects new capabilities into the live call: new tools become available, a knowledge-base entry gets added to context. The agent picks it up naturally — "I can now see your account details" — with no awkward pause.</p>
         <div class="callout-orange">
-          <strong>Practical example:</strong> A 2-minute identity verification flow. Agent fires the auth webhook async, chats normally in the meantime. Once verification completes, the agent gains access to account-level tools it didn't have before � and mentions it naturally in conversation.
+          <strong>Practical example:</strong> A 2-minute identity verification flow. Agent fires the auth webhook async, chats normally in the meantime. Once verification completes, the agent gains access to account-level tools it didn't have before — and mentions it naturally in conversation.
         </div>
       </div>
 
       <!-- Identity Verification -->
       <div class="uc-panel" id="ucp-auth">
         <h4>The problem: verifying caller identity before (or at the start of) the conversation</h4>
-        <p>Regulated industries need to know who is calling before the agent does anything sensitive. The question was whether voice recognition, emotion detection, and STT could handle authentication in the brief window before the agent starts speaking. The answer: yes � with the right pattern.</p>
+        <p>Regulated industries need to know who is calling before the agent does anything sensitive. The question was whether voice recognition, emotion detection, and STT could handle authentication in the brief window before the agent starts speaking. The answer: yes — with the right pattern.</p>
 
         <div class="flow-wrap">
-          <div class="flow-label">Pattern A � Pre-call webhook (the 5-second gap)</div>
+          <div class="flow-label">Pattern A — Pre-call webhook (the 5-second gap)</div>
           <div class="flow-row" style="margin-bottom:0.4rem;">
             <div class="flow-box neutral">Caller dials</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box">5-second telephony setup gap</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box">Fire pre-call webhook with phone number</div>
           </div>
           <div class="flow-row">
             <div class="flow-box neutral">Authenticated in last 24h?</div>
-            <span class="flow-arr">?</span>
-            <div class="flow-box ok">Yes ? straight to agent</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box ok">Yes → straight to agent</div>
             <span class="flow-arr" style="margin-left:0.6rem;">or</span>
-            <div class="flow-box vio" style="margin-left:0.4rem;">No ? OTP flow</div>
+            <div class="flow-box vio" style="margin-left:0.4rem;">No → OTP flow</div>
           </div>
         </div>
 
         <div class="flow-wrap">
-          <div class="flow-label">Pattern B � OTP spoken aloud (most common for regulated industries)</div>
+          <div class="flow-label">Pattern B — OTP spoken aloud (most common for regulated industries)</div>
           <div class="flow-row" style="margin-bottom:0.35rem;">
             <div class="flow-box">Agent says: "I'll send a 4-digit code by SMS"</div>
           </div>
           <div class="flow-row" style="margin-bottom:0.35rem;">
             <div class="flow-box neutral">SMS arrives</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box">User reads aloud: "3, 4, 5, 6"</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box">STT transcribes: "3456"</div>
           </div>
           <div class="flow-row">
             <div class="flow-box">Agent calls verify tool with "3456"</div>
-            <span class="flow-arr">?</span>
+            <span class="flow-arr">→</span>
             <div class="flow-box neutral">Backend checks code</div>
-            <span class="flow-arr">?</span>
-            <div class="flow-box ok">? Authenticated</div>
+            <span class="flow-arr">→</span>
+            <div class="flow-box ok">✓ Authenticated</div>
           </div>
         </div>
 
-        <p>The OTP approach converts a traditionally robotic step (DTMF tones, "enter your PIN on the keypad") into a natural voice conversation. STT handles the number extraction. The agent just asks, listens, and verifies � no keypad required.</p>
+        <p>The OTP approach converts a traditionally robotic step (DTMF tones, "enter your PIN on the keypad") into a natural voice conversation. STT handles the number extraction. The agent just asks, listens, and verifies — no keypad required.</p>
       </div>
 
       <!-- Dialects -->
       <div class="uc-panel" id="ucp-dialect">
         <h4>The problem: your users speak different dialects of the same language</h4>
-        <p>Accents and dialects aren't the same problem. Accents are handled within a language model. Dialects � especially those with completely different pronunciation � are treated as separate sub-languages. The gap in coverage comes down to one thing: how much training data exists on the internet for that dialect.</p>
+        <p>Accents and dialects aren't the same problem. Accents are handled within a language model. Dialects — especially those with completely different pronunciation — are treated as separate sub-languages. The gap in coverage comes down to one thing: how much training data exists on the internet for that dialect.</p>
 
         <div class="dialect-grid">
           <div class="d-card">
             <span class="s-pill s-good">Well Supported</span>
             <h5>Major dialect pairs</h5>
-            <p>Portuguese vs Brazilian Portuguese. Standard Spanish vs Latin American Spanish. These are modeled as separate sub-languages but share training data intelligence � coverage of one helps the other.</p>
+            <p>Portuguese vs Brazilian Portuguese. Standard Spanish vs Latin American Spanish. These are modeled as separate sub-languages but share training data intelligence — coverage of one helps the other.</p>
           </div>
           <div class="d-card">
             <span class="s-pill s-partial">Data-limited</span>
             <h5>Mandarin vs Cantonese</h5>
-            <p>Similar grammar, completely different pronunciation. Mandarin has enormous training data; Cantonese has far less. Quality gap is a data problem, not an architecture one � the model can only learn what it's seen.</p>
+            <p>Similar grammar, completely different pronunciation. Mandarin has enormous training data; Cantonese has far less. Quality gap is a data problem, not an architecture one — the model can only learn what it's seen.</p>
           </div>
           <div class="d-card">
             <span class="s-pill s-good">Broad Coverage</span>
             <h5>Indian languages</h5>
-            <p>ElevenLabs publicly documents support for 9�10 Indian languages, covering 99% of the world's population. Specific regional dialect coverage within each language is not detailed in their public documentation.</p>
+            <p>ElevenLabs publicly documents support for 9–10 Indian languages, covering 99% of the world's population. Specific regional dialect coverage within each language is not detailed in their public documentation.</p>
           </div>
           <div class="d-card">
             <span class="s-pill s-open">Unsolved</span>
             <h5>Low-resource dialects</h5>
-            <p>"A bit of an unsolved problem." If a dialect lacks internet training data, architecture can't compensate. PVC (Professional Voice Clone) is the best mitigation for accent-critical deployments � it learns from your specific audio, not general data.</p>
+            <p>"A bit of an unsolved problem." If a dialect lacks internet training data, architecture can't compensate. PVC (Professional Voice Clone) is the best mitigation for accent-critical deployments — it learns from your specific audio, not general data.</p>
           </div>
         </div>
 
         <div class="callout-vio">
-          <strong>How to configure it:</strong> Dialects aren't auto-detected mid-call. You specify which languages and sub-languages your agent supports in the dashboard. For accent-sensitive use cases, the audio tag system allows the LLM to inject accent directives into TTS � but only works well when the dialect is within the model's training coverage.
+          <strong>How to configure it:</strong> Dialects aren't auto-detected mid-call. You specify which languages and sub-languages your agent supports in the dashboard. For accent-sensitive use cases, the audio tag system allows the LLM to inject accent directives into TTS — but only works well when the dialect is within the model's training coverage.
         </div>
       </div>
 
       <!-- Audit -->
       <div class="uc-panel" id="ucp-audit">
         <h4>The problem: proving your voice agent behaves correctly when regulators ask</h4>
-        <p>Regulated industries can't just deploy and hope. Conversations that change account data, offer credits, or handle complaints need to be auditable � adversarially tested and human-validated before going live. ElevenLabs' enterprise documentation covers how they approach this with a specialist audit partner.</p>
+        <p>Regulated industries can't just deploy and hope. Conversations that change account data, offer credits, or handle complaints need to be auditable — adversarially tested and human-validated before going live. ElevenLabs' enterprise documentation covers how they approach this with a specialist audit partner.</p>
 
         <div class="audit-pair">
           <div class="a-card">
             <div class="a-num">10,000</div>
-            <h5>Phase 1 � Automated Adversarial Testing</h5>
+            <h5>Phase 1 — Automated Adversarial Testing</h5>
             <p>Synthetic agent callers run nefarious scenarios: prompt injection, aggressive language, attempts to make the agent contradict its policy or say something it shouldn't. Fully automated. Measures whether the agent stays on-policy under pressure.</p>
           </div>
           <div class="a-card">
             <div class="a-num">100</div>
-            <h5>Phase 2 � Human Red-Team Testing</h5>
+            <h5>Phase 2 — Human Red-Team Testing</h5>
             <p>Real humans call the agent with fabricated but realistic scenarios. Each person is given a character and a goal. Human raters score whether the agent handled each call correctly, helpfully, and within policy.</p>
           </div>
         </div>
 
-        <p>The two phases answer different questions. Phase 1 asks: <em>can this agent be manipulated?</em> Phase 2 asks: <em>does this agent actually help real people?</em> Both are needed. Neither replaces the other. The output is a formal audit report � the kind a regulated industry can present to a compliance function.</p>
+        <p>The two phases answer different questions. Phase 1 asks: <em>can this agent be manipulated?</em> Phase 2 asks: <em>does this agent actually help real people?</em> Both are needed. Neither replaces the other. The output is a formal audit report — the kind a regulated industry can present to a compliance function.</p>
 
         <div class="callout-orange">
-          <strong>On AI safety more broadly:</strong> ElevenLabs has a large dedicated AI safety team. Their primary concern is voice fraud � the risk that someone clones a real person's voice and uses it for a scam call. When emotion tags like "crying" are tested in a suspicious context, the system refuses to generate the audio. Child protection and non-consensual cloning detection are active areas. PVC (Professional Voice Clone) requires identity verification before the clone can be created.
+          <strong>On AI safety more broadly:</strong> ElevenLabs has a large dedicated AI safety team. Their primary concern is voice fraud — the risk that someone clones a real person's voice and uses it for a scam call. When emotion tags like "crying" are tested in a suspicious context, the system refuses to generate the audio. Child protection and non-consensual cloning detection are active areas. PVC (Professional Voice Clone) requires identity verification before the clone can be created.
         </div>
       </div>
     </section>
 
-    <!-- -- BEFORE YOU SHIP ------------------------------------ -->
+    <!-- ══ BEFORE YOU SHIP ════════════════════════════════════ -->
     <section class="section" id="ship">
       <span class="sec-label">Decision 4</span>
-      <h2>Before You Ship � Three Practices That Actually Matter</h2>
+      <h2>Before You Ship — Three Practices That Actually Matter</h2>
       <p>What separates a demo from a production agent comes down to three practices. Based on ElevenLabs' developer documentation and real deployment patterns, these are non-negotiable once you have real call volume.</p>
 
       <div class="ship-grid">
         <div class="ship-card">
           <div class="ship-num">01</div>
           <h4>Procedures, not one giant prompt</h4>
-          <p>Instead of a single system prompt covering every edge case, write trigger-based procedures � each one loads only when its trigger fires. The agent's context stays lean, the LLM stays focused, and your costs stay predictable.</p>
-          <div class="ship-tip">? The industry is moving from monolithic prompts to SOPs + Skills. Start here before you have 5,000 tokens in a single prompt.</div>
+          <p>Instead of a single system prompt covering every edge case, write trigger-based procedures — each one loads only when its trigger fires. The agent's context stays lean, the LLM stays focused, and your costs stay predictable.</p>
+          <div class="ship-tip">→ The industry is moving from monolithic prompts to SOPs + Skills. Start here before you have 5,000 tokens in a single prompt.</div>
         </div>
         <div class="ship-card">
           <div class="ship-num">02</div>
           <h4>Branch before you commit</h4>
-          <p>Every configuration change � new LLM, new voice, new procedure � should go to a traffic branch first. Send 3% of real calls to the experiment. Measure sentiment, call duration, and resolution rate before promoting. Never change main directly.</p>
-          <div class="ship-tip">? Run synthetic tests (10�50 calls) before even the 3% slice. Voice agents are non-deterministic; one pass proves nothing.</div>
+          <p>Every configuration change — new LLM, new voice, new procedure — should go to a traffic branch first. Send 3% of real calls to the experiment. Measure sentiment, call duration, and resolution rate before promoting. Never change main directly.</p>
+          <div class="ship-tip">→ Run synthetic tests (10–50 calls) before even the 3% slice. Voice agents are non-deterministic; one pass proves nothing.</div>
         </div>
         <div class="ship-card">
           <div class="ship-num">03</div>
           <h4>Find where sentiment drops</h4>
-          <p>Topic Discovery clusters your past conversations semantically and groups them. Find the clusters where sentiment trends DOWN over the call's duration � those are the scenarios your agent is actively making worse. Build procedures specifically for those.</p>
-          <div class="ship-tip">? Once you have volume, this can be automated: point an agent at the API, ask it to find downward-trending topics and draft procedures. It works.</div>
+          <p>Topic Discovery clusters your past conversations semantically and groups them. Find the clusters where sentiment trends DOWN over the call's duration — those are the scenarios your agent is actively making worse. Build procedures specifically for those.</p>
+          <div class="ship-tip">→ Once you have volume, this can be automated: point an agent at the API, ask it to find downward-trending topics and draft procedures. It works.</div>
         </div>
       </div>
     </section>
 
-    <!-- -- VOICE + LLM ---------------------------------------- -->
+    <!-- ══ VOICE + LLM ════════════════════════════════════════ -->
     <section class="section" id="voice-llm">
       <span class="sec-label">Decisions 2 &amp; 3</span>
-      <h2>Voice Clone and LLM � The Two Other Choices</h2>
+      <h2>Voice Clone and LLM — The Two Other Choices</h2>
       <p>Two configuration decisions have an outsized impact on how the agent sounds and how it reasons. Both are set in the dashboard per agent.</p>
 
       <div class="choice-pair">
         <div class="choice-card orange">
           <div class="choice-title">IVC</div>
           <div class="choice-name">Instant Voice Clone</div>
-          <div class="cr"><span class="cr-k">Audio required</span><span class="cr-v">2�3 samples</span></div>
+          <div class="cr"><span class="cr-k">Audio required</span><span class="cr-v">2–3 samples</span></div>
           <div class="cr"><span class="cr-k">Setup</span><span class="cr-v">Seconds</span></div>
           <div class="cr"><span class="cr-k">Quality</span><span class="cr-v">Best effort</span></div>
-          <div class="cr"><span class="cr-k">Accent fidelity</span><span class="cr-v cr-v accent">Variable � can drift</span></div>
-          <p style="font-size:0.76rem;color:var(--rw-text-muted);line-height:1.55;margin-top:0.75rem;margin-bottom:0;">Works well for many voices. For non-English accents, the model fills phonetic gaps from its general training data � which often sounds like a different accent. If accent fidelity matters, upgrade to PVC.</p>
+          <div class="cr"><span class="cr-k">Accent fidelity</span><span class="cr-v cr-v accent">Variable — can drift</span></div>
+          <p style="font-size:0.76rem;color:var(--rw-text-muted);line-height:1.55;margin-top:0.75rem;margin-bottom:0;">Works well for many voices. For non-English accents, the model fills phonetic gaps from its general training data — which often sounds like a different accent. If accent fidelity matters, upgrade to PVC.</p>
         </div>
         <div class="choice-card vio">
           <div class="choice-title">PVC</div>
@@ -820,13 +820,13 @@
           <div class="cr"><span class="cr-k">Audio required</span><span class="cr-v">~2 hours</span></div>
           <div class="cr"><span class="cr-k">Setup</span><span class="cr-v">Hours to days</span></div>
           <div class="cr"><span class="cr-k">Quality</span><span class="cr-v">Near-indistinguishable</span></div>
-          <div class="cr"><span class="cr-k">Accent fidelity</span><span class="cr-v" style="color:var(--pg2);">Full � accent preserved</span></div>
+          <div class="cr"><span class="cr-k">Accent fidelity</span><span class="cr-v" style="color:var(--pg2);">Full — accent preserved</span></div>
           <p style="font-size:0.76rem;color:var(--rw-text-muted);line-height:1.55;margin-top:0.75rem;margin-bottom:0;">The 2-hour requirement exists so the model has enough phonetic range to reconstruct your voice across all sounds it will encounter. Requires identity verification. Separate paid tier.</p>
         </div>
       </div>
 
       <h3>LLM Choice</h3>
-      <p>The LLM is the reasoning brain. ElevenLabs gives you three paths � and you can swap them without rebuilding the agent.</p>
+      <p>The LLM is the reasoning brain. ElevenLabs gives you three paths — and you can swap them without rebuilding the agent.</p>
       <div class="llm-row">
         <div class="llm-card">
           <div class="llm-label">Self-Hosted</div>
@@ -834,7 +834,7 @@
         </div>
         <div class="llm-card">
           <div class="llm-label">Third-Party API</div>
-          <div class="llm-note">Claude, GPT-4, Gemini � called via their APIs. Use the model you already trust. Easy to swap as models improve.</div>
+          <div class="llm-note">Claude, GPT-4, Gemini — called via their APIs. Use the model you already trust. Easy to swap as models improve.</div>
         </div>
         <div class="llm-card">
           <div class="llm-label">Your Own LLM</div>
@@ -847,11 +847,11 @@
       </div>
     </section>
 
-    <!-- -- GET STARTED ------------------------------------------- -->
+    <!-- ══ GET STARTED ═══════════════════════════════════════════ -->
     <section class="section" id="get-started">
       <span class="sec-label">Your Path</span>
-      <h2>Get Started � The Recommended Journey</h2>
-      <p>ElevenLabs recommends a build path that goes from self-serve platform through to a production agent that improves itself. Not a waterfall. A loop: build, run, learn, refine � documented in their public developer guides.</p>
+      <h2>Get Started — The Recommended Journey</h2>
+      <p>ElevenLabs recommends a build path that goes from self-serve platform through to a production agent that improves itself. Not a waterfall. A loop: build, run, learn, refine — documented in their public developer guides.</p>
 
       <div class="journey">
         <div class="j-step">
@@ -861,10 +861,10 @@
           <ul class="j-items">
             <li>Write a system prompt and first message</li>
             <li>Pick a voice from the library (or upload an IVC sample)</li>
-            <li>Choose your LLM � start with Claude or GPT-4 via their APIs</li>
+            <li>Choose your LLM — start with Claude or GPT-4 via their APIs</li>
             <li>Call it. Hear it. Adjust the prompt.</li>
           </ul>
-          <div class="j-tip">? Don't overthink the first agent. Get something speaking first, tune later.</div>
+          <div class="j-tip">→ Don't overthink the first agent. Get something speaking first, tune later.</div>
         </div>
 
         <div class="j-step">
@@ -875,47 +875,47 @@
             <li>Add a knowledge base for RAG over your docs</li>
             <li>Wire webhooks to your existing APIs (CRM, ticketing, booking)</li>
             <li>Or use native integrations for one-click platform connections</li>
-            <li>If you have an existing chatbot � try Speech Engine instead of rebuilding</li>
+            <li>If you have an existing chatbot — try Speech Engine instead of rebuilding</li>
           </ul>
-          <div class="j-tip">? MCP servers also work if you're already on that ecosystem.</div>
+          <div class="j-tip">→ MCP servers also work if you're already on that ecosystem.</div>
         </div>
 
         <div class="j-step">
           <div class="j-num">Stage 3</div>
           <div class="j-title">Learn from real calls</div>
-          <div class="j-desc">Once calls are flowing, the platform gives you tools to find where the agent is failing � before your customers tell you.</div>
+          <div class="j-desc">Once calls are flowing, the platform gives you tools to find where the agent is failing — before your customers tell you.</div>
           <ul class="j-items">
             <li>Topic Discovery clusters your conversations semantically</li>
             <li>Find clusters where sentiment trends downward over the call</li>
-            <li>Those are your gaps � where the agent is making things worse</li>
+            <li>Those are your gaps — where the agent is making things worse</li>
             <li>Use Coaching to talk to the agent about a bad call and get its own suggestions</li>
           </ul>
-          <div class="j-tip">? Claude Code pointed at the ElevenLabs API can read topics and draft procedures automatically.</div>
+          <div class="j-tip">→ Claude Code pointed at the ElevenLabs API can read topics and draft procedures automatically.</div>
         </div>
 
         <div class="j-step">
           <div class="j-num">Stage 4</div>
           <div class="j-title">Refine and ship safely</div>
-          <div class="j-desc">Every change to a production agent should go through a safety gate � even small ones. Voice agents are non-deterministic; surprises happen.</div>
+          <div class="j-desc">Every change to a production agent should go through a safety gate — even small ones. Voice agents are non-deterministic; surprises happen.</div>
           <ul class="j-items">
             <li>Write Procedures for the topics found in Stage 3</li>
-            <li>Run synthetic tests 10�50 times before any live traffic</li>
+            <li>Run synthetic tests 10–50 times before any live traffic</li>
             <li>Branch the change: 3% of real calls to the new config first</li>
             <li>Compare sentiment and resolution rate across branches</li>
           </ul>
-          <div class="j-tip">? This loop repeats. Stage 3 ? Stage 4 is the continuous improvement cycle.</div>
+          <div class="j-tip">→ This loop repeats. Stage 3 → Stage 4 is the continuous improvement cycle.</div>
         </div>
       </div>
 
       <div class="callout-vio" style="margin-top:1.25rem;">
-        <strong>Who to involve:</strong> ElevenLabs has three access tiers per their public documentation. Self-serve for builders experimenting on their own. A growth team for teams scaling up. And forward-deployed engineers who embed directly inside enterprise customers to run the Stage 3�4 loop with them � specifically for regulated industries.
+        <strong>Who to involve:</strong> ElevenLabs has three access tiers per their public documentation. Self-serve for builders experimenting on their own. A growth team for teams scaling up. And forward-deployed engineers who embed directly inside enterprise customers to run the Stage 3–4 loop with them — specifically for regulated industries.
       </div>
     </section>
 
-    <!-- -- ABBREVIATIONS ----------------------------------------- -->
+    <!-- ══ ABBREVIATIONS ═════════════════════════════════════════ -->
     <section class="section" id="abbreviations">
       <span class="sec-label vio">Reference</span>
-      <h2>Abbreviations � Quick Reference for Newcomers</h2>
+      <h2>Abbreviations — Quick Reference for Newcomers</h2>
       <p>Every acronym used across this page and its companion, in one place.</p>
 
       <div class="abbr-grid">
@@ -932,17 +932,17 @@
         <div class="abbr-item">
           <span class="abbr-term">ASR</span>
           <span class="abbr-full">Automatic Speech Recognition</span>
-          <span class="abbr-note">Older term for STT. Same technology � you'll see both in ElevenLabs documentation.</span>
+          <span class="abbr-note">Older term for STT. Same technology — you'll see both in ElevenLabs documentation.</span>
         </div>
         <div class="abbr-item">
           <span class="abbr-term">LLM</span>
           <span class="abbr-full">Large Language Model</span>
-          <span class="abbr-note">The reasoning brain � Claude, GPT-4, Gemini, or a self-hosted open model. Decides what the agent says next.</span>
+          <span class="abbr-note">The reasoning brain — Claude, GPT-4, Gemini, or a self-hosted open model. Decides what the agent says next.</span>
         </div>
         <div class="abbr-item">
           <span class="abbr-term vio">IVC</span>
           <span class="abbr-full">Instant Voice Clone</span>
-          <span class="abbr-note">Upload 2�3 audio samples, voice clone ready in seconds. Best-effort quality. May not preserve accent.</span>
+          <span class="abbr-note">Upload 2–3 audio samples, voice clone ready in seconds. Best-effort quality. May not preserve accent.</span>
         </div>
         <div class="abbr-item">
           <span class="abbr-term vio">PVC</span>
@@ -992,19 +992,19 @@
         <div class="abbr-item">
           <span class="abbr-term">WebRTC</span>
           <span class="abbr-full">Web Real-Time Communication</span>
-          <span class="abbr-note">Browser-native protocol for real-time audio. One of ElevenLabs' SDK transport options � preferred for browser-based voice.</span>
+          <span class="abbr-note">Browser-native protocol for real-time audio. One of ElevenLabs' SDK transport options — preferred for browser-based voice.</span>
         </div>
       </div>
     </section>
 
-    <!-- -- SOURCES & ATTRIBUTION ------------------------------ -->
+    <!-- ══ SOURCES & ATTRIBUTION ══════════════════════════════ -->
     <section class="section" id="attribution">
       <span class="sec-label">Sources &amp; Attribution</span>
       <h2>How This Page Was Built</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; margin-bottom:1.5rem;">
         <a href="https://elevenlabs.io/docs" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.9rem 1rem; text-decoration:none; display:block;">
           <p style="color:#fb923c; font-weight:700; font-size:0.8rem; margin:0 0 0.2rem;">ElevenLabs Documentation</p>
-          <p style="color:rgba(255,255,255,0.35); font-size:0.72rem; margin:0;">elevenlabs.io/docs � full API &amp; SDK reference</p>
+          <p style="color:rgba(255,255,255,0.35); font-size:0.72rem; margin:0;">elevenlabs.io/docs — full API &amp; SDK reference</p>
         </a>
         <a href="https://elevenlabs.io/blog" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.9rem 1rem; text-decoration:none; display:block;">
           <p style="color:#fb923c; font-weight:700; font-size:0.8rem; margin:0 0 0.2rem;">ElevenLabs Blog</p>
@@ -1021,7 +1021,7 @@
       </div>
       <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.2rem;">
         <p style="color:rgba(255,255,255,0.55); font-size:0.75rem; line-height:1.7; margin:0;">
-          <span style="color:rgba(255,255,255,0.75); font-weight:600;">My workflow:</span> A GenAcademy live session introduced me to the ElevenLabs builder ecosystem and the audio-tag emotion signal idea. From there I explored the public documentation, developer blog, and open-source SDKs � then built this guide to understand the decisions by walking through a real deployment myself. This is my personal learning synthesis. A live session has many more takeaways than any single set of notes captures � if you want the full depth, reach out to GenAcademy for their materials.
+          <span style="color:rgba(255,255,255,0.75); font-weight:600;">My workflow:</span> A GenAcademy live session introduced me to the ElevenLabs builder ecosystem and the audio-tag emotion signal idea. From there I explored the public documentation, developer blog, and open-source SDKs — then built this guide to understand the decisions by walking through a real deployment myself. This is my personal learning synthesis. A live session has many more takeaways than any single set of notes captures — if you want the full depth, reach out to GenAcademy for their materials.
         </p>
       </div>
     </section>
@@ -1029,9 +1029,9 @@
   </main>
 </div>
 
-<!-- ------------------------------------------------------------
+<!-- ════════════════════════════════════════════════════════════
      FOOTER
----------------------------------------------------------------- -->
+════════════════════════════════════════════════════════════════ -->
 <div id="rw-footer"
      data-related='[
        {"label":"MCP Practitioner Playbook","url":"/guide/mcp-practitioner-playbook.html"},
@@ -1041,7 +1041,7 @@
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-/* -- Use case tabs -------------------------------------------- */
+/* ── Use case tabs ──────────────────────────────────────────── */
 function switchUC(id, btn) {
   document.querySelectorAll('.uc-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.uc-panel').forEach(p => p.classList.remove('active'));
@@ -1049,7 +1049,7 @@ function switchUC(id, btn) {
   document.getElementById('ucp-' + id).classList.add('active');
 }
 
-/* -- Scrollspy ------------------------------------------------ */
+/* ── Scrollspy ──────────────────────────────────────────────── */
 (function () {
   const sections = document.querySelectorAll('.section[id]');
   const links = document.querySelectorAll('.toc-list a');

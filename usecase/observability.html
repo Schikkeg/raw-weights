@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Agent Observability � Why 200 OK Lies | RawWeights</title>
+  <title>AI Agent Observability — Why 200 OK Lies | RawWeights</title>
   <meta name="description" content="Traditional monitoring is blind to AI agent failures. Learn the telemetry standards, trace architectures, and interactive tools to actually see what your agent did.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/usecase/observability.html">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/usecase/observability.html">
   <meta property="og:image" content="https://rawweights.com/images/observe.png">
-  <meta property="og:title" content="AI Agent Observability � Why 200 OK Lies | RawWeights">
+  <meta property="og:title" content="AI Agent Observability — Why 200 OK Lies | RawWeights">
   <meta property="og:description" content="Your agent runs. Your dashboards stay green. It delivers wrong answers at HTTP 200 OK.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -352,13 +352,13 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- -- Hero ---------------------------------------------------- -->
+<!-- ── Hero ──────────────────────────────────────────────────── -->
 <div class="guide-hero">
   <div class="hero-split">
     <div class="hero-text">
       <span class="guide-hero-label"><span class="pulse-dot"></span> Observability Guide</span>
       <h1>Why <span>200 OK</span> is the most dangerous status code in AI</h1>
-      <p>Your agent runs. Your dashboards stay green. It hallucinates the answer, calls the wrong tool, and retrieves garbage context � all while returning HTTP 200 OK. Traditional monitoring is completely blind to this.</p>
+      <p>Your agent runs. Your dashboards stay green. It hallucinates the answer, calls the wrong tool, and retrieves garbage context — all while returning HTTP 200 OK. Traditional monitoring is completely blind to this.</p>
       <div class="hero-tags">
         <span class="hero-tag">OpenTelemetry</span>
         <span class="hero-tag">OpenInference</span>
@@ -367,36 +367,36 @@
         <span class="hero-tag">Arize Phoenix</span>
         <span class="hero-tag">ClickHouse</span>
       </div>
-      <a href="#guide-content" class="rw-btn rw-btn-primary">Explore the guide ?</a>
+      <a href="#guide-content" class="rw-btn rw-btn-primary">Explore the guide ↓</a>
     </div>
     <div class="hero-terminal">
       <div class="term-hdr">
         <div class="term-dot term-dot-r"></div>
         <div class="term-dot term-dot-y"></div>
         <div class="term-dot term-dot-g"></div>
-        <span class="term-lbl">agent-trace-stream � live</span>
+        <span class="term-lbl">agent-trace-stream · live</span>
       </div>
       <div class="term-body" id="termBody">
         <div class="t-line" id="tl0"><span class="t-ts">00:00.001</span><span class="t-lvl t-ind">SPAN</span><span class="t-txt">span.start  trace_id=4bf92f3  op=HTTP POST</span></div>
         <div class="t-line" id="tl1"><span class="t-ts">00:00.003</span><span class="t-lvl t-ind">LLM</span><span class="t-txt">model=claude-sonnet-4-6  prompt_tokens=1240</span></div>
-        <div class="t-line" id="tl2"><span class="t-ts">00:00.218</span><span class="t-lvl t-ok">TOOL</span><span class="t-txt">flight_search_api  ?  status=<span class="t-ok">200</span></span></div>
-        <div class="t-line" id="tl3"><span class="t-ts">00:00.441</span><span class="t-lvl t-warn">RETR</span><span class="t-txt">similarity=<span class="t-warn">0.41</span>  threshold=0.70  <span class="t-warn">? BELOW</span></span></div>
+        <div class="t-line" id="tl2"><span class="t-ts">00:00.218</span><span class="t-lvl t-ok">TOOL</span><span class="t-txt">flight_search_api  →  status=<span class="t-ok">200</span></span></div>
+        <div class="t-line" id="tl3"><span class="t-ts">00:00.441</span><span class="t-lvl t-warn">RETR</span><span class="t-txt">similarity=<span class="t-warn">0.41</span>  threshold=0.70  <span class="t-warn">← BELOW</span></span></div>
         <div class="t-line" id="tl4"><span class="t-ts">00:00.442</span><span class="t-lvl t-warn">WARN</span><span class="t-txt">retrieval.threshold_breached=<span class="t-warn">true</span></span></div>
         <div class="t-line" id="tl5"><span class="t-ts">00:00.621</span><span class="t-lvl t-ind">LLM</span><span class="t-txt">completion="Flights on May 1st to Tokyo..."</span></div>
-        <div class="t-line" id="tl6"><span class="t-ts">00:00.623</span><span class="t-lvl t-err">HTTP</span><span class="t-txt"><span class="t-ok">200 OK</span>  <span class="t-err">? SILENT FAILURE</span></span></div>
+        <div class="t-line" id="tl6"><span class="t-ts">00:00.623</span><span class="t-lvl t-err">HTTP</span><span class="t-txt"><span class="t-ok">200 OK</span>  <span class="t-err">← SILENT FAILURE</span></span></div>
         <div class="t-line" id="tl7"><span class="t-cur"></span></div>
       </div>
     </div>
   </div>
   <div class="stat-row">
-    <div class="stat-cell"><div class="stat-val sv-r">40,000</div><div class="stat-label">bad outputs/day � illustrative math: 4% silent failure rate � 1M daily requests</div></div>
-    <div class="stat-cell"><div class="stat-val sv-y">~60%</div><div class="stat-label">end-to-end success rate � 10 steps at 95% each</div></div>
+    <div class="stat-cell"><div class="stat-val sv-r">40,000</div><div class="stat-label">bad outputs/day — illustrative math: 4% silent failure rate × 1M daily requests</div></div>
+    <div class="stat-cell"><div class="stat-val sv-y">~60%</div><div class="stat-label">end-to-end success rate — 10 steps at 95% each</div></div>
     <div class="stat-cell"><div class="stat-val sv-g">4</div><div class="stat-label">telemetry layers needed to catch what HTTP status codes miss</div></div>
     <div class="stat-cell"><div class="stat-val">9</div><div class="stat-label">unmet market opportunities in agent observability today</div></div>
   </div>
 </div>
 
-<!-- -- Guide Content ------------------------------------------ -->
+<!-- ── Guide Content ────────────────────────────────────────── -->
 <div class="guide-layout" id="guide-content">
   <aside class="guide-sidebar">
     <div class="guide-toc-label">Contents</div>
@@ -415,25 +415,25 @@
   </aside>
 
   <main>
-    <!-- -- Section 1: Paradigm Shift -- -->
+    <!-- ── Section 1: Paradigm Shift ── -->
     <section class="guide-section" id="s-paradigm">
-      <h2>The Paradigm Shift: Deterministic ? Probabilistic</h2>
+      <h2>The Paradigm Shift: Deterministic → Probabilistic</h2>
       <p>Traditional software fails loudly. An unhandled exception throws a stack trace. A bad database query returns an error code. You know exactly what broke and where.</p>
       <p>AI agents fail silently. The same prompt submitted twice can take completely different execution paths. A retrieval step returns garbage context. The model hallucinates. Your monitoring dashboard stays green the whole time.</p>
 
       <div class="feature-grid">
         <div class="feature-card fc-grn">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🚦</div>
           <h4>Traditional: Explicit Failures</h4>
           <p>Exceptions, stack traces, HTTP 5xx errors. Every failure mode is loud and localized. Monitoring looks for known signatures.</p>
         </div>
         <div class="feature-card fc-red">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">👻</div>
           <h4>Agents: Silent Failures</h4>
-          <p>Wrong answers returned at 200 OK. Hallucinations, bad context, looping tool calls � all invisible to traditional metrics.</p>
+          <p>Wrong answers returned at 200 OK. Hallucinations, bad context, looping tool calls — all invisible to traditional metrics.</p>
         </div>
         <div class="feature-card fc-ind">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔬</div>
           <h4>What You Need Instead</h4>
           <p>Runtime state reconstruction, causal trace linking, context quality verification, and probabilistic evaluation.</p>
         </div>
@@ -452,10 +452,10 @@
       </div>
     </section>
 
-    <!-- -- Section 2: Railway Simulator -- -->
+    <!-- ── Section 2: Railway Simulator ── -->
     <section class="guide-section" id="s-railway">
       <h2>Railway Simulator: See the Difference</h2>
-      <p>Think of a static commuter railway vs. a dynamic agent network. The commuter train stops loudly when a rail breaks. The agent network silently routes to the wrong city � and every sensor along the route reports perfect health.</p>
+      <p>Think of a static commuter railway vs. a dynamic agent network. The commuter train stops loudly when a rail breaks. The agent network silently routes to the wrong city — and every sensor along the route reports perfect health.</p>
 
       <div class="railway-sim">
         <div class="sim-hdr">
@@ -485,7 +485,7 @@
                 <text x="289" y="59" text-anchor="middle" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.55)">C</text>
                 <text x="289" y="78" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(255,255,255,0.3)">Dest</text>
                 <!-- Break marker (hidden by default) -->
-                <text id="breakMarker" x="155" y="38" text-anchor="middle" font-size="14" fill="#f87171" opacity="0">?</text>
+                <text id="breakMarker" x="155" y="38" text-anchor="middle" font-size="14" fill="#f87171" opacity="0">✕</text>
                 <!-- Train -->
                 <rect id="trainStatic" x="18" y="50" width="20" height="10" rx="2" fill="#22d3ee" opacity="0">
                   <animate attributeName="opacity" values="0;1" dur="0.3s" begin="indefinite" id="trainStaticFade"/>
@@ -493,7 +493,7 @@
               </svg>
             </div>
             <div class="sim-status">
-              <span class="sim-status-text" id="statusTextStatic">Idle � click Send Request</span>
+              <span class="sim-status-text" id="statusTextStatic">Idle — click Send Request</span>
               <span class="http-badge" id="httpBadgeStatic" style="display:none"></span>
             </div>
           </div>
@@ -524,11 +524,11 @@
                 <!-- Train agent -->
                 <circle id="trainAgent" cx="34" cy="65" r="6" fill="#818cf8" opacity="0"/>
                 <!-- Wrong city label -->
-                <text id="wrongLabel" x="291" y="116" text-anchor="middle" font-family="monospace" font-size="6.5" fill="#fbbf24" opacity="0">? wrong city!</text>
+                <text id="wrongLabel" x="291" y="116" text-anchor="middle" font-family="monospace" font-size="6.5" fill="#fbbf24" opacity="0">← wrong city!</text>
               </svg>
             </div>
             <div class="sim-status">
-              <span class="sim-status-text" id="statusTextAgent">Idle � click Send Request</span>
+              <span class="sim-status-text" id="statusTextAgent">Idle — click Send Request</span>
               <span class="http-badge" id="httpBadgeAgent" style="display:none"></span>
             </div>
           </div>
@@ -537,14 +537,14 @@
 
       <div class="callout warn">
         <div class="callout-label">Key Insight</div>
-        <p>The static railway fails <strong>loud and early</strong>. The agent network continues at full speed and only reveals its error when you check the final destination � which, in production, no one does automatically.</p>
+        <p>The static railway fails <strong>loud and early</strong>. The agent network continues at full speed and only reveals its error when you check the final destination — which, in production, no one does automatically.</p>
       </div>
     </section>
 
-    <!-- -- Section 3: Compounding Errors -- -->
+    <!-- ── Section 3: Compounding Errors ── -->
     <section class="guide-section" id="s-compounding">
       <h2>Compounding Error Calculator</h2>
-      <p>Agent failures don't add linearly � they compound. A 10-step workflow where each step succeeds 95% of the time doesn't give you 95% end-to-end success. It gives you 60%.</p>
+      <p>Agent failures don't add linearly — they compound. A 10-step workflow where each step succeeds 95% of the time doesn't give you 95% end-to-end success. It gives you 60%.</p>
       <p>Adjust the sliders to see how quickly individual step accuracy translates into end-to-end collapse:</p>
 
       <div class="error-calc">
@@ -582,11 +582,11 @@
 
       <div class="callout danger">
         <div class="callout-label">Thought Experiment</div>
-        <p>Work through the math: if a system handles 1,000,000 daily requests and 4% fail silently � plausible with a 25-step chain at 99.8% per step � that's <strong>40,000 wrong answers daily</strong>, all at HTTP 200 OK. Your real rate will depend on chain length and step reliability. The point is: this never appears in a standard monitoring dashboard.</p>
+        <p>Work through the math: if a system handles 1,000,000 daily requests and 4% fail silently — plausible with a 25-step chain at 99.8% per step — that's <strong>40,000 wrong answers daily</strong>, all at HTTP 200 OK. Your real rate will depend on chain length and step reliability. The point is: this never appears in a standard monitoring dashboard.</p>
       </div>
     </section>
 
-    <!-- -- Section 4: Control Plane -- -->
+    <!-- ── Section 4: Control Plane ── -->
     <section class="guide-section" id="s-controlplane">
       <h2>The 4-Layer Observability Control Plane</h2>
       <p>A production-grade agent observability control plane intercepts, processes, stores, and analyzes telemetry across four strictly separated layers. Each layer has different storage engines, different query patterns, and different latency requirements.</p>
@@ -594,77 +594,77 @@
       <div class="arch-diagram full-arch">
         <!-- Layer 1: Runtime -->
         <div class="fa-layer fa-layer-runtime">
-          <div class="fa-layer-title">Agent Runtime � four signal sources</div>
+          <div class="fa-layer-title">Agent Runtime — four signal sources</div>
           <div class="fa-boxes">
             <div class="fa-box"><strong>App Logic</strong>what decisions / why they were made</div>
             <div class="fa-box"><strong>LangGraph / Framework</strong>how steps executed &amp; chained</div>
-            <div class="fa-box"><strong>K8s / GPU Infra</strong>CPU � VRAM � queue depth</div>
-            <div class="fa-box fa-box-brain"><strong>Brain / Vector Memory</strong>reads + writes � similarity scores � state</div>
+            <div class="fa-box"><strong>K8s / GPU Infra</strong>CPU · VRAM · queue depth</div>
+            <div class="fa-box fa-box-brain"><strong>Brain / Vector Memory</strong>reads + writes · similarity scores · state</div>
           </div>
         </div>
-        <div class="fa-arrow-dn">? emits four signal types ?</div>
+        <div class="fa-arrow-dn">↓ emits four signal types ↓</div>
         <div class="fa-signal-row">
           <span class="fa-signal fa-sig-log">STRUCTURED LOGS</span>
           <span class="fa-signal fa-sig-trace">TRACE SPANS (OpenInference)</span>
-          <span class="fa-signal fa-sig-met">METRICS � USE / RED</span>
+          <span class="fa-signal fa-sig-met">METRICS — USE / RED</span>
           <span class="fa-signal fa-sig-mem">MEMORY EVENTS</span>
         </div>
-        <div class="fa-arrow-dn">?</div>
+        <div class="fa-arrow-dn">↓</div>
         <!-- Layer 2: Collection -->
         <div class="fa-layer fa-layer-collect">
-          <div class="fa-layer-title">Collection � OpenTelemetry Collector</div>
+          <div class="fa-layer-title">Collection — OpenTelemetry Collector</div>
           <div class="fa-boxes">
             <div class="fa-box"><strong>Signal Enrichment</strong>stamps trace_id, session_id, user_id on every log &amp; metric</div>
             <div class="fa-box"><strong>Tail-Based Sampling</strong>buffers traces; retains anomalies, drops clean noise</div>
             <div class="fa-box"><strong>PII Scrubbing</strong>masks prompt content &amp; user data at the collection boundary</div>
           </div>
         </div>
-        <div class="fa-arrow-dn">? routes to specialist storage backends ?</div>
+        <div class="fa-arrow-dn">↓ routes to specialist storage backends ↓</div>
         <!-- Layer 3: Storage -->
         <div class="fa-layer fa-layer-storage">
-          <div class="fa-layer-title">Storage � four specialist backends</div>
+          <div class="fa-layer-title">Storage — four specialist backends</div>
           <div class="fa-boxes">
-            <div class="fa-box fa-box-log"><strong>Log Store</strong>Elasticsearch / ClickHouse � full-text JSON � queryable by trace_id</div>
-            <div class="fa-box fa-box-trace"><strong>Trace DB</strong>Jaeger / Arize Phoenix � span hierarchies indexed by Trace ID</div>
-            <div class="fa-box fa-box-ts"><strong>Time-Series DB</strong>Prometheus � numerical USE + RED aggregations � alertable</div>
-            <div class="fa-box fa-box-brain"><strong>Memory Audit Log</strong>Mem0 / pgvector � drift scans � poisoning sweeps � state diffs</div>
+            <div class="fa-box fa-box-log"><strong>Log Store</strong>Elasticsearch / ClickHouse · full-text JSON · queryable by trace_id</div>
+            <div class="fa-box fa-box-trace"><strong>Trace DB</strong>Jaeger / Arize Phoenix · span hierarchies indexed by Trace ID</div>
+            <div class="fa-box fa-box-ts"><strong>Time-Series DB</strong>Prometheus · numerical USE + RED aggregations · alertable</div>
+            <div class="fa-box fa-box-brain"><strong>Memory Audit Log</strong>Mem0 / pgvector · drift scans · poisoning sweeps · state diffs</div>
           </div>
         </div>
-        <div class="fa-arrow-dn">? unified query layer enables cross-signal correlation ?</div>
+        <div class="fa-arrow-dn">↓ unified query layer enables cross-signal correlation ↓</div>
         <!-- Layer 4: Analysis -->
         <div class="fa-layer fa-layer-analysis">
-          <div class="fa-layer-title">Analysis � operator visibility</div>
+          <div class="fa-layer-title">Analysis — operator visibility</div>
           <div class="fa-boxes">
-            <div class="fa-box fa-box-dash"><strong>Dashboards</strong>Grafana � Phoenix UI � click a latency spike ? jump to trace ? filter logs, all in one view</div>
-            <div class="fa-box"><strong>Anomaly Detection</strong>eval score drops � 10� token spikes � retrieval quality drift over time</div>
-            <div class="fa-box"><strong>Alert Engine</strong>PagerDuty / Slack � threshold breaches ? on-call notification</div>
+            <div class="fa-box fa-box-dash"><strong>Dashboards</strong>Grafana · Phoenix UI — click a latency spike → jump to trace → filter logs, all in one view</div>
+            <div class="fa-box"><strong>Anomaly Detection</strong>eval score drops · 10× token spikes · retrieval quality drift over time</div>
+            <div class="fa-box"><strong>Alert Engine</strong>PagerDuty / Slack · threshold breaches → on-call notification</div>
           </div>
         </div>
-        <div class="fa-arrow-dn">? anomaly signals trigger policy dispatch ?</div>
+        <div class="fa-arrow-dn">↓ anomaly signals trigger policy dispatch ↓</div>
         <!-- Layer 5: Control Plane -->
         <div class="fa-layer fa-layer-control">
-          <div class="fa-layer-title">Control Plane � closed-loop feedback (no redeployment needed)</div>
+          <div class="fa-layer-title">Control Plane — closed-loop feedback (no redeployment needed)</div>
           <div class="fa-boxes">
-            <div class="fa-box"><strong>Guardrail API</strong>NeMo / Llama Guard � tighten safety filters automatically when eval scores drop</div>
-            <div class="fa-box"><strong>RAG Threshold Tuner</strong>raise similarity floor � adjust top_k when retrieval quality drifts below baseline</div>
-            <div class="fa-box"><strong>Traffic Control</strong>circuit breakers � rate throttles � automatic fallback to secondary model provider</div>
+            <div class="fa-box"><strong>Guardrail API</strong>NeMo / Llama Guard · tighten safety filters automatically when eval scores drop</div>
+            <div class="fa-box"><strong>RAG Threshold Tuner</strong>raise similarity floor · adjust top_k when retrieval quality drifts below baseline</div>
+            <div class="fa-box"><strong>Traffic Control</strong>circuit breakers · rate throttles · automatic fallback to secondary model provider</div>
           </div>
         </div>
-        <div class="fa-feedback">? policy updates flow back to Agent Runtime � the loop closes without a code deployment ?</div>
+        <div class="fa-feedback">↑ policy updates flow back to Agent Runtime — the loop closes without a code deployment ↑</div>
       </div>
 
       <ul class="step-list">
         <li class="step-item"><div class="step-num">1</div><div class="step-body"><h4>Layer 1 emits what and why</h4><p>The application layer emits domain signals about decisions made. The framework emits structural signals about how orchestration ran. The runtime emits hardware signals about resource constraints.</p></div></li>
-        <li class="step-item"><div class="step-num">2</div><div class="step-body"><h4>Layer 2 decouples and enriches</h4><p>The collection layer sits between the app and storage. It handles protocol translation, batching, signal enrichment, and � critically � tail-based sampling decisions.</p></div></li>
+        <li class="step-item"><div class="step-num">2</div><div class="step-body"><h4>Layer 2 decouples and enriches</h4><p>The collection layer sits between the app and storage. It handles protocol translation, batching, signal enrichment, and — critically — tail-based sampling decisions.</p></div></li>
         <li class="step-item"><div class="step-num">3</div><div class="step-body"><h4>Layer 3 stores by access pattern</h4><p>Metrics go to time-series databases optimized for numerical aggregation. Logs go to full-text search engines. Traces go to distributed trace storage indexed by Trace ID.</p></div></li>
-        <li class="step-item"><div class="step-num">4</div><div class="step-body"><h4>Layer 4 correlates across signals</h4><p>The key power: click a latency spike on a metrics dashboard, jump directly to the underlying trace, then filter logs by that exact Trace ID � without copy-pasting.</p></div></li>
+        <li class="step-item"><div class="step-num">4</div><div class="step-body"><h4>Layer 4 correlates across signals</h4><p>The key power: click a latency spike on a metrics dashboard, jump directly to the underlying trace, then filter logs by that exact Trace ID — without copy-pasting.</p></div></li>
       </ul>
     </section>
 
-    <!-- -- Section 5: X-Ray Trace Inspector -- -->
+    <!-- ── Section 5: X-Ray Trace Inspector ── -->
     <section class="guide-section" id="s-trace">
       <h2>X-Ray Trace Inspector</h2>
-      <p>This is what a real agent trace looks like. Click any span to expand its attributes. Notice how the HTTP 200 OK at the root level tells you nothing � you have to inspect the retrieval span to find the silent failure.</p>
+      <p>This is what a real agent trace looks like. Click any span to expand its attributes. Notice how the HTTP 200 OK at the root level tells you nothing — you have to inspect the retrieval span to find the silent failure.</p>
 
       <div class="trace-inspector">
         <div class="trace-toolbar">
@@ -679,7 +679,7 @@
           <!-- Root span -->
           <div class="t-node" data-kind="root">
             <div class="t-node-hdr" onclick="toggleNode(this)">
-              <span class="t-exp open">?</span>
+              <span class="t-exp open">▼</span>
               <span class="tk tk-root">ROOT</span>
               <span class="t-span-name">HTTP POST /api/v1/investigate</span>
               <span class="t-dur">2,340ms</span>
@@ -694,7 +694,7 @@
               <!-- LLM: query_classification -->
               <div class="t-node" data-kind="llm">
                 <div class="t-node-hdr" onclick="toggleNode(this)">
-                  <span class="t-exp">?</span>
+                  <span class="t-exp">▶</span>
                   <span class="tk tk-llm">LLM</span>
                   <span class="t-span-name">query_classification</span>
                   <span class="t-dur">120ms</span>
@@ -710,7 +710,7 @@
               <!-- TOOL: flight_search_api -->
               <div class="t-node" data-kind="tool">
                 <div class="t-node-hdr" onclick="toggleNode(this)">
-                  <span class="t-exp open">?</span>
+                  <span class="t-exp open">▼</span>
                   <span class="tk tk-tool">TOOL</span>
                   <span class="t-span-name">flight_search_api</span>
                   <span class="t-dur">2,100ms</span>
@@ -723,14 +723,14 @@
                   <div class="t-attr"><span class="ak">agent.retry_count:</span><span class="av av-warn">3</span></div>
                 </div>
                 <div class="t-children">
-                  <!-- RETRIEVAL: vector_search � the silent failure -->
+                  <!-- RETRIEVAL: vector_search — the silent failure -->
                   <div class="t-node" data-kind="retr warn">
                     <div class="t-node-hdr" onclick="toggleNode(this)">
-                      <span class="t-exp open">?</span>
+                      <span class="t-exp open">▼</span>
                       <span class="tk tk-retr">RETRIEVAL</span>
                       <span class="t-span-name">vector_search</span>
                       <span class="t-dur">340ms</span>
-                      <span class="ts ts-warn">? LOW SCORE</span>
+                      <span class="ts ts-warn">⚠ LOW SCORE</span>
                     </div>
                     <div class="t-attrs open">
                       <div class="t-attr"><span class="ak">retrieval.query_text:</span><span class="av">"flights to Tokyo May 1st"</span></div>
@@ -743,14 +743,14 @@
                   </div>
                 </div>
               </div>
-              <!-- LLM: response_generation � silent failure propagates here -->
+              <!-- LLM: response_generation — silent failure propagates here -->
               <div class="t-node" data-kind="llm">
                 <div class="t-node-hdr" onclick="toggleNode(this)">
-                  <span class="t-exp">?</span>
+                  <span class="t-exp">▶</span>
                   <span class="tk tk-llm">LLM</span>
                   <span class="t-span-name">response_generation</span>
                   <span class="t-dur">180ms</span>
-                  <span class="ts ts-silent">? SILENT FAIL</span>
+                  <span class="ts ts-silent">⚠ SILENT FAIL</span>
                 </div>
                 <div class="t-attrs">
                   <div class="t-attr"><span class="ak">llm.model_name:</span><span class="av">"claude-sonnet-4-6"</span></div>
@@ -766,29 +766,29 @@
         </div>
       </div>
 
-      <p>The retrieval step returned documents with similarity scores of 0.41 and 0.38 � both below the quality threshold of 0.70. The LLM generated a confident-sounding response using that garbage context. The HTTP status code reported 200 OK throughout.</p>
+      <p>The retrieval step returned documents with similarity scores of 0.41 and 0.38 — both below the quality threshold of 0.70. The LLM generated a confident-sounding response using that garbage context. The HTTP status code reported 200 OK throughout.</p>
     </section>
 
-    <!-- -- Section 6: Telemetry Standards -- -->
+    <!-- ── Section 6: Telemetry Standards ── -->
     <section class="guide-section" id="s-standards">
       <h2>Telemetry Standards: OTel vs OpenInference</h2>
       <p>Standard OpenTelemetry was built for HTTP endpoints and database queries. It has no native primitives for prompt tokens, vector similarity scores, or reasoning steps. OpenInference extends OTel specifically for AI systems.</p>
 
       <div class="feature-grid">
         <div class="feature-card fc-yel">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📡</div>
           <h4>Standard OTel Span</h4>
           <p>Captures: HTTP method, status code, URL, peer IP. <strong>Misses:</strong> token counts, model ID, prompt text, retrieval scores, retry logic.</p>
         </div>
         <div class="feature-card fc-ind">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🧬</div>
           <h4>OpenInference Span</h4>
           <p>Adds: <code>llm.model_name</code>, <code>llm.token_count.*</code>, <code>tool.parameters</code>, <code>retrieval.documents.*.score</code>, <code>agent.retry_count</code>.</p>
         </div>
         <div class="feature-card fc-grn">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔗</div>
           <h4>Trace Context Propagation</h4>
-          <p>W3C <code>traceparent</code> headers carry Trace ID + Span ID across service boundaries, sub-agents, and async calls � keeping the entire journey stitched together.</p>
+          <p>W3C <code>traceparent</code> headers carry Trace ID + Span ID across service boundaries, sub-agents, and async calls — keeping the entire journey stitched together.</p>
         </div>
       </div>
 
@@ -798,18 +798,18 @@
           <thead><tr><th>Primitive</th><th>What It Stores</th><th>Why It Matters for Agents</th></tr></thead>
           <tbody>
             <tr><td><span class="tag tag-ind">Trace ID</span></td><td>128-bit global request identifier</td><td>Ties every sub-agent call, tool, and DB query to one user request</td></tr>
-            <tr><td><span class="tag tag-ind">Root Span</span></td><td>Full transaction from ingress to response</td><td>Your timer for end-to-end latency � the thing the user actually experiences</td></tr>
-            <tr><td><span class="tag tag-ind">Child Spans</span></td><td>Named sub-tasks nested inside parent</td><td>RAG retrieval, LLM inference, tool call � each gets its own measurable unit</td></tr>
+            <tr><td><span class="tag tag-ind">Root Span</span></td><td>Full transaction from ingress to response</td><td>Your timer for end-to-end latency — the thing the user actually experiences</td></tr>
+            <tr><td><span class="tag tag-ind">Child Spans</span></td><td>Named sub-tasks nested inside parent</td><td>RAG retrieval, LLM inference, tool call — each gets its own measurable unit</td></tr>
             <tr><td><span class="tag tag-ind">Span Attributes</span></td><td>Key-value metadata on each span</td><td>Where token counts, similarity scores, and model IDs live</td></tr>
             <tr><td><span class="tag tag-warn">Span Events</span></td><td>Timestamped point-in-time markers</td><td>Rate limit hits, retry attempts, stream chunk arrivals</td></tr>
-            <tr><td><span class="tag tag-warn">Span Links</span></td><td>Causal references across separate trace contexts</td><td>Essential for async sub-agent delegation � unlike parent-child spans they cross trace ID boundaries</td></tr>
+            <tr><td><span class="tag tag-warn">Span Links</span></td><td>Causal references across separate trace contexts</td><td>Essential for async sub-agent delegation — unlike parent-child spans they cross trace ID boundaries</td></tr>
             <tr><td><span class="tag tag-ind">Context Propagation</span></td><td>Serialized Trace ID in HTTP/gRPC headers</td><td>Prevents trace fragmentation when requests cross service boundaries</td></tr>
           </tbody>
         </table>
       </div>
 
       <h3 id="s-span-links">Span Links in Multi-Agent Systems</h3>
-      <p>Parent-child spans share the same Trace ID. Span Links are different � they reference spans in a <em>completely separate</em> trace context. This is what makes async sub-agent delegation traceable: the Research Agent starts its own trace, but its root span links back to the Orchestrator span that spawned it.</p>
+      <p>Parent-child spans share the same Trace ID. Span Links are different — they reference spans in a <em>completely separate</em> trace context. This is what makes async sub-agent delegation traceable: the Research Agent starts its own trace, but its root span links back to the Orchestrator span that spawned it.</p>
 
       <div class="span-link-demo">
         <div class="sld-trace sld-trace-a">
@@ -818,13 +818,13 @@
             <span style="font-family:var(--rw-font-mono);font-size:.62rem;color:rgba(255,255,255,.28)">trace_id: aaa-111</span>
           </div>
           <div class="sld-node">
-            <span style="color:rgba(255,255,255,.25);font-size:.68rem">?</span>
+            <span style="color:rgba(255,255,255,.25);font-size:.68rem">▼</span>
             <span class="tk tk-root">ROOT</span>
             <span style="color:rgba(240,244,255,.65)">plan_travel_itinerary</span>
           </div>
           <div class="sld-children">
             <div class="sld-node">
-              <span style="color:rgba(255,255,255,.25);font-size:.68rem">?</span>
+              <span style="color:rgba(255,255,255,.25);font-size:.68rem">▼</span>
               <span class="tk tk-llm">LLM</span>
               <span style="color:rgba(240,244,255,.65)">decompose_task</span>
             </div>
@@ -832,11 +832,11 @@
               <div class="sld-node sld-delegate">
                 <span class="tk tk-tool">TOOL</span>
                 <span style="color:rgba(240,244,255,.65);flex:1">delegate_to_research_agent</span>
-                <span class="sld-link-tag">? spawns Trace B</span>
+                <span class="sld-link-tag">→ spawns Trace B</span>
               </div>
             </div>
             <div class="sld-node">
-              <span style="color:rgba(255,255,255,.25);font-size:.68rem">?</span>
+              <span style="color:rgba(255,255,255,.25);font-size:.68rem">▶</span>
               <span class="tk tk-llm">LLM</span>
               <span style="color:rgba(240,244,255,.55)">assemble_itinerary</span>
               <span style="font-size:.62rem;color:rgba(255,255,255,.25);margin-left:auto">awaits Trace B result</span>
@@ -856,10 +856,10 @@
             <span style="font-family:var(--rw-font-mono);font-size:.62rem;color:rgba(255,255,255,.28)">trace_id: bbb-222</span>
           </div>
           <div class="sld-node">
-            <span style="color:rgba(255,255,255,.25);font-size:.68rem">?</span>
+            <span style="color:rgba(255,255,255,.25);font-size:.68rem">▼</span>
             <span class="tk tk-root">ROOT</span>
             <span style="color:rgba(240,244,255,.65);flex:1">research_task</span>
-            <span class="sld-link-tag">? linked to aaa-111</span>
+            <span class="sld-link-tag">← linked to aaa-111</span>
           </div>
           <div class="sld-children">
             <div class="sld-node">
@@ -876,28 +876,28 @@
             </div>
           </div>
           <div style="margin-top:.5rem;padding:.3rem .5rem;background:rgba(129,140,248,.07);border-radius:4px;font-size:.65rem;color:rgba(129,140,248,.7)">
-            span_link.trace_id: "aaa-111" � span_link.span_id: "spa-002"
+            span_link.trace_id: "aaa-111" · span_link.span_id: "spa-002"
           </div>
         </div>
       </div>
 
       <div class="sle-usecases">
-        <div class="sle-uc"><span class="tag tag-ind">1 Async delegation</span> <strong>Orchestrator ? Research Agent</strong> � the research agent runs independently on its own trace. A span link lets you trace back from the research result to the exact orchestrator span that created the task.</div>
-        <div class="sle-uc"><span class="tag tag-warn">2 Background eval pipeline</span> <strong>Eval runs after main trace closes</strong> � the evaluator opens a new trace, but links to the original trace it scored. You can correlate eval results with the exact execution context that produced them.</div>
-        <div class="sle-uc"><span class="tag tag-ok">3 Multi-turn sessions</span> <strong>Cross-turn root cause</strong> � turn 7 references the constraint established in turn 2. Without span links, you'd need to search manually across sessions; with them, the causal chain is navigable in one click.</div>
+        <div class="sle-uc"><span class="tag tag-ind">1 Async delegation</span> <strong>Orchestrator → Research Agent</strong> — the research agent runs independently on its own trace. A span link lets you trace back from the research result to the exact orchestrator span that created the task.</div>
+        <div class="sle-uc"><span class="tag tag-warn">2 Background eval pipeline</span> <strong>Eval runs after main trace closes</strong> — the evaluator opens a new trace, but links to the original trace it scored. You can correlate eval results with the exact execution context that produced them.</div>
+        <div class="sle-uc"><span class="tag tag-ok">3 Multi-turn sessions</span> <strong>Cross-turn root cause</strong> — turn 7 references the constraint established in turn 2. Without span links, you'd need to search manually across sessions; with them, the causal chain is navigable in one click.</div>
       </div>
     </section>
 
-    <!-- -- Section 7: Sampling Strategies -- -->
+    <!-- ── Section 7: Sampling Strategies ── -->
     <section class="guide-section" id="s-sampling">
       <h2>Sampling Strategies: Head-Based vs Tail-Based</h2>
-      <p>Storing 100% of production traces is cost-prohibitive. But choosing what to keep is critical � the wrong approach discards exactly the failures you need.</p>
+      <p>Storing 100% of production traces is cost-prohibitive. But choosing what to keep is critical — the wrong approach discards exactly the failures you need.</p>
 
       <div class="sampling-grid">
         <div class="sampling-panel sp-head">
           <div class="sp-title">Head-Based Sampling</div>
           <div class="sp-verdict">Dangerous for agents</div>
-          <div class="sp-point">Decision made at request ingress � before execution starts.</div>
+          <div class="sp-point">Decision made at request ingress — before execution starts.</div>
           <div class="sp-point">Randomly drops 90% of requests. Low-frequency silent failures are discarded at the same rate as routine successes.</div>
           <div class="sp-point">Cheap: no buffering required. But you'll never see the rare catastrophic hallucination that only happens 0.1% of the time.</div>
         </div>
@@ -905,27 +905,27 @@
           <div class="sp-title">Tail-Based Sampling</div>
           <div class="sp-verdict">Built for agents</div>
           <div class="sp-point">Buffers the full trace locally. Decision made after request completes, using actual execution signals.</div>
-          <div class="sp-point">Retains traces where: retrieval score &lt; 0.70, tool retries &gt; 2, token usage &gt; 10� baseline, eval score dropped.</div>
+          <div class="sp-point">Retains traces where: retrieval score &lt; 0.70, tool retries &gt; 2, token usage &gt; 10× baseline, eval score dropped.</div>
           <div class="sp-point">Moderate cost (memory buffer at collector). But you capture 100% of the complex anomalous traces that matter.</div>
         </div>
       </div>
     </section>
 
-    <!-- -- Section 8: 9 Opportunities -- -->
+    <!-- ── Section 8: 9 Opportunities ── -->
     <section class="guide-section" id="s-opportunities">
       <h2>9 Directions Worth Exploring</h2>
-      <p>Current observability platforms handle infrastructure metrics and distributed traces well. The nine areas below aren't necessarily missing from every product � some have partial solutions, others are emerging. Think of them as directions the field is still working through: good hackathon territory, or things to watch as products mature.</p>
+      <p>Current observability platforms handle infrastructure metrics and distributed traces well. The nine areas below aren't necessarily missing from every product — some have partial solutions, others are emerging. Think of them as directions the field is still working through: good hackathon territory, or things to watch as products mature.</p>
 
       <div class="opp-grid">
         <div class="opp-card">
           <div class="opp-num">EXPLORE #1</div>
           <div class="opp-title">Code-Aware AST Analysis</div>
-          <div class="opp-desc">What if trace frames could link to the exact source code AST node � docstring, type annotation, git SHA � that caused a hallucination? The idea: pinpoint line 35 automatically, not after hours of debugging.</div>
+          <div class="opp-desc">What if trace frames could link to the exact source code AST node — docstring, type annotation, git SHA — that caused a hallucination? The idea: pinpoint line 35 automatically, not after hours of debugging.</div>
         </div>
         <div class="opp-card">
           <div class="opp-num">EXPLORE #2</div>
           <div class="opp-title">ClickHouse Threat Hunting</div>
-          <div class="opp-desc">SQL window queries over trace streams to detect multi-session "slow-and-low" prompt injection � patterns that look harmless per-request but reveal intent across sessions. Most threat tools still work per-request.</div>
+          <div class="opp-desc">SQL window queries over trace streams to detect multi-session "slow-and-low" prompt injection — patterns that look harmless per-request but reveal intent across sessions. Most threat tools still work per-request.</div>
         </div>
         <div class="opp-card">
           <div class="opp-num">EXPLORE #3</div>
@@ -935,12 +935,12 @@
         <div class="opp-card">
           <div class="opp-num">EXPLORE #4</div>
           <div class="opp-title">Environment State-Diffing</div>
-          <div class="opp-desc">A tool call returning 200 OK proves nothing about whether the mutation was correct. Pre/post state snapshots diffed against agent intent � and automated rollback � would close this verification gap.</div>
+          <div class="opp-desc">A tool call returning 200 OK proves nothing about whether the mutation was correct. Pre/post state snapshots diffed against agent intent — and automated rollback — would close this verification gap.</div>
         </div>
         <div class="opp-card">
           <div class="opp-num">EXPLORE #5</div>
           <div class="opp-title">Auto-Discovery Topology Maps</div>
-          <div class="opp-desc">In LangGraph or CrewAI systems, sub-agent communication graphs form at runtime. Auto-rendering these without manual instrumentation � by hooking into framework event dispatchers � is technically feasible but not mainstream.</div>
+          <div class="opp-desc">In LangGraph or CrewAI systems, sub-agent communication graphs form at runtime. Auto-rendering these without manual instrumentation — by hooking into framework event dispatchers — is technically feasible but not mainstream.</div>
         </div>
         <div class="opp-card">
           <div class="opp-num">EXPLORE #6</div>
@@ -955,21 +955,21 @@
         <div class="opp-card">
           <div class="opp-num">EXPLORE #8</div>
           <div class="opp-title">Auto-Generated Issue Tickets</div>
-          <div class="opp-desc">Clustering failure traces by root cause and auto-opening a Jira story with impact stats, code pointers, and a suggested fix � this is a compelling hackathon project. LLM-assisted root cause grouping makes it plausible.</div>
+          <div class="opp-desc">Clustering failure traces by root cause and auto-opening a Jira story with impact stats, code pointers, and a suggested fix — this is a compelling hackathon project. LLM-assisted root cause grouping makes it plausible.</div>
         </div>
         <div class="opp-card">
           <div class="opp-num">EXPLORE #9</div>
           <div class="opp-title">Observability-Driven Caching</div>
-          <div class="opp-desc">If your trace logs reveal that 30% of requests are semantically near-identical, you could auto-generate prompt caching rules. The observability data is already there � it just needs a recommendation engine on top.</div>
+          <div class="opp-desc">If your trace logs reveal that 30% of requests are semantically near-identical, you could auto-generate prompt caching rules. The observability data is already there — it just needs a recommendation engine on top.</div>
         </div>
       </div>
       <div class="callout" style="margin-top:1rem">
         <div class="callout-label">Note on framing</div>
-        <p>These are drawn from research and architectural thinking, not from testing specific production systems. They're worth watching as the agent observability space matures � and several make strong hackathon starting points.</p>
+        <p>These are drawn from research and architectural thinking, not from testing specific production systems. They're worth watching as the agent observability space matures — and several make strong hackathon starting points.</p>
       </div>
     </section>
 
-    <!-- -- Section 9: Vendor Landscape -- -->
+    <!-- ── Section 9: Vendor Landscape ── -->
     <section class="guide-section" id="s-vendors">
       <h2>Vendor Landscape</h2>
       <p>Four distinct platform archetypes exist. The right choice depends on how much control you need vs. how much operational overhead you can absorb.</p>
@@ -982,29 +982,29 @@
               <td><strong>Self-Managed</strong></td>
               <td>OTel Collector + Prometheus + Jaeger</td>
               <td><span class="tag tag-ok">Maximum</span></td>
-              <td><span class="tag tag-warn">Low � manual</span></td>
+              <td><span class="tag tag-warn">Low — manual</span></td>
               <td><span class="tag tag-fail">High</span></td>
             </tr>
             <tr>
               <td><strong>Commercial Managed</strong></td>
               <td>Datadog, Dynatrace, New Relic</td>
               <td><span class="tag tag-warn">Moderate</span></td>
-              <td><span class="tag tag-warn">Moderate � LLM wrappers</span></td>
+              <td><span class="tag tag-warn">Moderate — LLM wrappers</span></td>
               <td><span class="tag tag-ok">Low</span></td>
             </tr>
             <tr>
               <td><strong>Cloud-Native</strong></td>
               <td>AWS CloudWatch, GCP Operations</td>
               <td><span class="tag tag-warn">Moderate</span></td>
-              <td><span class="tag tag-fail">Low � infra only</span></td>
+              <td><span class="tag tag-fail">Low — infra only</span></td>
               <td><span class="tag tag-ok">Low</span></td>
             </tr>
             <tr>
               <td><strong>Purpose-Built AI</strong></td>
               <td>Arize Phoenix, LangSmith, Braintrust</td>
               <td><span class="tag tag-warn">Moderate</span></td>
-              <td><span class="tag tag-ok">Maximum � first-class</span></td>
-              <td><span class="tag tag-ok">Low�Medium</span></td>
+              <td><span class="tag tag-ok">Maximum — first-class</span></td>
+              <td><span class="tag tag-ok">Low–Medium</span></td>
             </tr>
           </tbody>
         </table>
@@ -1012,13 +1012,13 @@
 
       <div class="callout">
         <div class="callout-label">Recommendation</div>
-        <p>Start with a purpose-built AI platform (Arize Phoenix or LangSmith) for rapid time-to-value on agent-specific observability. Layer in OTel-based infrastructure telemetry alongside it rather than choosing one or the other. <strong>Never use only a general-purpose APM tool for agent observability</strong> � you will be completely blind to the failures that matter most.</p>
+        <p>Start with a purpose-built AI platform (Arize Phoenix or LangSmith) for rapid time-to-value on agent-specific observability. Layer in OTel-based infrastructure telemetry alongside it rather than choosing one or the other. <strong>Never use only a general-purpose APM tool for agent observability</strong> — you will be completely blind to the failures that matter most.</p>
       </div>
     </section>
 
     <!-- Attribution -->
     <div style="border-top:1px solid var(--rw-border);padding-top:1.5rem;margin-top:1rem;display:flex;align-items:flex-start;gap:.75rem;">
-      <span style="font-size:1.1rem;flex-shrink:0">??</span>
+      <span style="font-size:1.1rem;flex-shrink:0">🎓</span>
       <p style="font-size:.82rem;color:var(--rw-text-subtle);line-height:1.65;margin:0">
         Inspired by a session on <strong style="color:var(--rw-text-muted)">Observability for AI Agents</strong> by
         <strong style="color:var(--rw-text-muted)">Elena Karrer</strong> from
@@ -1031,12 +1031,12 @@
 
 <div id="rw-footer"
      data-linkedin=""
-     data-related='[{"label":"TripRipple � Agent Memory","url":"/usecase/tripripple.html"}]'
+     data-related='[{"label":"TripRipple — Agent Memory","url":"/usecase/tripripple.html"}]'
 ></div>
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-// -- Hero terminal animation ----------------------------------
+// ── Hero terminal animation ──────────────────────────────────
 (function() {
   const lines = document.querySelectorAll('#termBody .t-line');
   let i = 0;
@@ -1056,7 +1056,7 @@
   setTimeout(showNext, 500);
 })();
 
-// -- Railway Simulator ----------------------------------------
+// ── Railway Simulator ────────────────────────────────────────
 let simRunning = false;
 
 function resetSim() {
@@ -1067,7 +1067,7 @@ function resetSim() {
   document.getElementById('breakMarker').setAttribute('opacity', '0');
   const sA = document.getElementById('sA'), sB = document.getElementById('sB'), sC = document.getElementById('sC');
   [sA,sB,sC].forEach(el => { el.setAttribute('stroke','rgba(255,255,255,0.25)'); el.setAttribute('fill','rgba(255,255,255,0.05)'); });
-  setStatus('static', 'Idle � click Send Request', null);
+  setStatus('static', 'Idle — click Send Request', null);
   // Agent
   const ta = document.getElementById('trainAgent');
   ta.setAttribute('cx','34'); ta.setAttribute('cy','65'); ta.setAttribute('opacity','0');
@@ -1076,7 +1076,7 @@ function resetSim() {
   document.getElementById('wrongLabel').setAttribute('opacity','0');
   document.getElementById('destB').setAttribute('stroke','rgba(248,113,113,0.15)');
   document.getElementById('destBText').setAttribute('fill','rgba(248,113,113,0.5)');
-  setStatus('agent', 'Idle � click Send Request', null);
+  setStatus('agent', 'Idle — click Send Request', null);
 }
 
 function setStatus(panel, text, badge) {
@@ -1121,14 +1121,14 @@ function runStaticSim(hasFailure) {
   setStatus('Static', 'Departing Station A...', null);
   sA.setAttribute('stroke','#4ade80'); sA.setAttribute('fill','rgba(74,222,128,0.1)');
 
-  // Move A?B
+  // Move A→B
   animateEl(train, 'x', 18, 148, 900, 0, () => {
     sB.setAttribute('stroke', hasFailure ? '#f87171' : '#4ade80');
     sB.setAttribute('fill', hasFailure ? 'rgba(248,113,113,0.1)' : 'rgba(74,222,128,0.1)');
     if (hasFailure) {
       breakM.setAttribute('opacity','1');
       train.setAttribute('opacity','0.3');
-      setStatus('Static', 'Track break at Station B � halted', {text:'500 ERROR', cls:'hb-err'});
+      setStatus('Static', 'Track break at Station B — halted', {text:'500 ERROR', cls:'hb-err'});
       simRunning = false;
     } else {
       setStatus('Static', 'Passing Station B...', null);
@@ -1147,25 +1147,25 @@ function runAgentSim(hasFailure) {
   const wl = document.getElementById('wrongLabel');
 
   train.setAttribute('opacity','1');
-  setStatus('Agent', 'Query received � routing...', null);
+  setStatus('Agent', 'Query received — routing...', null);
 
-  // Move Input?Engine (cx: 34?160)
+  // Move Input→Engine (cx: 34→160)
   animateEl(train, 'cx', 34, 160, 700, 0, () => {
     setStatus('Agent', 'LLM evaluating context...', null);
-    // Engine?Switch (cx: 160?220)
+    // Engine→Switch (cx: 160→220)
     animateEl(train, 'cx', 160, 220, 600, 200, () => {
       if (hasFailure) {
         // Bad switch
         sw.setAttribute('stroke','#f87171');
         sw.setAttribute('fill','rgba(248,113,113,0.2)');
-        // Move to wrong destination (cx: 220?291, cy: 65?95)
-        setStatus('Agent', 'Context ambiguous � switch misrouted', null);
+        // Move to wrong destination (cx: 220→291, cy: 65→95)
+        setStatus('Agent', 'Context ambiguous — switch misrouted', null);
         animateEl(train, 'cx', 220, 291, 700, 0, () => {});
         animateEl(train, 'cy', 65, 95, 700, 0, () => {
           document.getElementById('destB').setAttribute('stroke','#fbbf24');
           document.getElementById('destBText').setAttribute('fill','#fbbf24');
           wl.setAttribute('opacity','1');
-          setStatus('Agent', 'Arrived � wrong destination', {text:'200 OK ? SILENT', cls:'hb-silent'});
+          setStatus('Agent', 'Arrived — wrong destination', {text:'200 OK ← SILENT', cls:'hb-silent'});
           simRunning = false;
         });
       } else {
@@ -1182,7 +1182,7 @@ function runAgentSim(hasFailure) {
   });
 }
 
-// -- Compounding Error Calculator -----------------------------
+// ── Compounding Error Calculator ─────────────────────────────
 function updateCalc() {
   const steps = parseInt(document.getElementById('stepsSlider').value);
   const acc = parseInt(document.getElementById('accuracySlider').value) / 1000;
@@ -1217,20 +1217,20 @@ function updateCalc() {
 }
 updateCalc();
 
-// -- Trace Inspector: node toggle -----------------------------
+// ── Trace Inspector: node toggle ─────────────────────────────
 function toggleNode(hdr) {
   const exp = hdr.querySelector('.t-exp');
   const node = hdr.closest('.t-node');
   const children = node.querySelector('.t-children');
   const attrs = node.querySelector('.t-attrs');
-  const isOpen = exp.textContent.trim() === '?';
+  const isOpen = exp.textContent.trim() === '▼';
 
   if (isOpen) {
-    exp.textContent = '?';
+    exp.textContent = '▶';
     if (children) children.style.display = 'none';
     if (attrs) attrs.classList.remove('open');
   } else {
-    exp.textContent = '?';
+    exp.textContent = '▼';
     if (children) children.style.display = '';
     if (attrs) attrs.classList.add('open');
   }
@@ -1248,7 +1248,7 @@ function filterTrace(kind, btn) {
   });
 }
 
-// -- Scrollspy ------------------------------------------------
+// ── Scrollspy ────────────────────────────────────────────────
 (function() {
   const sections = document.querySelectorAll('.guide-section[id]');
   const links = document.querySelectorAll('.guide-toc a');

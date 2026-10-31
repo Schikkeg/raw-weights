@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Debrief � 9 Hours, 1 Graph, 14 People Remembered � RawWeights</title>
-  <meta name="description" content="We built a conference networking app at the same hackathon where we needed it. FalkorDB, Bright Data, Qodo � here's exactly what happened, hour by hour.">
+  <title>Debrief — 9 Hours, 1 Graph, 14 People Remembered · RawWeights</title>
+  <meta name="description" content="We built a conference networking app at the same hackathon where we needed it. FalkorDB, Bright Data, Qodo — here's exactly what happened, hour by hour.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/usecase/debrief-film.html">
-  <meta property="og:title" content="Debrief � 9 Hours, 1 Graph, 14 People Remembered">
+  <meta property="og:title" content="Debrief — 9 Hours, 1 Graph, 14 People Remembered">
   <meta property="og:description" content="We built a conference networking app at the same hackathon where we needed it. 26 PRs. 119 tests. Built with FalkorDB, Bright Data, and Qodo.">
   <meta property="og:image" content="https://rawweights.com/images/debrief/debrief-film-og.jpeg">
   <meta name="twitter:card" content="summary_large_image">
@@ -19,7 +19,7 @@
 
   <style>
 
-    /* -- Film variables -------------------------------------------- */
+    /* ── Film variables ──────────────────────────────────────────── */
     :root {
       --c-falkordb:    #818cf8;
       --c-brightdata:  #4ade80;
@@ -32,19 +32,19 @@
       --film-muted:    rgba(238,242,255,.55);
     }
 
-    /* -- Reset / base ---------------------------------------------- */
+    /* ── Reset / base ────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--film-bg); color: var(--film-text); font-family: var(--rw-font-body); }
     a { color: inherit; text-decoration: none; }
 
-    /* -- Reveal animations ----------------------------------------- */
+    /* ── Reveal animations ───────────────────────────────────────── */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
     .reveal.in { opacity: 1; transform: none; }
     .reveal-fast { opacity: 0; transition: opacity .4s ease; }
     .reveal-fast.in { opacity: 1; }
 
-    /* -- Scene structure ------------------------------------------- */
+    /* ── Scene structure ─────────────────────────────────────────── */
     .scene { position: relative; padding: 0; overflow: hidden; }
     .scene-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
     .scene-label {
@@ -54,7 +54,7 @@
     }
     .scene-label::after { content: ''; flex: 1; height: 1px; background: var(--film-border); }
 
-    /* -- Fixed progress reel --------------------------------------- */
+    /* ── Fixed progress reel ─────────────────────────────────────── */
     .film-reel {
       position: fixed; right: 1.25rem; top: 50%; transform: translateY(-50%);
       display: flex; flex-direction: column; gap: .45rem; z-index: 100;
@@ -67,7 +67,7 @@
     .reel-dot.active { background: var(--film-text); transform: scale(1.5); }
     @media(max-width:640px){ .film-reel { display: none; } }
 
-    /* -- Cold open elements ---------------------------------------- */
+    /* ── Cold open elements ──────────────────────────────────────── */
     .cold-open-stamp {
       font-family: var(--rw-font-mono); font-size: .75rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: .15em;
@@ -75,7 +75,7 @@
       display: flex; align-items: center; gap: .75rem;
     }
     .cold-open-stamp::before {
-      content: '?'; animation: pulse 2s infinite; font-size: .55rem;
+      content: '●'; animation: pulse 2s infinite; font-size: .55rem;
     }
     .cold-numbers {
       display: flex; align-items: center; flex-wrap: wrap; gap: 0;
@@ -111,15 +111,15 @@
     .problem-col.good .problem-col-head { background: rgba(74,222,128,.08); color: var(--c-brightdata); }
     .problem-list { list-style: none; padding: 1rem 1.1rem; background: var(--film-surface); display: flex; flex-direction: column; gap: .65rem; }
     .problem-list li { font-size: .83rem; color: var(--film-muted); padding-left: 1.1em; position: relative; line-height: 1.55; }
-    .problem-col.bad  .problem-list li::before { content: '?'; position: absolute; left: 0; color: #fb7185; font-size: .7rem; top: .1em; }
-    .problem-col.good .problem-list li::before { content: '?'; position: absolute; left: 0; color: var(--c-brightdata); font-size: .8rem; }
+    .problem-col.bad  .problem-list li::before { content: '✕'; position: absolute; left: 0; color: #fb7185; font-size: .7rem; top: .1em; }
+    .problem-col.good .problem-list li::before { content: '✓'; position: absolute; left: 0; color: var(--c-brightdata); font-size: .8rem; }
     @media(max-width:640px) {
       .problem-split { grid-template-columns: 1fr; }
       .cold-numbers { flex-direction: column; }
       .cn-sep { width: 100%; height: 1px; }
     }
 
-    /* -- SCENE 01: TITLE ------------------------------------------- */
+    /* ── SCENE 01: TITLE ─────────────────────────────────────────── */
     #s1 {
       min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
       background: var(--film-bg);
@@ -166,11 +166,11 @@
     .sp-qodo        { color: var(--c-qodo);        border-color: rgba(251,191,36,.3);  background: rgba(251,191,36,.08); }
     .sp-wemakedevs  { color: var(--c-wemakedevs);  border-color: rgba(244,114,182,.3); background: rgba(244,114,182,.08); }
 
-    /* -- Scene 01 two-column hero layout -------------------------- */
+    /* ── Scene 01 two-column hero layout ────────────────────────── */
     .s1-hero { display: grid; grid-template-columns: 1fr 400px; gap: 3.5rem; align-items: center; margin-bottom: 3rem; }
     @media(max-width:1024px) { .s1-hero { grid-template-columns: 1fr; gap: 2rem; } }
 
-    /* -- Scene 01 video card --------------------------------------- */
+    /* ── Scene 01 video card ─────────────────────────────────────── */
     .film-video-card {
       position: relative; border-radius: 10px; overflow: hidden;
       border: 1px solid rgba(129,140,248,.18); cursor: pointer; background: #000;
@@ -201,7 +201,7 @@
     .film-video-meta-title { color: rgba(238,242,255,.75); letter-spacing: .05em; text-transform: uppercase; }
     .film-video-meta-credit { color: rgba(129,140,248,.7); }
 
-    /* -- Video modal ----------------------------------------------- */
+    /* ── Video modal ─────────────────────────────────────────────── */
     dialog.video-modal {
       position: fixed; inset: 0; z-index: 9999; border: none; padding: 1.5rem; margin: 0;
       width: 100%; max-width: 100%; height: 100%; background: rgba(0,0,0,.9);
@@ -217,7 +217,7 @@
     }
     .video-modal-close:hover { color: #fff; }
 
-    /* -- SCENE 02: NUMBERS ----------------------------------------- */
+    /* ── SCENE 02: NUMBERS ───────────────────────────────────────── */
     #s2 { padding: 6rem 0; background: var(--film-surface); }
     .numbers-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
@@ -250,7 +250,7 @@
     .big-num.c6 { color: var(--c-falkordb); }
     .num-label { font-size: .78rem; color: var(--film-muted); line-height: 1.4; font-family: var(--rw-font-mono); }
 
-    /* -- SCENE 03: THE CAST ---------------------------------------- */
+    /* ── SCENE 03: THE CAST ──────────────────────────────────────── */
     #s3 { padding: 6rem 0; background: var(--film-bg); }
     .cast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; margin-top: 2.5rem; }
     .cast-card {
@@ -281,7 +281,7 @@
     .cast-stat { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--film-muted); line-height: 1.8; }
     .cast-stat strong { color: var(--film-text); }
 
-    /* -- SCENE 04: PIPELINE INFOGRAPHIC --------------------------- */
+    /* ── SCENE 04: PIPELINE INFOGRAPHIC ─────────────────────────── */
     #s4 { padding: 6rem 0; background: var(--film-surface); }
     .pipeline-wrap { margin-top: 3rem; position: relative; }
     .pipeline-row { display: flex; align-items: stretch; gap: 0; }
@@ -333,7 +333,7 @@
     .outcome-text { font-size: .9rem; color: var(--film-muted); line-height: 1.65; }
     .outcome-text strong { color: var(--film-text); }
 
-    /* -- SCENE 05: THE GRAPH --------------------------------------- */
+    /* ── SCENE 05: THE GRAPH ─────────────────────────────────────── */
     #s5 { padding: 6rem 0; background: var(--film-bg); }
     .graph-visual {
       margin-top: 2.5rem; position: relative;
@@ -370,7 +370,7 @@
     }
     .graph-insight strong { color: var(--film-text); }
 
-    /* -- Graph slide deck ------------------------------------------ */
+    /* ── Graph slide deck ────────────────────────────────────────── */
     .graph-deck { background:#030710; border:1px solid rgba(129,140,248,.15); border-radius:12px; overflow:hidden; margin-top:2rem; }
     .graph-slide-nav { display:flex; border-bottom:1px solid rgba(255,255,255,.06); overflow-x:auto; scrollbar-width:none; }
     .graph-slide-nav::-webkit-scrollbar { display:none; }
@@ -406,7 +406,7 @@
     .graph-progress-wrap { height:3px; background:rgba(255,255,255,.06); }
     .graph-progress-bar { height:100%; background:var(--c-falkordb); width:0%; transition:width linear; }
 
-    /* -- Phone carousel -------------------------------------------- */
+    /* ── Phone carousel ──────────────────────────────────────────── */
     .phone-carousel { display:flex; gap:3rem; align-items:center; margin-top:2rem; }
     .phone-carousel-main { flex-shrink:0; }
     .pc-frame {
@@ -443,7 +443,7 @@
       .pc-frame { width:160px; }
     }
 
-    /* -- SCENE 06: BUILD TIMELINE ---------------------------------- */
+    /* ── SCENE 06: BUILD TIMELINE ────────────────────────────────── */
     #s6 { padding: 6rem 0; background: var(--film-surface); }
     .build-clock {
       margin: 2rem 0; display: grid; grid-template-columns: repeat(2,1fr); gap: 1px;
@@ -479,7 +479,7 @@
       white-space: nowrap; z-index: 10;
     }
 
-    /* -- SCENE 07: PLOT TWISTS ------------------------------------- */
+    /* ── SCENE 07: PLOT TWISTS ───────────────────────────────────── */
     #s7 { padding: 6rem 0; background: var(--film-bg); }
     .twist-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2.5rem; }
     .twist-card {
@@ -507,7 +507,7 @@
     .twist-fix p { font-size: .77rem; color: var(--film-muted); margin: 0; }
     .twist-fix strong { color: var(--c-brightdata); }
 
-    /* -- SCENE 08: THE APP ----------------------------------------- */
+    /* ── SCENE 08: THE APP ───────────────────────────────────────── */
     #s8 { padding: 6rem 0; background: var(--film-surface); }
     .filmstrip {
       display: flex; gap: 1.5rem; overflow-x: auto; padding: 1.5rem 0 1rem;
@@ -534,7 +534,7 @@
     }
     .film-phone-cap strong { color: var(--film-text); font-family: var(--rw-font-display); font-size: .78rem; display: block; margin-bottom: .15rem; }
 
-    /* -- SCENE 09: PLATFORM SCORES --------------------------------- */
+    /* ── SCENE 09: PLATFORM SCORES ───────────────────────────────── */
     #s9 { padding: 6rem 0; background: var(--film-bg); }
     .verdict-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2.5rem; }
     .verdict-card {
@@ -558,7 +558,7 @@
     .verdict-tag-row { padding: .75rem 1.1rem; border-top: 1px solid var(--film-border); background: rgba(0,0,0,.25); }
     .verdict-quote { font-size: .8rem; color: var(--film-muted); font-style: italic; line-height: 1.55; }
 
-    /* -- SCENE 10: CREDITS ----------------------------------------- */
+    /* ── SCENE 10: CREDITS ───────────────────────────────────────── */
     #s10 {
       padding: 7rem 0 5rem; background: var(--film-surface);
       text-align: center;
@@ -574,7 +574,7 @@
     .team-info-role { font-size: .72rem; color: var(--film-muted); }
     .credits-sponsors { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
-    /* -- Section headings ------------------------------------------ */
+    /* ── Section headings ────────────────────────────────────────── */
     .scene-h2 {
       font-family: var(--rw-font-display); font-weight: 900;
       font-size: clamp(1.75rem, 4vw, 2.75rem); line-height: 1;
@@ -584,7 +584,7 @@
     .scene-h2 span { color: var(--c-falkordb); }
     .scene-sub { font-size: .95rem; color: var(--film-muted); max-width: 560px; line-height: 1.7; margin-bottom: .5rem; }
 
-    /* -- Graph "up next" indicator -------------------------------- */
+    /* ── Graph "up next" indicator ──────────────────────────────── */
     .graph-upnext {
       display:flex; align-items:center; gap:.5rem; padding:.55rem 1.4rem;
       border-top:1px solid rgba(255,255,255,.04); background:rgba(0,0,0,.2);
@@ -593,7 +593,7 @@
     .gun-arrow { color:rgba(129,140,248,.5); }
     .gun-title { color:rgba(238,242,255,.5); font-weight:600; transition:opacity .4s; }
 
-    /* -- WeMakeDevs gallery ---------------------------------------- */
+    /* ── WeMakeDevs gallery ──────────────────────────────────────── */
     .submissions-grid {
       display:grid; grid-template-columns:repeat(3,1fr);
       gap:.75rem; margin-top:2rem;
@@ -619,17 +619,17 @@
     @media(max-width:900px) { .submissions-grid { grid-template-columns:repeat(2,1fr); } }
     @media(max-width:600px) { .submissions-grid { grid-template-columns:1fr; } }
 
-    /* -- Score bar animation --------------------------------------- */
+    /* ── Score bar animation ─────────────────────────────────────── */
     .score-fill { height:100%; border-radius:3px; width:0%; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
     .score-fill.animated { opacity: 1; }
     .score-num-anim { transition:opacity .3s; }
 
-    /* -- Team photo ------------------------------------------------ */
+    /* ── Team photo ──────────────────────────────────────────────── */
     .team-av img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
     .team-chip a { text-decoration:none; display:flex; align-items:center; gap:.6rem; }
     .team-chip a:hover .team-info-name { color:var(--c-falkordb); }
 
-    /* -- Responsive ------------------------------------------------ */
+    /* ── Responsive ──────────────────────────────────────────────── */
     @media(max-width:900px) {
       .cast-grid { grid-template-columns: repeat(2,1fr); }
       .numbers-grid { grid-template-columns: repeat(2,1fr); }
@@ -674,38 +674,38 @@
   <div class="reel-dot" data-s="s11"></div>
 </nav>
 
-<!-- ----------------------------------------------------------------
-     SCENE 01 � COLD OPEN � THE RESULT
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 01 · COLD OPEN — THE RESULT
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s1" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;background:var(--film-bg);padding:5rem 1.5rem 4rem">
   <div class="scene-inner" style="max-width:1100px">
 
     <!-- Two-column hero: text left, video right -->
     <div class="s1-hero">
       <div class="s1-left">
-        <div class="cold-open-stamp reveal">5:30 PM &nbsp;�&nbsp; October 24, 2024 &nbsp;�&nbsp; San Francisco</div>
+        <div class="cold-open-stamp reveal">5:30 PM &nbsp;·&nbsp; October 24, 2024 &nbsp;·&nbsp; San Francisco</div>
         <h1 class="film-h1 reveal" style="transition-delay:.1s">
           THE DEMO<br>JUST <span class="hi">RAN.</span>
         </h1>
         <p class="film-lead reveal" style="transition-delay:.2s">
-          14 meaningful conversations logged. 10 sessions attended. 10 ideas captured. 2,307 nodes in a FalkorDB graph �
+          14 meaningful conversations logged. 10 sessions attended. 10 ideas captured. 2,307 nodes in a FalkorDB graph —
           all from the same conference happening <em>right outside this room.</em> There were 200+ people in that building.
           We talked to 14 of them deeply enough to remember why it mattered. Every one of those 14 is in the graph. Forever.
         </p>
       </div>
       <div class="s1-right reveal" style="transition-delay:.2s">
         <div class="film-video-card" onclick="openVideoModal()">
-          <img class="film-video-thumb" src="../images/debrief/recap.png" alt="Debrief � Same Day">
+          <img class="film-video-thumb" src="../images/debrief/recap.png" alt="Debrief — Same Day">
           <div class="film-play-btn"><div class="film-play-icon"></div></div>
           <div class="film-video-meta">
-            <span class="film-video-meta-title">? &nbsp; Same Day &nbsp;�&nbsp; 1 min 45 sec</span>
+            <span class="film-video-meta-title">▶ &nbsp; Same Day &nbsp;·&nbsp; 1 min 45 sec</span>
             <span class="film-video-meta-credit">Made with AdaL</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Success numbers � animated on enter -->
+    <!-- Success numbers — animated on enter -->
     <div class="cold-numbers reveal" style="transition-delay:.3s">
       <div class="cn-item">
         <div class="cn-val" data-count="2307">0</div>
@@ -724,7 +724,7 @@
       <div class="cn-sep"></div>
       <div class="cn-item">
         <div class="cn-val" style="color:var(--c-brightdata)">30s</div>
-        <div class="cn-label">URL ? meet plan</div>
+        <div class="cn-label">URL → meet plan</div>
       </div>
       <div class="cn-sep"></div>
       <div class="cn-item">
@@ -741,7 +741,7 @@
     <!-- Rewind marker -->
     <div class="rewind-bar reveal" style="transition-delay:.45s">
       <div class="rewind-line"></div>
-      <div class="rewind-label">? &nbsp; 9 HOURS EARLIER</div>
+      <div class="rewind-label">↺ &nbsp; 9 HOURS EARLIER</div>
       <div class="rewind-line"></div>
     </div>
 
@@ -755,12 +755,12 @@
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 02 � FLASHBACK � THE PROBLEM
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 02 · FLASHBACK — THE PROBLEM
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s2" style="padding:5rem 0;background:var(--film-surface)">
   <div class="scene-inner">
-    <div class="scene-label">Scene 02 � The Problem</div>
+    <div class="scene-label">Scene 02 — The Problem</div>
     <h2 class="scene-h2 reveal">9:00 AM.<br><span>WE HAD THE PROBLEM</span><br>WE WERE ABOUT<br>TO SOLVE.</h2>
     <div class="problem-split reveal" style="transition-delay:.12s">
       <div class="problem-col bad">
@@ -769,7 +769,7 @@
           <li>200 people in the building. You had deep conversations with 14. You remember 4 of their names a week later.</li>
           <li>Notes scattered across 3 apps, 2 voice memos, and 1 napkin.</li>
           <li>LinkedIn searches that take 3 hours before the event even starts.</li>
-          <li>Follow-up emails written from memory � wrong details, wrong tone.</li>
+          <li>Follow-up emails written from memory — wrong details, wrong tone.</li>
           <li>Ideas that sparked in a session, gone by the commute home.</li>
         </ul>
       </div>
@@ -777,7 +777,7 @@
         <div class="problem-col-head">What we decided to build by 9:01 AM</div>
         <ul class="problem-list">
           <li>One graph that remembers everyone, every session, every idea.</li>
-          <li>30-second event import � URL to ranked meet plan.</li>
+          <li>30-second event import — URL to ranked meet plan.</li>
           <li>Notes linked to people + sessions in the graph, immutable.</li>
           <li>AI follow-up drafts from <em>your</em> notes, not their bio.</li>
           <li>Every idea traceable to the talk that sparked it. Forever.</li>
@@ -791,19 +791,19 @@
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 03 � THE CAST
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 03 · THE CAST
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s3" style="padding: 6rem 0; background: var(--film-bg);">
   <div class="scene-inner">
-    <div class="scene-label">Scene 03 � The Cast</div>
+    <div class="scene-label">Scene 03 — The Cast</div>
     <h2 class="scene-h2 reveal">THE TOOLS<br><span>IN THE STORY</span></h2>
     <p class="scene-sub reveal" style="transition-delay:.08s">Every tool played a specific role. Here's who did what, when it mattered most.</p>
     <div class="cast-grid reveal" style="transition-delay:.15s">
 
       <div class="cast-card falkordb">
         <div class="cast-head" style="background: rgba(129,140,248,.04)">
-          <div class="cast-icon">???</div>
+          <div class="cast-icon">🕸️</div>
           <div class="cast-role-tag">The Memory</div>
           <div class="cast-name">FalkorDB</div>
           <div class="cast-alias">graph database</div>
@@ -815,7 +815,7 @@
 
       <div class="cast-card brightdata">
         <div class="cast-head" style="background: rgba(74,222,128,.04)">
-          <div class="cast-icon">??</div>
+          <div class="cast-icon">📡</div>
           <div class="cast-role-tag">The Intel</div>
           <div class="cast-name">Bright Data</div>
           <div class="cast-alias">web intelligence</div>
@@ -827,7 +827,7 @@
 
       <div class="cast-card qodo">
         <div class="cast-head" style="background: rgba(251,191,36,.04)">
-          <div class="cast-icon">??</div>
+          <div class="cast-icon">🔍</div>
           <div class="cast-role-tag">The Auditor</div>
           <div class="cast-name">Qodo</div>
           <div class="cast-alias">AI code review</div>
@@ -839,10 +839,10 @@
 
       <div class="cast-card wemakedevs">
         <div class="cast-head" style="background: rgba(244,114,182,.04)">
-          <div class="cast-icon">??</div>
+          <div class="cast-icon">🌐</div>
           <div class="cast-role-tag">The Stage</div>
           <div class="cast-name">WeMakeDevs</div>
-          <div class="cast-alias">community � host</div>
+          <div class="cast-alias">community · host</div>
         </div>
         <div class="cast-body">
           <div class="cast-stat">Role: <strong>Hackathon host</strong><br>Community: <strong>builders + makers</strong><br>Critical scene: <strong>The problem itself</strong><br>Signature: <strong>the reason we built</strong></div>
@@ -853,12 +853,12 @@
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 04 � THE PIPELINE
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 04 · THE PIPELINE
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s4" style="padding: 6rem 0; background: var(--film-surface);">
   <div class="scene-inner">
-    <div class="scene-label">Scene 04 � The Pipeline</div>
+    <div class="scene-label">Scene 04 — The Pipeline</div>
     <h2 class="scene-h2 reveal">FROM URL TO<br><span>RANKED MEET PLAN</span><br>IN 30 SECONDS</h2>
     <p class="scene-sub reveal" style="transition-delay:.08s">Paste one URL. This is everything that happens before you finish reading this sentence.</p>
 
@@ -867,19 +867,19 @@
 
         <div class="pipe-step">
           <div class="pipe-node">
-            <div class="pipe-node-icon">??</div>
+            <div class="pipe-node-icon">🔗</div>
             <div class="pipe-node-tool" style="background:rgba(238,242,255,.07);color:rgba(238,242,255,.5)">Input</div>
             <div class="pipe-node-label">Event URL</div>
-            <div class="pipe-node-sub">Conference schedule page � JS-rendered, behind anti-bot</div>
+            <div class="pipe-node-sub">Conference schedule page — JS-rendered, behind anti-bot</div>
           </div>
           <div class="pipe-time">you paste it</div>
         </div>
 
-        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">?</div>
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
 
         <div class="pipe-step">
           <div class="pipe-node">
-            <div class="pipe-node-icon">??</div>
+            <div class="pipe-node-icon">📡</div>
             <div class="pipe-node-tool sp-brightdata" style="background:rgba(74,222,128,.1);border:none">Bright Data</div>
             <div class="pipe-node-label">Web Unlocker</div>
             <div class="pipe-node-sub">Renders JS, bypasses protection, returns clean HTML</div>
@@ -887,72 +887,72 @@
           <div class="pipe-time"><strong>~3s</strong></div>
         </div>
 
-        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">?</div>
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
 
         <div class="pipe-step">
           <div class="pipe-node">
-            <div class="pipe-node-icon">??</div>
+            <div class="pipe-node-icon">🤖</div>
             <div class="pipe-node-tool" style="background:rgba(238,242,255,.07);color:rgba(238,242,255,.5)">OpenAI</div>
             <div class="pipe-node-label">gpt-4o-mini</div>
             <div class="pipe-node-sub">Extracts sessions, speaker names, abstracts, topics</div>
           </div>
-          <div class="pipe-time"><strong>~5s</strong> � 8 sessions � 12 speakers</div>
+          <div class="pipe-time"><strong>~5s</strong> · 8 sessions · 12 speakers</div>
         </div>
 
-        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">?</div>
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
 
         <div class="pipe-step">
           <div class="pipe-node">
-            <div class="pipe-node-icon">??</div>
+            <div class="pipe-node-icon">🔎</div>
             <div class="pipe-node-tool sp-brightdata" style="background:rgba(74,222,128,.1);border:none">Bright Data</div>
             <div class="pipe-node-label">SERP API</div>
-            <div class="pipe-node-sub">Structured JSON � finds LinkedIn URLs for each speaker</div>
+            <div class="pipe-node-sub">Structured JSON — finds LinkedIn URLs for each speaker</div>
           </div>
-          <div class="pipe-time"><strong>~8s</strong> � 11 of 12 found</div>
+          <div class="pipe-time"><strong>~8s</strong> · 11 of 12 found</div>
         </div>
 
-        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">?</div>
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
 
         <div class="pipe-step">
           <div class="pipe-node">
-            <div class="pipe-node-icon">??</div>
+            <div class="pipe-node-icon">👤</div>
             <div class="pipe-node-tool sp-brightdata" style="background:rgba(74,222,128,.1);border:none">Bright Data</div>
             <div class="pipe-node-label">LinkedIn Datasets</div>
-            <div class="pipe-node-sub">Full profile enrichment � async 202 + snapshot polling</div>
+            <div class="pipe-node-sub">Full profile enrichment — async 202 + snapshot polling</div>
           </div>
-          <div class="pipe-time"><strong>~10s</strong> � 11 profiles</div>
+          <div class="pipe-time"><strong>~10s</strong> · 11 profiles</div>
         </div>
 
-        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">?</div>
+        <div style="display:flex;align-items:center;padding-bottom:2rem;color:rgba(74,222,128,.35);font-size:.9rem;">→</div>
 
         <div class="pipe-step">
           <div class="pipe-node" style="border-color:rgba(129,140,248,.3)">
-            <div class="pipe-node-icon">???</div>
+            <div class="pipe-node-icon">🕸️</div>
             <div class="pipe-node-tool sp-falkordb" style="background:rgba(129,140,248,.1);border:none">FalkorDB</div>
             <div class="pipe-node-label">5-Signal Score</div>
             <div class="pipe-node-sub">Shared employer, school, intent fit, connection, warm intro</div>
           </div>
-          <div class="pipe-time"><strong>~1s</strong> � PLANS_TO_MEET</div>
+          <div class="pipe-time"><strong>~1s</strong> · PLANS_TO_MEET</div>
         </div>
 
       </div>
 
       <div class="pipeline-outcome">
-        <div class="outcome-icon">?</div>
+        <div class="outcome-icon">⚡</div>
         <div class="outcome-text">
-          <strong>Result: ranked meet plan in under 30 seconds.</strong> Before Bright Data, this was 2�3 hours of manual LinkedIn searching per event. With three Bright Data products working in sequence, it's one URL and a coffee.
+          <strong>Result: ranked meet plan in under 30 seconds.</strong> Before Bright Data, this was 2–3 hours of manual LinkedIn searching per event. With three Bright Data products working in sequence, it's one URL and a coffee.
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 05 � THE GRAPH
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 05 · THE GRAPH
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s5" style="padding: 6rem 0; background: var(--film-bg);">
   <div class="scene-inner">
-    <div class="scene-label">Scene 05 � The Graph</div>
+    <div class="scene-label">Scene 05 — The Graph</div>
     <h2 class="scene-h2 reveal">THE RECOMMENDATION<br>IS THE <span>PATH</span></h2>
     <p class="scene-sub reveal" style="transition-delay:.08s">Most apps say "you should meet X" and give you a score. Debrief shows you the graph path that IS the reason.</p>
 
@@ -981,13 +981,13 @@
               <!-- highlighted: top ranked person -->
               <line x1="430" y1="150" x2="680" y2="60" stroke="rgba(74,222,128,.7)" stroke-width="2.5" stroke-dasharray="6,3"><animate attributeName="stroke-dashoffset" from="0" to="-40" dur="1.8s" repeatCount="indefinite"/></line>
               <text x="525" y="90" fill="rgba(74,222,128,.6)" font-size="9" font-family="monospace">PLANS_TO_MEET</text>
-              <text x="525" y="102" fill="rgba(74,222,128,.5)" font-size="8" font-family="monospace">score:14 � opener:?</text>
+              <text x="525" y="102" fill="rgba(74,222,128,.5)" font-size="8" font-family="monospace">score:14 · opener:✓</text>
               <text x="270" y="90" fill="rgba(129,140,248,.35)" font-size="8" font-family="monospace">CONNECTED</text>
               <text x="240" y="185" fill="rgba(129,140,248,.25)" font-size="8" font-family="monospace">MET</text>
               <text x="555" y="195" fill="rgba(129,140,248,.25)" font-size="8" font-family="monospace">MET</text>
             </svg>
             <div class="gv-node me"     style="left:430px;top:150px;transform:translate(-50%,-50%)">Me</div>
-            <div class="gv-node person" style="left:680px;top:60px;transform:translate(-50%,-50%);border-color:var(--c-brightdata);box-shadow:0 0 16px rgba(74,222,128,.35)">S.C.<div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.55rem;white-space:nowrap;color:var(--c-brightdata);font-family:monospace">#1 � 14pts</div></div>
+            <div class="gv-node person" style="left:680px;top:60px;transform:translate(-50%,-50%);border-color:var(--c-brightdata);box-shadow:0 0 16px rgba(74,222,128,.35)">S.C.<div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.55rem;white-space:nowrap;color:var(--c-brightdata);font-family:monospace">#1 · 14pts</div></div>
             <div class="gv-node person" style="left:180px;top:60px;transform:translate(-50%,-50%)">J.M.</div>
             <div class="gv-node person" style="left:130px;top:200px;transform:translate(-50%,-50%)">C.T.</div>
             <div class="gv-node person" style="left:700px;top:220px;transform:translate(-50%,-50%)">E.G.</div>
@@ -995,7 +995,7 @@
           <div class="gslide-caption">
             <div class="gsc-label">QUERY: WHO SHOULD I MEET?</div>
             <div class="gsc-title">5-signal Cypher scoring</div>
-            <div class="gsc-text">Shared employer +3 � shared school +2 � intent fit +3 � direct connection +5 � warm intro +4. All five signals in one <code>OPTIONAL MATCH</code>. Lizz Zhang scores 14 � highest of any speaker. OpenAI generates a personalised opener from the shared graph context.</div>
+            <div class="gsc-text">Shared employer +3 · shared school +2 · intent fit +3 · direct connection +5 · warm intro +4. All five signals in one <code>OPTIONAL MATCH</code>. Lizz Zhang scores 14 — highest of any speaker. OpenAI generates a personalised opener from the shared graph context.</div>
           </div>
         </div>
 
@@ -1021,8 +1021,8 @@
           </div>
           <div class="gslide-caption">
             <div class="gsc-label">QUERY: HOW ARE WE CONNECTED?</div>
-            <div class="gsc-title">allShortestPaths � 3 hops</div>
-            <div class="gsc-text">Me ? [CONNECTED] ? Jordan ? [WORKS_AT] ? Bright Data ? [WORKS_AT] ? Sam. Jordan is the bridge. Debrief found this path in one <code>allShortestPaths()</code> call � and showed it to us in the "Why?" view. The recommendation IS the path, not a score hiding one.</div>
+            <div class="gsc-title">allShortestPaths — 3 hops</div>
+            <div class="gsc-text">Me → [CONNECTED] → Jordan → [WORKS_AT] → Bright Data ← [WORKS_AT] ← Sam. Jordan is the bridge. Debrief found this path in one <code>allShortestPaths()</code> call — and showed it to us in the "Why?" view. The recommendation IS the path, not a score hiding one.</div>
           </div>
         </div>
 
@@ -1032,10 +1032,10 @@
             <svg viewBox="0 0 860 300" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:0;left:0;width:100%;height:100%">
               <line x1="430" y1="150" x2="280" y2="60"  stroke="rgba(251,191,36,.2)" stroke-width="1"/>
               <line x1="430" y1="150" x2="600" y2="60"  stroke="rgba(251,191,36,.2)" stroke-width="1"/>
-              <!-- SAW ? sessions highlighted -->
+              <!-- SAW → sessions highlighted -->
               <line x1="430" y1="150" x2="280" y2="60"  stroke="rgba(251,191,36,.65)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2s" repeatCount="indefinite"/></line>
               <line x1="430" y1="150" x2="600" y2="60"  stroke="rgba(251,191,36,.55)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2s" repeatCount="indefinite"/></line>
-              <!-- sessions ? ideas highlighted -->
+              <!-- sessions → ideas highlighted -->
               <line x1="280" y1="60"  x2="130" y2="220" stroke="rgba(244,114,182,.7)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2.2s" repeatCount="indefinite"/></line>
               <line x1="280" y1="60"  x2="300" y2="240" stroke="rgba(244,114,182,.6)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2.2s" repeatCount="indefinite"/></line>
               <line x1="600" y1="60"  x2="560" y2="240" stroke="rgba(244,114,182,.65)" stroke-width="2" stroke-dasharray="5,3"><animate attributeName="stroke-dashoffset" from="0" to="-35" dur="2.2s" repeatCount="indefinite"/></line>
@@ -1048,14 +1048,14 @@
             <div class="gv-node me"      style="left:430px;top:150px;transform:translate(-50%,-50%)">Me</div>
             <div class="gv-node session" style="left:280px;top:60px;transform:translate(-50%,-50%)">Talk A</div>
             <div class="gv-node session" style="left:600px;top:60px;transform:translate(-50%,-50%)">Talk B</div>
-            <div class="gv-node idea"    style="left:130px;top:220px;transform:translate(-50%,-50%)">??</div>
-            <div class="gv-node idea"    style="left:300px;top:240px;transform:translate(-50%,-50%)">??</div>
-            <div class="gv-node idea"    style="left:560px;top:240px;transform:translate(-50%,-50%)">??</div>
-            <div class="gv-node idea"    style="left:740px;top:220px;transform:translate(-50%,-50%)">??</div>
+            <div class="gv-node idea"    style="left:130px;top:220px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:300px;top:240px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:560px;top:240px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:740px;top:220px;transform:translate(-50%,-50%)">💡</div>
           </div>
           <div class="gslide-caption">
             <div class="gsc-label">QUERY: WHAT SPARKED IDEAS TODAY?</div>
-            <div class="gsc-title">SAW ? Session ? SPARKED ? Idea</div>
+            <div class="gsc-title">SAW → Session → SPARKED → Idea</div>
             <div class="gsc-text">10 ideas from one day. Each linked to the session that sparked it via a <code>SPARKED</code> edge. "Agent-to-agent communication" traces back to the multi-agent talk. "One Dollar Computer" to the maker session. 6 months from now, you'll still know where each idea was born.</div>
           </div>
         </div>
@@ -1087,14 +1087,14 @@
             <div class="gv-node person"  style="left:660px;top:250px;transform:translate(-50%,-50%)">A.P.</div>
             <div class="gv-node session" style="left:330px;top:55px;transform:translate(-50%,-50%)">Talk</div>
             <div class="gv-node session" style="left:540px;top:55px;transform:translate(-50%,-50%)">Talk</div>
-            <div class="gv-node idea"    style="left:330px;top:250px;transform:translate(-50%,-50%)">??</div>
-            <div class="gv-node idea"    style="left:540px;top:250px;transform:translate(-50%,-50%)">??</div>
+            <div class="gv-node idea"    style="left:330px;top:250px;transform:translate(-50%,-50%)">💡</div>
+            <div class="gv-node idea"    style="left:540px;top:250px;transform:translate(-50%,-50%)">💡</div>
             <div class="gv-node company" style="left:660px;top:150px;transform:translate(-50%,-50%)" style="display:none">FDB</div>
           </div>
           <div class="gslide-caption">
             <div class="gsc-label">THE FULL PICTURE</div>
-            <div class="gsc-title">14 deep conversations � 10 sessions � 10 ideas � one graph</div>
-            <div class="gsc-text">Every node is queryable. Six months later: "Show me everyone I met at Patch 2024 who works in AI infrastructure." One Cypher query � instant. The graph doesn't expire. This is what a relational database with foreign keys can't easily give you: a first-class relationship as the answer.</div>
+            <div class="gsc-title">14 deep conversations · 10 sessions · 10 ideas — one graph</div>
+            <div class="gsc-text">Every node is queryable. Six months later: "Show me everyone I met at Patch 2024 who works in AI infrastructure." One Cypher query — instant. The graph doesn't expire. This is what a relational database with foreign keys can't easily give you: a first-class relationship as the answer.</div>
           </div>
         </div>
 
@@ -1107,9 +1107,9 @@
 
       <!-- Up next indicator -->
       <div class="graph-upnext">
-        <span class="gun-arrow">?</span>
+        <span class="gun-arrow">↑</span>
         <span style="letter-spacing:.08em">UP NEXT</span>
-        <span class="gun-arrow">�</span>
+        <span class="gun-arrow">·</span>
         <span class="gun-title" id="graphNextTitle">Warm intro path</span>
       </div>
 
@@ -1117,12 +1117,12 @@
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 06 � BUILD CLOCK
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 06 · BUILD CLOCK
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s6" style="padding: 6rem 0; background: var(--film-surface);">
   <div class="scene-inner">
-    <div class="scene-label">Scene 06 � Hour by Hour</div>
+    <div class="scene-label">Scene 06 — Hour by Hour</div>
     <h2 class="scene-h2 reveal">9 HOURS.<br><span>10 MILESTONES.</span></h2>
     <div class="build-clock reveal" style="transition-delay:.12s">
       <div class="clock-cell">
@@ -1137,15 +1137,15 @@
         <div class="clock-time">01:30</div>
         <div class="clock-content">
           <div class="clock-title">Setup + Me Node</div>
-          <div class="clock-desc">Intent picker, LinkedIn archive import, Me node write. Qodo caught intent flag bug � primary flag on node, not edge.</div>
-          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-qodo)"></div><div class="clock-tool-name">Qodo PR #2 � first save</div></div>
+          <div class="clock-desc">Intent picker, LinkedIn archive import, Me node write. Qodo caught intent flag bug — primary flag on node, not edge.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-qodo)"></div><div class="clock-tool-name">Qodo PR #2 — first save</div></div>
         </div>
       </div>
       <div class="clock-cell">
         <div class="clock-time">02:45</div>
         <div class="clock-content">
           <div class="clock-title">Connections Import</div>
-          <div class="clock-desc">Connections.csv ? CONNECTED edges. Custom parser skips LinkedIn's "Notes:" preamble. Idempotent MERGE.</div>
+          <div class="clock-desc">Connections.csv → CONNECTED edges. Custom parser skips LinkedIn's "Notes:" preamble. Idempotent MERGE.</div>
           <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">MERGE on linkedin_url</div></div>
         </div>
       </div>
@@ -1153,7 +1153,7 @@
         <div class="clock-time">04:00</div>
         <div class="clock-content">
           <div class="clock-title">Add Person + Research</div>
-          <div class="clock-desc">LinkedIn enrichment, fire-and-forget research, 7-day freshness gate. Bright Data SERP returns structured JSON � no HTML parsing needed.</div>
+          <div class="clock-desc">LinkedIn enrichment, fire-and-forget research, 7-day freshness gate. Bright Data SERP returns structured JSON — no HTML parsing needed.</div>
           <div class="clock-tool"><div class="clock-pip" style="background:var(--c-brightdata)"></div><div class="clock-tool-name">Bright Data SERP active</div></div>
         </div>
       </div>
@@ -1169,7 +1169,7 @@
         <div class="clock-time">06:45</div>
         <div class="clock-content">
           <div class="clock-title">Event Import + Meet Plan</div>
-          <div class="clock-desc">Full 30-second pipeline live. Web Unlocker ? extract ? SERP ? LinkedIn Datasets ? Cypher score ? opener.</div>
+          <div class="clock-desc">Full 30-second pipeline live. Web Unlocker → extract → SERP → LinkedIn Datasets → Cypher score → opener.</div>
           <div class="clock-tool"><div class="clock-pip" style="background:var(--c-brightdata)"></div><div class="clock-tool-name">All 3 Bright Data products</div></div>
         </div>
       </div>
@@ -1178,15 +1178,15 @@
         <div class="clock-content">
           <div class="clock-title">Transcript Import</div>
           <div class="clock-desc">VTT parse, 90-second gap split, 45-second merge pass. Review screen before save. Conversation graph written on confirm.</div>
-          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">Conversation nodes ? FalkorDB</div></div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">Conversation nodes → FalkorDB</div></div>
         </div>
       </div>
       <div class="clock-cell">
         <div class="clock-time">09:30</div>
         <div class="clock-content">
           <div class="clock-title">Talk Notes + Today</div>
-          <div class="clock-desc">Slide photo ? OpenAI vision ? session match. SAW / SPARKED edges. UNION timeline query.</div>
-          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">UNION query � one call for full day</div></div>
+          <div class="clock-desc">Slide photo → OpenAI vision → session match. SAW / SPARKED edges. UNION timeline query.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">UNION query — one call for full day</div></div>
         </div>
       </div>
       <div class="clock-cell">
@@ -1194,22 +1194,22 @@
         <div class="clock-content">
           <div class="clock-title">Recap + Why?</div>
           <div class="clock-desc">Counts, faces, ideas by topic, follow-up drafts, force-graph visualization. 119 tests green.</div>
-          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">allShortestPaths � the explainability layer</div></div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">allShortestPaths — the explainability layer</div></div>
         </div>
       </div>
       <div class="clock-cell" style="background: rgba(129,140,248,.04); border: 1px solid rgba(129,140,248,.15); margin: 1px;">
         <div class="clock-time" style="color:var(--c-falkordb)">17:30</div>
         <div class="clock-content">
           <div class="clock-title" style="color:var(--c-falkordb)">Live Demo</div>
-          <div class="clock-desc">Demoed Debrief at Patch the Conference � the event it was built for. The graph had data from the actual day.</div>
-          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">14 real people � 2,307 nodes</div></div>
+          <div class="clock-desc">Demoed Debrief at Patch the Conference — the event it was built for. The graph had data from the actual day.</div>
+          <div class="clock-tool"><div class="clock-pip" style="background:var(--c-falkordb)"></div><div class="clock-tool-name">14 real people · 2,307 nodes</div></div>
         </div>
       </div>
     </div>
 
     <!-- 26 PR bars -->
     <div class="pr-bar-wrap reveal" style="transition-delay:.2s">
-      <div class="pr-bar-label">26 PULL REQUESTS � each bar is one PR, color = category</div>
+      <div class="pr-bar-label">26 PULL REQUESTS — each bar is one PR, color = category</div>
       <div class="pr-bars" id="prBars">
         <!-- generated by JS below -->
       </div>
@@ -1224,12 +1224,12 @@
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 07 � PLOT TWISTS
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 07 · PLOT TWISTS
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s7" style="padding: 6rem 0; background: var(--film-bg);">
   <div class="scene-inner">
-    <div class="scene-label">Scene 07 � The Plot Twists</div>
+    <div class="scene-label">Scene 07 — The Plot Twists</div>
     <h2 class="scene-h2 reveal">THINGS WENT<br>WRONG. GOOD.</h2>
     <p class="scene-sub reveal" style="transition-delay:.08s">Every bug that hit us under pressure is a lesson we won't forget. These three were the most expensive.</p>
     <div class="twist-grid reveal" style="transition-delay:.15s">
@@ -1248,7 +1248,7 @@
       <div class="twist-card">
         <div class="twist-head">
           <div class="twist-num">02</div>
-          <div class="twist-title">The silent params bug � 1 hour gone</div>
+          <div class="twist-title">The silent params bug — 1 hour gone</div>
         </div>
         <div class="twist-body">
           <p class="twist-p"><code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">graph.query(cypher, params)</code> vs <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">graph.query(cypher, {&thinsp;params&thinsp;})</code>. Both return without error. One writes nothing to the graph. No stack trace. No warning. Just 0 nodes created.</p>
@@ -1259,10 +1259,10 @@
       <div class="twist-card">
         <div class="twist-head">
           <div class="twist-num">03</div>
-          <div class="twist-title">Qodo PR #2 � intent flag on the wrong thing</div>
+          <div class="twist-title">Qodo PR #2 — intent flag on the wrong thing</div>
         </div>
         <div class="twist-body">
-          <p class="twist-p"><code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">primary: true</code> was on the <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">Intent</code> node, not the <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">HAS_INTENT</code> edge. Works fine for one user. Breaks the moment a second user sets a different primary � they'd overwrite each other's node property. Caught before it ever merged.</p>
+          <p class="twist-p"><code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">primary: true</code> was on the <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">Intent</code> node, not the <code style="background:rgba(255,255,255,.07);padding:.1rem .3rem;border-radius:3px;font-size:.82em">HAS_INTENT</code> edge. Works fine for one user. Breaks the moment a second user sets a different primary — they'd overwrite each other's node property. Caught before it ever merged.</p>
           <div class="twist-fix"><p><strong>Qodo flagged this on the second PR of the day.</strong> Moved the flag to the relationship. Lesson: flags that vary per-user belong on the edge, not the shared node.</p></div>
         </div>
       </div>
@@ -1271,14 +1271,14 @@
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 08 � THE APP
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 08 · THE APP
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s8" style="padding: 6rem 0; background: var(--film-surface);">
   <div class="scene-inner">
-    <div class="scene-label">Scene 08 � The App</div>
+    <div class="scene-label">Scene 08 — The App</div>
     <h2 class="scene-h2 reveal">THE CONFERENCE.<br><span>SCREEN BY SCREEN.</span></h2>
-    <p class="scene-sub reveal" style="transition-delay:.08s">A day at Patch the Conference, seen through the app that was built for it � while it was happening.</p>
+    <p class="scene-sub reveal" style="transition-delay:.08s">A day at Patch the Conference, seen through the app that was built for it — while it was happening.</p>
 
     <div class="phone-carousel reveal" style="transition-delay:.15s">
       <!-- Phone frame -->
@@ -1294,33 +1294,33 @@
       <div class="phone-carousel-meta">
         <div class="pcm-time" id="pcmTime">7:00 AM</div>
         <div class="pcm-name" id="pcmName">Setup</div>
-        <div class="pcm-desc" id="pcmDesc">Before the conference � import your LinkedIn archive, set your primary intent, write your Me node into FalkorDB. Takes 60 seconds. The graph is ready.</div>
+        <div class="pcm-desc" id="pcmDesc">Before the conference — import your LinkedIn archive, set your primary intent, write your Me node into FalkorDB. Takes 60 seconds. The graph is ready.</div>
         <div class="pcm-dots" id="pcmDots"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 09 � THE VERDICT
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 09 · THE VERDICT
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s9" style="padding: 6rem 0; background: var(--film-bg);">
   <div class="scene-inner">
-    <div class="scene-label">Scene 09 � The Verdict</div>
+    <div class="scene-label">Scene 09 — The Verdict</div>
     <h2 class="scene-h2 reveal">HOW EACH TOOL<br><span>HELD UP</span></h2>
     <p class="scene-sub reveal" style="transition-delay:.08s">Under time pressure, with real data, at the event we were building for.</p>
     <div class="verdict-grid reveal" style="transition-delay:.15s">
 
       <div class="verdict-card" style="border-color:rgba(129,140,248,.2)">
         <div class="verdict-top">
-          <div class="verdict-icon">???</div>
+          <div class="verdict-icon">🕸️</div>
           <div class="verdict-name">FalkorDB</div>
-          <div class="verdict-role">Graph DB � The Memory</div>
+          <div class="verdict-role">Graph DB — The Memory</div>
           <div class="score-track"><div class="score-fill" data-width="95" style="background:linear-gradient(90deg,#6366f1,#818cf8)"></div></div>
           <div class="score-label-row"><span>Fit for this problem</span><span class="score-num" data-score="9.5" style="color:var(--c-falkordb)">0.0 / 10</span></div>
-          <div class="vi"><span class="vi-icon">?</span><span class="vi-text">Cypher makes every recommendation self-documenting � the path IS the reason</span></div>
-          <div class="vi"><span class="vi-icon">?</span><span class="vi-text">Docker + Cloud seamless; GCP instance shared across team all day with zero config</span></div>
-          <div class="vi"><span class="vi-icon">??</span><span class="vi-text"><code style="font-size:.82em">shortestPath()</code> fails in SDK; use <code style="font-size:.82em">allShortestPaths()</code>. Cost an hour.</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">Cypher makes every recommendation self-documenting — the path IS the reason</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">Docker + Cloud seamless; GCP instance shared across team all day with zero config</span></div>
+          <div class="vi"><span class="vi-icon">⚠️</span><span class="vi-text"><code style="font-size:.82em">shortestPath()</code> fails in SDK; use <code style="font-size:.82em">allShortestPaths()</code>. Cost an hour.</span></div>
         </div>
         <div class="verdict-tag-row">
           <div class="verdict-quote">"A relational DB would need recursive CTEs and three self-joins for what Cypher expresses in one sentence."</div>
@@ -1329,30 +1329,30 @@
 
       <div class="verdict-card" style="border-color:rgba(74,222,128,.2)">
         <div class="verdict-top">
-          <div class="verdict-icon">??</div>
+          <div class="verdict-icon">📡</div>
           <div class="verdict-name">Bright Data</div>
-          <div class="verdict-role">Web Intelligence � The Intel</div>
+          <div class="verdict-role">Web Intelligence — The Intel</div>
           <div class="score-track"><div class="score-fill" data-width="88" style="background:linear-gradient(90deg,#22c55e,#4ade80)"></div></div>
           <div class="score-label-row"><span>ROI for conference use case</span><span class="score-num" data-score="8.8" style="color:var(--c-brightdata)">0.0 / 10</span></div>
-          <div class="vi"><span class="vi-icon">?</span><span class="vi-text">3 hours of manual research ? 30 seconds. That's the only metric that matters.</span></div>
-          <div class="vi"><span class="vi-icon">?</span><span class="vi-text">SERP API returns structured JSON � no HTML scraping, no regex, just array access</span></div>
-          <div class="vi"><span class="vi-icon">??</span><span class="vi-text">LinkedIn Datasets is async (202 + polling) � not obvious from docs, confused us initially</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">3 hours of manual research → 30 seconds. That's the only metric that matters.</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">SERP API returns structured JSON — no HTML scraping, no regex, just array access</span></div>
+          <div class="vi"><span class="vi-icon">⚠️</span><span class="vi-text">LinkedIn Datasets is async (202 + polling) — not obvious from docs, confused us initially</span></div>
         </div>
         <div class="verdict-tag-row">
-          <div class="verdict-quote">"2�3 hours of manual Googling before a 30-speaker event becomes 30 seconds. One URL and a coffee."</div>
+          <div class="verdict-quote">"2–3 hours of manual Googling before a 30-speaker event becomes 30 seconds. One URL and a coffee."</div>
         </div>
       </div>
 
       <div class="verdict-card" style="border-color:rgba(251,191,36,.2)">
         <div class="verdict-top">
-          <div class="verdict-icon">??</div>
+          <div class="verdict-icon">🔍</div>
           <div class="verdict-name">Qodo</div>
-          <div class="verdict-role">AI Code Review � The Auditor</div>
+          <div class="verdict-role">AI Code Review — The Auditor</div>
           <div class="score-track"><div class="score-fill" data-width="80" style="background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
           <div class="score-label-row"><span>Value for hackathon pace</span><span class="score-num" data-score="8.0" style="color:var(--c-qodo)">0.0 / 10</span></div>
-          <div class="vi"><span class="vi-icon">?</span><span class="vi-text">Caught the intent flag schema bug on PR #2 before it ever merged � saved hours</span></div>
-          <div class="vi"><span class="vi-icon">?</span><span class="vi-text">26 PRs, consistent feedback, never rushed � the extra reviewer who never skips</span></div>
-          <div class="vi"><span class="vi-icon">??</span><span class="vi-text">Didn't know the FalkorDB SDK's <code style="font-size:.82em">{ params }</code> quirk � some SDK-specific bugs slipped through</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">Caught the intent flag schema bug on PR #2 before it ever merged — saved hours</span></div>
+          <div class="vi"><span class="vi-icon">✅</span><span class="vi-text">26 PRs, consistent feedback, never rushed — the extra reviewer who never skips</span></div>
+          <div class="vi"><span class="vi-icon">⚠️</span><span class="vi-text">Didn't know the FalkorDB SDK's <code style="font-size:.82em">{ params }</code> quirk — some SDK-specific bugs slipped through</span></div>
         </div>
         <div class="verdict-tag-row">
           <div class="verdict-quote">"The two catches on day 1 alone saved more time than the tool took to set up."</div>
@@ -1363,15 +1363,15 @@
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 10 � BUILT ALONGSIDE
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 10 · BUILT ALONGSIDE
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s10" style="padding:6rem 0;background:var(--film-surface)">
   <div class="scene-inner">
-    <div class="scene-label">Scene 10 � The Field</div>
+    <div class="scene-label">Scene 10 — The Field</div>
     <h2 class="scene-h2 reveal">57 TEAMS.<br><span>ONE PROBLEM.</span></h2>
     <p class="scene-sub reveal" style="transition-delay:.08s">
-      Debrief wasn't alone. Here's some of what was built alongside it at Patch the Conference Hackathon �
+      Debrief wasn't alone. Here's some of what was built alongside it at Patch the Conference Hackathon —
       a room full of people trying to solve the same conference experience problem, from completely different angles.
     </p>
 
@@ -1381,146 +1381,146 @@
         <div class="sub-name">Paraverse</div>
         <div class="sub-builder">Joshua Levy</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://github.com/jlevy/paraverse" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://github.com/jlevy/paraverse" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
-        <div class="sub-name">ConferenceOS � explainable shortlisting</div>
+        <div class="sub-name">ConferenceOS — explainable shortlisting</div>
         <div class="sub-builder">L-G G</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://github.com/liviaguo/patchconference-conferenceOS" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://github.com/liviaguo/patchconference-conferenceOS" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">Spo8ted</div>
         <div class="sub-builder">Bikram B</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://bikrambrar.com/spo8ted" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/Bikz/spo8ted" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://bikrambrar.com/spo8ted" class="sub-link" target="_blank">Live →</a><a href="https://github.com/Bikz/spo8ted" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
-        <div class="sub-name">Serendipity � conference matchmaking</div>
+        <div class="sub-name">Serendipity — conference matchmaking</div>
         <div class="sub-builder">Serendipity team</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
-        <div class="sub-links"><a href="https://williaminla.github.io/serendipity-ptc/" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/williaminla/serendipity-ptc" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://williaminla.github.io/serendipity-ptc/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/williaminla/serendipity-ptc" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">NetCues</div>
         <div class="sub-builder">Sphoenix X</div>
         <div class="sub-tracks"><span class="sub-track st-f">FalkorDB</span></div>
-        <div class="sub-links"><a href="https://netcue.vercel.app/demo" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/SphoenixAI/NetCues" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://netcue.vercel.app/demo" class="sub-link" target="_blank">Live →</a><a href="https://github.com/SphoenixAI/NetCues" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">Backstage</div>
         <div class="sub-builder">Hatem Elsisi</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://backstage-live.fly.dev/" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/elsisiem/backstage" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://backstage-live.fly.dev/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/elsisiem/backstage" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">AfterTalk</div>
         <div class="sub-builder">Rohan A</div>
         <div class="sub-tracks"><span class="sub-track st-f">FalkorDB</span></div>
-        <div class="sub-links"><a href="https://aftertalk.wysdm.ai/" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/rvabraham/aftertalk" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://aftertalk.wysdm.ai/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/rvabraham/aftertalk" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
-        <div class="sub-name">Coco � AI Conference Buddy</div>
+        <div class="sub-name">Coco — AI Conference Buddy</div>
         <div class="sub-builder">Bhavani Kalisetty</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://coco-companion-web.vercel.app/" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/bhavanikalisetty/coco" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://coco-companion-web.vercel.app/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/bhavanikalisetty/coco" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">ezcon</div>
         <div class="sub-builder">Katie Leong</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://ezcon-six.vercel.app/" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/heykatie/ezcon" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://ezcon-six.vercel.app/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/heykatie/ezcon" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">Audience Atlas</div>
         <div class="sub-builder">Aymen AZOUI</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://github.com/azouiaymen/audience-atlas" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://github.com/azouiaymen/audience-atlas" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">Inference Badge</div>
-        <div class="sub-builder">Pri Krishiyer � Sriram R Iyer</div>
+        <div class="sub-builder">Pri Krishiyer · Sriram R Iyer</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
-        <div class="sub-links"><a href="https://github.com/sriramr-repo/inference-badge" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://github.com/sriramr-repo/inference-badge" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">conferge</div>
         <div class="sub-builder">Mannan Shukla</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
-        <div class="sub-links"><a href="https://conferge-fx6pnv.spwt.app/" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/spicyx9/PatchConferenceHack" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://conferge-fx6pnv.spwt.app/" class="sub-link" target="_blank">Live →</a><a href="https://github.com/spicyx9/PatchConferenceHack" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">patchwork</div>
         <div class="sub-builder">Hayk Sargsyan</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
-        <div class="sub-links"><a href="https://github.com/haaaaaaaaaayk/patchwork-github-universe-2026" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://github.com/haaaaaaaaaayk/patchwork-github-universe-2026" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">Meaningful</div>
         <div class="sub-builder">Yahya Alhinai</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span></div>
-        <div class="sub-links"><a href="https://github.com/yhinai/meaningful" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://github.com/yhinai/meaningful" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
       <div class="sub-card">
         <div class="sub-name">stratcom</div>
         <div class="sub-builder">Chris McKenzie</div>
         <div class="sub-tracks"><span class="sub-track st-b">Bright Data</span><span class="sub-track st-f">FalkorDB</span><span class="sub-track st-q">Qodo</span></div>
-        <div class="sub-links"><a href="https://9ol.es/stratcon-video" class="sub-link" target="_blank">Live ?</a><a href="https://github.com/kristopolous/stratcon" class="sub-link" target="_blank">GitHub ?</a></div>
+        <div class="sub-links"><a href="https://9ol.es/stratcon-video" class="sub-link" target="_blank">Live →</a><a href="https://github.com/kristopolous/stratcon" class="sub-link" target="_blank">GitHub →</a></div>
       </div>
 
     </div><!-- /submissions-grid -->
 
     <div class="sub-count-note reveal" style="transition-delay:.2s">
-      15 of 57 submissions shown �
-      <a href="https://www.wemakedevs.org/hackathons/ptc/projects/all" target="_blank">See all 57 on WeMakeDevs ?</a>
+      15 of 57 submissions shown ·
+      <a href="https://www.wemakedevs.org/hackathons/ptc/projects/all" target="_blank">See all 57 on WeMakeDevs →</a>
     </div>
   </div>
 </section>
 
-<!-- ----------------------------------------------------------------
-     SCENE 11 � CREDITS
----------------------------------------------------------------- -->
+<!-- ════════════════════════════════════════════════════════════════
+     SCENE 11 · CREDITS
+════════════════════════════════════════════════════════════════ -->
 <section class="scene" id="s10">
   <div class="scene-inner" style="text-align:center">
-    <div class="scene-label" style="justify-content:center;margin-bottom:2rem">Scene 10 � Credits</div>
+    <div class="scene-label" style="justify-content:center;margin-bottom:2rem">Scene 10 — Credits</div>
     <div class="credits-title reveal">OPEN SOURCE.<br>SHIP IT.</div>
     <p class="credits-sub reveal" style="transition-delay:.08s">Debrief is open source. If you go to conferences and forget people, this is for you. One URL, 30 seconds, never forget a face again.</p>
     <div class="credits-btns reveal" style="transition-delay:.15s">
-      <a href="https://github.com/researchsite/debrief" class="rw-btn rw-btn-primary" target="_blank">GitHub ?</a>
-      <a href="debrief.html" class="rw-btn rw-btn-secondary">Full blog post ?</a>
+      <a href="https://github.com/researchsite/debrief" class="rw-btn rw-btn-primary" target="_blank">GitHub →</a>
+      <a href="debrief.html" class="rw-btn rw-btn-secondary">Full blog post →</a>
     </div>
     <div class="credits-divider"></div>
     <div class="team-row reveal" style="transition-delay:.2s">
       <div class="team-chip">
         <a href="https://www.linkedin.com/in/shamhc/" target="_blank" rel="noopener">
           <div class="team-av"><img src="https://media.licdn.com/dms/image/v2/D5603AQHP2JmxLyO6ww/profile-displayphoto-shrink_100_100/B56Z7t1Xv0HYAI-/0/1782106652716?e=1794441600&v=beta&t=RHgIgE_wrY4uyJBfltQO_Q8GGjhvnkW-7dk_z55uGrQ" alt="Sham" loading="lazy"></div>
-          <div><div class="team-info-name">Sham Hassan Chikkegowda</div><div class="team-info-role">Graph � API � Pipeline</div></div>
+          <div><div class="team-info-name">Sham Hassan Chikkegowda</div><div class="team-info-role">Graph · API · Pipeline</div></div>
         </a>
       </div>
       <div class="team-chip">
         <a href="https://www.linkedin.com/in/madhu-koseka/" target="_blank" rel="noopener">
           <div class="team-av"><img src="https://media.licdn.com/dms/image/v2/D5635AQE0dBtiqBz_Xw/profile-framedphoto-shrink_100_100/B56aEMdBtGIMAc-/0/1791210298536?e=1793678400&v=beta&t=R-cSVquGqlZYPfEdMgXwm-5Fpz8hvaGeczzvd9Klj2o" alt="Madhu Koseka" loading="lazy"></div>
-          <div><div class="team-info-name">Madhu Koseka</div><div class="team-info-role">Data Platform � Backend</div></div>
+          <div><div class="team-info-name">Madhu Koseka</div><div class="team-info-role">Data Platform · Backend</div></div>
         </a>
       </div>
       <div class="team-chip">
         <a href="https://www.linkedin.com/in/madhughnea-adabala/" target="_blank" rel="noopener">
           <div class="team-av"><img src="https://media.licdn.com/dms/image/v2/D4E03AQGrushCp9OcAQ/profile-displayphoto-crop_800_800/B4EZv5SL5zHoAI-/0/1769413853213?e=1794441600&v=beta&t=6wP_39ZeLF3uKNfrIXeRGalUzMwdb6Rj-PrPLCkQIkM" alt="Madhughnea Adabala" loading="lazy"></div>
-          <div><div class="team-info-name">Madhughnea Adabala</div><div class="team-info-role">UX � Mobile � Frontend</div></div>
+          <div><div class="team-info-name">Madhughnea Adabala</div><div class="team-info-role">UX · Mobile · Frontend</div></div>
         </a>
       </div>
     </div>
@@ -1531,18 +1531,18 @@
             <span class="sponsor-pill sp-wemakedevs">#WeMakeDevs</span>
     </div>
     <div style="margin-top:1.5rem;font-family:var(--rw-font-mono);font-size:.68rem;color:rgba(238,242,255,.2)">
-      Patch the Conference Hackathon � San Francisco � October 2024
+      Patch the Conference Hackathon · San Francisco · October 2024
     </div>
   </div>
 </section>
 
 <div id="rw-footer"
      data-linkedin="https://www.linkedin.com/in/shamhc/"
-     data-related='[{"label":"Debrief � Full Technical Deep Dive","url":"/usecase/debrief.html"}]'></div>
+     data-related='[{"label":"Debrief — Full Technical Deep Dive","url":"/usecase/debrief.html"}]'></div>
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-/* -- Reveal on scroll (re-triggers each time) --------------------- */
+/* ── Reveal on scroll (re-triggers each time) ───────────────────── */
 (function(){
   const els = document.querySelectorAll('.reveal, .reveal-fast');
   if(!els.length) return;
@@ -1552,7 +1552,7 @@
   els.forEach(el => obs.observe(el));
 })();
 
-/* -- Animated counters (re-triggers each time) -------------------- */
+/* ── Animated counters (re-triggers each time) ──────────────────── */
 (function(){
   const nums = document.querySelectorAll('[data-count]');
   const running = new WeakMap();
@@ -1579,7 +1579,7 @@
   nums.forEach(n => obs.observe(n));
 })();
 
-/* -- Score bars + score numbers (Scene 9, re-triggers) ----------- */
+/* ── Score bars + score numbers (Scene 9, re-triggers) ─────────── */
 (function(){
   const grid = document.querySelector('.verdict-grid');
   if(!grid) return;
@@ -1614,22 +1614,22 @@
   obs.observe(grid);
 })();
 
-/* -- PR bars ------------------------------------------------------ */
+/* ── PR bars ────────────────────────────────────────────────────── */
 (function(){
   const wrap = document.getElementById('prBars');
   if(!wrap) return;
   const prs = [
     {c:'rgba(129,140,248,.7)',h:52,l:'FalkorDB client setup'},
-    {c:'rgba(244,114,182,.5)',h:38,l:'Intent flag � Qodo caught schema bug',dashed:true},
+    {c:'rgba(244,114,182,.5)',h:38,l:'Intent flag — Qodo caught schema bug',dashed:true},
     {c:'rgba(129,140,248,.6)',h:45,l:'Me node + Setup page'},
     {c:'rgba(129,140,248,.5)',h:40,l:'Connections import'},
-    {c:'rgba(74,222,128,.6)', h:55,l:'Add Person � Bright Data SERP'},
+    {c:'rgba(74,222,128,.6)', h:55,l:'Add Person — Bright Data SERP'},
     {c:'rgba(74,222,128,.5)', h:42,l:'Fire-and-forget research'},
     {c:'rgba(251,191,36,.6)', h:48,l:'Add Person UI'},
     {c:'rgba(74,222,128,.7)', h:58,l:'LinkedIn Datasets enrichment'},
     {c:'rgba(251,191,36,.5)', h:44,l:'Common-ground badges'},
-    {c:'rgba(244,114,182,.4)',h:36,l:'Tests � fire-and-forget'},
-    {c:'rgba(251,191,36,.7)', h:52,l:'Import anything � classifier'},
+    {c:'rgba(244,114,182,.4)',h:36,l:'Tests — fire-and-forget'},
+    {c:'rgba(251,191,36,.7)', h:52,l:'Import anything — classifier'},
     {c:'rgba(251,191,36,.5)', h:40,l:'Coupon wallet'},
     {c:'rgba(244,114,182,.5)',h:38,l:'ZXing QR WASM'},
     {c:'rgba(129,140,248,.7)',h:60,l:'Event import pipeline'},
@@ -1641,7 +1641,7 @@
     {c:'rgba(244,114,182,.4)',h:35,l:'Transcript tests'},
     {c:'rgba(129,140,248,.7)',h:56,l:'Talk notes + slide match'},
     {c:'rgba(129,140,248,.6)',h:50,l:'Today timeline UNION query'},
-    {c:'rgba(251,191,36,.7)', h:54,l:'Recap � counts + faces'},
+    {c:'rgba(251,191,36,.7)', h:54,l:'Recap — counts + faces'},
     {c:'rgba(129,140,248,.8)',h:58,l:'Follow-up draft generation'},
     {c:'rgba(129,140,248,.7)',h:56,l:'Why? force-graph visualization'},
     {c:'rgba(244,114,182,.6)',h:45,l:'All 119 tests green'},
@@ -1664,7 +1664,7 @@
   });
 })();
 
-/* -- Reel progress ------------------------------------------------ */
+/* ── Reel progress ──────────────────────────────────────────────── */
 (function(){
   const scenes = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
   const dots = document.querySelectorAll('.reel-dot');
@@ -1686,7 +1686,7 @@
   });
 })();
 
-/* -- Graph slide deck (re-triggers on re-entry) ------------------- */
+/* ── Graph slide deck (re-triggers on re-entry) ─────────────────── */
 (function(){
   const deck = document.getElementById('graphDeck');
   if(!deck) return;
@@ -1748,7 +1748,7 @@
   obs.observe(deck);
 })();
 
-/* -- Phone carousel ----------------------------------------------- */
+/* ── Phone carousel ─────────────────────────────────────────────── */
 (function(){
   const img   = document.getElementById('pcImg');
   const time  = document.getElementById('pcmTime');
@@ -1760,12 +1760,12 @@
 
   const screens = [
     { src:'setup',      time:'7:00 AM',  name:'Setup',       desc:'Import your LinkedIn archive, pick your intent, create your Me node. The FalkorDB graph is ready before you leave home.' },
-    { src:'event',      time:'9:00 AM',  name:'Event Import', desc:'Paste the conference URL. Bright Data fetches the page, OpenAI extracts 12 speakers, SERP finds their LinkedIn profiles, Datasets enriches them � 30 seconds.' },
-    { src:'add-person', time:'10:30 AM', name:'First Person', desc:'Met Lizz Zhang. LinkedIn URL ? research fires in the background. By the time you sit down for coffee, his AI context card is ready.' },
+    { src:'event',      time:'9:00 AM',  name:'Event Import', desc:'Paste the conference URL. Bright Data fetches the page, OpenAI extracts 12 speakers, SERP finds their LinkedIn profiles, Datasets enriches them — 30 seconds.' },
+    { src:'add-person', time:'10:30 AM', name:'First Person', desc:'Met Lizz Zhang. LinkedIn URL → research fires in the background. By the time you sit down for coffee, his AI context card is ready.' },
     { src:'add-talk',   time:'11:15 AM', name:'Add Talk',     desc:'Walked into a multi-agent talk mid-session. Snapped the slide. OpenAI matched it to the session in the graph. Notes linked instantly.' },
-    { src:'today',      time:'2:00 PM',  name:'Today',        desc:'Timeline filling up. Sessions, people, ideas � all in chronological order. Every entry is a graph node. Every connection is an edge.' },
+    { src:'today',      time:'2:00 PM',  name:'Today',        desc:'Timeline filling up. Sessions, people, ideas — all in chronological order. Every entry is a graph node. Every connection is an edge.' },
     { src:'wallet',     time:'3:30 PM',  name:'Wallet',       desc:'Scanned a FalkorDB sponsor coupon. ZXing WASM decoded the QR. Saved to the graph as a Coupon node with a copy button.' },
-    { src:'recap',      time:'5:30 PM',  name:'Recap',        desc:'End of day. 14 people. 10 sessions. 10 ideas. Follow-up drafts written from your notes � not their bio. Faces to Remember grid.' },
+    { src:'recap',      time:'5:30 PM',  name:'Recap',        desc:'End of day. 14 people. 10 sessions. 10 ideas. Follow-up drafts written from your notes — not their bio. Faces to Remember grid.' },
     { src:'projects',   time:'Next day', name:'Projects',     desc:'Ideas are still here. Each one linked to the talk that sparked it. Queryable. Searchable. The graph doesn\'t expire after the event.' },
   ];
 
@@ -1844,7 +1844,7 @@
 <!-- Video modal -->
 <dialog class="video-modal" id="videoModal" onclick="if(event.target===this)closeVideoModal()">
   <div class="video-modal-inner">
-    <button class="video-modal-close" onclick="closeVideoModal()" aria-label="Close video">?</button>
+    <button class="video-modal-close" onclick="closeVideoModal()" aria-label="Close video">✕</button>
     <video controls preload="none"></video>
   </div>
 </dialog>

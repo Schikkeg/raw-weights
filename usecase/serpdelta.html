@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SERP Delta � LLM Knowledge Gap Detector | RawWeights</title>
+  <title>SERP Delta — LLM Knowledge Gap Detector | RawWeights</title>
   <meta name="description" content="Detect and score LLM knowledge staleness against live Google search results. Zero infrastructure. One API call between you and the truth.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/usecase/serpdelta.html">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/usecase/serpdelta.html">
-  <meta property="og:title" content="SERP Delta � LLM Knowledge Gap Detector">
-  <meta property="og:description" content="Your AI isn't lying � it's frozen in time. SERP Delta shows you exactly where, and by how much.">
+  <meta property="og:title" content="SERP Delta — LLM Knowledge Gap Detector">
+  <meta property="og:description" content="Your AI isn't lying — it's frozen in time. SERP Delta shows you exactly where, and by how much.">
   <meta property="og:image" content="https://rawweights.com/images/serpdelta.jpeg">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
@@ -18,7 +18,7 @@
   <script type="text/javascript" async src="../includes/analytics.js"></script>
 
   <style>
-    /* -- Hero ----------------------------------------- */
+    /* ── Hero ───────────────────────────────────────── */
     .guide-hero {
       background: linear-gradient(135deg, #07101f 0%, #0f0b28 50%, #071530 100%);
       padding: 4rem 2rem 3.5rem; position: relative; overflow: hidden;
@@ -60,7 +60,7 @@
     .hero-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
     .hero-tag { font-size: .72rem; font-family: var(--rw-font-mono); color: rgba(240,244,255,.45); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.11); border-radius: 6px; padding: .2rem .6rem; }
 
-    /* -- Hero video panel ----------------------------- */
+    /* ── Hero video panel ───────────────────────────── */
     .hero-video-wrap {
       position: relative; border-radius: 14px; overflow: hidden;
       border: 1px solid rgba(129,140,248,.25);
@@ -74,7 +74,7 @@
       padding: .25rem .65rem; font-family: var(--rw-font-mono); font-size: .68rem; color: #818cf8;
     }
 
-    /* -- Guide layout --------------------------------- */
+    /* ── Guide layout ───────────────────────────────── */
     .guide-layout {
       display: grid; grid-template-columns: 220px 1fr;
       gap: 2.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; align-items: start;
@@ -86,7 +86,7 @@
     .guide-toc a { font-size: .83rem; color: var(--rw-text-muted); text-decoration: none; padding: .3rem .6rem; border-left: 2px solid transparent; display: block; border-radius: 0 4px 4px 0; transition: color .15s, border-color .15s, background .15s; }
     .guide-toc a:hover, .guide-toc a.active { color: var(--rw-orange); border-left-color: var(--rw-orange); background: var(--rw-orange-light); }
 
-    /* -- Sections ------------------------------------- */
+    /* ── Sections ───────────────────────────────────── */
     .guide-section { margin-bottom: 3.5rem; }
     .guide-section h2 {
       font-family: var(--rw-font-display); font-size: 1.5rem; font-weight: 800;
@@ -97,7 +97,7 @@
     .guide-section p { font-size: .97rem; color: var(--rw-text-muted); line-height: 1.75; margin-bottom: 1rem; }
     code { font-family: var(--rw-font-mono); font-size: .84em; background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 4px; padding: .1em .35em; color: var(--rw-indigo); }
 
-    /* -- Stat row ------------------------------------- */
+    /* ── Stat row ───────────────────────────────────── */
     .stat-row { display: flex; border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; margin: 1.5rem 0; }
     .stat-cell { flex: 1; padding: 1.1rem; text-align: center; border-right: 1px solid var(--rw-border); }
     .stat-cell:last-child { border-right: none; }
@@ -105,14 +105,14 @@
     .sv-indigo { color: #818cf8; } .sv-green { color: #4ade80; }
     .stat-label { font-size: .73rem; color: var(--rw-text-subtle); margin-top: .3rem; }
 
-    /* -- Feature grid --------------------------------- */
+    /* ── Feature grid ───────────────────────────────── */
     .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
     .feature-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
     .feature-card-icon { font-size: 1.5rem; margin-bottom: .5rem; }
     .feature-card h4 { font-family: var(--rw-font-display); font-size: .9rem; font-weight: 700; color: var(--rw-text); margin-bottom: .3rem; }
     .feature-card p { font-size: .82rem; color: var(--rw-text-muted); margin: 0; line-height: 1.55; }
 
-    /* -- Verdict spectrum ----------------------------- */
+    /* ── Verdict spectrum ───────────────────────────── */
     .verdict-row { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1.25rem 0; }
     .verdict-chip {
       flex: 1; min-width: 100px;
@@ -131,7 +131,7 @@
     .vc-contra { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.3); }
     .vc-contra .vc-score, .vc-contra .vc-label { color: #f87171; }
 
-    /* -- The Inversion visual -------------------------- */
+    /* ── The Inversion visual ────────────────────────── */
     .inversion-grid {
       display: grid; grid-template-columns: 1fr auto 1fr;
       gap: 1rem; align-items: stretch; margin: 1.25rem 0;
@@ -159,7 +159,7 @@
     .inv-arrow-col span { font-size: 1.5rem; color: #818cf8; }
     .inv-result { margin-top: .85rem; background: rgba(129,140,248,.1); border: 1px solid rgba(129,140,248,.2); border-radius: 6px; padding: .55rem .75rem; font-family: var(--rw-font-display); font-size: .82rem; font-weight: 700; color: #818cf8; }
 
-    /* -- RAG vs comparison ---------------------------- */
+    /* ── RAG vs comparison ──────────────────────────── */
     .rag-vs-wrap { display: grid; grid-template-columns: 1fr 44px 1fr; gap: .75rem; align-items: stretch; margin: 1.25rem 0; }
     .rag-card { border-radius: var(--rw-r-md); overflow: hidden; }
     .rag-header { padding: .75rem 1.1rem; font-family: var(--rw-font-display); font-weight: 800; font-size: .9rem; }
@@ -176,7 +176,7 @@
     .rag-vs-badge { display: flex; align-items: center; justify-content: center; }
     .rag-vs-badge span { font-family: var(--rw-font-display); font-size: .78rem; font-weight: 800; color: var(--rw-text-subtle); background: var(--rw-bg-subtle); border: 1px solid var(--rw-border); border-radius: 9999px; padding: .4rem .55rem; }
 
-    /* -- Industry grid -------------------------------- */
+    /* ── Industry grid ──────────────────────────────── */
     .industry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
     .industry-card {
       background: var(--rw-card); border: 1px solid var(--rw-border);
@@ -190,7 +190,7 @@
     .ind-pain { font-size: .78rem; color: var(--rw-text-muted); line-height: 1.5; margin-bottom: .45rem; }
     .ind-win { font-size: .72rem; font-family: var(--rw-font-mono); color: #818cf8; }
 
-    /* -- Demo tabs ------------------------------------ */
+    /* ── Demo tabs ──────────────────────────────────── */
     .demo-tabs-wrap { margin: 1.5rem 0; }
     .demo-tab-bar { display: flex; gap: .5rem; flex-wrap: wrap; padding-bottom: .5rem; position: sticky; top: calc(var(--rw-nav-height)); z-index: 10; background: var(--rw-bg); padding-top: .5rem; }
     .demo-tab { white-space: nowrap; padding: .45rem 1rem; border-radius: 9999px; border: 1.5px solid var(--rw-border); background: transparent; color: var(--rw-text-muted); font-family: var(--rw-font-display); font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .15s; flex-shrink: 0; }
@@ -208,35 +208,35 @@
     .tag-orange { background: rgba(240,114,53,.12); color: var(--rw-orange); border: 1px solid rgba(240,114,53,.2); }
     .tag-indigo { background: rgba(129,140,248,.12); color: #818cf8; border: 1px solid rgba(129,140,248,.2); }
 
-    /* -- How it works --------------------------------- */
+    /* ── How it works ───────────────────────────────── */
     .step-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
     .step-item { display: flex; gap: .9rem; align-items: flex-start; }
     .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--rw-orange); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .step-body h4 { font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; color: var(--rw-text); margin-bottom: .2rem; }
     .step-body p { font-size: .84rem; color: var(--rw-text-muted); margin: 0; line-height: 1.6; }
 
-    /* -- Cache visual --------------------------------- */
+    /* ── Cache visual ───────────────────────────────── */
     .cache-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1.25rem 0; }
     .cache-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1rem 1.1rem; }
     .cache-ttl { font-family: var(--rw-font-display); font-size: 1.4rem; font-weight: 800; color: #818cf8; margin-bottom: .15rem; }
     .cache-name { font-family: var(--rw-font-mono); font-size: .72rem; color: var(--rw-orange); margin-bottom: .3rem; }
     .cache-desc { font-size: .78rem; color: var(--rw-text-muted); line-height: 1.5; }
 
-    /* -- Learnings ------------------------------------ */
+    /* ── Learnings ──────────────────────────────────── */
     .learning-item { border: 1px solid var(--rw-border); border-left: 3px solid var(--rw-orange); border-radius: 0 var(--rw-r-sm) var(--rw-r-sm) 0; padding: 1rem 1.25rem; margin-bottom: .85rem; background: var(--rw-card); }
     .learning-num { font-family: var(--rw-font-mono); font-size: .68rem; color: var(--rw-orange); letter-spacing: .06em; margin-bottom: .25rem; }
     .learning-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .92rem; color: var(--rw-text); margin-bottom: .35rem; }
     .learning-body { font-size: .83rem; color: var(--rw-text-muted); line-height: 1.6; margin-bottom: .5rem; }
     .learning-quote { padding: .4rem .8rem; background: var(--rw-orange-light); border-left: 2px solid var(--rw-orange); font-size: .78rem; color: var(--rw-orange); font-style: italic; border-radius: 0 4px 4px 0; }
 
-    /* -- Moments -------------------------------------- */
+    /* ── Moments ────────────────────────────────────── */
     .moments-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
     .moment-card { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.2rem; border-top: 3px solid rgba(129,140,248,.35); }
     .moment-emoji { font-size: 1.5rem; margin-bottom: .55rem; }
     .moment-title { font-family: var(--rw-font-display); font-weight: 700; font-size: .88rem; color: var(--rw-text); margin-bottom: .35rem; }
     .moment-body { font-size: .81rem; color: var(--rw-text-muted); line-height: 1.6; }
 
-    /* -- What's Next ---------------------------------- */
+    /* ── What's Next ────────────────────────────────── */
     .roadmap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .85rem; margin: 1.25rem 0; }
     .roadmap-item { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1rem 1.1rem; display: flex; gap: .75rem; align-items: flex-start; }
     .roadmap-icon { font-size: 1.2rem; flex-shrink: 0; }
@@ -246,7 +246,7 @@
     .rb-hot { background: rgba(251,146,60,.12); color: var(--rw-orange); border: 1px solid rgba(251,146,60,.2); }
     .rb-stretch { background: rgba(129,140,248,.1); color: #818cf8; border: 1px solid rgba(129,140,248,.18); }
 
-    /* -- Platform Review ------------------------------ */
+    /* ── Platform Review ────────────────────────────── */
     .platform-rows { display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
     .platform-item { background: var(--rw-card); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); overflow: hidden; }
     .platform-name-row { padding: .65rem 1.1rem; background: var(--rw-bg-subtle); border-bottom: 1px solid var(--rw-border); font-family: var(--rw-font-display); font-size: .88rem; font-weight: 700; color: var(--rw-text); display: flex; align-items: center; gap: .5rem; }
@@ -261,18 +261,18 @@
     .plat-dot-g { color: #4ade80; flex-shrink: 0; }
     .plat-dot-r { color: #f87171; flex-shrink: 0; }
 
-    /* -- Callout -------------------------------------- */
+    /* ── Callout ────────────────────────────────────── */
     .callout { background: rgba(129,140,248,.06); border: 1px solid rgba(129,140,248,.22); border-left: 3px solid #818cf8; border-radius: 0 var(--rw-r-md) var(--rw-r-md) 0; padding: .9rem 1.2rem; margin: 1.25rem 0; }
     .callout p { font-size: .9rem; color: var(--rw-text-muted); margin: 0; line-height: 1.65; }
 
-    /* -- Comparison table ----------------------------- */
+    /* ── Comparison table ───────────────────────────── */
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.25rem 0; }
     .comparison-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
     .comparison-table th { background: var(--rw-bg-subtle); font-family: var(--rw-font-display); font-weight: 700; font-size: .8rem; text-align: left; padding: .7rem 1rem; border-bottom: 2px solid var(--rw-border); color: var(--rw-text); }
     .comparison-table td { padding: .65rem 1rem; border-bottom: 1px solid var(--rw-border); color: var(--rw-text-muted); vertical-align: top; }
     .comparison-table tr:hover td { background: var(--rw-bg-alt); }
 
-    /* -- Responsive ----------------------------------- */
+    /* ── Responsive ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; }
     html, body { max-width: 100%; overflow-x: hidden; }
     * { word-break: break-word; overflow-wrap: break-word; }
@@ -317,15 +317,15 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- -- Hero --------------------------------------------------- -->
+<!-- ── Hero ─────────────────────────────────────────────────── -->
 <div class="guide-hero">
   <div class="hero-split">
     <div class="hero-text">
-      <span class="guide-hero-label"><span class="pulse-dot"></span> SerpApi Hackathon &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Solo � 3 hrs</span>
+      <span class="guide-hero-label"><span class="pulse-dot"></span> SerpApi Hackathon &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Solo · 3 hrs</span>
       <h1>SERP Delta<br><span>Detect the Gap</span></h1>
       <p>Your AI assistant isn&rsquo;t lying &mdash; it&rsquo;s frozen in time. SERP Delta measures exactly where the freeze happened and by how much. One input. Zero infrastructure. The truth in three seconds.</p>
       <div class="hero-tags">
-        <span class="hero-tag">Python � Streamlit</span>
+        <span class="hero-tag">Python · Streamlit</span>
         <span class="hero-tag">SerpApi</span>
         <span class="hero-tag">Nebius AI Studio</span>
         <span class="hero-tag">ThreadPoolExecutor</span>
@@ -348,7 +348,7 @@
   </div>
 </div>
 
-<!-- -- Guide Content ------------------------------------------- -->
+<!-- ── Guide Content ─────────────────────────────────────────── -->
 <div class="guide-layout" id="guide-content">
 
   <aside class="guide-sidebar">
@@ -369,7 +369,7 @@
 
   <main>
 
-    <!-- -- WHAT IT DOES ----------------------------- -->
+    <!-- ── WHAT IT DOES ───────────────────────────── -->
     <section class="guide-section" id="section-what">
       <h2>What It Does</h2>
       <p>Ask any time-sensitive question. SERP Delta runs it through an LLM and through live Google simultaneously, then computes a structured score of the gap between frozen training data and current reality.</p>
@@ -384,32 +384,32 @@
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📊</div>
           <h4>Staleness Score</h4>
           <p>0 = perfectly fresh. 100 = completely wrong. Computed by a second LLM reading both answers.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔍</div>
           <h4>Specific Discrepancies</h4>
           <p>&ldquo;AI says X, web says Y.&rdquo; Named, citable findings &mdash; not just a feeling something is off.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📅</div>
           <h4>Knowledge Timeline</h4>
           <p>Visual bar showing how many months the AI&rsquo;s answer appears to lag behind current reality.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">⚖️</div>
           <h4>Side-by-Side View</h4>
           <p>AI training answer left, live Google snippets right. The gap is visible before you read the verdict.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🏆</div>
           <h4>Lie Leaderboard</h4>
           <p>Session-ranked table of every gap you&rsquo;ve found. People compete to find the most outdated answer.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🎭</div>
           <h4>Demo Mode</h4>
           <p>9 pre-loaded results, zero API keys. The app works the moment you open it.</p>
         </div>
@@ -425,7 +425,7 @@
       </div>
     </section>
 
-    <!-- -- THE INVERSION ---------------------------- -->
+    <!-- ── THE INVERSION ──────────────────────────── -->
     <section class="guide-section" id="section-inversion">
       <h2>The Inversion</h2>
       <p>Everyone uses SerpApi the same way. SERP Delta uses it differently.</p>
@@ -435,9 +435,9 @@
           <div class="inv-eyebrow">Standard use</div>
           <div class="inv-headline">Search engines use SerpApi to show users results</div>
           <div class="inv-flow">
-            <div class="inv-step"><span class="inv-step-icon">??</span>User searches for a topic</div>
-            <div class="inv-step"><span class="inv-step-icon">??</span>SerpApi fetches live web data</div>
-            <div class="inv-step"><span class="inv-step-icon">??</span>Results displayed to the user</div>
+            <div class="inv-step"><span class="inv-step-icon">👤</span>User searches for a topic</div>
+            <div class="inv-step"><span class="inv-step-icon">🔍</span>SerpApi fetches live web data</div>
+            <div class="inv-step"><span class="inv-step-icon">📄</span>Results displayed to the user</div>
           </div>
         </div>
 
@@ -447,10 +447,10 @@
           <div class="inv-eyebrow">SERP Delta</div>
           <div class="inv-headline">SerpApi used to <em style="font-style:italic;color:#818cf8">audit</em> AI knowledge</div>
           <div class="inv-flow">
-            <div class="inv-step"><span class="inv-step-icon">??</span>User asks a time-sensitive question</div>
-            <div class="inv-step"><span class="inv-step-icon">??</span>LLM answers from frozen training data</div>
-            <div class="inv-step"><span class="inv-step-icon">??</span>SerpApi fetches current ground truth</div>
-            <div class="inv-step"><span class="inv-step-icon">??</span>Delta computed between the two</div>
+            <div class="inv-step"><span class="inv-step-icon">👤</span>User asks a time-sensitive question</div>
+            <div class="inv-step"><span class="inv-step-icon">🤖</span>LLM answers from frozen training data</div>
+            <div class="inv-step"><span class="inv-step-icon">🔍</span>SerpApi fetches current ground truth</div>
+            <div class="inv-step"><span class="inv-step-icon">📊</span>Delta computed between the two</div>
           </div>
           <div class="inv-result">The staleness score is the diff</div>
         </div>
@@ -461,35 +461,35 @@
       </div>
     </section>
 
-    <!-- -- VS RAG ----------------------------------- -->
+    <!-- ── VS RAG ─────────────────────────────────── -->
     <section class="guide-section" id="section-rag">
       <h2>vs RAG</h2>
       <p>RAG (Retrieval-Augmented Generation) is the industry standard for solving LLM staleness. It works &mdash; but it&rsquo;s heavyweight. SERP Delta is the lightweight alternative for external knowledge validation.</p>
 
       <div class="rag-vs-wrap">
         <div class="rag-card rag-old">
-          <div class="rag-header">? &nbsp;RAG Pipeline</div>
+          <div class="rag-header">❌ &nbsp;RAG Pipeline</div>
           <div class="rag-rows">
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Setup:</span><span class="rag-row-val">Weeks � pipeline, embeddings, vector DB</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Maintenance:</span><span class="rag-row-val">Ongoing re-indexing required</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Coverage:</span><span class="rag-row-val">Only what you indexed</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Cost:</span><span class="rag-row-val">Infrastructure + embedding costs</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Output:</span><span class="rag-row-val">Source chunks returned</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Freshness:</span><span class="rag-row-val">Still goes stale after weeks</span></div>
+            <div class="rag-row"><span class="rag-row-icon">⏱️</span><span class="rag-row-label">Setup:</span><span class="rag-row-val">Weeks — pipeline, embeddings, vector DB</span></div>
+            <div class="rag-row"><span class="rag-row-icon">🔄</span><span class="rag-row-label">Maintenance:</span><span class="rag-row-val">Ongoing re-indexing required</span></div>
+            <div class="rag-row"><span class="rag-row-icon">📁</span><span class="rag-row-label">Coverage:</span><span class="rag-row-val">Only what you indexed</span></div>
+            <div class="rag-row"><span class="rag-row-icon">💰</span><span class="rag-row-label">Cost:</span><span class="rag-row-val">Infrastructure + embedding costs</span></div>
+            <div class="rag-row"><span class="rag-row-icon">📚</span><span class="rag-row-label">Output:</span><span class="rag-row-val">Source chunks returned</span></div>
+            <div class="rag-row"><span class="rag-row-icon">📆</span><span class="rag-row-label">Freshness:</span><span class="rag-row-val">Still goes stale after weeks</span></div>
           </div>
         </div>
 
         <div class="rag-vs-badge"><span>VS</span></div>
 
         <div class="rag-card rag-new">
-          <div class="rag-header">? &nbsp;SERP Delta</div>
+          <div class="rag-header">✓ &nbsp;SERP Delta</div>
           <div class="rag-rows">
-            <div class="rag-row"><span class="rag-row-icon">?</span><span class="rag-row-label">Setup:</span><span class="rag-row-val">Hours � pip install, two API keys</span></div>
-            <div class="rag-row"><span class="rag-row-icon">?</span><span class="rag-row-label">Maintenance:</span><span class="rag-row-val">Zero</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Coverage:</span><span class="rag-row-val">Entire live web</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Cost:</span><span class="rag-row-val">Per-query API call</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Output:</span><span class="rag-row-val">Specific discrepancies, named</span></div>
-            <div class="rag-row"><span class="rag-row-icon">??</span><span class="rag-row-label">Freshness:</span><span class="rag-row-val">Always current � live at query time</span></div>
+            <div class="rag-row"><span class="rag-row-icon">⚡</span><span class="rag-row-label">Setup:</span><span class="rag-row-val">Hours — pip install, two API keys</span></div>
+            <div class="rag-row"><span class="rag-row-icon">✓</span><span class="rag-row-label">Maintenance:</span><span class="rag-row-val">Zero</span></div>
+            <div class="rag-row"><span class="rag-row-icon">🌐</span><span class="rag-row-label">Coverage:</span><span class="rag-row-val">Entire live web</span></div>
+            <div class="rag-row"><span class="rag-row-icon">💸</span><span class="rag-row-label">Cost:</span><span class="rag-row-val">Per-query API call</span></div>
+            <div class="rag-row"><span class="rag-row-icon">🎯</span><span class="rag-row-label">Output:</span><span class="rag-row-val">Specific discrepancies, named</span></div>
+            <div class="rag-row"><span class="rag-row-icon">🔴</span><span class="rag-row-label">Freshness:</span><span class="rag-row-val">Always current — live at query time</span></div>
           </div>
         </div>
       </div>
@@ -499,59 +499,59 @@
       </div>
     </section>
 
-    <!-- -- WHERE IT FITS ---------------------------- -->
+    <!-- ── WHERE IT FITS ──────────────────────────── -->
     <section class="guide-section" id="section-industries">
       <h2>Where It Fits</h2>
       <p>Any domain where AI answers drive decisions and facts change faster than training cycles.</p>
 
       <div class="industry-grid">
         <div class="industry-card">
-          <div class="ind-icon">??</div>
+          <div class="ind-icon">🏢</div>
           <div class="ind-name">Enterprise AI Copilots</div>
           <div class="ind-pain">Internal chatbots answer confidently. No one checks if the answer is a year old.</div>
-          <div class="ind-win">? Validate before it drives a decision</div>
+          <div class="ind-win">→ Validate before it drives a decision</div>
         </div>
         <div class="industry-card">
-          <div class="ind-icon">??</div>
+          <div class="ind-icon">⚖️</div>
           <div class="ind-name">Legal &amp; Compliance</div>
           <div class="ind-pain">Regulations, sanctions, and case law change. AI doesn't get the memo.</div>
-          <div class="ind-win">? Flag stale regulatory answers automatically</div>
+          <div class="ind-win">→ Flag stale regulatory answers automatically</div>
         </div>
         <div class="industry-card">
-          <div class="ind-icon">??</div>
+          <div class="ind-icon">📈</div>
           <div class="ind-name">Financial Research</div>
           <div class="ind-pain">AI answers on rates, valuations, and leadership are months behind the market.</div>
-          <div class="ind-win">? Audit AI output against current state</div>
+          <div class="ind-win">→ Audit AI output against current state</div>
         </div>
         <div class="industry-card">
-          <div class="ind-icon">??</div>
+          <div class="ind-icon">🏥</div>
           <div class="ind-name">Healthcare AI</div>
           <div class="ind-pain">Clinical guidelines and drug approvals update constantly. Stale answers can mislead.</div>
-          <div class="ind-win">? Surface outdated clinical guidance</div>
+          <div class="ind-win">→ Surface outdated clinical guidance</div>
         </div>
         <div class="industry-card">
-          <div class="ind-icon">??</div>
+          <div class="ind-icon">💬</div>
           <div class="ind-name">Customer Support Bots</div>
-          <div class="ind-pain">Stale pricing, discontinued products, old policy � all answered with full confidence.</div>
-          <div class="ind-win">? Catch stale answers before customers do</div>
+          <div class="ind-pain">Stale pricing, discontinued products, old policy — all answered with full confidence.</div>
+          <div class="ind-win">→ Catch stale answers before customers do</div>
         </div>
         <div class="industry-card">
-          <div class="ind-icon">???</div>
+          <div class="ind-icon">🖥️</div>
           <div class="ind-name">Developer API</div>
           <div class="ind-pain">Every LLM API call is a potential stale answer. No existing wrapper checks freshness.</div>
-          <div class="ind-win">? Wrap any LLM call with a freshness layer</div>
+          <div class="ind-win">→ Wrap any LLM call with a freshness layer</div>
         </div>
       </div>
     </section>
 
-    <!-- -- SEE IT IN ACTION ------------------------- -->
+    <!-- ── SEE IT IN ACTION ───────────────────────── -->
     <section class="guide-section" id="section-demo">
       <h2>See It In Action</h2>
       <p>The CEO query became the defining moment. Score 100, Contradicted, caught in three seconds.</p>
 
       <div class="demo-tabs-wrap">
         <div class="demo-tab-bar">
-          <button class="demo-tab active" onclick="showDemo('ceo',this)">CEO Query � Score 100</button>
+          <button class="demo-tab active" onclick="showDemo('ceo',this)">CEO Query — Score 100</button>
           <button class="demo-tab" onclick="showDemo('score',this)">Score Card</button>
           <button class="demo-tab" onclick="showDemo('leaderboard',this)">Lie Leaderboard</button>
           <button class="demo-tab" onclick="showDemo('title',this)">App Overview</button>
@@ -599,7 +599,7 @@
       </div>
     </section>
 
-    <!-- -- HOW IT WORKS ----------------------------- -->
+    <!-- ── HOW IT WORKS ───────────────────────────── -->
     <section class="guide-section" id="section-how">
       <h2>How It Works</h2>
       <p>Two threads. Three cache layers. One structured JSON diff. The critical design decision: LLM answer and live web fetch start at the same time. Neither waits for the other.</p>
@@ -616,14 +616,14 @@
           <div class="step-num">2</div>
           <div class="step-body">
             <h4>LLM answer (parallel thread A)</h4>
-            <p>Checks <code>llm_cache/</code> first (7-day disk TTL). Cache miss ? Nebius Qwen3-32B answers from training data. Training answers are deterministic � cache them for days, not minutes.</p>
+            <p>Checks <code>llm_cache/</code> first (7-day disk TTL). Cache miss → Nebius Qwen3-32B answers from training data. Training answers are deterministic — cache them for days, not minutes.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">3</div>
           <div class="step-body">
             <h4>Live web data (parallel thread B)</h4>
-            <p>Checks <code>serp_cache/</code> first (24h disk TTL). Cache miss ? SerpApi Google Search + Google News run in a nested executor. Two calls in parallel, not serial.</p>
+            <p>Checks <code>serp_cache/</code> first (24h disk TTL). Cache miss → SerpApi Google Search + Google News run in a nested executor. Two calls in parallel, not serial.</p>
           </div>
         </li>
         <li class="step-item">
@@ -664,7 +664,7 @@
       </div>
     </section>
 
-    <!-- -- REAL LEARNINGS -------------------------- -->
+    <!-- ── REAL LEARNINGS ────────────────────────── -->
     <section class="guide-section" id="section-learnings">
       <h2>Real Learnings</h2>
 
@@ -704,42 +704,42 @@
       </div>
     </section>
 
-    <!-- -- MOMENTS ---------------------------------- -->
+    <!-- ── MOMENTS ────────────────────────────────── -->
     <section class="guide-section" id="section-moments">
       <h2>Moments In Between</h2>
 
       <div class="moments-grid">
         <div class="moment-card">
-          <div class="moment-emoji">??</div>
+          <div class="moment-emoji">📸</div>
           <div class="moment-title">The CEO screenshot found us</div>
           <div class="moment-body">A smoke-test query: &ldquo;Who is the CEO of OpenAI?&rdquo; Score back: 100. Contradicted. The AI named the previous CEO with full confidence. That screenshot went into every slide, the README, and every tweet from that point forward. The best demo content finds you.</div>
         </div>
         <div class="moment-card">
-          <div class="moment-emoji">??</div>
+          <div class="moment-emoji">🐛</div>
           <div class="moment-title">Threading bug that looked like a math error</div>
           <div class="moment-body">The quota counter was doubling and halving seemingly at random. Turned out session state writes inside the executor were racing each other. Looked like arithmetic. Was a concurrency problem. Reading the Streamlit docs properly, not skimming them, would have caught it in five minutes.</div>
         </div>
         <div class="moment-card">
-          <div class="moment-emoji">??</div>
+          <div class="moment-emoji">🏆</div>
           <div class="moment-title">Leaderboard: 30 minutes, outsized impact</div>
           <div class="moment-body">Someone asked mid-session &ldquo;which query had the worst score?&rdquo; The leaderboard existed an hour later. Demo crowds immediately started competing to find the most outdated AI claim. The feature with the least planning got the most engagement.</div>
         </div>
         <div class="moment-card">
-          <div class="moment-emoji">???</div>
+          <div class="moment-emoji">🛡️</div>
           <div class="moment-title">Quota hit. Demo mode held.</div>
           <div class="moment-body">The SerpApi free plan ran out mid-presentation. The app switched silently to pre-loaded demo results. Zero visible degradation. The only person who knew was watching the quota meter. Build the fallback before you need it &mdash; you will need it.</div>
         </div>
       </div>
     </section>
 
-    <!-- -- WHAT'S NEXT ------------------------------- -->
+    <!-- ── WHAT'S NEXT ─────────────────────────────── -->
     <section class="guide-section" id="section-next">
       <h2>What&rsquo;s Next</h2>
       <p>The MVP validates the core idea. These are the features worth building next, ranked by impact vs effort.</p>
 
       <div class="roadmap-grid">
         <div class="roadmap-item">
-          <div class="roadmap-icon">??</div>
+          <div class="roadmap-icon">🔬</div>
           <div>
             <div><span class="roadmap-badge rb-hot">High Impact</span></div>
             <div class="roadmap-name">Multi-LLM Comparison</div>
@@ -747,7 +747,7 @@
           </div>
         </div>
         <div class="roadmap-item">
-          <div class="roadmap-icon">??</div>
+          <div class="roadmap-icon">📦</div>
           <div>
             <div><span class="roadmap-badge rb-hot">High Impact</span></div>
             <div class="roadmap-name">Batch Mode</div>
@@ -755,7 +755,7 @@
           </div>
         </div>
         <div class="roadmap-item">
-          <div class="roadmap-icon">??</div>
+          <div class="roadmap-icon">🔌</div>
           <div>
             <div><span class="roadmap-badge rb-hot">High Impact</span></div>
             <div class="roadmap-name">REST API (FastAPI)</div>
@@ -763,7 +763,7 @@
           </div>
         </div>
         <div class="roadmap-item">
-          <div class="roadmap-icon">??</div>
+          <div class="roadmap-icon">📉</div>
           <div>
             <div><span class="roadmap-badge rb-stretch">Stretch</span></div>
             <div class="roadmap-name">Historical Staleness Trend</div>
@@ -771,7 +771,7 @@
           </div>
         </div>
         <div class="roadmap-item">
-          <div class="roadmap-icon">??</div>
+          <div class="roadmap-icon">🌐</div>
           <div>
             <div><span class="roadmap-badge rb-stretch">Stretch</span></div>
             <div class="roadmap-name">Browser Extension</div>
@@ -779,7 +779,7 @@
           </div>
         </div>
         <div class="roadmap-item">
-          <div class="roadmap-icon">??</div>
+          <div class="roadmap-icon">🔔</div>
           <div>
             <div><span class="roadmap-badge rb-stretch">Stretch</span></div>
             <div class="roadmap-name">Webhook Alerts</div>
@@ -789,7 +789,7 @@
       </div>
     </section>
 
-    <!-- -- PLATFORM REVIEW -------------------------- -->
+    <!-- ── PLATFORM REVIEW ────────────────────────── -->
     <section class="guide-section" id="section-platform">
       <h2>Platform Review</h2>
 
@@ -805,7 +805,7 @@
             </div>
             <div class="plat-col">
               <div class="plat-heading plat-gotcha-h">! Gotcha</div>
-              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>Session state not thread-safe � crashes silently from workers</div>
+              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>Session state not thread-safe — crashes silently from workers</div>
               <div class="plat-point"><span class="plat-dot-r">&#9679;</span>Layout customization limited; CSS overrides required</div>
             </div>
           </div>
@@ -816,14 +816,14 @@
           <div class="platform-cols">
             <div class="plat-col">
               <div class="plat-heading plat-liked-h">&#10003; Liked</div>
-              <div class="plat-point"><span class="plat-dot-g">&#9679;</span>Structured JSON � reliable and consistent</div>
+              <div class="plat-point"><span class="plat-dot-g">&#9679;</span>Structured JSON — reliable and consistent</div>
               <div class="plat-point"><span class="plat-dot-g">&#9679;</span>News endpoint is genuinely separate signal</div>
               <div class="plat-point"><span class="plat-dot-g">&#9679;</span>Free plan usable for development</div>
             </div>
             <div class="plat-col">
               <div class="plat-heading plat-gotcha-h">! Gotcha</div>
               <div class="plat-point"><span class="plat-dot-r">&#9679;</span>100 searches/month gone in a live demo day</div>
-              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>No streaming � full response or nothing</div>
+              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>No streaming — full response or nothing</div>
             </div>
           </div>
         </div>
@@ -833,14 +833,14 @@
           <div class="platform-cols">
             <div class="plat-col">
               <div class="plat-heading plat-liked-h">&#10003; Liked</div>
-              <div class="plat-point"><span class="plat-dot-g">&#9679;</span>OpenAI-compatible � one SDK, three providers</div>
+              <div class="plat-point"><span class="plat-dot-g">&#9679;</span>OpenAI-compatible — one SDK, three providers</div>
               <div class="plat-point"><span class="plat-dot-g">&#9679;</span>Notably cheaper than direct Anthropic pricing</div>
               <div class="plat-point"><span class="plat-dot-g">&#9679;</span>Qwen3-32B fast for the simpler answer call</div>
             </div>
             <div class="plat-col">
               <div class="plat-heading plat-gotcha-h">! Gotcha</div>
-              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>Occasional timeouts under load � fallback chain is mandatory</div>
-              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>Qwen3 thinking mode adds 2�5s unless explicitly disabled</div>
+              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>Occasional timeouts under load — fallback chain is mandatory</div>
+              <div class="plat-point"><span class="plat-dot-r">&#9679;</span>Qwen3 thinking mode adds 2–5s unless explicitly disabled</div>
             </div>
           </div>
         </div>
@@ -857,7 +857,7 @@
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-// -- Demo tab switching --------------------------------------------------------
+// ── Demo tab switching ────────────────────────────────────────────────────────
 function showDemo(id, btn) {
   document.querySelectorAll('.demo-tab').forEach(function(t) { t.classList.remove('active'); });
   document.querySelectorAll('.demo-panel').forEach(function(p) { p.classList.remove('active'); });
@@ -866,7 +866,7 @@ function showDemo(id, btn) {
   if (p) p.classList.add('active');
 }
 
-// -- TOC scrollspy -------------------------------------------------------------
+// ── TOC scrollspy ─────────────────────────────────────────────────────────────
 (function() {
   var sections = document.querySelectorAll('.guide-section[id]');
   var links = document.querySelectorAll('.guide-toc a');

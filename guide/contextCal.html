@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agentic Scheduling Without Calendar Access � ContextCal | RawWeights</title>
-  <meta name="description" content="How ContextCal replaces 3 hours of email back-and-forth with a link � parsing multilingual availability, normalizing timezones, and computing meeting overlap without ever touching a calendar API.">
+  <title>Agentic Scheduling Without Calendar Access — ContextCal | RawWeights</title>
+  <meta name="description" content="How ContextCal replaces 3 hours of email back-and-forth with a link — parsing multilingual availability, normalizing timezones, and computing meeting overlap without ever touching a calendar API.">
   <meta name="author" content="RawWeights">
   <link rel="canonical" href="https://rawweights.com/guide/contextcal-react-agent.html">
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://rawweights.com/images/contextcal.png">
 
   <meta property="og:url" content="https://rawweights.com/guide/contextcal-react-agent.html">
-  <meta property="og:title" content="Agentic Scheduling Without Calendar Access � ContextCal | RawWeights">
-  <meta property="og:description" content="Parsing multilingual availability, normalizing timezones, computing overlap � no calendar API, no OAuth, no calendar screenshots.">
+  <meta property="og:title" content="Agentic Scheduling Without Calendar Access — ContextCal | RawWeights">
+  <meta property="og:description" content="Parsing multilingual availability, normalizing timezones, computing overlap — no calendar API, no OAuth, no calendar screenshots.">
 
   <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
 
@@ -28,7 +28,7 @@
   <style>
     html { scroll-behavior: smooth; }
 
-    /* -- HERO light mode ------------------------------------------- */
+    /* ── HERO light mode ─────────────────────────────────────────── */
     [data-theme="light"] header.cc-hero {
       background: linear-gradient(135deg,#eef2ff 0%,#f5f3ff 50%,#eff6ff 100%) !important;
       border-color: #c7d2fe !important;
@@ -52,11 +52,11 @@
     [data-theme="light"] header.cc-hero .stat-lab,
     [data-theme="light"] header.cc-hero [class*="text-slate-5"] { color: #64748b !important; }
 
-    /* -- MAIN light mode ------------------------------------------- */
+    /* ── MAIN light mode ─────────────────────────────────────────── */
     [data-theme="light"] main.cc-main { background: #f1f5f9 !important; }
     [data-theme="light"] main.cc-main .section-wrap { border-color: #cbd5e1 !important; }
 
-    /* Backgrounds � catch plain and opacity variants */
+    /* Backgrounds — catch plain and opacity variants */
     [data-theme="light"] main.cc-main [class*="bg-slate-800"] { background: #ffffff !important; }
     [data-theme="light"] main.cc-main [class*="bg-slate-900"] { background: #f8fafc !important; }
     [data-theme="light"] main.cc-main [class*="bg-slate-950"] { background: #f1f5f9 !important; }
@@ -109,7 +109,7 @@
     /* Section number circles */
     [data-theme="light"] main.cc-main .text-indigo-400.font-bold { color: #4338ca !important; }
 
-    /* -- cc-code blocks -------------------------------------------- */
+    /* ── cc-code blocks ──────────────────────────────────────────── */
     .cc-code {
       background: #0d1117; border: 1px solid #1e293b; border-radius: 10px;
       padding: 1.1rem 1.25rem; font-family: 'JetBrains Mono', monospace;
@@ -121,7 +121,7 @@
     .cm  { color: #475569; } [data-theme="light"] .cm  { color: #94a3b8; }
     .fn  { color: #67e8f9; } [data-theme="light"] .fn  { color: #0284c7; }
 
-    /* -- Agentic flow cells ---------------------------------------- */
+    /* ── Agentic flow cells ──────────────────────────────────────── */
     .flow-think { background: rgba(139,92,246,.09); border: 1px solid rgba(139,92,246,.28); border-radius: 10px; padding: 1rem; }
     .flow-act   { background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.28); border-radius: 10px; padding: 1rem; }
     .flow-obs   { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.28); border-radius: 10px; padding: 1rem; }
@@ -166,7 +166,7 @@
         Teams spread across multiple countries and timezones know the cost: scheduling a joint call takes 3 hours of email chains, manual timezone math, and calendar screenshots nobody should be sharing.
       </p>
       <p class="hero-sub text-slate-400 text-sm leading-relaxed">
-        Participants reply in their own words � Hindi, French, Chinese, casual English, voice. The agent parses it all, normalizes timezones, and finds the slot. Zero calendar access. iCal invite ready in under 5 minutes.
+        Participants reply in their own words — Hindi, French, Chinese, casual English, voice. The agent parses it all, normalizes timezones, and finds the slot. Zero calendar access. iCal invite ready in under 5 minutes.
       </p>
 
       <div class="flex flex-wrap gap-2">
@@ -182,7 +182,7 @@
         <a href="https://github.com/researchsite/ContextCal" target="_blank" rel="noopener noreferrer"
            class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          View on GitHub ?
+          View on GitHub →
         </a>
       </div>
     </div>
@@ -201,7 +201,7 @@
       <div class="grid grid-cols-4 gap-3">
         <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
           <div class="stat-val text-2xl font-black text-indigo-400">5 min</div>
-          <div class="stat-lab text-xs text-slate-500 uppercase tracking-wider mt-1">Email ? iCal</div>
+          <div class="stat-lab text-xs text-slate-500 uppercase tracking-wider mt-1">Email → iCal</div>
         </div>
         <div class="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-700">
           <div class="stat-val text-2xl font-black text-indigo-400">6+</div>
@@ -239,31 +239,31 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div class="space-y-4 text-slate-300 leading-relaxed">
         <p>Global teams face a universal friction point: scheduling joint meetings. Both sides have calendars. Neither wants to share them. So the organizer sends an email asking for availability.</p>
-        <p>Responses trickle in over 24 hours. Some say <em class="text-slate-200">"9�5 IST"</em>, others say <em class="text-slate-200">"mornings only"</em>, one says <em class="text-slate-200">"je suis libre mercredi apr�s-midi"</em>. Someone converts timezones in their head and gets it wrong.</p>
+        <p>Responses trickle in over 24 hours. Some say <em class="text-slate-200">"9–5 IST"</em>, others say <em class="text-slate-200">"mornings only"</em>, one says <em class="text-slate-200">"je suis libre mercredi après-midi"</em>. Someone converts timezones in their head and gets it wrong.</p>
         <p><strong class="text-white">The information exists. The friction is transforming it.</strong> That's exactly where an agent adds value.</p>
       </div>
       <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
         <p class="text-red-400 font-bold text-xs uppercase tracking-widest mb-4">The manual workflow cost</p>
         <div class="space-y-3">
           <div class="flex items-start gap-3">
-            <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
-            <p class="text-slate-300 text-sm">Email thread for availability � 1�2 rounds = 24�48 hrs</p>
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Email thread for availability — 1–2 rounds = 24–48 hrs</p>
           </div>
           <div class="flex items-start gap-3">
-            <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
-            <p class="text-slate-300 text-sm">Manual timezone math � error-prone across multiple regions</p>
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Manual timezone math — error-prone across multiple regions</p>
           </div>
           <div class="flex items-start gap-3">
-            <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
-            <p class="text-slate-300 text-sm">Calendar screenshots � privacy risk, stale within hours</p>
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Calendar screenshots — privacy risk, stale within hours</p>
           </div>
           <div class="flex items-start gap-3">
-            <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
-            <p class="text-slate-300 text-sm">Doodle/When2meet � requires structured input, no casual phrasing, no multilingual support</p>
+            <span class="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+            <p class="text-slate-300 text-sm">Doodle/When2meet — requires structured input, no casual phrasing, no multilingual support</p>
           </div>
           <div class="border-t border-slate-700 pt-3 mt-2 flex items-start gap-3">
-            <span class="text-green-400 mt-0.5 flex-shrink-0 font-bold">?</span>
-            <p class="text-white text-sm font-semibold">ContextCal: participants reply in their own words � agent parses and finds the slot in 5 minutes</p>
+            <span class="text-green-400 mt-0.5 flex-shrink-0 font-bold">✓</span>
+            <p class="text-white text-sm font-semibold">ContextCal: participants reply in their own words — agent parses and finds the slot in 5 minutes</p>
           </div>
         </div>
       </div>
@@ -290,7 +290,7 @@
             <tr class="hover:bg-slate-700/20 transition-colors">
               <td class="px-5 py-3 text-slate-300 text-xs font-medium">Language support</td>
               <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">English structured input only</span></td>
-              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">Any language � Hindi, French, Chinese�</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">Any language — Hindi, French, Chinese…</span></td>
             </tr>
             <tr class="hover:bg-slate-700/20 transition-colors">
               <td class="px-5 py-3 text-slate-300 text-xs font-medium">Timezone handling</td>
@@ -304,18 +304,18 @@
             </tr>
             <tr class="hover:bg-slate-700/20 transition-colors">
               <td class="px-5 py-3 text-slate-300 text-xs font-medium">Vague availability ("mornings only")</td>
-              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">? Not supported</span></td>
-              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">? LLM resolves to time window</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">✗ Not supported</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">✓ LLM resolves to time window</span></td>
             </tr>
             <tr class="hover:bg-slate-700/20 transition-colors">
               <td class="px-5 py-3 text-slate-300 text-xs font-medium">Voice input</td>
-              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">? Not supported</span></td>
-              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">? Whisper STT (local, multilingual)</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">✗ Not supported</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">✓ Whisper STT (local, multilingual)</span></td>
             </tr>
             <tr class="hover:bg-slate-700/20 transition-colors">
               <td class="px-5 py-3 text-slate-300 text-xs font-medium">Programmable / A2A</td>
-              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">? No API</span></td>
-              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">? A2A Agent Card � any orchestrator</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-red-400 text-xs">✗ No API</span></td>
+              <td class="px-5 py-3 text-center"><span class="text-green-400 text-xs font-semibold">✓ A2A Agent Card — any orchestrator</span></td>
             </tr>
           </tbody>
         </table>
@@ -330,7 +330,7 @@
         <span class="text-indigo-400 font-bold text-sm">02</span>
       </div>
       <div>
-        <h2 class="text-white text-2xl font-bold mb-1">How It Works � The 9-Step Flow</h2>
+        <h2 class="text-white text-2xl font-bold mb-1">How It Works — The 9-Step Flow</h2>
         <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">LangGraph orchestrates everything end-to-end</p>
       </div>
     </div>
@@ -363,23 +363,23 @@
       <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
         <div class="w-8 h-8 rounded-full bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold text-xs flex-shrink-0 mt-0.5">4</div>
         <div>
-          <span class="text-white font-semibold text-sm">LLM parses each response ? structured JSON</span>
+          <span class="text-white font-semibold text-sm">LLM parses each response → structured JSON</span>
           <span class="ml-2 bg-violet-500/15 text-violet-300 border border-violet-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">LLM</span>
-          <p class="text-slate-400 text-sm mt-1">Llama-3.3-70B extracts timezone, time windows, hard constraints, soft preferences, and flexibility flag � from any language.</p>
+          <p class="text-slate-400 text-sm mt-1">Llama-3.3-70B extracts timezone, time windows, hard constraints, soft preferences, and flexibility flag — from any language.</p>
         </div>
       </div>
       <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
         <div class="w-8 h-8 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-xs flex-shrink-0 mt-0.5">5</div>
         <div>
-          <span class="text-white font-semibold text-sm">Normalize all timezones ? UTC</span>
+          <span class="text-white font-semibold text-sm">Normalize all timezones → UTC</span>
           <span class="ml-2 bg-green-500/15 text-green-300 border border-green-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Python</span>
-          <p class="text-slate-400 text-sm mt-1">Pure Python via pytz. Every timezone converted to UTC � deterministic. The LLM never touches time math.</p>
+          <p class="text-slate-400 text-sm mt-1">Pure Python via pytz. Every timezone converted to UTC — deterministic. The LLM never touches time math.</p>
         </div>
       </div>
       <div class="flex gap-4 py-4 border-b border-slate-800 items-start">
         <div class="w-8 h-8 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-xs flex-shrink-0 mt-0.5">6</div>
         <div>
-          <span class="text-white font-semibold text-sm">Compute slot overlap � interval intersection math</span>
+          <span class="text-white font-semibold text-sm">Compute slot overlap — interval intersection math</span>
           <span class="ml-2 bg-green-500/15 text-green-300 border border-green-500/30 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Python</span>
           <p class="text-slate-400 text-sm mt-1">Event-sweep algorithm finds N-way intersections. Slots ranked by coverage %. Near-miss path triggered if no full overlap.</p>
         </div>
@@ -418,27 +418,27 @@
         <span class="text-indigo-400 font-bold text-sm">03</span>
       </div>
       <div>
-        <h2 class="text-white text-2xl font-bold mb-1">Inside the Agent � The Agentic Flow</h2>
+        <h2 class="text-white text-2xl font-bold mb-1">Inside the Agent — The Agentic Flow</h2>
         <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">What happens internally for each participant response</p>
       </div>
     </div>
 
     <p class="text-slate-300 text-base leading-relaxed mb-8 max-w-2xl">
-      Each LangGraph node operates in a <strong class="text-white">Think ? Act ? Observe</strong> cycle. Here's what runs when a Hinglish response hits the agent:
+      Each LangGraph node operates in a <strong class="text-white">Think → Act → Observe</strong> cycle. Here's what runs when a Hinglish response hits the agent:
     </p>
 
-    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">-- Cycle 1: Parse the Response</p>
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">── Cycle 1: Parse the Response</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
       <div class="flow-think">
-        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">?? Think</div>
-        <p class="text-slate-300 text-sm leading-relaxed">"Response is Hinglish. 'baje' = time in Hindi. 'raat' = night. Should extract Wednesday 9:30 PM�11:30 PM IST."</p>
+        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">🧠 Think</div>
+        <p class="text-slate-300 text-sm leading-relaxed">"Response is Hinglish. 'baje' = time in Hindi. 'raat' = night. Should extract Wednesday 9:30 PM–11:30 PM IST."</p>
       </div>
       <div class="flow-act">
-        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">? Act</div>
+        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">⚡ Act</div>
         <p class="text-slate-300 text-sm leading-relaxed">Call <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">parse_availability()</code> with the raw Hinglish text as input.</p>
       </div>
       <div class="flow-obs">
-        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">?? Observe</div>
+        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">👁 Observe</div>
         <pre class="text-slate-300 text-xs leading-relaxed font-mono">{ timezone: "Asia/Kolkata",
   windows: [{ day: "Wednesday",
     start: "21:30",
@@ -447,48 +447,48 @@
       </div>
     </div>
 
-    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">-- Cycle 2: Normalize to UTC (Python only)</p>
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">── Cycle 2: Normalize to UTC (Python only)</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
       <div class="flow-think">
-        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">?? Think</div>
-        <p class="text-slate-300 text-sm leading-relaxed">"Multiple timezones parsed. Must convert to UTC. LLM must NOT compute this � use Python pytz. Resolve relative day names against the session date range."</p>
+        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">🧠 Think</div>
+        <p class="text-slate-300 text-sm leading-relaxed">"Multiple timezones parsed. Must convert to UTC. LLM must NOT compute this — use Python pytz. Resolve relative day names against the session date range."</p>
       </div>
       <div class="flow-act">
-        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">? Act</div>
-        <p class="text-slate-300 text-sm leading-relaxed">Call Python <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">normalize_to_utc()</code> ? pytz localizes each window to the correct absolute UTC datetime.</p>
+        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">⚡ Act</div>
+        <p class="text-slate-300 text-sm leading-relaxed">Call Python <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">normalize_to_utc()</code> → pytz localizes each window to the correct absolute UTC datetime.</p>
       </div>
       <div class="flow-obs">
-        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">?? Observe</div>
-        <pre class="text-slate-300 text-xs leading-relaxed font-mono">Wed IST 21:30�23:30
-? UTC T16:00Z�T18:00Z
+        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">👁 Observe</div>
+        <pre class="text-slate-300 text-xs leading-relaxed font-mono">Wed IST 21:30–23:30
+→ UTC T16:00Z–T18:00Z
 
 All participants now
 aligned to UTC.</pre>
       </div>
     </div>
 
-    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">-- Cycle 3: Compute Overlap + Handle Near-Miss</p>
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">── Cycle 3: Compute Overlap + Handle Near-Miss</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
       <div class="flow-think">
-        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">?? Think</div>
-        <p class="text-slate-300 text-sm leading-relaxed">"Run event-sweep. Full N-way overlap fails � one participant's window misses. Route to near-miss path and surface best partial slot."</p>
+        <div class="text-xs font-bold text-violet-400 uppercase tracking-wide mb-2">🧠 Think</div>
+        <p class="text-slate-300 text-sm leading-relaxed">"Run event-sweep. Full N-way overlap fails — one participant's window misses. Route to near-miss path and surface best partial slot."</p>
       </div>
       <div class="flow-act">
-        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">? Act</div>
-        <p class="text-slate-300 text-sm leading-relaxed">Call Python <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">compute_overlap()</code> ? conditional edge routes graph to summarize node.</p>
+        <div class="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">⚡ Act</div>
+        <p class="text-slate-300 text-sm leading-relaxed">Call Python <code class="bg-slate-900 text-green-300 border border-slate-700 px-1 rounded text-xs font-mono">compute_overlap()</code> → conditional edge routes graph to summarize node.</p>
       </div>
       <div class="flow-obs">
-        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">?? Observe</div>
-        <pre class="text-slate-300 text-xs leading-relaxed font-mono">best_slot: Wed 16:00�18:00Z
+        <div class="text-xs font-bold text-amber-400 uppercase tracking-wide mb-2">👁 Observe</div>
+        <pre class="text-slate-300 text-xs leading-relaxed font-mono">best_slot: Wed 16:00–18:00Z
 coverage: 83% (5/6)
 duration: 120 min
-? human decision needed</pre>
+→ human decision needed</pre>
       </div>
     </div>
 
     <div class="bg-slate-800 border border-indigo-500/25 rounded-xl p-5">
       <p class="text-white font-semibold text-sm mb-1">The critical design boundary</p>
-      <p class="text-slate-400 text-sm leading-relaxed">The LLM handles <strong class="text-white">language understanding</strong> and <strong class="text-white">prose generation</strong>. Python handles all <strong class="text-green-400">time math</strong>. LLMs hallucinate datetime arithmetic � by making this boundary explicit in the LangGraph node types, overlap computation is provably correct regardless of which model is used.</p>
+      <p class="text-slate-400 text-sm leading-relaxed">The LLM handles <strong class="text-white">language understanding</strong> and <strong class="text-white">prose generation</strong>. Python handles all <strong class="text-green-400">time math</strong>. LLMs hallucinate datetime arithmetic — by making this boundary explicit in the LangGraph node types, overlap computation is provably correct regardless of which model is used.</p>
     </div>
   </section>
 
@@ -507,48 +507,48 @@ duration: 120 min
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
       <div>
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/30 flex items-center justify-center text-lg">??</div>
+          <div class="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/30 flex items-center justify-center text-lg">🔒</div>
           <h3 class="text-white font-bold text-base">Blind Privacy Integration</h3>
         </div>
         <div class="space-y-3">
           <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
             <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-1.5">Token-scoped access</p>
-            <p class="text-slate-400 text-sm">Each participant gets a unique SHA-256 token. Their URL only shows their own response page � no participant list, no other responses visible.</p>
+            <p class="text-slate-400 text-sm">Each participant gets a unique SHA-256 token. Their URL only shows their own response page — no participant list, no other responses visible.</p>
           </div>
           <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
             <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-1.5">No calendar data stored</p>
-            <p class="text-slate-400 text-sm">Only free-text availability descriptions in SQLite. No calendar events, no event titles, no recurring data � just words.</p>
+            <p class="text-slate-400 text-sm">Only free-text availability descriptions in SQLite. No calendar events, no event titles, no recurring data — just words.</p>
           </div>
           <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
             <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-1.5">Organizer sees only the intersection</p>
-            <p class="text-slate-400 text-sm">Results show computed overlap slots. Individual responses stay private � the agent consolidates without exposing raw inputs.</p>
+            <p class="text-slate-400 text-sm">Results show computed overlap slots. Individual responses stay private — the agent consolidates without exposing raw inputs.</p>
           </div>
         </div>
       </div>
 
       <div>
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-lg">??</div>
+          <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-lg">🧠</div>
           <h3 class="text-white font-bold text-base">Contextual Nuance Handling</h3>
         </div>
         <div class="space-y-3">
           <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
-            <p class="text-violet-400 text-xs font-bold uppercase tracking-wide mb-1.5">Vague time words ? default windows</p>
-            <p class="text-slate-400 text-sm"><em>"mornings only"</em> ? 09:00�12:00 � <em>"afternoon"</em> ? 13:00�17:00 � <em>"evenings"</em> ? 18:00�21:00. Defaults baked into the LLM prompt.</p>
+            <p class="text-violet-400 text-xs font-bold uppercase tracking-wide mb-1.5">Vague time words → default windows</p>
+            <p class="text-slate-400 text-sm"><em>"mornings only"</em> → 09:00–12:00 · <em>"afternoon"</em> → 13:00–17:00 · <em>"evenings"</em> → 18:00–21:00. Defaults baked into the LLM prompt.</p>
           </div>
           <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
             <p class="text-violet-400 text-xs font-bold uppercase tracking-wide mb-1.5">Hard vs soft constraints</p>
-            <p class="text-slate-400 text-sm"><em>"I can't do Friday"</em> ? hard exclusion. <em>"I prefer not early mornings"</em> ? soft preference. Both preserved in parsed JSON.</p>
+            <p class="text-slate-400 text-sm"><em>"I can't do Friday"</em> → hard exclusion. <em>"I prefer not early mornings"</em> → soft preference. Both preserved in parsed JSON.</p>
           </div>
           <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
             <p class="text-violet-400 text-xs font-bold uppercase tracking-wide mb-1.5">Flexibility signals</p>
-            <p class="text-slate-400 text-sm"><em>"I'm flexible"</em> / <em>"whatever works"</em> ? <code class="bg-slate-900 text-violet-300 border border-slate-700 px-1 rounded text-xs font-mono">flexible: true</code>. Overlap engine weights flexible participants lower in near-miss ranking.</p>
+            <p class="text-slate-400 text-sm"><em>"I'm flexible"</em> / <em>"whatever works"</em> → <code class="bg-slate-900 text-violet-300 border border-slate-700 px-1 rounded text-xs font-mono">flexible: true</code>. Overlap engine weights flexible participants lower in near-miss ranking.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4">Real inputs ? parsed JSON</p>
+    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4">Real inputs → parsed JSON</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
       <div class="cc-code">
 <span class="cm"># Hinglish input:</span><br/>
@@ -565,7 +565,7 @@ duration: 120 min
       </div>
       <div class="cc-code">
 <span class="cm"># French input:</span><br/>
-<span class="str">"Je suis disponible mercredi<br/> apr�s-midi et jeudi matin,<br/> pas vendredi SVP"</span><br/>
+<span class="str">"Je suis disponible mercredi<br/> après-midi et jeudi matin,<br/> pas vendredi SVP"</span><br/>
 <br/>
 <span class="cm"># Parsed:</span><br/>
 { <span class="str">"timezone"</span>: <span class="str">"Europe/Paris"</span>,<br/>
@@ -583,7 +583,7 @@ duration: 120 min
 <span class="cm"># Parsed:</span><br/>
 { <span class="str">"timezone"</span>: <span class="str">"America/New_York"</span>,<br/>
   <span class="str">"windows"</span>: [<br/>
-    { <span class="str">"day"</span>: <span class="str">"Mon�Wed,Fri"</span>,<br/>
+    { <span class="str">"day"</span>: <span class="str">"Mon–Wed,Fri"</span>,<br/>
       <span class="str">"start"</span>: <span class="str">"09:00"</span> }],<br/>
   <span class="str">"flexible"</span>: <span class="kw">true</span>,<br/>
   <span class="str">"soft_prefs"</span>: [<span class="str">"avoid Thu PM"</span>] }
@@ -626,7 +626,7 @@ duration: 120 min
           <tr class="hover:bg-slate-700/30 transition-colors">
             <td class="px-5 py-3 font-mono text-indigo-300 text-xs">agents/parser.py</td>
             <td class="px-5 py-3 text-white font-medium text-xs">Llama-3.3-70B / Nebius</td>
-            <td class="px-5 py-3 text-slate-400 text-xs">Free-text ? structured JSON (timezone, windows, constraints, flexibility)</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Free-text → structured JSON (timezone, windows, constraints, flexibility)</td>
           </tr>
           <tr class="hover:bg-slate-700/30 transition-colors">
             <td class="px-5 py-3 font-mono text-indigo-300 text-xs">agents/normalizer.py</td>
@@ -651,7 +651,7 @@ duration: 120 min
           <tr class="hover:bg-slate-700/30 transition-colors">
             <td class="px-5 py-3 font-mono text-indigo-300 text-xs">tools/whisper_stt.py</td>
             <td class="px-5 py-3 text-white font-medium text-xs">faster-whisper (local)</td>
-            <td class="px-5 py-3 text-slate-400 text-xs">Voice ? text, CPU inference, multilingual Whisper model</td>
+            <td class="px-5 py-3 text-slate-400 text-xs">Voice → text, CPU inference, multilingual Whisper model</td>
           </tr>
           <tr class="hover:bg-slate-700/30 transition-colors">
             <td class="px-5 py-3 font-mono text-indigo-300 text-xs">db/database.py</td>
@@ -663,20 +663,20 @@ duration: 120 min
     </div>
 
     <div class="cc-code">
-<span class="cm"># LangGraph node chain � agents/graph.py (simplified)</span><br/>
+<span class="cm"># LangGraph node chain — agents/graph.py (simplified)</span><br/>
 <span class="kw">def</span> <span class="fn">build_graph</span>():<br/>
     graph = <span class="fn">StateGraph</span>(AgentState)<br/>
 <br/>
-    graph.<span class="fn">add_node</span>(<span class="str">"parse"</span>,    parse_node)     <span class="cm"># LLM ? JSON</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"parse"</span>,    parse_node)     <span class="cm"># LLM → JSON</span><br/>
     graph.<span class="fn">add_node</span>(<span class="str">"normalize"</span>, normalize_node) <span class="cm"># Python TZ math</span><br/>
     graph.<span class="fn">add_node</span>(<span class="str">"overlap"</span>,   overlap_node)   <span class="cm"># Python interval math</span><br/>
-    graph.<span class="fn">add_node</span>(<span class="str">"summarize"</span>, summarize_node) <span class="cm"># LLM ? prose</span><br/>
-    graph.<span class="fn">add_node</span>(<span class="str">"ical"</span>,      ical_node)      <span class="cm"># System ? .ics</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"summarize"</span>, summarize_node) <span class="cm"># LLM → prose</span><br/>
+    graph.<span class="fn">add_node</span>(<span class="str">"ical"</span>,      ical_node)      <span class="cm"># System → .ics</span><br/>
     graph.<span class="fn">add_node</span>(<span class="str">"error"</span>,     error_node)     <span class="cm"># Graceful recovery</span><br/>
 <br/>
     graph.<span class="fn">add_conditional_edges</span>(<span class="str">"parse"</span>,   route_after_parse,   {...})<br/>
     graph.<span class="fn">add_conditional_edges</span>(<span class="str">"overlap"</span>, route_after_overlap, {...})<br/>
-    <span class="cm"># Each node routes to "error" on failure � agent never crashes the UI</span><br/>
+    <span class="cm"># Each node routes to "error" on failure — agent never crashes the UI</span><br/>
 <br/>
     <span class="kw">return</span> graph.<span class="fn">compile</span>(checkpointer=<span class="fn">MemorySaver</span>())
     </div>
@@ -689,45 +689,45 @@ duration: 120 min
         <span class="text-indigo-400 font-bold text-sm">06</span>
       </div>
       <div>
-        <h2 class="text-white text-2xl font-bold mb-1">Next Step � Agent-to-Agent (A2A) Compatible</h2>
+        <h2 class="text-white text-2xl font-bold mb-1">Next Step — Agent-to-Agent (A2A) Compatible</h2>
         <p class="text-indigo-400 text-sm font-semibold uppercase tracking-widest">Don't build adapters for every platform. Become a discoverable agent.</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
       <div class="space-y-4 text-slate-300 leading-relaxed">
-        <p>The current framing � "build an email adapter, then a Slack adapter, then a REST adapter" � means ContextCal does integration work for every platform indefinitely.</p>
-        <p>The smarter move: expose ContextCal as an <strong class="text-white">A2A-compatible agent</strong>. Publish an Agent Card at <code class="bg-slate-800 border border-slate-700 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono">/.well-known/agent.json</code>. Any A2A-aware orchestrator � Gmail AI, Outlook Copilot, a LangGraph workflow � discovers ContextCal and delegates scheduling to it.</p>
+        <p>The current framing — "build an email adapter, then a Slack adapter, then a REST adapter" — means ContextCal does integration work for every platform indefinitely.</p>
+        <p>The smarter move: expose ContextCal as an <strong class="text-white">A2A-compatible agent</strong>. Publish an Agent Card at <code class="bg-slate-800 border border-slate-700 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono">/.well-known/agent.json</code>. Any A2A-aware orchestrator — Gmail AI, Outlook Copilot, a LangGraph workflow — discovers ContextCal and delegates scheduling to it.</p>
         <p><strong class="text-white">ContextCal stops being a feature and becomes infrastructure.</strong> The LangGraph pipeline inside stays unchanged. You add one A2A HTTP layer on top.</p>
       </div>
       <div class="space-y-3">
         <div class="bg-red-950/30 border border-red-800/40 rounded-xl p-4">
-          <p class="text-red-400 text-xs font-bold uppercase tracking-wide mb-2">Before � ContextCal owns every integration</p>
-          <p class="text-slate-400 text-sm">Gmail adapter ? Outlook adapter ? Slack adapter�</p>
-          <p class="text-red-400 text-xs mt-2">8 integrations, all maintained by ContextCal</p>
+          <p class="text-red-400 text-xs font-bold uppercase tracking-wide mb-2">Before — ContextCal owns every integration</p>
+          <p class="text-slate-400 text-sm">Gmail adapter → Outlook adapter → Slack adapter…</p>
+          <p class="text-red-400 text-xs mt-2">∞ integrations, all maintained by ContextCal</p>
         </div>
         <div class="bg-green-950/20 border border-green-800/30 rounded-xl p-4">
-          <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-2">After � Platforms discover ContextCal via A2A</p>
+          <p class="text-green-400 text-xs font-bold uppercase tracking-wide mb-2">After — Platforms discover ContextCal via A2A</p>
           <div class="space-y-1.5 text-sm">
             <div class="flex items-center gap-2 text-slate-300">
               <span class="text-slate-500 w-24 text-xs">Gmail AI</span>
               <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded text-xs font-bold">A2A</span>
-              <span class="text-slate-500">--?</span>
+              <span class="text-slate-500">──▶</span>
               <span class="text-green-400 font-semibold">ContextCal</span>
             </div>
             <div class="flex items-center gap-2 text-slate-300">
               <span class="text-slate-500 w-24 text-xs">Copilot</span>
               <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded text-xs font-bold">A2A</span>
-              <span class="text-slate-500">--?</span>
+              <span class="text-slate-500">──▶</span>
               <span class="text-green-400 font-semibold">ContextCal</span>
             </div>
             <div class="flex items-center gap-2 text-slate-300">
               <span class="text-slate-500 w-24 text-xs">AG2 Agent</span>
               <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded text-xs font-bold">A2A</span>
-              <span class="text-slate-500">--?</span>
+              <span class="text-slate-500">──▶</span>
               <span class="text-green-400 font-semibold">ContextCal</span>
             </div>
-            <p class="text-green-400 text-xs mt-2">1 spec � zero per-platform maintenance</p>
+            <p class="text-green-400 text-xs mt-2">1 spec · zero per-platform maintenance</p>
           </div>
         </div>
       </div>
@@ -735,7 +735,7 @@ duration: 120 min
 
     <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4">The A2A Agent Card</p>
     <div class="cc-code mb-8">
-<span class="cm"># /.well-known/agent.json � ContextCal A2A Agent Card</span><br/>
+<span class="cm"># /.well-known/agent.json — ContextCal A2A Agent Card</span><br/>
 {<br/>
   <span class="str">"name"</span>: <span class="str">"ContextCal"</span>,<br/>
   <span class="str">"description"</span>: <span class="str">"Schedules meetings from free-text availability in any language"</span>,<br/>
@@ -747,7 +747,7 @@ duration: 120 min
     <span class="str">"inputModes"</span>:  [<span class="str">"text"</span>],<br/>
     <span class="str">"outputModes"</span>: [<span class="str">"text"</span>, <span class="str">"file"</span>],<br/>
     <span class="str">"examples"</span>: [<br/>
-      <span class="str">"Schedule: Participant A says raat ko 9 baje, B says mercredi apr�s-midi"</span><br/>
+      <span class="str">"Schedule: Participant A says raat ko 9 baje, B says mercredi après-midi"</span><br/>
     ]<br/>
   }]<br/>
 }
@@ -755,17 +755,17 @@ duration: 120 min
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-slate-800 rounded-xl border border-slate-700 p-5">
-        <p class="text-2xl mb-3">??</p>
+        <p class="text-2xl mb-3">🔒</p>
         <p class="text-white font-bold text-sm mb-1">What stays identical</p>
-        <p class="text-slate-400 text-xs leading-relaxed">The entire LangGraph pipeline � parse, normalize, overlap, summarize, iCal. Zero changes to agent logic.</p>
+        <p class="text-slate-400 text-xs leading-relaxed">The entire LangGraph pipeline — parse, normalize, overlap, summarize, iCal. Zero changes to agent logic.</p>
       </div>
       <div class="bg-slate-800 rounded-xl border border-indigo-500/30 p-5">
-        <p class="text-2xl mb-3">?</p>
+        <p class="text-2xl mb-3">➕</p>
         <p class="text-white font-bold text-sm mb-1">What gets added</p>
         <p class="text-slate-400 text-xs leading-relaxed">A FastAPI A2A endpoint that receives tasks, runs the pipeline, and streams status back per the A2A protocol spec.</p>
       </div>
       <div class="bg-slate-800 rounded-xl border border-green-500/20 p-5">
-        <p class="text-2xl mb-3">??</p>
+        <p class="text-2xl mb-3">🌐</p>
         <p class="text-white font-bold text-sm mb-1">What becomes possible</p>
         <p class="text-slate-400 text-xs leading-relaxed">Any A2A-compatible orchestrator can delegate scheduling without a custom integration per platform.</p>
       </div>

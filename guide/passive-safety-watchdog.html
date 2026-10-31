@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Invisible Recall ó Building a Passive Food Safety Watchdog | RawWeights</title>
+    <title>The Invisible Recall ‚Äî Building a Passive Food Safety Watchdog | RawWeights</title>
     <meta name="description" content="How we built a GraphRAG food safety system that silently monitors 29,000+ FDA and USDA recalls and alerts households before they know to ask. A builder's log from idea to Phase 1.">
     <meta name="author" content="RawWeights">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://www.rawweights.com/images/passive.png">
     <meta property="og:url" content="https://www.rawweights.com/guide/passive-safety-watchdog.html">
-    <meta property="og:title" content="The Invisible Recall ó Building a Passive Food Safety Watchdog | RawWeights">
+    <meta property="og:title" content="The Invisible Recall ‚Äî Building a Passive Food Safety Watchdog | RawWeights">
     <meta property="og:description" content="GraphRAG + Neo4j + ChromaDB + LangGraph: a builder's log from the first line to Phase 1 ship.">
       <script>(function(){document.documentElement.setAttribute('data-theme','dark');})();</script>
   <link rel="stylesheet" href="../includes/brand.css">
@@ -36,7 +36,7 @@
         .timeline-line { position:relative; }
         .timeline-line::before { content:''; position:absolute; left:1.25rem; top:2rem; bottom:0; width:2px; background:linear-gradient(to bottom, #fb7185, #f43f5e, #9f1239); opacity:.3; }
 
-        /* -- LIGHT mode: comprehensive overrides for dark-bg pages -- */
+        /* ‚îÄ‚îÄ LIGHT mode: comprehensive overrides for dark-bg pages ‚îÄ‚îÄ */
         /* Hero header always stays dark (brand accent) */
         [data-theme="light"] header.bg-slate-900 { background: linear-gradient(135deg,#080c18 0%,#0f172a 100%) !important; }
         [data-theme="light"] header .text-white,
@@ -48,7 +48,7 @@
         /* Body + main: light surface */
         [data-theme="light"] body { background: #f1f5f9 !important; color: #1e293b !important; }
         [data-theme="light"] main { background: #f1f5f9 !important; color: #1e293b !important; }
-        /* Slate base classes ó scoped to main so header stays dark */
+        /* Slate base classes ‚Äî scoped to main so header stays dark */
         [data-theme="light"] main .bg-slate-950 { background: #e2e8f0 !important; }
         [data-theme="light"] main .bg-slate-900 { background: #f8fafc !important; }
         [data-theme="light"] main .bg-slate-800 { background: #ffffff !important; }
@@ -115,9 +115,9 @@
     <div class="max-w-5xl mx-auto px-6 relative z-10">
         <div class="flex flex-wrap items-center gap-3 mb-6">
             <span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Builder's Log</span>
-            <span class="text-slate-500 text-sm">Phase 1 ó Shipped</span>
+            <span class="text-slate-500 text-sm">Phase 1 ‚Äî Shipped</span>
             <span class="bg-amber-500/15 text-amber-300 border border-amber-500/35 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">GenAcademy Week 2 Project</span>
-            <span class="text-slate-500 text-xs">∑ Submitted for industry expert review</span>
+            <span class="text-slate-500 text-xs">¬∑ Submitted for industry expert review</span>
         </div>
         <h1 class="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
             The Invisible Recall
@@ -125,7 +125,7 @@
         <p class="text-rose-300 text-xl font-semibold mb-4">Building a Passive Food Safety Watchdog with GraphRAG</p>
         <p class="text-slate-300 text-lg max-w-2xl leading-relaxed">
             29,000+ FDA and USDA recall records. A supply-chain knowledge graph. An LLM that evaluates relevance for each household.
-            This is how we built a system that watches food safety so you don't have to ó and what we learned along the way.
+            This is how we built a system that watches food safety so you don't have to ‚Äî and what we learned along the way.
         </p>
         <div class="flex flex-wrap gap-3 mt-8">
             <span class="bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-mono">LangGraph</span>
@@ -170,34 +170,34 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
             <div class="space-y-4 text-slate-300 leading-relaxed">
-                <p>The FDA publishes every food recall. It's all public. Class I recalls ó the ones with genuine risk of serious harm ó go out immediately. The information exists.</p>
+                <p>The FDA publishes every food recall. It's all public. Class I recalls ‚Äî the ones with genuine risk of serious harm ‚Äî go out immediately. The information exists.</p>
                 <p>The problem is the assumption buried in the system: that consumers are monitoring a database, reading enforcement reports, and cross-referencing their grocery purchases against a list of affected lot numbers.</p>
-                <p>Most people aren't. And in rural communities ó where product variety is lower, alternatives are fewer, and people buy in bulk ó a recall hitting one product means a lot more households are exposed than the data suggests.</p>
+                <p>Most people aren't. And in rural communities ‚Äî where product variety is lower, alternatives are fewer, and people buy in bulk ‚Äî a recall hitting one product means a lot more households are exposed than the data suggests.</p>
                 <p>The idea was simple: <strong class="text-white">what if the system found you, instead of the other way around?</strong></p>
             </div>
             <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
                 <p class="text-rose-400 font-bold text-xs uppercase tracking-widest mb-4">The gap</p>
                 <div class="space-y-3">
                     <div class="flex items-start gap-3">
-                        <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
+                        <span class="text-red-400 mt-0.5 flex-shrink-0">‚úó</span>
                         <p class="text-slate-300 text-sm">Recalls published in government databases most consumers never visit</p>
                     </div>
                     <div class="flex items-start gap-3">
-                        <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
-                        <p class="text-slate-300 text-sm">News coverage reaches educated urban audiences ó not everyone</p>
+                        <span class="text-red-400 mt-0.5 flex-shrink-0">‚úó</span>
+                        <p class="text-slate-300 text-sm">News coverage reaches educated urban audiences ‚Äî not everyone</p>
                     </div>
                     <div class="flex items-start gap-3">
-                        <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
-                        <p class="text-slate-300 text-sm">Existing apps require manual searches ó passive knowledge required</p>
+                        <span class="text-red-400 mt-0.5 flex-shrink-0">‚úó</span>
+                        <p class="text-slate-300 text-sm">Existing apps require manual searches ‚Äî passive knowledge required</p>
                     </div>
                     <div class="flex items-start gap-3">
-                        <span class="text-red-400 mt-0.5 flex-shrink-0">?</span>
+                        <span class="text-red-400 mt-0.5 flex-shrink-0">‚úó</span>
                         <p class="text-slate-300 text-sm">Lot number matching requires the consumer to read the fine print on their product</p>
                     </div>
                     <div class="border-t border-slate-700 pt-3 mt-3">
                         <div class="flex items-start gap-3">
-                            <span class="text-rose-400 mt-0.5 flex-shrink-0 font-bold">?</span>
-                            <p class="text-white text-sm font-semibold">The system should monitor recalls and push alerts to households ó zero effort required from the consumer</p>
+                            <span class="text-rose-400 mt-0.5 flex-shrink-0 font-bold">‚Üí</span>
+                            <p class="text-white text-sm font-semibold">The system should monitor recalls and push alerts to households ‚Äî zero effort required from the consumer</p>
                         </div>
                     </div>
                 </div>
@@ -220,23 +220,23 @@
         <p class="text-slate-300 leading-relaxed mb-8 max-w-2xl">When a manufacturer gets a recall, often only one product is officially listed. But the same factory, the same ingredient supplier, the same production line may have touched dozens of other products. A vector search on "is this specific SKU recalled?" returns nothing. A graph traversal on "what else came from this manufacturer?" returns everything.</p>
 
         <div class="bg-slate-800 rounded-2xl border border-rose-900/40 p-6 mb-8">
-            <p class="text-rose-300 font-bold text-sm mb-5">Supply chain traversal ó how the graph finds what keyword search misses</p>
+            <p class="text-rose-300 font-bold text-sm mb-5">Supply chain traversal ‚Äî how the graph finds what keyword search misses</p>
             <div class="flex flex-wrap items-center gap-2 text-sm font-mono">
                 <div class="bg-rose-900/30 border border-rose-700/50 text-rose-200 px-3 py-2 rounded-lg">Manufacturer</div>
-                <span class="text-rose-500 text-lg">?</span>
+                <span class="text-rose-500 text-lg">‚Üí</span>
                 <div class="bg-slate-700 border border-slate-600 text-slate-200 px-3 py-2 rounded-lg">ISSUED_RECALL</div>
-                <span class="text-rose-500 text-lg">?</span>
+                <span class="text-rose-500 text-lg">‚Üí</span>
                 <div class="bg-rose-900/30 border border-rose-700/50 text-rose-200 px-3 py-2 rounded-lg">RecallEvent</div>
-                <span class="text-rose-500 text-lg">?</span>
+                <span class="text-rose-500 text-lg">‚Üí</span>
                 <div class="bg-slate-700 border border-slate-600 text-slate-200 px-3 py-2 rounded-lg">ACTIVE_IN</div>
-                <span class="text-rose-500 text-lg">?</span>
+                <span class="text-rose-500 text-lg">‚Üí</span>
                 <div class="bg-rose-900/30 border border-rose-700/50 text-rose-200 px-3 py-2 rounded-lg">Region</div>
-                <span class="text-rose-500 text-lg">?</span>
+                <span class="text-rose-500 text-lg">‚Üê</span>
                 <div class="bg-slate-700 border border-slate-600 text-slate-200 px-3 py-2 rounded-lg">LOCATED_IN</div>
-                <span class="text-rose-500 text-lg">?</span>
+                <span class="text-rose-500 text-lg">‚Üê</span>
                 <div class="bg-rose-900/30 border border-rose-700/50 text-rose-200 px-3 py-2 rounded-lg">User</div>
             </div>
-            <p class="text-slate-400 text-xs mt-4">One Cypher traversal finds all users exposed by any recall from any manufacturer active in their region ó without knowing which specific product to search for.</p>
+            <p class="text-slate-400 text-xs mt-4">One Cypher traversal finds all users exposed by any recall from any manufacturer active in their region ‚Äî without knowing which specific product to search for.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -246,7 +246,7 @@
             </div>
             <div class="bg-slate-800 rounded-xl border border-rose-900/30 p-5">
                 <p class="text-rose-400 font-bold text-sm mb-2">Graph traversal</p>
-                <p class="text-slate-400 text-sm leading-relaxed">Query: Traverse from manufacturer ? all recall events ? all affected regions.<br>Finds: Every product from this supplier across all recall events.<br><strong class="text-rose-300">Catches: The indirect risk the consumer never thought to search for.</strong></p>
+                <p class="text-slate-400 text-sm leading-relaxed">Query: Traverse from manufacturer ‚Üí all recall events ‚Üí all affected regions.<br>Finds: Every product from this supplier across all recall events.<br><strong class="text-rose-300">Catches: The indirect risk the consumer never thought to search for.</strong></p>
             </div>
         </div>
     </section>
@@ -272,29 +272,29 @@
                         <span class="text-rose-400 font-mono text-xs w-6">1</span>
                         <span class="text-slate-300">Fetch FDA + USDA + CDC records</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">2</span>
                         <span class="text-slate-300">Extract entities (fast-path for structured, LLM for unstructured)</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">3</span>
                         <span class="text-slate-300">Chunk: summary (what) + detail (where/when)</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">4</span>
-                        <span class="text-rose-300 font-semibold">ChromaDB ó embed + store (slow: Nebius API)</span>
+                        <span class="text-rose-300 font-semibold">ChromaDB ‚Äî embed + store (slow: Nebius API)</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">5</span>
-                        <span class="text-slate-300">Neo4j ó build knowledge graph</span>
+                        <span class="text-slate-300">Neo4j ‚Äî build knowledge graph</span>
                     </div>
                 </div>
                 <div class="mt-4 bg-rose-900/20 border border-rose-800/40 rounded-lg p-3">
-                    <p class="text-rose-300 text-xs font-semibold">29,044 records ? 58,000 chunks ? ~25 min total</p>
+                    <p class="text-rose-300 text-xs font-semibold">29,044 records ‚Üí 58,000 chunks ‚Üí ~25 min total</p>
                     <p class="text-slate-400 text-xs mt-1">The bottleneck is always the embedding API. We log every batch with timing so you know exactly where you are.</p>
                 </div>
             </div>
@@ -307,22 +307,22 @@
                         <span class="text-rose-400 font-mono text-xs w-6">1</span>
                         <span class="text-slate-300">Load household profiles</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">2</span>
                         <span class="text-slate-300">ChromaDB semantic match per profile</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">3</span>
-                        <span class="text-slate-300">Neo4j graph traversal ó supply chain exposure</span>
+                        <span class="text-slate-300">Neo4j graph traversal ‚Äî supply chain exposure</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">4</span>
                         <span class="text-rose-300 font-semibold">LLM evaluates relevance (8 parallel workers)</span>
                     </div>
-                    <div class="flex justify-center text-rose-600 text-xs">?</div>
+                    <div class="flex justify-center text-rose-600 text-xs">‚Üì</div>
                     <div class="flex items-center gap-3 bg-slate-900 rounded-lg px-3 py-2">
                         <span class="text-rose-400 font-mono text-xs w-6">5</span>
                         <span class="text-slate-300">Deliver personalised alert per household</span>
@@ -341,7 +341,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
                     <p class="text-rose-400 font-semibold mb-1">FDA Enforcement</p>
-                    <p class="text-slate-400 text-xs">27,285 Class I + II records from bulk JSON export. Fast-path extraction ó no LLM needed. Deduplicated by recall_id.</p>
+                    <p class="text-slate-400 text-xs">27,285 Class I + II records from bulk JSON export. Fast-path extraction ‚Äî no LLM needed. Deduplicated by recall_id.</p>
                 </div>
                 <div>
                     <p class="text-rose-400 font-semibold mb-1">USDA FSIS</p>
@@ -375,9 +375,9 @@
                 <button onclick="toggleLesson(0)" class="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-slate-750 transition-colors">
                     <div class="flex items-center gap-3">
                         <span class="bg-rose-900/40 text-rose-300 border border-rose-700/50 px-2 py-0.5 rounded text-xs font-bold font-mono">FIX 1</span>
-                        <span class="text-white font-semibold text-sm">session_state doesn't survive a page refresh ó lock files do</span>
+                        <span class="text-white font-semibold text-sm">session_state doesn't survive a page refresh ‚Äî lock files do</span>
                     </div>
-                    <span class="text-slate-500 text-sm lesson-arrow-0">?</span>
+                    <span class="text-slate-500 text-sm lesson-arrow-0">‚ñº</span>
                 </button>
                 <div class="lesson-body lesson-0 px-5 pb-5 border-t border-slate-700 pt-4">
                     <p class="text-slate-300 text-sm leading-relaxed mb-3">The auto-scan triggered on every page refresh because <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">st.session_state.scan_started</code> resets when the browser reloads. The fix: write a lock file to disk (<code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">data/.scan_running</code>) when the scan starts and delete it in <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">finally</code>. The lock survives page refreshes because it's on the filesystem, not in memory. A 10-minute stale guard clears crashed locks automatically.</p>
@@ -390,13 +390,13 @@
                 <button onclick="toggleLesson(1)" class="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-slate-750 transition-colors">
                     <div class="flex items-center gap-3">
                         <span class="bg-rose-900/40 text-rose-300 border border-rose-700/50 px-2 py-0.5 rounded text-xs font-bold font-mono">FIX 2</span>
-                        <span class="text-white font-semibold text-sm">The USDA RSS feed is 404 ó use the undocumented JSON API instead</span>
+                        <span class="text-white font-semibold text-sm">The USDA RSS feed is 404 ‚Äî use the undocumented JSON API instead</span>
                     </div>
-                    <span class="text-slate-500 text-sm lesson-arrow-1">?</span>
+                    <span class="text-slate-500 text-sm lesson-arrow-1">‚ñº</span>
                 </button>
                 <div class="lesson-body lesson-1 px-5 pb-5 border-t border-slate-700 pt-4">
-                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The original USDA client used <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">feedparser</code> on the official RSS URL. That URL returns 404. Silently. The code caught the exception and returned an empty list ó so USDA data was simply missing with no error message.</p>
-                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The fix: inspect what the USDA's own website calls in the browser network tab. It hits <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">https://www.fsis.usda.gov/fsis/api/recall/v/1</code> ó an undocumented but stable JSON API that returns 2,006 structured records. More than the RSS ever carried.</p>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The original USDA client used <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">feedparser</code> on the official RSS URL. That URL returns 404. Silently. The code caught the exception and returned an empty list ‚Äî so USDA data was simply missing with no error message.</p>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The fix: inspect what the USDA's own website calls in the browser network tab. It hits <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">https://www.fsis.usda.gov/fsis/api/recall/v/1</code> ‚Äî an undocumented but stable JSON API that returns 2,006 structured records. More than the RSS ever carried.</p>
                     <p class="text-slate-400 text-xs font-semibold">Rule: when an official API is broken, inspect the network traffic of the official website. Their frontend is calling something.</p>
                 </div>
             </div>
@@ -408,11 +408,11 @@
                         <span class="bg-rose-900/40 text-rose-300 border border-rose-700/50 px-2 py-0.5 rounded text-xs font-bold font-mono">FIX 3</span>
                         <span class="text-white font-semibold text-sm">Arbitrary chunking splits lot numbers and state lists at random boundaries</span>
                     </div>
-                    <span class="text-slate-500 text-sm lesson-arrow-2">?</span>
+                    <span class="text-slate-500 text-sm lesson-arrow-2">‚ñº</span>
                 </button>
                 <div class="lesson-body lesson-2 px-5 pb-5 border-t border-slate-700 pt-4">
-                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The original chunker built one text blob and split at 512 tokens with 64-token overlap. For unstructured prose that's fine. For structured recall data ó product, company, reason, states, lot numbers ó the split boundary is random. A query about salmonella might hit a chunk that contains the distribution states but not the product name.</p>
-                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The fix: two deliberate chunks per record. A <em>summary</em> chunk (what: product, company, hazard, reason) for semantic search, and a <em>detail</em> chunk (where/when: states, lot numbers, dates) for precision filtering. No overlap needed ó each chunk is self-contained.</p>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The original chunker built one text blob and split at 512 tokens with 64-token overlap. For unstructured prose that's fine. For structured recall data ‚Äî product, company, reason, states, lot numbers ‚Äî the split boundary is random. A query about salmonella might hit a chunk that contains the distribution states but not the product name.</p>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The fix: two deliberate chunks per record. A <em>summary</em> chunk (what: product, company, hazard, reason) for semantic search, and a <em>detail</em> chunk (where/when: states, lot numbers, dates) for precision filtering. No overlap needed ‚Äî each chunk is self-contained.</p>
                     <p class="text-slate-400 text-xs font-semibold">Rule: for structured records, chunk by semantic role, not by character count.</p>
                 </div>
             </div>
@@ -424,12 +424,12 @@
                         <span class="bg-rose-900/40 text-rose-300 border border-rose-700/50 px-2 py-0.5 rounded text-xs font-bold font-mono">FIX 4</span>
                         <span class="text-white font-semibold text-sm">16,000+ LLM calls per scan because the graph returns one row per (user, region, recall)</span>
                     </div>
-                    <span class="text-slate-500 text-sm lesson-arrow-3">?</span>
+                    <span class="text-slate-500 text-sm lesson-arrow-3">‚ñº</span>
                 </button>
                 <div class="lesson-body lesson-3 px-5 pb-5 border-t border-slate-700 pt-4">
-                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The Neo4j query returned one row per <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">(user, region, recall)</code> triple. If a recall is active in TX, CA, and NY, and a user lives in TX, that's one row. But if the user lives in TX and CA, that's two rows for the same (user, recall) pair ó the evaluation step then called the LLM twice for the same combination.</p>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The Neo4j query returned one row per <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">(user, region, recall)</code> triple. If a recall is active in TX, CA, and NY, and a user lives in TX, that's one row. But if the user lives in TX and CA, that's two rows for the same (user, recall) pair ‚Äî the evaluation step then called the LLM twice for the same combination.</p>
                     <p class="text-slate-300 text-sm leading-relaxed mb-3">The fix: collapse at the Cypher level using <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">WITH u, r, collect(DISTINCT reg.stateCode) AS matchedStates</code>, returning one row per (user, recall). Add a cap of 2,000 results. Add a 7-day evaluation cache so the LLM is only called for new (user, recall) pairs.</p>
-                    <p class="text-slate-400 text-xs font-semibold">Rule: aggregate at the database level, not in Python. And cache LLM results ó they don't change unless the recall or profile does.</p>
+                    <p class="text-slate-400 text-xs font-semibold">Rule: aggregate at the database level, not in Python. And cache LLM results ‚Äî they don't change unless the recall or profile does.</p>
                 </div>
             </div>
 
@@ -438,13 +438,13 @@
                 <button onclick="toggleLesson(4)" class="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-slate-750 transition-colors">
                     <div class="flex items-center gap-3">
                         <span class="bg-rose-900/40 text-rose-300 border border-rose-700/50 px-2 py-0.5 rounded text-xs font-bold font-mono">FIX 5</span>
-                        <span class="text-white font-semibold text-sm">ChromaDB DuplicateIDError ó the FDA bulk file has 709 repeated recall numbers</span>
+                        <span class="text-white font-semibold text-sm">ChromaDB DuplicateIDError ‚Äî the FDA bulk file has 709 repeated recall numbers</span>
                     </div>
-                    <span class="text-slate-500 text-sm lesson-arrow-4">?</span>
+                    <span class="text-slate-500 text-sm lesson-arrow-4">‚ñº</span>
                 </button>
                 <div class="lesson-body lesson-4 px-5 pb-5 border-t border-slate-700 pt-4">
-                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The FDA enforcement bulk export contains duplicate recall numbers ó the same recall appearing more than once in the raw data. ChromaDB's upsert validates that IDs are unique within a single batch call, so 709 duplicate IDs inside one batch triggered a hard error that crashed the entire ingestion pipeline after 20+ minutes of embedding work.</p>
-                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The fix: deduplicate the <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">{id: doc}</code> dict before batching ó last record wins on collision. Three lines of code, added before the batch loop.</p>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The FDA enforcement bulk export contains duplicate recall numbers ‚Äî the same recall appearing more than once in the raw data. ChromaDB's upsert validates that IDs are unique within a single batch call, so 709 duplicate IDs inside one batch triggered a hard error that crashed the entire ingestion pipeline after 20+ minutes of embedding work.</p>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-3">The fix: deduplicate the <code class="bg-slate-900 px-1 rounded text-rose-300 text-xs">{id: doc}</code> dict before batching ‚Äî last record wins on collision. Three lines of code, added before the batch loop.</p>
                     <p class="text-slate-400 text-xs font-semibold">Rule: always deduplicate before sending to any storage layer. Never assume source data is clean.</p>
                 </div>
             </div>
@@ -456,7 +456,7 @@
                         <span class="bg-rose-900/40 text-rose-300 border border-rose-700/50 px-2 py-0.5 rounded text-xs font-bold font-mono">DESIGN</span>
                         <span class="text-white font-semibold text-sm">Add step labels and timing logs before you think you need them</span>
                     </div>
-                    <span class="text-slate-500 text-sm lesson-arrow-5">?</span>
+                    <span class="text-slate-500 text-sm lesson-arrow-5">‚ñº</span>
                 </button>
                 <div class="lesson-body lesson-5 px-5 pb-5 border-t border-slate-700 pt-4">
                     <p class="text-slate-300 text-sm leading-relaxed mb-3">The ingestion pipeline initially showed one line after completion. When it ran for 10+ minutes with no output, there was no way to know if it was stuck at embedding (slow, expected) or at entity extraction (fast, should have finished) or had crashed silently.</p>
@@ -479,7 +479,7 @@
             </div>
         </div>
 
-        <p class="text-slate-400 leading-relaxed mb-10 max-w-2xl">If you're curious how it's actually wired ó two diagrams below. The first shows every system component and how data flows between them. The second is a file-by-file component map showing imports, classes, and key methods for each module. Click either diagram to open full size.</p>
+        <p class="text-slate-400 leading-relaxed mb-10 max-w-2xl">If you're curious how it's actually wired ‚Äî two diagrams below. The first shows every system component and how data flows between them. The second is a file-by-file component map showing imports, classes, and key methods for each module. Click either diagram to open full size.</p>
 
         <!-- Architecture SVG -->
         <div class="mb-4">
@@ -491,17 +491,17 @@
                 </div>
                 <img id="arch-img"
                      src="../images/architecture.svg"
-                     alt="Passive Safety Guard ó System Architecture"
+                     alt="Passive Safety Guard ‚Äî System Architecture"
                      class="w-full h-auto"
                      loading="lazy"
-                     onerror="handleDiagramError(this, 'architecture.svg', 'System Architecture ó Data sources ? LangGraph ingestion ? ChromaDB + Neo4j ? matching pipeline ? household alerts')">
+                     onerror="handleDiagramError(this, 'architecture.svg', 'System Architecture ‚Äî Data sources ‚Üí LangGraph ingestion ‚Üí ChromaDB + Neo4j ‚Üí matching pipeline ‚Üí household alerts')">
             </div>
-            <p class="text-slate-600 text-xs mt-2">Data sources ? ingestion pipeline (LangGraph) ? ChromaDB + Neo4j ? matching pipeline ? alerts</p>
+            <p class="text-slate-600 text-xs mt-2">Data sources ‚Üí ingestion pipeline (LangGraph) ‚Üí ChromaDB + Neo4j ‚Üí matching pipeline ‚Üí alerts</p>
         </div>
 
         <!-- Components SVG -->
         <div class="mb-8">
-            <p class="text-slate-500 text-xs uppercase tracking-widest font-semibold mb-3">Component Map ó Imports, Classes &amp; Methods</p>
+            <p class="text-slate-500 text-xs uppercase tracking-widest font-semibold mb-3">Component Map ‚Äî Imports, Classes &amp; Methods</p>
             <div class="rounded-2xl overflow-hidden border border-slate-700 bg-white cursor-zoom-in relative group"
                  onclick="openDiagram('comp-img', 'Component Map')">
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors z-10 flex items-center justify-center">
@@ -509,10 +509,10 @@
                 </div>
                 <img id="comp-img"
                      src="../images/components.svg"
-                     alt="Passive Safety Guard ó Component Map"
+                     alt="Passive Safety Guard ‚Äî Component Map"
                      class="w-full h-auto"
                      loading="lazy"
-                     onerror="handleDiagramError(this, 'components.svg', 'Component Map ó Each Python module with its library dependencies, classes, and callable methods. Colour-coded by library type.')">
+                     onerror="handleDiagramError(this, 'components.svg', 'Component Map ‚Äî Each Python module with its library dependencies, classes, and callable methods. Colour-coded by library type.')">
             </div>
             <p class="text-slate-600 text-xs mt-2">Each Python module with its library dependencies, classes, and callable methods. Colour-coded by library type.</p>
         </div>
@@ -533,13 +533,13 @@
         <!-- quick links -->
         <div class="flex flex-wrap gap-3">
             <div class="bg-slate-800 border border-slate-700 rounded-xl px-5 py-3 text-xs text-slate-400 leading-relaxed">
-                <span class="text-rose-400 font-semibold">Stack:</span> LangGraph ∑ LangChain ∑ Neo4j Aura ∑ ChromaDB ∑ Nebius AI ∑ Streamlit ∑ Python 3.11
+                <span class="text-rose-400 font-semibold">Stack:</span> LangGraph ¬∑ LangChain ¬∑ Neo4j Aura ¬∑ ChromaDB ¬∑ Nebius AI ¬∑ Streamlit ¬∑ Python 3.11
             </div>
             <div class="bg-slate-800 border border-slate-700 rounded-xl px-5 py-3 text-xs text-slate-400 leading-relaxed">
-                <span class="text-rose-400 font-semibold">Models:</span> Llama-3.3-70B ∑ Qwen3-32B ∑ Qwen3-Embedding-8B (all via Nebius AI Studio)
+                <span class="text-rose-400 font-semibold">Models:</span> Llama-3.3-70B ¬∑ Qwen3-32B ¬∑ Qwen3-Embedding-8B (all via Nebius AI Studio)
             </div>
             <div class="bg-slate-800 border border-slate-700 rounded-xl px-5 py-3 text-xs text-slate-400 leading-relaxed">
-                <span class="text-rose-400 font-semibold">Data:</span> 29,044 recalls ∑ ~58K semantic chunks ∑ 5,000+ manufacturers in graph
+                <span class="text-rose-400 font-semibold">Data:</span> 29,044 recalls ¬∑ ~58K semantic chunks ¬∑ 5,000+ manufacturers in graph
             </div>
         </div>
     </section>
@@ -558,32 +558,32 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 phase-step">
-                <p class="text-2xl mb-3">??</p>
+                <p class="text-2xl mb-3">üí¨</p>
                 <p class="text-white font-bold mb-1 text-sm">Chat</p>
                 <p class="text-slate-400 text-xs leading-relaxed">Ask in plain English. Hybrid retrieval: ChromaDB for semantics, Neo4j for supply chain. One grounded answer, both sources visible.</p>
             </div>
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 phase-step">
-                <p class="text-2xl mb-3">???</p>
+                <p class="text-2xl mb-3">üóÇÔ∏è</p>
                 <p class="text-white font-bold mb-1 text-sm">Browse Recalls</p>
                 <p class="text-slate-400 text-xs leading-relaxed">29,000+ records. Filter by severity, state, keyword. Severity-coded cards with manufacturer and hazard details.</p>
             </div>
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 phase-step">
-                <p class="text-2xl mb-3">??</p>
+                <p class="text-2xl mb-3">üîó</p>
                 <p class="text-white font-bold mb-1 text-sm">Supply Chain</p>
-                <p class="text-slate-400 text-xs leading-relaxed">Enter any manufacturer. Graph traversal finds every recall linked to that company ó direct and indirect. The blindspot finder.</p>
+                <p class="text-slate-400 text-xs leading-relaxed">Enter any manufacturer. Graph traversal finds every recall linked to that company ‚Äî direct and indirect. The blindspot finder.</p>
             </div>
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 phase-step">
-                <p class="text-2xl mb-3">??</p>
+                <p class="text-2xl mb-3">üö®</p>
                 <p class="text-white font-bold mb-1 text-sm">Alerts</p>
-                <p class="text-slate-400 text-xs leading-relaxed">Personalised household alerts. Runs automatically on startup. Each alert is LLM-evaluated for genuine relevance ó no false positives.</p>
+                <p class="text-slate-400 text-xs leading-relaxed">Personalised household alerts. Runs automatically on startup. Each alert is LLM-evaluated for genuine relevance ‚Äî no false positives.</p>
             </div>
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 phase-step">
-                <p class="text-2xl mb-3">??</p>
+                <p class="text-2xl mb-3">üî¨</p>
                 <p class="text-white font-bold mb-1 text-sm">RAG Comparison</p>
                 <p class="text-slate-400 text-xs leading-relaxed">Side-by-side: vector search vs graph traversal on the same query. See when relationships matter more than semantics.</p>
             </div>
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 phase-step">
-                <p class="text-2xl mb-3">???</p>
+                <p class="text-2xl mb-3">üóÑÔ∏è</p>
                 <p class="text-white font-bold mb-1 text-sm">Vector DB Browser</p>
                 <p class="text-slate-400 text-xs leading-relaxed">Browse every chunk in ChromaDB. Filter by source (FDA/USDA), severity, keyword. Pagination. Confirms exactly what data is indexed.</p>
             </div>
@@ -595,7 +595,7 @@
         <div class="flex items-start gap-4 mb-8">
             <div class="w-10 h-10 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center flex-shrink-0 mt-1 relative">
                 <span class="absolute inset-0 rounded-full bg-rose-500/20 pulse"></span>
-                <span class="text-rose-400 font-bold text-sm relative z-10">?</span>
+                <span class="text-rose-400 font-bold text-sm relative z-10">‚Üí</span>
             </div>
             <div>
                 <h2 class="text-white text-2xl font-bold mb-1">Phase 2: The Moment of Purchase</h2>
@@ -608,29 +608,29 @@
         <div class="bg-slate-800 rounded-2xl border border-rose-900/40 p-8 mb-8">
             <div class="flex flex-wrap items-center gap-3 text-sm">
                 <div class="bg-slate-900 border border-slate-600 text-slate-200 px-4 py-3 rounded-xl text-center">
-                    <p class="text-2xl mb-1">??</p>
+                    <p class="text-2xl mb-1">üõí</p>
                     <p class="text-xs text-slate-400">You buy groceries</p>
                 </div>
-                <span class="text-rose-500 text-xl font-bold">?</span>
+                <span class="text-rose-500 text-xl font-bold">‚Üí</span>
                 <div class="bg-slate-900 border border-slate-600 text-slate-200 px-4 py-3 rounded-xl text-center">
-                    <p class="text-2xl mb-1">??</p>
+                    <p class="text-2xl mb-1">üì±</p>
                     <p class="text-xs text-slate-400">Receipt arrives by SMS</p>
                 </div>
-                <span class="text-rose-500 text-xl font-bold">?</span>
+                <span class="text-rose-500 text-xl font-bold">‚Üí</span>
                 <div class="bg-slate-900 border border-slate-600 text-slate-200 px-4 py-3 rounded-xl text-center">
-                    <p class="text-2xl mb-1">??</p>
+                    <p class="text-2xl mb-1">ü§ñ</p>
                     <p class="text-xs text-slate-400">LLM parses line items</p>
                 </div>
-                <span class="text-rose-500 text-xl font-bold">?</span>
+                <span class="text-rose-500 text-xl font-bold">‚Üí</span>
                 <div class="bg-slate-900 border border-rose-700/50 text-rose-200 px-4 py-3 rounded-xl text-center">
-                    <p class="text-2xl mb-1">??</p>
+                    <p class="text-2xl mb-1">‚ö†Ô∏è</p>
                     <p class="text-xs text-rose-400 font-semibold">Alert if match found</p>
                 </div>
             </div>
             <div class="mt-6 bg-slate-900 rounded-xl p-4 font-mono text-sm border border-slate-700">
                 <p class="text-slate-500 text-xs mb-2">SMS received 14:32</p>
-                <p class="text-white">?? Food Safety Alert</p>
-                <p class="text-slate-300 mt-1">You purchased Acme Organic Peanut Butter (16oz) today. This product was recalled June 3 for potential Salmonella contamination ó Lot LOT-2024-A.</p>
+                <p class="text-white">‚ö†Ô∏è Food Safety Alert</p>
+                <p class="text-slate-300 mt-1">You purchased Acme Organic Peanut Butter (16oz) today. This product was recalled June 3 for potential Salmonella contamination ‚Äî Lot LOT-2024-A.</p>
                 <p class="text-rose-300 mt-1 font-semibold">Do not consume. Return to store for full refund. Reference recall F-1234-2024.</p>
             </div>
         </div>
@@ -639,30 +639,30 @@
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
                 <p class="text-rose-400 font-bold text-sm mb-2">Already built toward this</p>
                 <ul class="text-slate-400 text-xs space-y-1">
-                    <li>ï UPC codes stored in ChromaDB metadata</li>
-                    <li>ï Supply chain graph links manufacturer ? product</li>
-                    <li>ï Entity extractor handles unstructured text</li>
-                    <li>ï Alert delivery pipeline ready</li>
+                    <li>‚Ä¢ UPC codes stored in ChromaDB metadata</li>
+                    <li>‚Ä¢ Supply chain graph links manufacturer ‚Üí product</li>
+                    <li>‚Ä¢ Entity extractor handles unstructured text</li>
+                    <li>‚Ä¢ Alert delivery pipeline ready</li>
                 </ul>
             </div>
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
                 <p class="text-rose-400 font-bold text-sm mb-2">Still to build</p>
                 <ul class="text-slate-400 text-xs space-y-1">
-                    <li>ï Twilio SMS webhook receiver</li>
-                    <li>ï Receipt line-item parser</li>
-                    <li>ï UPC ? product name (Open Food Facts)</li>
-                    <li>ï User phone enrollment flow</li>
+                    <li>‚Ä¢ Twilio SMS webhook receiver</li>
+                    <li>‚Ä¢ Receipt line-item parser</li>
+                    <li>‚Ä¢ UPC ‚Üí product name (Open Food Facts)</li>
+                    <li>‚Ä¢ User phone enrollment flow</li>
                 </ul>
             </div>
             <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
                 <p class="text-rose-400 font-bold text-sm mb-2">Why no app required</p>
-                <p class="text-slate-400 text-xs leading-relaxed">An app requires download, account creation, and active use. SMS requires nothing. Older phones, low data plans, rural households ó all reached exactly the same way.</p>
+                <p class="text-slate-400 text-xs leading-relaxed">An app requires download, account creation, and active use. SMS requires nothing. Older phones, low data plans, rural households ‚Äî all reached exactly the same way.</p>
             </div>
         </div>
 
         <div class="bg-rose-950/30 border border-rose-800/40 rounded-2xl p-8 text-center">
             <p class="text-rose-200 text-xl font-bold mb-3">Everybody eats food.</p>
-            <p class="text-slate-300 leading-relaxed max-w-xl mx-auto">Nobody should need a food science degree, a government database login, or the time to cross-reference their grocery receipt to know when their food is safe. Phase 1 builds the watchdog. Phase 2 puts it in your pocket ó without requiring you to know it's there.</p>
+            <p class="text-slate-300 leading-relaxed max-w-xl mx-auto">Nobody should need a food science degree, a government database login, or the time to cross-reference their grocery receipt to know when their food is safe. Phase 1 builds the watchdog. Phase 2 puts it in your pocket ‚Äî without requiring you to know it's there.</p>
         </div>
     </section>
 
@@ -670,59 +670,59 @@
     <section class="max-w-5xl mx-auto px-6 py-16 border-t border-slate-800">
         <div class="flex items-start gap-4 mb-8">
             <div class="w-10 h-10 rounded-full bg-slate-700/50 border border-slate-600 flex items-center justify-center flex-shrink-0 mt-1">
-                <span class="text-slate-400 font-bold text-sm">?</span>
+                <span class="text-slate-400 font-bold text-sm">‚Üó</span>
             </div>
             <div>
                 <h2 class="text-white text-2xl font-bold mb-1">What's Still on the Learning Path</h2>
-                <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest">Phase 1 shipped ó these come next</p>
+                <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest">Phase 1 shipped ‚Äî these come next</p>
             </div>
         </div>
 
-        <p class="text-slate-400 leading-relaxed mb-8 max-w-2xl">This is a live learning project. I'm working through a GenAI course and deliberately incorporating each new capability as I study it. Here's what I haven't applied yet ó and what I'm planning to add as I progress.</p>
+        <p class="text-slate-400 leading-relaxed mb-8 max-w-2xl">This is a live learning project. I'm working through a GenAI course and deliberately incorporating each new capability as I study it. Here's what I haven't applied yet ‚Äî and what I'm planning to add as I progress.</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div class="bg-slate-800/60 rounded-xl border border-slate-700 p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex items-center justify-center text-violet-400 text-xs font-bold">P</span>
-                    <p class="text-white font-semibold text-sm">Pinecone ó Hybrid Search</p>
+                    <p class="text-white font-semibold text-sm">Pinecone ‚Äî Hybrid Search</p>
                 </div>
                 <p class="text-slate-400 text-xs leading-relaxed">Currently using ChromaDB for local vector search. Pinecone's hybrid dense+sparse mode (BM25 + embeddings) would improve recall on exact product codes and lot numbers.</p>
             </div>
             <div class="bg-slate-800/60 rounded-xl border border-slate-700 p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 text-xs font-bold">W</span>
-                    <p class="text-white font-semibold text-sm">Whisper ó Voice Input</p>
+                    <p class="text-white font-semibold text-sm">Whisper ‚Äî Voice Input</p>
                 </div>
                 <p class="text-slate-400 text-xs leading-relaxed">Whisper transcription would let users speak a product name or barcode scan instead of typing. Particularly useful for the Phase 2 SMS-to-alert loop.</p>
             </div>
             <div class="bg-slate-800/60 rounded-xl border border-slate-700 p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="w-8 h-8 rounded-lg bg-green-500/20 border border-green-500/40 flex items-center justify-center text-green-400 text-xs font-bold">LS</span>
-                    <p class="text-white font-semibold text-sm">LangSmith ó Tracing & Evals</p>
+                    <p class="text-white font-semibold text-sm">LangSmith ‚Äî Tracing & Evals</p>
                 </div>
                 <p class="text-slate-400 text-xs leading-relaxed">No systematic eval dataset yet. LangSmith would track which queries produce poor answers and let me build a ground-truth set to measure retrieval quality over time.</p>
             </div>
             <div class="bg-slate-800/60 rounded-xl border border-slate-700 p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-xs font-bold">RR</span>
-                    <p class="text-white font-semibold text-sm">Re-rankers ó Precision at Top-K</p>
+                    <p class="text-white font-semibold text-sm">Re-rankers ‚Äî Precision at Top-K</p>
                 </div>
                 <p class="text-slate-400 text-xs leading-relaxed">Current retrieval returns top-K by cosine similarity. A cross-encoder re-ranker would re-score chunks against the actual query, lifting the most relevant result to position 1.</p>
             </div>
         </div>
 
         <div class="bg-slate-800/40 border border-slate-700 rounded-xl px-6 py-4 text-slate-400 text-sm leading-relaxed">
-            I'm publishing progress as I go. Each new capability gets wired into a real use case ó not a toy demo. Follow along if you're doing the same.
+            I'm publishing progress as I go. Each new capability gets wired into a real use case ‚Äî not a toy demo. Follow along if you're doing the same.
         </div>
     </section>
 
-    <!-- OLD CALLOUT ó superseded by roadmap below -->
+    <!-- OLD CALLOUT ‚Äî superseded by roadmap below -->
     <!--
     <section class="max-w-5xl mx-auto px-6 py-12">
         <div class="bg-gradient-to-br from-rose-950/40 to-slate-900 border border-rose-800/50 rounded-2xl p-10 text-center">
-            <p class="text-rose-400 text-xs uppercase tracking-widest font-semibold mb-4">Phase 1 ó Prototype Shipped</p>
+            <p class="text-rose-400 text-xs uppercase tracking-widest font-semibold mb-4">Phase 1 ‚Äî Prototype Shipped</p>
             <h2 class="text-white text-3xl font-bold mb-4">Looking for Investors, Cohort Partners, or Feedback</h2>
-            <p class="text-slate-300 leading-relaxed max-w-2xl mx-auto mb-8">Phase 1 is live. People are already using it. The core pipeline ó data ingestion, GraphRAG matching, personalised alerts ó works end to end. I'm hoping to find investors or a cohort to take this to the next level, and I genuinely want to hear feedback from anyone who builds, eats, or cares about food safety.</p>
+            <p class="text-slate-300 leading-relaxed max-w-2xl mx-auto mb-8">Phase 1 is live. People are already using it. The core pipeline ‚Äî data ingestion, GraphRAG matching, personalised alerts ‚Äî works end to end. I'm hoping to find investors or a cohort to take this to the next level, and I genuinely want to hear feedback from anyone who builds, eats, or cares about food safety.</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="mailto:shassanchi@gmail.com" class="inline-block bg-rose-600 hover:bg-rose-500 text-white font-semibold px-8 py-3 rounded-xl transition-colors text-sm">Get in touch</a>
                 <a href="https://github.com" target="_blank" rel="noopener" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-semibold px-8 py-3 rounded-xl transition-colors text-sm">View on GitHub</a>
@@ -734,7 +734,7 @@
     <!-- SECTION 8: PHASE ROADMAP -->
     <section class="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <div class="text-center mb-12">
-            <p class="text-rose-400 text-xs uppercase tracking-widest font-semibold mb-3">Where We Are ∑ Where We're Going</p>
+            <p class="text-rose-400 text-xs uppercase tracking-widest font-semibold mb-3">Where We Are ¬∑ Where We're Going</p>
             <h2 class="text-white text-3xl font-bold">Project Roadmap</h2>
         </div>
 
@@ -743,13 +743,13 @@
             <!-- 3 PHASE CARDS -->
             <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-5">
 
-                <!-- PHASE 1 ó POC SHIPPED -->
+                <!-- PHASE 1 ‚Äî POC SHIPPED -->
                 <div class="relative bg-slate-800 rounded-2xl border border-rose-700/50 overflow-hidden flex flex-col">
                     <div class="h-1.5 bg-gradient-to-r from-rose-700 to-rose-400"></div>
                     <div class="p-6 flex flex-col flex-1">
                         <div class="flex items-start justify-between mb-5">
                             <span class="text-rose-400/40 font-black text-6xl leading-none select-none">01</span>
-                            <span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap">? Shipped</span>
+                            <span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap">‚úì Shipped</span>
                         </div>
                         <h3 class="text-white font-bold text-lg mb-2">Proof of Concept</h3>
                         <p class="text-slate-400 text-xs leading-relaxed mb-5">End-to-end GraphRAG pipeline live. Ingests 29K+ recalls, builds a supply-chain knowledge graph, evaluates relevance per household, delivers personalised alerts. People are using it.</p>
@@ -784,16 +784,16 @@
                     </div>
                 </div>
 
-                <!-- PHASE 2 ó LEARNING IN PROGRESS -->
+                <!-- PHASE 2 ‚Äî LEARNING IN PROGRESS -->
                 <div class="relative bg-slate-800 rounded-2xl border border-amber-700/40 overflow-hidden flex flex-col">
                     <div class="h-1.5 bg-gradient-to-r from-amber-600 to-yellow-400"></div>
                     <div class="p-6 flex flex-col flex-1">
                         <div class="flex items-start justify-between mb-5">
                             <span class="text-amber-400/35 font-black text-6xl leading-none select-none">02</span>
-                            <span class="bg-amber-500/15 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap">? In Progress</span>
+                            <span class="bg-amber-500/15 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap">‚ü≥ In Progress</span>
                         </div>
                         <h3 class="text-white font-bold text-lg mb-2">Learning in Progress</h3>
-                        <p class="text-slate-400 text-xs leading-relaxed mb-5">Applying each new GenAI capability directly to this project as I study it. No toy demos ó every addition wired into a real food safety use case.</p>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-5">Applying each new GenAI capability directly to this project as I study it. No toy demos ‚Äî every addition wired into a real food safety use case.</p>
                         <div class="bg-slate-900 rounded-xl p-4 mb-5 space-y-3 flex-1">
                             <div>
                                 <div class="flex justify-between items-center mb-1.5">
@@ -832,29 +832,29 @@
                     </div>
                 </div>
 
-                <!-- PHASE 3 ó VISION -->
+                <!-- PHASE 3 ‚Äî VISION -->
                 <div class="relative bg-slate-800 rounded-2xl border border-violet-800/30 overflow-hidden flex flex-col opacity-80">
                     <div class="h-1.5 bg-gradient-to-r from-violet-700 to-blue-500"></div>
                     <div class="p-6 flex flex-col flex-1">
                         <div class="flex items-start justify-between mb-5">
                             <span class="text-violet-400/30 font-black text-6xl leading-none select-none">03</span>
-                            <span class="bg-violet-500/10 text-violet-300 border border-violet-500/25 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap">? Future</span>
+                            <span class="bg-violet-500/10 text-violet-300 border border-violet-500/25 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap">‚óá Future</span>
                         </div>
                         <h3 class="text-white font-bold text-lg mb-2">Purchase-Time Safety</h3>
-                        <p class="text-slate-400 text-xs leading-relaxed mb-5">Alert fires the moment you buy something recalled. No app, no login ó just an SMS. A system so quiet you forget it exists until it saves you.</p>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-5">Alert fires the moment you buy something recalled. No app, no login ‚Äî just an SMS. A system so quiet you forget it exists until it saves you.</p>
                         <div class="bg-slate-900 rounded-xl p-4 mb-5 flex-1">
-                            <p class="text-slate-600 text-xs mb-2 font-mono">ó future SMS, 14:32 ó</p>
-                            <p class="text-slate-400 text-xs leading-relaxed">?? You purchased Acme Organic Peanut Butter today. Recalled June 3 for Salmonella ó Lot A.</p>
+                            <p class="text-slate-600 text-xs mb-2 font-mono">‚Äî future SMS, 14:32 ‚Äî</p>
+                            <p class="text-slate-400 text-xs leading-relaxed">‚ö†Ô∏è You purchased Acme Organic Peanut Butter today. Recalled June 3 for Salmonella ‚Äî Lot A.</p>
                             <p class="text-rose-400 text-xs mt-2 font-semibold">Do not consume. Return for full refund.</p>
                             <div class="mt-4 pt-3 border-t border-slate-800 space-y-1.5">
                                 <div class="flex items-center gap-2 text-slate-500 text-xs">
-                                    <span>??</span><span>Receipt arrives by SMS</span>
+                                    <span>üõí</span><span>Receipt arrives by SMS</span>
                                 </div>
                                 <div class="flex items-center gap-2 text-slate-500 text-xs">
-                                    <span>??</span><span>LLM parses line items</span>
+                                    <span>ü§ñ</span><span>LLM parses line items</span>
                                 </div>
                                 <div class="flex items-center gap-2 text-slate-500 text-xs">
-                                    <span>?</span><span>Matched against graph in &lt;2s</span>
+                                    <span>‚ö°</span><span>Matched against graph in &lt;2s</span>
                                 </div>
                             </div>
                         </div>
@@ -867,7 +867,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT SIDEBAR: Investor / Cohort ó UNCOMMENT WHEN READY -->
+            <!-- RIGHT SIDEBAR: Investor / Cohort ‚Äî UNCOMMENT WHEN READY -->
             <!--
             <div class="lg:w-72 bg-gradient-to-b from-rose-950/50 via-slate-900 to-slate-900 border border-rose-800/50 rounded-2xl overflow-hidden flex-shrink-0">
                 <div class="h-1.5 bg-gradient-to-r from-rose-600 to-rose-400"></div>
@@ -877,20 +877,20 @@
                     <p class="text-slate-300 text-sm leading-relaxed mb-6">Phase 1 is live and people are already using it. Looking for investors, accelerators, or cohorts who want to take passive food safety mainstream.</p>
                     <ul class="space-y-3 mb-6">
                         <li class="flex items-start gap-2.5 text-slate-300 text-sm">
-                            <span class="text-rose-400 mt-0.5 flex-shrink-0">?</span>
+                            <span class="text-rose-400 mt-0.5 flex-shrink-0">‚Üí</span>
                             <span>Seed investment to scale infrastructure</span>
                         </li>
                         <li class="flex items-start gap-2.5 text-slate-300 text-sm">
-                            <span class="text-rose-400 mt-0.5 flex-shrink-0">?</span>
+                            <span class="text-rose-400 mt-0.5 flex-shrink-0">‚Üí</span>
                             <span>Cohort / accelerator (YC, AI Grant, etc.)</span>
                         </li>
                         <li class="flex items-start gap-2.5 text-slate-300 text-sm">
-                            <span class="text-rose-400 mt-0.5 flex-shrink-0">?</span>
+                            <span class="text-rose-400 mt-0.5 flex-shrink-0">‚Üí</span>
                             <span>Technical co-founder for Phase 2 + 3</span>
                         </li>
                         <li class="flex items-start gap-2.5 text-slate-300 text-sm">
-                            <span class="text-rose-400 mt-0.5 flex-shrink-0">?</span>
-                            <span>Just honest feedback ó all welcome</span>
+                            <span class="text-rose-400 mt-0.5 flex-shrink-0">‚Üí</span>
+                            <span>Just honest feedback ‚Äî all welcome</span>
                         </li>
                     </ul>
                     <div class="border-t border-slate-800 pt-5 space-y-3">
@@ -940,9 +940,9 @@ function handleDiagramError(img, filename, description) {
     if (wrap) { wrap.onclick = null; wrap.classList.remove('cursor-zoom-in'); }
     img.parentElement.innerHTML =
         '<div class="p-8 text-center">' +
-        '<p class="text-amber-400 text-sm font-semibold mb-2">?? ' + filename + '</p>' +
+        '<p class="text-amber-400 text-sm font-semibold mb-2">üìê ' + filename + '</p>' +
         '<p class="text-slate-400 text-xs leading-relaxed max-w-lg mx-auto mb-3">' + description + '</p>' +
-        '<p class="text-slate-600 text-xs">Diagram image being hosted ó will look into it shortly.</p>' +
+        '<p class="text-slate-600 text-xs">Diagram image being hosted ‚Äî will look into it shortly.</p>' +
         '</div>';
 }
 
@@ -951,7 +951,7 @@ function toggleLesson(i) {
     const arrow = document.querySelector(`.lesson-arrow-${i}`);
     const open = body.style.display === 'block';
     body.style.display = open ? 'none' : 'block';
-    arrow.textContent = open ? '?' : '?';
+    arrow.textContent = open ? '‚ñº' : '‚ñ≤';
 }
 
 // Nav dropdown groups
@@ -967,7 +967,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.style.cssText = 'position:relative;display:inline-block;';
         const trigger = document.createElement('button');
         trigger.className = 'nav-btn';
-        trigger.innerHTML = `${groupName} ?`;
+        trigger.innerHTML = `${groupName} ‚ñæ`;
         const menu = document.createElement('div');
         menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;padding:.5rem;z-index:1000;min-width:180px;flex-direction:column;gap:5px;';
         const first = groupItems[0];
