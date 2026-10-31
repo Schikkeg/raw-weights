@@ -812,7 +812,10 @@
                     title: (d.meta && d.meta.title) ? d.meta.title : pageUrl,
                     excerpt: d.excerpt || '',
                     sub_results: (d.sub_results || []).map(function (s) {
-                      return { title: s.title || '', url: pageUrl.replace(/#.*$/, '') + (s.anchor || '') };
+                      /* s.url from Pagefind already contains the full path + anchor hash */
+                      var subUrl = s.url || '';
+                      if (subUrl && !/^https?:\/\//.test(subUrl)) subUrl = 'https://rawweights.com' + subUrl;
+                      return { title: s.title || '', url: subUrl || pageUrl };
                     })
                   };
                 })
