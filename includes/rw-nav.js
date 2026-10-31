@@ -780,12 +780,9 @@
       name: 'search_rawweights',
       description: [
         'Search RawWeights for articles, guides, playgrounds, and use cases.',
-        'Returns up to 5 structured results, each with: title, excerpt, page url, and sub_results (section-level anchor links inside that page).',
-        'Use results[].url to send the user to a specific page.',
-        'Use results[].sub_results[].url to deep-link directly to a section, e.g. https://rawweights.com/guide/rag.html#evaluation-metrics.',
-        'Always show the results as a list of clickable links — title as the link text, excerpt as context.',
-        'If sub_results exist, also show them as indented section links under the page.',
-        'If results is empty, send the user to results_url to browse visually.'
+        'Returns a `message` field (pre-formatted Markdown list) — present it directly to the user as your response.',
+        'Also returns `results[]` for structured access: each item has url, title, excerpt, and sub_results[] (section-level deep-link anchors).',
+        'If results is empty, direct the user to results_url to browse visually.'
       ].join(' '),
       inputSchema: {
         type: 'object',
@@ -802,24 +799,29 @@
             var top = (res && res.results || []).slice(0, 5);
             if (top.length === 0) return { query: query, results_url: resultsUrl, results: [] };
             return Promise.all(top.map(function (r) { return r.data(); })).then(function (items) {
-              return {
-                query: query,
-                results_url: resultsUrl,
-                results: items.map(function (d) {
-                  var pageUrl = /^https?:\/\//.test(d.url) ? d.url : 'https://rawweights.com' + d.url;
-                  return {
-                    url: pageUrl,
-                    title: (d.meta && d.meta.title) ? d.meta.title : pageUrl,
-                    excerpt: d.excerpt || '',
-                    sub_results: (d.sub_results || []).map(function (s) {
-                      /* s.url from Pagefind already contains the full path + anchor hash */
-                      var subUrl = s.url || '';
-                      if (subUrl && !/^https?:\/\//.test(subUrl)) subUrl = 'https://rawweights.com' + subUrl;
-                      return { title: s.title || '', url: subUrl || pageUrl };
-                    })
-                  };
-                })
-              };
+              var results = items.map(function (d) {
+                var pageUrl = /^https?:\/\//.test(d.url) ? d.url : 'https://rawweights.com' + d.url;
+                return {
+                  url: pageUrl,
+                  title: (d.meta && d.meta.title) ? d.meta.title : pageUrl,
+                  excerpt: (d.excerpt || '').replace(/<\/?mark>/g, ''),
+                  sub_results: (d.sub_results || []).map(function (s) {
+                    /* s.url from Pagefind already contains the full path + anchor hash */
+                    var subUrl = s.url || '';
+                    if (subUrl && !/^https?:\/\//.test(subUrl)) subUrl = 'https://rawweights.com' + subUrl;
+                    return { title: s.title || '', url: subUrl || pageUrl };
+                  })
+                };
+              });
+              /* Pre-format as Markdown so agents can present it without parsing JSON */
+              var lines = ['Here are the top results for **' + query + '**:\n'];
+              results.forEach(function (r) {
+                lines.push('- [' + r.title + '](' + r.url + ')');
+                lines.push('  ' + r.excerpt);
+                var subs = r.sub_results.filter(function (s) { return s.url !== r.url && s.title && s.url; });
+                subs.forEach(function (s) { lines.push('  - [' + s.title + '](' + s.url + ')'); });
+              });
+              return { query: query, results_url: resultsUrl, results: results, message: lines.join('\n') };
             });
           }).catch(function (err) {
             return { query: query, results_url: resultsUrl, results: [], error: String(err) };
