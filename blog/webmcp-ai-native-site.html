@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When AI Visits Your Site, Does It Understand It? A Guide to WebMCP | RawWeights</title>
+  <meta name="description" content="WebMCP turns your website into a structured API that AI agents can actually use — not just read. Interactive playground, real examples, and 5 field notes from real builds.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/blog/webmcp-ai-native-site.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/blog/webmcp-ai-native-site.html">
+  <meta property="og:title" content="When AI Visits Your Site, Does It Understand It?">
+  <meta property="og:description" content="WebMCP turns your website into a structured API that AI agents can actually use — not just read.">
+  <meta property="og:image" content="https://rawweights.com/images/webmcp-launch-og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://rawweights.com/images/webmcp-launch-og.jpg">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||'dark';document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})()</script>
+  <link rel="stylesheet" href="../includes/brand.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+  <style>
+    html,body{max-width:100%;overflow-x:clip}*{overflow-wrap:anywhere}
+
+    /* ── Hero ──────────────────────────────────────── */
+    .wm-hero{background:linear-gradient(135deg,#04030b,#0b0720,#050c1a);padding:4rem 1.5rem 3.5rem}
+    .wm-hero-inner{max-width:1100px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center}
+    .wm-hero-text{text-align:left}
+    .wm-hero-label{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;font-family:var(--rw-font-mono);text-transform:uppercase;letter-spacing:.1em;color:#a5b4fc;background:rgba(129,140,248,.12);border:1px solid rgba(129,140,248,.3);border-radius:99px;padding:.3rem .8rem;margin-bottom:1.2rem}
+    .wm-pulse{width:7px;height:7px;background:#818cf8;border-radius:50%;box-shadow:0 0 10px #818cf8;animation:wm-pulse 2s infinite}
+    @keyframes wm-pulse{50%{opacity:.35;transform:scale(.7)}}
+    .wm-hero h1{font-size:clamp(1.7rem,3.5vw,3rem);font-family:'Outfit',var(--rw-font-display);font-weight:900;letter-spacing:-.03em;line-height:1.07;text-wrap:balance;margin-bottom:.7rem;color:#f0eeff}
+    .wm-hero h1 em{font-style:normal;color:#a5b4fc}
+    .wm-hero p{font-size:.96rem;color:rgba(210,205,255,.78);margin-bottom:.5rem;line-height:1.65}
+    .wm-hero-meta{font-size:.75rem;color:rgba(200,195,255,.45);margin-top:.9rem}
+    /* ── Hero video column ── */
+    .wm-hero-vid{position:relative}
+    .wm-vid-wrap{position:relative;border-radius:14px;overflow:hidden;border:1.5px solid rgba(129,140,248,.25);box-shadow:0 0 40px rgba(99,102,241,.18),0 8px 32px rgba(0,0,0,.45);background:#08071a;aspect-ratio:16/9}
+    .wm-vid{width:100%;height:100%;display:block;object-fit:cover}
+
+    /* ── Layout ────────────────────────────────────── */
+    .wm-layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:2.5rem;max-width:1100px;margin:3rem auto;padding:0 1.5rem;align-items:start}
+    .wm-layout>*{min-width:0}
+    .wm-sidebar{position:sticky;top:calc(var(--rw-nav-height,64px) + 1.5rem);align-self:start}
+    .wm-toc-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--rw-text-subtle);margin-bottom:.7rem}
+    .wm-toc{list-style:none;padding:0;display:flex;flex-direction:column;gap:.1rem}
+    .wm-toc a{font-size:.81rem;color:var(--rw-text-muted);text-decoration:none;padding:.28rem .6rem;border-left:2px solid transparent;display:block;border-radius:0 4px 4px 0;transition:color .15s,border-color .15s,background .15s}
+    .wm-toc a:hover,.wm-toc a.active{color:#818cf8;border-left-color:#818cf8;background:rgba(129,140,248,.08)}
+    .wm-sec-tag{font-size:.64rem;font-family:var(--rw-font-mono);text-transform:uppercase;letter-spacing:.14em;color:#818cf8;margin-bottom:.4rem}
+    .wm-sec{margin-bottom:3.5rem;scroll-margin-top:calc(var(--rw-nav-height,64px) + 1rem)}
+    .wm-sec h2{font-size:clamp(1.3rem,3vw,1.85rem);font-family:'Outfit',var(--rw-font-display);font-weight:800;letter-spacing:-.02em;line-height:1.15;text-wrap:balance;margin-bottom:.4rem;border-bottom:1px solid rgba(129,140,248,.15);padding-bottom:.6rem}
+    .wm-sub{font-size:.92rem;color:var(--rw-text-muted);max-width:600px;margin-bottom:1.8rem;line-height:1.6}
+    .wm-sub em{color:var(--rw-text);font-style:italic}
+
+    /* ── Story cards ──────────────────────────────── */
+    .wm-story{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:start}
+    .wm-col{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:12px;overflow:hidden}
+    .wm-col.bad{border-color:rgba(248,113,113,.3)}
+    .wm-col.good{border-color:rgba(52,211,153,.3)}
+    .wm-col-head{padding:.6rem 1rem;display:flex;align-items:center;gap:.55rem;border-bottom:1px solid var(--rw-border)}
+    .wm-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+    .bad .wm-dot{background:#f87171}.good .wm-dot{background:#34d399}
+    .wm-col-lbl{font-size:.63rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    .bad .wm-col-lbl{color:#f87171}.good .wm-col-lbl{color:#34d399}
+    .wm-steps{padding:1.1rem 1rem 1.3rem;display:flex;flex-direction:column;gap:.85rem}
+    .wm-step{display:flex;align-items:flex-start;gap:.65rem}
+    .wm-num{width:22px;height:22px;border-radius:50%;font-size:.63rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .bad .wm-num{background:rgba(248,113,113,.14);color:#f87171}
+    .good .wm-num{background:rgba(52,211,153,.14);color:#34d399}
+    .wm-step-t{font-size:.82rem;color:var(--rw-text-muted);line-height:1.5}
+    .wm-step-t code{font-family:var(--rw-font-mono);font-size:.76rem;color:#a5b4fc;background:rgba(129,140,248,.1);border-radius:3px;padding:.04em .28em}
+    .wm-out{margin:.2rem 1rem 1rem;border-radius:8px;padding:.7rem .85rem;font-size:.81rem;line-height:1.6}
+    .bad .wm-out{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.22);color:#f87171}
+    .good .wm-out{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);color:#34d399}
+    .wm-out strong{display:block;font-size:.67rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.28rem;opacity:.7}
+    .wm-vs{align-self:center;font-size:1.2rem;color:var(--rw-text-subtle);padding:0 .15rem;display:flex;flex-direction:column;align-items:center;gap:.25rem}
+    .wm-vs span{font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--rw-text-subtle)}
+
+    /* ── Playground ───────────────────────────────── */
+    .wm-pills{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1.1rem}
+    .wm-ptag{font-size:.7rem;font-weight:700;padding:.2rem .65rem;border-radius:99px;border:1px solid var(--rw-border);color:var(--rw-text-muted);background:var(--rw-bg-subtle);cursor:pointer;transition:all .15s;font-family:'Outfit',var(--rw-font-display)}
+    .wm-ptag:hover,.wm-ptag.active{background:rgba(129,140,248,.15);border-color:rgba(129,140,248,.4);color:#a5b4fc}
+    .wm-input-row{display:flex;gap:.6rem;margin-bottom:1.3rem}
+    .wm-input{flex:1;background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:8px;color:var(--rw-text);font-family:'Outfit',var(--rw-font-display);font-size:.9rem;padding:.65rem 1rem;outline:none;transition:border-color .15s;min-width:0}
+    .wm-input:focus{border-color:#818cf8}
+    .wm-ask-btn{background:#6366f1;color:#fff;font-family:'Outfit',var(--rw-font-display);font-weight:700;font-size:.85rem;border:none;border-radius:8px;padding:.65rem 1.2rem;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+    .wm-ask-btn:hover{opacity:.85}.wm-ask-btn:disabled{opacity:.4;cursor:not-allowed}
+    .wm-panels{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+    .wm-pane{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:10px;overflow:hidden}
+    .wm-pane.bad{border-color:rgba(248,113,113,.25)}.wm-pane.good{border-color:rgba(52,211,153,.25)}
+    .wm-pane-head{padding:.55rem .85rem;border-bottom:1px solid var(--rw-border);display:flex;align-items:center;justify-content:space-between}
+    .wm-pane-hl{display:flex;align-items:center;gap:.55rem}
+    .wm-pane-dot{width:8px;height:8px;border-radius:50%}
+    .bad .wm-pane-dot{background:#f87171}.good .wm-pane-dot{background:#34d399}
+    .wm-pane-lbl{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    .bad .wm-pane-lbl{color:#f87171}.good .wm-pane-lbl{color:#34d399}
+    .wm-pane-time{font-size:.62rem;color:var(--rw-text-subtle);font-weight:600}
+    .wm-pane-body{padding:.85rem;min-height:155px;position:relative}
+    .wm-pane-body pre{font-family:var(--rw-font-mono);font-size:.73rem;color:var(--rw-text-muted);white-space:pre-wrap;word-break:break-word;line-height:1.7}
+    .wm-pane-body .whi{color:#34d399;font-weight:600}
+    .wm-pane-body .werr{color:#f87171}
+    .wm-pane-body .wkey{color:#a5b4fc}
+    .wm-pane-body .wval{color:#fbbf24}
+    .wm-idle{display:flex;flex-direction:column;align-items:center;justify-content:center;height:135px;gap:.5rem;color:var(--rw-text-subtle);font-size:.81rem;text-align:center}
+    .wm-idle-i{font-size:2rem;opacity:.35}
+    @keyframes wm-spin{to{transform:rotate(360deg)}}
+    .wm-spin{width:20px;height:20px;border:2.5px solid rgba(129,140,248,.2);border-top-color:#818cf8;border-radius:50%;animation:wm-spin .7s linear infinite;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+    @keyframes wm-blink{0%,100%{opacity:1}50%{opacity:0}}
+    .wm-cursor{display:inline-block;width:2px;height:.9em;background:#34d399;vertical-align:middle;animation:wm-blink .85s step-end infinite;margin-left:1px}
+
+    /* ── Learnings ──────────────────────────────────── */
+    .wm-learns{display:flex;flex-direction:column;gap:.85rem}
+    .wm-lcard{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:10px;padding:1rem 1.15rem 1rem 1.4rem;display:grid;grid-template-columns:auto 1fr;gap:.75rem 1rem;align-items:start;position:relative;overflow:hidden}
+    .wm-lcard::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:#6366f1}
+    .wm-licon{font-size:1.5rem;line-height:1;padding-top:.08rem}
+    .wm-lhead h4{font-size:.95rem;font-weight:700;margin-bottom:.22rem;line-height:1.25;color:var(--rw-text)}
+    .wm-lhead p{font-size:.81rem;color:var(--rw-text-muted);line-height:1.55;margin:0}
+    .wm-lhead em{font-style:italic;color:var(--rw-text)}
+    .wm-lhead code{font-family:var(--rw-font-mono);font-size:.77rem;color:#a5b4fc;background:rgba(129,140,248,.1);border-radius:3px;padding:.04em .28em}
+
+    /* ── Takeaway ──────────────────────────────────── */
+    .wm-ta{text-align:center;padding:2.5rem 1rem 3.5rem;border-top:1px solid var(--rw-border)}
+    .wm-ta p{font-size:clamp(1rem,2.5vw,1.18rem);font-weight:600;max-width:560px;margin:0 auto .5rem;line-height:1.6;color:var(--rw-text)}
+    .wm-ta small{font-size:.81rem;color:var(--rw-text-subtle)}
+
+    /* ── Proof section ─────────────────────────────── */
+    .wm-proof-wrap{display:flex;flex-direction:column;gap:1rem}
+    .wm-proof-chat{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:12px;padding:1.2rem;display:flex;flex-direction:column;gap:.85rem}
+    .wm-proof-q{display:flex;align-items:flex-start;gap:.7rem}
+    .wm-proof-q--ai{align-items:flex-start}
+    .wm-proof-avatar{width:30px;height:30px;border-radius:50%;font-size:.67rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .wm-proof-avatar--user{background:rgba(129,140,248,.2);color:#a5b4fc;border:1px solid rgba(129,140,248,.3)}
+    .wm-proof-avatar--ai{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.25)}
+    .wm-proof-bubble{font-size:.84rem;line-height:1.6;color:var(--rw-text-muted);background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:0 8px 8px 8px;padding:.65rem .9rem;flex:1}
+    .wm-proof-bubble--ai{color:var(--rw-text);border-radius:8px 0 8px 8px}
+    .wm-proof-bubble strong{color:var(--rw-text);font-weight:700}
+    .wm-proof-note{display:block;font-size:.72rem;color:var(--rw-text-subtle);margin-top:.2rem;font-style:italic}
+    .wm-proof-events{display:flex;flex-direction:column;gap:.35rem;padding-left:2.4rem}
+    .wm-ev{display:flex;align-items:baseline;gap:.5rem;font-size:.76rem}
+    .wm-ev-badge{font-size:.6rem;font-weight:800;letter-spacing:.08em;padding:.15rem .45rem;border-radius:4px;flex-shrink:0}
+    .wm-ev--ready .wm-ev-badge{background:rgba(52,211,153,.15);color:#34d399}
+    .wm-ev--tool .wm-ev-badge{background:rgba(129,140,248,.15);color:#a5b4fc}
+    .wm-ev--result .wm-ev-badge{background:rgba(251,191,36,.1);color:#fbbf24}
+    .wm-ev-body{color:var(--rw-text-subtle);line-height:1.4}
+    .wm-ev-key{color:var(--rw-text-muted)}
+    .wm-ev-hi{color:var(--rw-text);font-weight:600}
+    .wm-proof-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+    .wm-proof-stat{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:10px;padding:.9rem .75rem;text-align:center}
+    .wm-proof-stat-n{font-size:1.6rem;font-weight:900;font-family:'Outfit',var(--rw-font-display);color:#818cf8;line-height:1}
+    .wm-proof-stat-l{font-size:.68rem;color:var(--rw-text-subtle);margin-top:.22rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+    .wm-proof-tools{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:10px;padding:1rem 1.15rem}
+    .wm-proof-tools-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--rw-text-subtle);margin-bottom:.75rem}
+    .wm-proof-tool-list{display:grid;grid-template-columns:1fr 1fr;gap:.45rem .75rem}
+    .wm-ptool{display:flex;flex-direction:column;gap:.15rem}
+    .wm-ptool code{font-family:var(--rw-font-mono);font-size:.76rem;color:#a5b4fc;font-weight:600}
+    .wm-ptool span{font-size:.73rem;color:var(--rw-text-subtle);line-height:1.4}
+
+    /* ── Responsive ────────────────────────────────── */
+    @media(max-width:900px){.wm-hero-inner{grid-template-columns:1fr;gap:1.5rem}.wm-hero-vid{order:-1}.wm-vid-wrap{max-width:480px;margin:auto}.wm-layout{grid-template-columns:1fr;gap:.5rem}.wm-sidebar{position:sticky;top:calc(var(--rw-nav-height,64px) + .25rem);width:100%;padding:.3rem 0;background:var(--rw-bg);border-bottom:1px solid var(--rw-border)}.wm-toc-label{display:none}.wm-toc{flex-direction:row;flex-wrap:nowrap;gap:.2rem;overflow-x:auto;padding-bottom:.1rem;scrollbar-width:thin}.wm-toc a{flex:0 0 auto;white-space:nowrap;border-left:0;border-bottom:2px solid transparent;border-radius:4px 4px 0 0}.wm-toc a:hover,.wm-toc a.active{border-bottom-color:#818cf8;border-left-color:transparent}}
+    @media(max-width:640px){.wm-story{grid-template-columns:1fr;gap:0}.wm-vs{flex-direction:row;padding:.5rem 0;justify-content:center}.wm-panels{grid-template-columns:1fr}.wm-input-row{flex-direction:column}.wm-ask-btn{width:100%}.wm-hero{padding:2.5rem 1rem 2rem}.wm-layout{padding:0 1rem;margin:1.5rem auto}.wm-proof-stats{grid-template-columns:repeat(2,1fr)}.wm-proof-tool-list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20261102"></script>
+
+<!-- Hero -->
+<div class="wm-hero">
+  <div class="wm-hero-inner">
+
+    <!-- Left: text -->
+    <div class="wm-hero-text">
+      <div class="wm-hero-label"><span class="wm-pulse"></span> WebMCP &middot; Build Log &middot; Oct 2026</div>
+      <h1>When AI visits your site,<br>does it <em>understand</em> it?</h1>
+      <p>WebMCP turns your website into a structured API that AI agents can actually use &mdash; not just read. Live proof from this site, interactive playground, and 5 field notes from real builds.</p>
+      <div class="wm-hero-meta">Sham Sundar HC &nbsp;&middot;&nbsp; Oct 30, 2026 &nbsp;&middot;&nbsp; 5 min read</div>
+    </div>
+
+    <!-- Right: self-hosted video -->
+    <div class="wm-hero-vid">
+      <div class="wm-vid-wrap">
+        <video class="wm-vid" id="wm-hero-vid" controls muted autoplay loop playsinline preload="metadata" poster="../images/webmcp-launch-poster.jpg">
+          <source src="../images/videos/webmcp-launch.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="wm-layout">
+
+  <!-- Sidebar TOC -->
+  <aside class="wm-sidebar">
+    <div class="wm-toc-label">Contents</div>
+    <ul class="wm-toc">
+      <li><a href="#story">The Story</a></li>
+      <li><a href="#playground">Try It</a></li>
+      <li><a href="#proof">Live Proof</a></li>
+      <li><a href="#learnings">Field Notes</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+
+    <!-- STORY -->
+    <section class="wm-sec" id="story">
+      <div class="wm-sec-tag">The Story</div>
+      <h2>Same question. Completely different answer.</h2>
+      <p class="wm-sub">A user asks an AI: <em>&ldquo;I&rsquo;ve read the RAG basics &mdash; where&rsquo;s the section on evaluation metrics?&rdquo;</em></p>
+
+      <div class="wm-story">
+        <div class="wm-col bad">
+          <div class="wm-col-head"><div class="wm-dot"></div><span class="wm-col-lbl">Without WebMCP</span></div>
+          <div class="wm-steps">
+            <div class="wm-step"><div class="wm-num">1</div><div class="wm-step-t">AI fetches the page. Gets 8,000 words of raw HTML with no structure.</div></div>
+            <div class="wm-step"><div class="wm-num">2</div><div class="wm-step-t">Scans text for &ldquo;evaluation metrics.&rdquo; Finds a match somewhere &mdash; but no anchor, no location.</div></div>
+            <div class="wm-step"><div class="wm-num">3</div><div class="wm-step-t">Guesses. Returns a generic summary with no link to the actual section.</div></div>
+          </div>
+          <div class="wm-out">
+            <strong>AI answer</strong>
+            &ldquo;The guide covers evaluation metrics. You can find it somewhere on the page.&rdquo;
+          </div>
+        </div>
+
+        <div class="wm-vs">&#8596;<span>vs</span></div>
+
+        <div class="wm-col good">
+          <div class="wm-col-head"><div class="wm-dot"></div><span class="wm-col-lbl">With WebMCP</span></div>
+          <div class="wm-steps">
+            <div class="wm-step"><div class="wm-num">1</div><div class="wm-step-t">AI calls <code>get_page_sections()</code>. Gets a labeled map of every heading + anchor ID in milliseconds.</div></div>
+            <div class="wm-step"><div class="wm-num">2</div><div class="wm-step-t">Returns: <code>Evaluation &amp; Metrics &rarr; #metrics</code>. Calls <code>search_rawweights("RAG production")</code> for related guides.</div></div>
+            <div class="wm-step"><div class="wm-num">3</div><div class="wm-step-t">Answers with the exact section link + two deeper guides the user didn&rsquo;t even know to ask for.</div></div>
+          </div>
+          <div class="wm-out">
+            <strong>AI answer</strong>
+            &ldquo;&rarr; Evaluation &amp; Metrics: rawweights.com/guide/rag.html#metrics<br>&rarr; Production toolkit: rawweights.com/guide/rag-pipeline-toolkit.html&rdquo;
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAYGROUND -->
+    <section class="wm-sec" id="playground">
+      <div class="wm-sec-tag">Try It</div>
+      <h2>Ask something. See the difference.</h2>
+      <p class="wm-sub">Type a question and watch what a raw HTML response looks like vs a WebMCP tool response.</p>
+
+      <div class="wm-pills">
+        <span class="wm-ptag active" data-q="How does RAG work?">RAG basics</span>
+        <span class="wm-ptag" data-q="Where are the evaluation metrics?">Evaluation</span>
+        <span class="wm-ptag" data-q="What AI security guides do you have?">Security</span>
+        <span class="wm-ptag" data-q="Show me all interactive playgrounds">Playgrounds</span>
+        <span class="wm-ptag" data-q="I need to fine-tune a model for production">Fine-tuning</span>
+      </div>
+
+      <div class="wm-input-row">
+        <input class="wm-input" id="wm-q" type="text" placeholder="Type a question or pick one above&hellip;" value="How does RAG work?" autocomplete="off">
+        <button class="wm-ask-btn" id="wm-ask">Ask &rarr;</button>
+      </div>
+
+      <div class="wm-panels">
+        <div class="wm-pane bad">
+          <div class="wm-pane-head">
+            <div class="wm-pane-hl"><div class="wm-pane-dot"></div><span class="wm-pane-lbl">Raw HTML fetch</span></div>
+            <span class="wm-pane-time" id="wm-t-bad"></span>
+          </div>
+          <div class="wm-pane-body" id="wm-body-bad">
+            <div class="wm-idle"><div class="wm-idle-i">&#128196;</div><span>Waiting for question&hellip;</span></div>
+          </div>
+        </div>
+        <div class="wm-pane good">
+          <div class="wm-pane-head">
+            <div class="wm-pane-hl"><div class="wm-pane-dot"></div><span class="wm-pane-lbl">WebMCP tool call</span></div>
+            <span class="wm-pane-time" id="wm-t-good"></span>
+          </div>
+          <div class="wm-pane-body" id="wm-body-good">
+            <div class="wm-idle"><div class="wm-idle-i">&#9881;&#65039;</div><span>Waiting for question&hellip;</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROOF -->
+    <section class="wm-sec" id="proof">
+      <div class="wm-sec-tag">Live Proof</div>
+      <h2>This is rawweights.com, right now.</h2>
+      <p class="wm-sub">A real agent session on this site. The question was answered using only tool calls &mdash; no page crawling.</p>
+
+      <div class="wm-proof-wrap">
+
+        <!-- Chat bubble -->
+        <div class="wm-proof-chat">
+          <div class="wm-proof-q">
+            <div class="wm-proof-avatar wm-proof-avatar--user">U</div>
+            <div class="wm-proof-bubble wm-proof-bubble--user">What topics does rawweights.com cover and how is the content organised?<br><span class="wm-proof-note">Don&rsquo;t fetch any pages &mdash; use only the site&rsquo;s structured tools.</span></div>
+          </div>
+          <div class="wm-proof-events">
+            <div class="wm-ev wm-ev--ready"><span class="wm-ev-badge">READY</span><span class="wm-ev-body"><span class="wm-ev-key">hasModelContext:</span> <span class="wm-ev-hi">true</span> &mdash; Chrome confirmed WebMCP active</span></div>
+            <div class="wm-ev wm-ev--tool"><span class="wm-ev-badge">TOOL</span><span class="wm-ev-body"><span class="wm-ev-key">get_navigation</span> invoked &mdash; <span class="wm-ev-hi">1ms</span></span></div>
+            <div class="wm-ev wm-ev--result"><span class="wm-ev-badge">RESULT</span><span class="wm-ev-body">4 sections returned: <span class="wm-ev-hi">Playgrounds &middot; Guides &middot; Use Cases &middot; Blog</span></span></div>
+          </div>
+          <div class="wm-proof-q wm-proof-q--ai">
+            <div class="wm-proof-avatar wm-proof-avatar--ai">AI</div>
+            <div class="wm-proof-bubble wm-proof-bubble--ai">RawWeights is organised into four areas:<br><br>
+              <strong>Playgrounds</strong> &mdash; 8 interactive ML sandboxes (ML Master Hub, Attention Journey, CNN Explorer&hellip;)<br>
+              <strong>Guides</strong> &mdash; 18 deep-dives covering RAG, fine-tuning, MCP, agentic AI, security&hellip;<br>
+              <strong>Use Cases</strong> &mdash; 15 real build stories (Debrief, SecurityTwin, SentTriage&hellip;)<br>
+              <strong>Blog</strong> &mdash; <a href="https://rawweights.com/blog.html" style="color:#818cf8">rawweights.com/blog.html</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="wm-proof-stats">
+          <div class="wm-proof-stat">
+            <div class="wm-proof-stat-n">4</div>
+            <div class="wm-proof-stat-l">Tools registered</div>
+          </div>
+          <div class="wm-proof-stat">
+            <div class="wm-proof-stat-n">1ms</div>
+            <div class="wm-proof-stat-l">Tool response time</div>
+          </div>
+          <div class="wm-proof-stat">
+            <div class="wm-proof-stat-n">0</div>
+            <div class="wm-proof-stat-l">Pages fetched</div>
+          </div>
+          <div class="wm-proof-stat">
+            <div class="wm-proof-stat-n">87</div>
+            <div class="wm-proof-stat-l">Pages covered</div>
+          </div>
+        </div>
+
+        <!-- Tools strip -->
+        <div class="wm-proof-tools">
+          <div class="wm-proof-tools-label">Registered tools on this page</div>
+          <div class="wm-proof-tool-list">
+            <div class="wm-ptool"><code>search_rawweights</code><span>Full-text search across all content</span></div>
+            <div class="wm-ptool"><code>get_navigation</code><span>Complete site structure + descriptions</span></div>
+            <div class="wm-ptool"><code>get_page_sections</code><span>Deep-link map of any page&rsquo;s headings</span></div>
+            <div class="wm-ptool"><code>get_footer_links</code><span>Footer categories and supplementary links</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LEARNINGS -->
+    <section class="wm-sec" id="learnings">
+      <div class="wm-sec-tag">5 Field Notes</div>
+      <h2>Things we figured out while building.</h2>
+      <p class="wm-sub">From real implementation, not the spec.</p>
+
+      <div class="wm-learns">
+        <div class="wm-lcard">
+          <div class="wm-licon">&#128737;&#65039;</div>
+          <div class="wm-lhead">
+            <h4>Always check <code>if (document.modelContext)</code> first</h4>
+            <p>WebMCP is a Chrome origin trial &mdash; only 0.5% of global traffic can use it before Google disables the experiment. 1&ndash;5% of users are intentionally excluded as holdbacks. Your code <em>must</em> fall back gracefully. If the API isn&rsquo;t there, your site still works &mdash; just without the AI tools. Never assume it exists.</p>
+          </div>
+        </div>
+        <div class="wm-lcard">
+          <div class="wm-licon">&#9997;&#65039;</div>
+          <div class="wm-lhead">
+            <h4>Your tool description is the AI&rsquo;s instruction manual</h4>
+            <p>Early version said: <em>&ldquo;Returns navigation links.&rdquo;</em> AI agents dumped raw JSON at the user. Rewritten as: <em>&ldquo;Scan links[].desc for keywords matching the user&rsquo;s question, return the matching URL as a clickable link.&rdquo;</em> &mdash; agents instantly changed behavior. The description isn&rsquo;t documentation. It&rsquo;s the prompt that runs every time the tool is called.</p>
+          </div>
+        </div>
+        <div class="wm-lcard">
+          <div class="wm-licon">&#128230;</div>
+          <div class="wm-lhead">
+            <h4>Add a <code>message</code> field &mdash; not just structured data</h4>
+            <p>Some agents echo tool results verbatim instead of formatting them. Return both: structured JSON <em>and</em> a pre-formatted Markdown string in a <code>message</code> field. Even the dumbest agent then outputs readable links. The best agents use the structure. The rest use the message. Nobody gets raw JSON.</p>
+          </div>
+        </div>
+        <div class="wm-lcard">
+          <div class="wm-licon">&#128221;</div>
+          <div class="wm-lhead">
+            <h4>Standard fields need no schema. Custom fields do.</h4>
+            <p>AI agents already know what <code>name</code>, <code>email</code>, <code>tel</code>, and <code>date</code> inputs mean &mdash; they&rsquo;re universal. Define <code>inputSchema</code> only for fields the agent couldn&rsquo;t guess: CRM dropdowns (<em>Job_Level__c</em>, <em>industry_vertical</em>), dependent selects, non-standard labels. Over-describing standard fields adds noise to the tool context and slows the agent down. Describe only what&rsquo;s unusual.</p>
+          </div>
+        </div>
+        <div class="wm-lcard">
+          <div class="wm-licon">&#9889;</div>
+          <div class="wm-lhead">
+            <h4>Flag auto-populated fields &mdash; and pace your typing for reCAPTCHA</h4>
+            <p>If a field fills itself (city from zip code, country from locale), say so in the schema: <em>&ldquo;Country auto-populates from zip &mdash; do not set directly.&rdquo;</em> If the agent tries to override it, the page&rsquo;s own logic may wipe the value mid-form. For reCAPTCHA: the score is based on keystroke rhythm, mouse entropy, and hover timing &mdash; type character-by-character at human speed (35&ndash;75ms per key), hover over the submit button before clicking to allow reCAPTCHA&rsquo;s token to generate, then submit. Programmatic instant-fill gets a bot score of 0.0 every time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAKEAWAY -->
+    <div class="wm-ta">
+      <p>WebMCP is the difference between an AI that <span style="color:#f87171">reads</span> your site and one that <span style="color:#34d399">uses</span> it.</p>
+      <small>One file. 87 pages. Every AI agent gets structured, callable tools automatically.</small>
+    </div>
+
+  </main>
+</div><!-- /.wm-layout -->
+
+<div id="rw-footer"></div>
+<script src="../includes/rw-footer.js?v=20261030"></script>
+
+<script>
+(function(){
+var D={
+  rag:{kw:['rag','retrieval','retrieval-augmented','embedding'],bt:'2.4s',gt:'38ms',
+    bad:'<span class="werr">GET</span> /guide/rag.html \u2192 200 OK (142KB)\n\n&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;\n  &lt;meta charset="UTF-8"&gt;\n  &lt;title&gt;Ultimate Guide to RAG...&lt;/title&gt;\n  &lt;link rel="stylesheet" href="/includes/brand.css?v=20261102"&gt;\n  ...\n&lt;/head&gt;&lt;body&gt;\n  &lt;main class="rw-content"&gt;\n    &lt;h1&gt;Ultimate Guide to RAG&lt;/h1&gt;\n    &lt;p&gt;Retrieval-Augmented Generation (RAG)...&lt;/p&gt;\n    &lt;h2&gt;Architecture Overview&lt;/h2&gt;\n    &lt;h2&gt;Chunking Strategies&lt;/h2&gt;\n    ...\n    [8,247 more words]\n  &lt;/main&gt;\n&lt;/body&gt;\n\n<span class="werr">\u26a0 AI must read entire page to find answer</span>',
+    good:'<span class="whi">Tool called:</span> <span class="wkey">search_rawweights</span>\n<span class="wkey">  query:</span> <span class="wval">"RAG"</span>\n\n<span class="whi">Response (38ms):</span>\n{\n  <span class="wkey">"message":</span> <span class="wval">"Here are the top results:\n  - [Ultimate Guide to RAG](rawweights.com/guide/rag.html)\n    Architecture, chunking, vector DBs, evaluation\n  - [RAG Pipeline Toolkit](rawweights.com/guide/rag-pipeline-toolkit.html)\n    Interactive builder for production RAG\n  - [RAG Architect\'s Studio](rawweights.com/guide/rag-architects-studio.html)"</span>\n}\n\n<span class="whi">\u2713 Agent presents message directly \u2014 no parsing needed</span>'},
+  eval:{kw:['evaluation','eval','metrics','where','section'],bt:'2.8s',gt:'12ms',
+    bad:'<span class="werr">GET</span> /guide/rag.html \u2192 200 OK (142KB)\n\nScanning 8,247 words for "evaluation"...\n\nFound text at unknown position:\n  "...BLEU scores measure precision of\n   n-gram overlap between generated and\n   reference text. ROUGE-L measures...\n   RAGAs framework provides automated...\n   Faithfulness, Answer Relevancy,\n   Context Precision and Recall..."\n\n<span class="werr">\u26a0 No anchor ID found. Cannot deep-link.</span>\n<span class="werr">\u26a0 Returning page URL with no section.</span>',
+    good:'<span class="whi">Tool called:</span> <span class="wkey">get_page_sections</span>\n<span class="wkey">  page:</span> <span class="wval">"/guide/rag.html"</span>\n\n<span class="whi">Response (12ms):</span>\n[\n  { <span class="wkey">text:</span> <span class="wval">"Architecture Overview"</span>, <span class="wkey">anchor:</span> <span class="wval">"#architecture"</span> },\n  { <span class="wkey">text:</span> <span class="wval">"Chunking Strategies"</span>,  <span class="wkey">anchor:</span> <span class="wval">"#chunking"</span> },\n  { <span class="wkey">text:</span> <span class="wval">"Vector Databases"</span>,     <span class="wkey">anchor:</span> <span class="wval">"#vectordb"</span> },\n  <span class="whi">{ <span class="wkey">text:</span> <span class="wval">"Evaluation &amp; Metrics"</span>, <span class="wkey">anchor:</span> <span class="wval">"#metrics"</span> } \u2190 match</span>,\n  { <span class="wkey">text:</span> <span class="wval">"Production Patterns"</span>, <span class="wkey">anchor:</span> <span class="wval">"#production"</span> }\n]\n\n<span class="whi">\u2713 Direct link: rawweights.com/guide/rag.html#metrics</span>'},
+  security:{kw:['security','threat','red team','attack','owasp'],bt:'1.9s',gt:'41ms',
+    bad:'<span class="werr">GET</span> /blog.html \u2192 200 OK (96KB)\n\nScanning all blog entries for "security"...\n\nFound partial matches across 19 articles.\nCannot determine which is most relevant.\nReturning first 3 title matches:\n\n- AI Security Stack Autopsy\n- AI Security Threat Model\n- Agent Security Guide\n\n<span class="werr">\u26a0 No excerpts. No ranking. No direct section links.</span>',
+    good:'<span class="whi">Tool called:</span> <span class="wkey">search_rawweights</span>\n<span class="wkey">  query:</span> <span class="wval">"AI security"</span>\n\n<span class="whi">Response (41ms) \u2014 top 3 results:</span>\n\n<span class="whi">1.</span> AI Security Stack Autopsy\n   <span class="wval">rawweights.com/guide/ai-security-stack-autopsy.html</span>\n   <span class="wkey">excerpt:</span> WAFs, DLP, SIEM fail against AI agents...\n\n<span class="whi">2.</span> AI Security Threat Model\n   <span class="wval">rawweights.com/guide/ai-security-threat-model.html</span>\n   <span class="wkey">excerpt:</span> STRIDE applied to LLM systems...\n\n<span class="whi">3.</span> Agent Security Guide (OWASP LLM Top 10)\n   <span class="wval">rawweights.com/guide/ai-security-redteam-brief.html</span>\n\n<span class="whi">\u2713 Ranked by relevance with excerpts &amp; direct links</span>'},
+  playgrounds:{kw:['playground','interactive','sandbox','try','demo'],bt:'1.6s',gt:'8ms',
+    bad:'<span class="werr">GET</span> /index.html \u2192 200 OK (88KB)\n\nScanning page for playground links...\n\nFound in JavaScript:\n  var SITE_DATA = [{ title:"ML Master Hub"...\n\n<span class="werr">\u26a0 Data inside a JS variable \u2014 not extractable\n   without executing the full page script.</span>\n\nFallback: returning page title only.\nNo structured list of playgrounds available.',
+    good:'<span class="whi">Tool called:</span> <span class="wkey">get_navigation</span>\n\n<span class="whi">Response (8ms) \u2014 Interactive Playgrounds:</span>\n\n[ <span class="wkey">"section":</span> <span class="wval">"Playgrounds"</span>,\n  <span class="wkey">"links":</span> [\n    { <span class="wkey">label:</span> <span class="wval">"ML Master Hub"</span>,\n      <span class="wkey">url:</span>   <span class="wval">"/tools/master_ml_hub.html"</span>,\n      <span class="wkey">desc:</span>  <span class="wval">"Gradient descent, neural nets, regularisation"</span> },\n    { <span class="wkey">label:</span> <span class="wval">"Attention Journey"</span>,\n      <span class="wkey">url:</span>   <span class="wval">"/tools/master_sequence_hub.html"</span>,\n      <span class="wkey">desc:</span>  <span class="wval">"RNNs \u2192 Transformers step by step"</span> },\n    ...\n  ]\n]\n\n<span class="whi">\u2713 All 8 playgrounds with descriptions, no page parse</span>'},
+  finetune:{kw:['fine-tun','finetun','lora','rlhf','training','sft','dpo'],bt:'2.1s',gt:'44ms',
+    bad:'<span class="werr">GET</span> /guide/fine-tuning-llm-guide.html \u2192 200 OK\n\n...scanning 6,800 words...\n\nFound mentions of "production" at many lines.\n\n<span class="werr">\u26a0 Cannot determine which section is most\n   relevant for "production" use case.</span>\n\nReturning page summary only.\nNo related guides found (search unavailable).',
+    good:'<span class="whi">Tool called:</span> <span class="wkey">search_rawweights</span>\n<span class="wkey">  query:</span> <span class="wval">"fine-tuning production"</span>\n\n<span class="whi">Response (44ms):</span>\n\n<span class="whi">1.</span> Fine-Tuning for Production\n   <span class="wval">rawweights.com/guide/fine-tuning-production.html</span>\n   <span class="wkey">excerpt:</span> LoRA, alignment, synthetic data, GPU cost...\n   <span class="wkey">sections:</span>\n     \u2192 LoRA Config <span class="wval">#lora</span>\n     \u2192 GPU Cost Model <span class="wval">#costs</span>\n     \u2192 Deployment <span class="wval">#deploy</span>\n\n<span class="whi">2.</span> LLM Post-Training Guide\n   <span class="wval">rawweights.com/guide/llm-post-training-guide.html</span>\n\n<span class="whi">\u2713 2 guides, direct section links, ranked</span>'}
+};
+
+function match(q){var ql=q.toLowerCase();for(var k in D){var d=D[k];for(var i=0;i<d.kw.length;i++) if(ql.indexOf(d.kw[i])!==-1) return d;}
+  return{bt:'2.2s',gt:'29ms',bad:'<span class="werr">GET</span> rawweights.com/ \u2192 200 OK\n\n...parsing HTML...\n...extracting visible text...\n\nFound some matching paragraphs but no\nstructured headings or direct links.\n\n<span class="werr">\u26a0 Returning generic summary. No deep links.</span>',good:'<span class="whi">Tool called:</span> <span class="wkey">search_rawweights</span>\n<span class="wkey">  query:</span> <span class="wval">"'+q.replace(/"/g,'\\"')+'"</span>\n\n<span class="whi">Response:</span>\n{\n  <span class="wkey">"results":</span> [{ <span class="wkey">"title":</span> <span class="wval">"Matching guide"</span>, <span class="wkey">"url":</span> <span class="wval">"rawweights.com/guide/..."</span> }],\n  <span class="wkey">"message":</span> <span class="wval">"Here are results \u2014 ready to present"</span>\n}\n\n<span class="whi">\u2713 Structured. Ranked. Ready for the user.</span>'};
+}
+function spin(el){el.innerHTML='<div class="wm-spin"></div>';}
+function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function typeOut(el,html,spd,cb){
+  var tmp=document.createElement('div');tmp.innerHTML=html;
+  var plain=(tmp.textContent||tmp.innerText||'').replace(/\n{3,}/g,'\n\n');
+  el.innerHTML='';var pre=document.createElement('pre');el.appendChild(pre);
+  var cur=document.createElement('span');cur.className='wm-cursor';pre.appendChild(cur);
+  var i=0;
+  function step(){
+    if(i>=plain.length){pre.innerHTML=html;if(cb)cb();return;}
+    var t=pre.childNodes[0];
+    if(!t||t.nodeType!==3){t=document.createTextNode('');pre.insertBefore(t,cur);}
+    t.textContent=plain.slice(0,++i);
+    setTimeout(step,spd+Math.random()*(spd*.4));
+  }
+  step();
+}
+var running=false;
+function run(q){
+  if(running||!q.trim())return;
+  running=true;document.getElementById('wm-ask').disabled=true;
+  var d=match(q);
+  var bb=document.getElementById('wm-body-bad'),bg=document.getElementById('wm-body-good');
+  setT('wm-t-bad','');setT('wm-t-good','');
+  spin(bb);spin(bg);
+  var t0=Date.now();
+  setTimeout(function(){setT('wm-t-bad',((Date.now()-t0)/1000).toFixed(1)+'s');bb.innerHTML='<pre></pre>';bb.querySelector('pre').innerHTML=d.bad;},1700+Math.random()*600);
+  setTimeout(function(){setT('wm-t-good',Math.round(parseFloat(d.gt)+Math.random()*12)+'ms');bg.innerHTML='';typeOut(bg,d.good,5,function(){running=false;document.getElementById('wm-ask').disabled=false;});},320+Math.random()*120);
+}
+document.getElementById('wm-ask').addEventListener('click',function(){run(document.getElementById('wm-q').value);});
+document.getElementById('wm-q').addEventListener('keydown',function(e){if(e.key==='Enter')run(this.value);});
+document.querySelectorAll('.wm-ptag').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.wm-ptag').forEach(function(x){x.classList.remove('active');});
+    t.classList.add('active');
+    document.getElementById('wm-q').value=t.getAttribute('data-q');
+    if(!running)run(t.getAttribute('data-q'));
+  });
+});
+setTimeout(function(){run('How does RAG work?');},700);
+
+// TOC active state
+var secs=document.querySelectorAll('.wm-sec[id]');
+var tocLinks=document.querySelectorAll('.wm-toc a');
+if('IntersectionObserver' in window){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){var id=e.target.id;tocLinks.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+id);});}});
+  },{threshold:.4});
+  secs.forEach(function(s){obs.observe(s);});
+}
+})();
+</script>
+
+</body>
+</html>

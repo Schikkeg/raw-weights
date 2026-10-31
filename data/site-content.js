@@ -16,6 +16,15 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Your Website Can Now Talk Back to AI: A Beginner's Guide to WebMCP",
+        excerpt: "WebMCP lets your website register tools an AI agent can call — search, navigation, deep-links. What it is, how it differs from MCP and Claude, and everything we learned wiring it into a static site.",
+        date: "Oct 30, 2026",
+        image: "./images/webmcp-launch-og.jpg",
+        type: "Blog",
+        link: "https://rawweights.com/blog/webmcp-ai-native-site.html",
+        linkedin: null
+      },
+      {
         title: "Debrief — Conference Memory & Networking Intelligence ",
         excerpt: "We built Debrief at the same conference where we had the problem. A mobile-first graph-powered app that remembers every person, session, and idea from your conference day. Built at Patch the Conference Hackathon 2024 with FalkorDB, Bright Data, and Qodo.",
         date: "Oct 30, 2026",
