@@ -1,0 +1,1398 @@
+{
+  "updated_at": "2026-11-06T22:18:20.846415+00:00",
+  "window_days": 20,
+  "categories": [
+    "Agents & Orchestration",
+    "Protocols & Tool Use",
+    "Retrieval & Memory",
+    "Inference & Serving",
+    "Training & Fine-tuning",
+    "Evals & Observability",
+    "Security & Sandboxing",
+    "Models & Foundations",
+    "Dev Workflow & Tooling"
+  ],
+  "signals": {
+    "architecture": "Architecture walk-through",
+    "deployment": "Deployment / containerization",
+    "tool-schema": "Tool or function schema design",
+    "state": "State handling",
+    "routing": "Routing / orchestration patterns",
+    "codebase": "Codebase exploration / live coding"
+  },
+  "funnel": {
+    "considered": 503,
+    "unavailable": 6,
+    "failed_topic": 281,
+    "failed_hype": 35,
+    "failed_joke": 3,
+    "failed_depth": 144,
+    "approved": 35
+  },
+  "entries": [
+    {
+      "video_id": "oWqsBuhRRZ4",
+      "title": "How We Mapped a 35-Million-Line Mainframe in 4 Days - Stephen Chin, Neo4j & Neeraj Deshmukh, Blitzy",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-06T20:00:10+00:00",
+          "author": null,
+          "kind": null
+        }
+      ],
+      "shared_at": "2026-11-06T20:00:10+00:00",
+      "discovered_at": "2026-11-06T20:14:46.047361+00:00",
+      "embeddable": true,
+      "published_at": "2026-11-06T20:00:10Z",
+      "duration_min": 19,
+      "views": 64,
+      "transcript": "auto",
+      "category": "Agents & Orchestration",
+      "subcategory": "Multi-Agent Systems",
+      "signals": [
+        "architecture",
+        "routing",
+        "codebase"
+      ],
+      "evidence_quote": "Every agent in 'Betsy' has a specific task context pack, right? This includes what the task description is, and also where it belongs in that diagram",
+      "quote_verified": true,
+      "covers": [
+        "mapping code to knowledge graphs",
+        "context-aware agent routing",
+        "automated testing for parity"
+      ],
+      "confidence": 5,
+      "justification": "The transcript explicitly describes a system where agents are assigned task-specific context from a graph-structured codebase, with real implementation details on routing, testing, and verification, supported by a GitHub-like demo and real-world results.",
+      "trusted_channel": true
+    },
+    {
+      "video_id": "C9HS3zMrGo0",
+      "title": "AREX-2 - The Harness in the Model",
+      "channel": "Sam Witteveen",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+          "score": 0,
+          "shared_at": "2026-11-06T14:00:01+00:00",
+          "author": null,
+          "kind": null
+        }
+      ],
+      "shared_at": "2026-11-06T14:00:01+00:00",
+      "discovered_at": "2026-11-06T20:14:51.821395+00:00",
+      "embeddable": true,
+      "published_at": "2026-11-06T14:00:01Z",
+      "duration_min": 16,
+      "views": 12662,
+      "transcript": "manual",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Harnesses",
+      "signals": [
+        "architecture",
+        "routing",
+        "codebase"
+      ],
+      "evidence_quote": "What if the model did that part for you itself? What if you just gave it a budget, say five hours on a problem, and it worked out how to actually use those hours to keep making its answer better?",
+      "quote_verified": true,
+      "covers": [
+        "Self-improving loop design",
+        "Try-check-retry orchestration",
+        "Model-driven harness logic"
+      ],
+      "confidence": 5,
+      "justification": "The transcript explicitly describes the architectural shift from harness-managed to model-managed retry loops, with concrete details on data pipelines, ablation studies, and real-world testing, indicating hands-on implementation insight.",
+      "trusted_channel": true
+    },
+    {
+      "video_id": "EtZwTYahfek",
+      "title": "7 Things Your AI Coworker Needs - Philipp Schmid, Google DeepMind",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-06T10:00:00+00:00"
+        }
+      ],
+      "shared_at": "2026-11-06T10:00:00+00:00",
+      "discovered_at": "2026-11-06T10:27:34.872261+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Products",
+      "signals": [
+        "architecture",
+        "deployment",
+        "tool-schema",
+        "state",
+        "routing",
+        "codebase"
+      ],
+      "evidence_quote": "He breaks a coworker down into seven needs (a brain, a computer, playbooks, tools, credentials, house rules and a schedule) and builds each one",
+      "quote_verified": true,
+      "covers": [
+        "Agent architecture",
+        "Tool and credential management",
+        "Scheduled execution"
+      ],
+      "confidence": 5,
+      "justification": "The title and context explicitly describe hands-on implementation of an autonomous AI coworker using specific components like MCP servers, sandboxing, and cron triggers, demonstrating real engineering depth in agent design.",
+      "published_at": "2026-11-06T02:00:00-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "SUqQlvyI3N8",
+      "title": "Your AI Agent Keeps Making the Same Mistakes - Sparsh Jain, CentralAgent AI",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-06T08:00:37+00:00"
+        }
+      ],
+      "shared_at": "2026-11-06T08:00:37+00:00",
+      "discovered_at": "2026-11-06T10:27:38.622541+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Memory & State",
+      "signals": [
+        "state",
+        "routing",
+        "codebase"
+      ],
+      "evidence_quote": "",
+      "quote_verified": false,
+      "covers": [
+        "experiential memory system",
+        "state management",
+        "judgment tracking"
+      ],
+      "confidence": 3,
+      "justification": "The title and context describe a hands-on implementation of a memory system with state transitions, routing logic for note updates, and code-level design decisions, indicating deep engineering work.",
+      "published_at": "2026-11-06T00:00:37-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "kCc8FmEb1nY",
+      "title": "Let's build GPT: from scratch, in code, spelled out.",
+      "channel": "Andrej Karpathy",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50319510",
+      "community_score": 0,
+      "shared_at": "2026-11-06T00:21:55+00:00",
+      "discovered_at": "2026-11-06T10:09:54.960236+00:00",
+      "category": "Models & Foundations",
+      "subcategory": "Model Architectures",
+      "signals": [
+        "codebase",
+        "architecture"
+      ],
+      "evidence_quote": "we're going to build on top of this now next up so far we've taken these indices and we've encoded them based on the identity of the uh tokens in inside idx",
+      "quote_verified": true,
+      "covers": [
+        "Building a GPT from scratch in PyTorch",
+        "Transformer architecture components",
+        "Autoregressive language modeling with self-attention"
+      ],
+      "confidence": 5,
+      "justification": "The video explicitly walks through implementing a GPT model line-by-line in PyTorch, covering core architectural components like embeddings, self-attention, and the decoder stack, with real code and live execution, satisfying the depth and implementation signals.",
+      "published_at": "2023-01-17T08:33:27-08:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50319510",
+          "score": 0,
+          "shared_at": "2026-11-06T00:21:55+00:00",
+          "author": "murtazayusuf",
+          "kind": "comment",
+          "author_karma": 30
+        }
+      ],
+      "trusted_channel": true,
+      "transcript": "auto",
+      "duration_min": 116,
+      "views": 8215624
+    },
+    {
+      "video_id": "AYFcmnQrZCg",
+      "title": "AI Agents Will Upend Investing Even More Than Coding - Frank Long, Coatue",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-06T00:00:09+00:00"
+        }
+      ],
+      "shared_at": "2026-11-06T00:00:09+00:00",
+      "discovered_at": "2026-11-06T10:27:41.257908+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Multi-Agent Systems",
+      "signals": [
+        "architecture",
+        "routing",
+        "state"
+      ],
+      "evidence_quote": "He frames a hedge fund as a function that takes in outside and inside context and returns what to buy, how much and when, then breaks it into gather, analyze and decide steps.",
+      "quote_verified": true,
+      "covers": [
+        "Agent architecture for investing",
+        "Step-wise routing in agents",
+        "State management across analysis steps"
+      ],
+      "confidence": 5,
+      "justification": "The title and context describe a detailed, implementation-focused breakdown of an agent system for financial decision-making, with explicit mention of orchestration steps, state handling, and routing logic, indicating deep engineering design.",
+      "published_at": "2026-11-05T16:00:09-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "YqJ4asgj1R8",
+      "title": "Stop Giving Your AI Agents API Keys - Kim Maida, Keycard & Mason Egger, Temporal",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-05T21:00:16+00:00"
+        }
+      ],
+      "shared_at": "2026-11-05T21:00:16+00:00",
+      "discovered_at": "2026-11-06T10:27:43.683790+00:00",
+      "category": "Security & Sandboxing",
+      "subcategory": "Agent Security",
+      "signals": [
+        "tool-schema",
+        "state",
+        "routing"
+      ],
+      "evidence_quote": "Kim replaces shared API keys with OAuth token exchange, so every tool call gets a short-lived token scoped to that one call",
+      "quote_verified": true,
+      "covers": [
+        "OAuth token exchange",
+        "agent state persistence",
+        "secure tool invocation"
+      ],
+      "confidence": 5,
+      "justification": "The title and context explicitly describe a live implementation of secure, auditable agent tooling using token delegation and durable execution, with clear engineering signals in tool schema, state handling, and routing.",
+      "published_at": "2026-11-05T13:00:16-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "zLc8zeGeNaY",
+      "title": "How Netflix Evaluates AI When There's No Right Answer - Cameron Wolfe, Netflix",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-05T20:00:25+00:00"
+        }
+      ],
+      "shared_at": "2026-11-05T20:00:25+00:00",
+      "discovered_at": "2026-11-06T10:27:46.208128+00:00",
+      "category": "Evals & Observability",
+      "subcategory": "Evals & Benchmarks",
+      "signals": [
+        "codebase",
+        "state",
+        "routing"
+      ],
+      "evidence_quote": "Human evaluation with calibrated guidelines is the North Star; LLM judges and rubrics, checked against human \"golden\" data, scale up offline evals",
+      "quote_verified": true,
+      "covers": [
+        "Human evaluation frameworks",
+        "LLM judge calibration",
+        "A/B testing in production"
+      ],
+      "confidence": 5,
+      "justification": "The title and context explicitly describe a production-grade evaluation pipeline involving human calibration, LLM judges, and real-world A/B testing, indicating deep implementation of evaluation systems with stateful, routed workflows and code-level design.",
+      "published_at": "2026-11-05T12:00:25-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "L1OBRtfPS34",
+      "title": "Stanford CS146S: How always-on agents work",
+      "channel": "leerob",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50380658",
+      "community_score": 0,
+      "shared_at": "2026-11-05T19:57:00+00:00",
+      "discovered_at": "2026-11-06T10:09:57.470113+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Always-On Agents",
+      "signals": [
+        "architecture",
+        "routing",
+        "state"
+      ],
+      "evidence_quote": "Stanford CS146S: How always-on agents work",
+      "quote_verified": true,
+      "covers": [
+        "Architecture of always-on agents",
+        "State management in persistent agents",
+        "Routing logic for continuous operation"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a deep dive into the design and operation of always-on agents, with explicit mention of architecture and state handling, supported by a lecture from a reputable CS course.",
+      "published_at": "2026-10-11T10:58:56-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50380658",
+          "score": 0,
+          "shared_at": "2026-11-05T19:57:00+00:00",
+          "author": "pss314",
+          "kind": "comment",
+          "author_karma": 143
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "sb9uPuiyM_8",
+      "title": "How Apple Fits a LLM on Your iPhone With Surgical Efficiency",
+      "channel": "Ruby Films",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50378587",
+      "community_score": 9,
+      "shared_at": "2026-11-05T13:01:58+00:00",
+      "discovered_at": "2026-11-06T10:09:33.885298+00:00",
+      "category": "Inference & Serving",
+      "subcategory": "Edge & On-Device",
+      "signals": [
+        "architecture",
+        "deployment",
+        "codebase"
+      ],
+      "evidence_quote": "How Apple Fits a LLM on Your iPhone With Surgical Efficiency",
+      "quote_verified": true,
+      "covers": [
+        "Model quantization",
+        "On-device deployment",
+        "Efficient inference architecture"
+      ],
+      "confidence": 5,
+      "justification": "The title and context explicitly suggest a deep dive into Apple's technical approach to deploying LLMs on mobile, implying hands-on implementation details on hardware-constrained systems.",
+      "published_at": "2026-11-05T04:30:03-08:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50378587",
+          "score": 9,
+          "shared_at": "2026-11-05T13:01:58+00:00",
+          "author": "lroe",
+          "kind": "story",
+          "author_karma": 11
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "4VmugsE-iP0",
+      "title": "How We Took an AI Agent From 41% to 97% Accurate - Milind Sunil Shah, Brainbase Labs",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-05T09:00:12+00:00"
+        }
+      ],
+      "shared_at": "2026-11-05T09:00:12+00:00",
+      "discovered_at": "2026-11-06T10:27:49.785883+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Products",
+      "signals": [
+        "codebase",
+        "routing",
+        "state"
+      ],
+      "evidence_quote": "From version 1 to version 11, accuracy went from 41% to 97%, cost per source halved from $2 to $1, and run time fell from 129 to 71 minutes, all through instructions, skills and playbooks rather than ",
+      "quote_verified": true,
+      "covers": [
+        "instruction tuning",
+        "agent iteration",
+        "playbook orchestration"
+      ],
+      "confidence": 5,
+      "justification": "The title and context describe a real-world, iterative engineering process for improving agent accuracy through structured design and stateful orchestration, with measurable performance gains across multiple dimensions.",
+      "published_at": "2026-11-05T01:00:12-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "T-42NrYjwxM",
+      "title": "Our Smaller Model Beat Opus on Finance Tasks - Alexander Shevchenko, Ramp",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-04T22:00:34+00:00"
+        }
+      ],
+      "shared_at": "2026-11-04T22:00:34+00:00",
+      "discovered_at": "2026-11-06T10:27:52.774054+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Multi-Agent Systems",
+      "signals": [
+        "codebase",
+        "state",
+        "routing"
+      ],
+      "evidence_quote": "swarms of 10,000 parallel agents that pen-tested Ramp and found seven high-severity vulnerabilities",
+      "quote_verified": true,
+      "covers": [
+        "parallel agent orchestration",
+        "state management in agent swarms",
+        "routing of agent tasks"
+      ],
+      "confidence": 5,
+      "justification": "The title and context describe a production-scale agent system with explicit implementation details on parallel execution, state handling, and task routing, indicating hands-on engineering of agent orchestration.",
+      "published_at": "2026-11-04T14:00:34-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "MpkARD5pq-M",
+      "title": "Robots Will Be Trained on Video Games - Pim de Witte, General Intuition",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-04T20:00:37+00:00"
+        }
+      ],
+      "shared_at": "2026-11-04T20:00:37+00:00",
+      "discovered_at": "2026-11-06T10:27:56.043151+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Harnesses",
+      "signals": [
+        "architecture",
+        "routing",
+        "codebase"
+      ],
+      "evidence_quote": "models take in frames and send out actions continuously, the way a gamer plays",
+      "quote_verified": true,
+      "covers": [
+        "frame-based action modeling",
+        "continuous control pipelines",
+        "multi-robot action routing"
+      ],
+      "confidence": 4,
+      "justification": "The title and context describe a novel architectural approach to AI agents that process video input and generate continuous actions, directly addressing agent design for real-time environments.",
+      "published_at": "2026-11-04T12:00:37-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "-uBABM2AuFg",
+      "title": "Don't Approve the AI Model. Approve the App - Doneyli De Jesus, Langfuse",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-04T10:00:35+00:00"
+        }
+      ],
+      "shared_at": "2026-11-04T10:00:35+00:00",
+      "discovered_at": "2026-11-06T10:27:57.992539+00:00",
+      "category": "Evals & Observability",
+      "subcategory": "Evals & Benchmarks",
+      "signals": [
+        "codebase",
+        "state"
+      ],
+      "evidence_quote": "He walks through building a golden data set, scoring traces across several dimensions",
+      "quote_verified": true,
+      "covers": [
+        "golden dataset creation",
+        "multi-dimensional trace scoring",
+        "evaluation thresholding"
+      ],
+      "confidence": 5,
+      "justification": "The context explicitly describes hands-on implementation of evaluation systems with real-world constraints, including trace scoring and thresholding by domain experts.",
+      "published_at": "2026-11-04T02:00:35-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "0PqGT2L6cZM",
+      "title": "Why Datasite Stopped Building Its Own Parsing - Adit Abraham, Reducto & Raj Bakhru, Datasite",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-04T09:00:20+00:00"
+        }
+      ],
+      "shared_at": "2026-11-04T09:00:20+00:00",
+      "discovered_at": "2026-11-06T10:28:00.341954+00:00",
+      "category": "Retrieval & Memory",
+      "subcategory": "Document Parsing",
+      "signals": [
+        "architecture",
+        "routing",
+        "codebase"
+      ],
+      "evidence_quote": "why parsing billions of pages of deal documents is \"all edge cases\"",
+      "quote_verified": true,
+      "covers": [
+        "Parsing architecture",
+        "Document routing",
+        "Codebase design"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a deep dive into the engineering challenges of parsing complex, real-world documents at scale, with explicit mention of system design decisions and internal evaluation metrics.",
+      "published_at": "2026-11-04T01:00:20-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "5UgnatzpZ9E",
+      "title": "Building the AI Agent Is Easy. Proving It's Safe Isn't - Jonathan Osborne, NatWest",
+      "channel": "AI Engineer",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA",
+          "score": 0,
+          "shared_at": "2026-11-04T08:00:39+00:00"
+        }
+      ],
+      "shared_at": "2026-11-04T08:00:39+00:00",
+      "discovered_at": "2026-11-06T10:28:02.740746+00:00",
+      "category": "Security & Sandboxing",
+      "subcategory": "Guardrails & Validation",
+      "signals": [
+        "routing",
+        "codebase",
+        "state"
+      ],
+      "evidence_quote": "routing funnel that limits what ever reaches a model, why quality is several scores instead of one, human reviews where an 83% pass rate hid a 54-point gap",
+      "quote_verified": true,
+      "covers": [
+        "routing funnel design",
+        "multi-metric quality evaluation",
+        "human-in-the-loop validation"
+      ],
+      "confidence": 5,
+      "justification": "The title and context explicitly describe implementation-level decisions around agent safety, including routing logic, stateful validation, and multi-dimensional quality scoring, indicating hands-on engineering of a production AI agent system.",
+      "published_at": "2026-11-04T00:00:39-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "eMlx5fFNoYc",
+      "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+      "channel": "3Blue1Brown",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50358582",
+      "community_score": 0,
+      "shared_at": "2026-11-03T22:08:23+00:00",
+      "discovered_at": "2026-11-06T10:09:59.652413+00:00",
+      "category": "Models & Foundations",
+      "subcategory": "Transformer Basics",
+      "signals": [
+        "architecture",
+        "codebase"
+      ],
+      "evidence_quote": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+      "quote_verified": true,
+      "covers": [
+        "Transformer architecture",
+        "Attention computation",
+        "Mathematical intuition"
+      ],
+      "confidence": 5,
+      "justification": "The title and context confirm a deep, implementation-focused walkthrough of attention in transformers, consistent with 3Blue1Brown's signature style of visual, code-informed mathematical exposition.",
+      "published_at": "2024-04-07T05:53:54-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50358582",
+          "score": 0,
+          "shared_at": "2026-11-03T22:08:23+00:00",
+          "author": "achandra03",
+          "kind": "comment",
+          "author_karma": 142
+        }
+      ],
+      "trusted_channel": true
+    },
+    {
+      "video_id": "6WM_q193Kls",
+      "title": "Twisting the rules of building software: Bending Spoons (the team behind Evernote)",
+      "channel": "The Pragmatic Engineer",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50331402",
+      "community_score": 0,
+      "shared_at": "2026-11-03T19:55:13+00:00",
+      "discovered_at": "2026-11-06T10:10:02.398491+00:00",
+      "category": "Dev Workflow & Tooling",
+      "subcategory": "AI-Native Tools",
+      "signals": [
+        "routing",
+        "codebase",
+        "architecture"
+      ],
+      "evidence_quote": "Twisting the rules of building software: Bending Spoons (the team behind Evernote)",
+      "quote_verified": true,
+      "covers": [
+        "software architecture",
+        "orchestration patterns",
+        "codebase design"
+      ],
+      "confidence": 4,
+      "justification": "The title and context suggest a deep dive into Bending Spoons' internal engineering practices, with the parent comment explicitly asking about reusable components and their workings, implying hands-on system design.",
+      "published_at": "2024-10-23T08:23:12-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50331402",
+          "score": 0,
+          "shared_at": "2026-11-03T19:55:13+00:00",
+          "author": "keane",
+          "kind": "comment",
+          "author_karma": 1211
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "OrcsMi2-IcM",
+      "title": "NEW DeepSeek Harness -  Super Agent!",
+      "channel": "Sam Witteveen",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+          "score": 0,
+          "shared_at": "2026-11-03T14:30:33+00:00"
+        }
+      ],
+      "shared_at": "2026-11-03T14:30:33+00:00",
+      "discovered_at": "2026-11-06T10:28:08.624828+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Harnesses",
+      "signals": [
+        "codebase",
+        "routing",
+        "architecture"
+      ],
+      "evidence_quote": "I look at the new announcement about the DeepSeek harness and the introduction of their super agent add-on",
+      "quote_verified": true,
+      "covers": [
+        "DeepSeek harness architecture",
+        "super agent routing logic",
+        "codebase walkthrough of prototype"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a hands-on review of a prototype codebase with focus on agent architecture and routing patterns, supported by GitHub links and a live coding channel.",
+      "published_at": "2026-11-03T06:30:33-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "aQvSG8paVjM",
+      "title": "What's in a Token? [Wading Through AI - Episode 11]",
+      "channel": "Molly Rocket",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50341174",
+      "community_score": 0,
+      "shared_at": "2026-11-03T00:35:56+00:00",
+      "discovered_at": "2026-11-06T10:10:05.202180+00:00",
+      "category": "Models & Foundations",
+      "subcategory": "Transformer Basics",
+      "signals": [
+        "architecture",
+        "state",
+        "routing"
+      ],
+      "evidence_quote": "What's in a Token? [Wading Through AI - Episode 11]",
+      "quote_verified": true,
+      "covers": [
+        "Token representation",
+        "Attention dynamics",
+        "State evolution"
+      ],
+      "confidence": 4,
+      "justification": "The title and context suggest a deep dive into the internal mechanics of token processing in LLMs, with explicit references to attention computation and state evolution, indicating hands-on architectural analysis.",
+      "published_at": "2026-10-27T09:27:35-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50341174",
+          "score": 0,
+          "shared_at": "2026-11-03T00:35:56+00:00",
+          "author": "ryanschneider",
+          "kind": "comment",
+          "author_karma": 602
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "vSCYL8ySh9g",
+      "title": "Dory - NVIDIA's Looped Transformer",
+      "channel": "Sam Witteveen",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+          "score": 0,
+          "shared_at": "2026-11-02T13:00:00+00:00"
+        }
+      ],
+      "shared_at": "2026-11-02T13:00:00+00:00",
+      "discovered_at": "2026-11-06T10:28:10.523217+00:00",
+      "category": "Models & Foundations",
+      "subcategory": "Model Architectures",
+      "signals": [
+        "architecture",
+        "state",
+        "routing"
+      ],
+      "evidence_quote": "How a loop transformer works",
+      "quote_verified": true,
+      "covers": [
+        "Looped transformer architecture",
+        "State handling in loops",
+        "KV cache optimization"
+      ],
+      "confidence": 5,
+      "justification": "The title and context explicitly describe a deep technical breakdown of a novel transformer architecture with looped state and KV cache mechanics, indicating hands-on implementation insight.",
+      "published_at": "2026-11-02T05:00:00-08:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "AL-PQuB2wy0",
+      "title": "I Run an AI Civilization in Herdr",
+      "channel": "OPENRIG",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50325662",
+      "community_score": 0,
+      "shared_at": "2026-11-01T14:59:54+00:00",
+      "discovered_at": "2026-11-06T10:10:17.182118+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Multi-Agent Systems",
+      "signals": [
+        "architecture",
+        "routing",
+        "state"
+      ],
+      "evidence_quote": "Multi-agent coordination is an engineering problem characterized by the inevitable emergence of human-like social pathologies - such as bureaucratic inertia.",
+      "quote_verified": true,
+      "covers": [
+        "Agent architecture design",
+        "Message routing patterns",
+        "State management in agent swarms"
+      ],
+      "confidence": 4,
+      "justification": "The context explicitly frames the video as a deep dive into multi-agent systems exhibiting real-world coordination failures, with engineering focus on emergent behaviors like bureaucracy, indicating hands-on implementation of agent state and routing.",
+      "published_at": "2026-09-18T12:06:49-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50325662",
+          "score": 0,
+          "shared_at": "2026-11-01T14:59:54+00:00",
+          "author": "fallinditch",
+          "kind": "comment",
+          "author_karma": 1040
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "f9uAG3AQGWM",
+      "title": "How to Build RAG From Scratch in 50 Lines of Python - Full Tutorial",
+      "channel": "Tech With Tim",
+      "source": "YouTube Search",
+      "source_url": "https://www.youtube.com/watch?v=f9uAG3AQGWM",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "YouTube Search",
+          "url": "https://www.youtube.com/watch?v=f9uAG3AQGWM",
+          "score": 0,
+          "shared_at": "2026-10-30T13:00:35+00:00",
+          "author": null,
+          "kind": "search"
+        }
+      ],
+      "shared_at": "2026-10-30T13:00:35+00:00",
+      "discovered_at": "2026-11-06T20:15:13.041231+00:00",
+      "embeddable": true,
+      "published_at": "2026-10-30T13:00:35Z",
+      "duration_min": 26,
+      "views": 64962,
+      "transcript": "manual",
+      "category": "Retrieval & Memory",
+      "subcategory": "RAG & Retrieval",
+      "signals": [
+        "codebase",
+        "tool-schema",
+        "architecture"
+      ],
+      "evidence_quote": "I'm going to show you how to build a rig system completely from scratch in plain Python and under 50 lines of code.",
+      "quote_verified": true,
+      "covers": [
+        "RAG pipeline architecture",
+        "local embedding with Nomic",
+        "cosine similarity for retrieval"
+      ],
+      "confidence": 5,
+      "justification": "The transcript explicitly describes building a RAG system from scratch in under 50 lines of Python, using local embeddings, document chunking, and cosine similarity—core implementation details that demonstrate hands-on coding and architectural design.",
+      "trusted_channel": false
+    },
+    {
+      "video_id": "1demEePpFXU",
+      "title": "tinyserve 2.0: How Fast Can We Make LLM Inference From Scratch?",
+      "channel": "Priyam Mazumdar",
+      "source": "YouTube Search",
+      "source_url": "https://www.youtube.com/watch?v=1demEePpFXU",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "YouTube Search",
+          "url": "https://www.youtube.com/watch?v=1demEePpFXU",
+          "score": 0,
+          "shared_at": "2026-10-29T18:41:04+00:00",
+          "author": null,
+          "kind": "search"
+        }
+      ],
+      "shared_at": "2026-10-29T18:41:04+00:00",
+      "discovered_at": "2026-11-06T20:15:34.541720+00:00",
+      "embeddable": true,
+      "published_at": "2026-10-29T18:41:04Z",
+      "duration_min": 360,
+      "views": 4888,
+      "transcript": "auto",
+      "category": "Inference & Serving",
+      "subcategory": "Efficient Inference",
+      "signals": [
+        "architecture",
+        "deployment",
+        "codebase"
+      ],
+      "evidence_quote": "We'll fuse operations across the Transformer, implement Paged Attention with Split-KV Decoding, and tackle the challenges of CUDA Graphs with mixed prefills.",
+      "quote_verified": true,
+      "covers": [
+        "Paged Attention with Split-KV Decoding",
+        "Triton-optimized kernels",
+        "CUDA Graphs for mixed prefills"
+      ],
+      "confidence": 5,
+      "justification": "The video's description and transcript explicitly detail hands-on implementation of advanced inference optimizations, including Triton kernels, Paged Attention, and CUDA Graphs, with measurable performance gains and code references.",
+      "trusted_channel": false
+    },
+    {
+      "video_id": "oe-2MowdsSs",
+      "title": "Live Speech-to-Text on a ~$5 Microcontroller | ESP32-P4X",
+      "channel": "boumedine billal",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50253150",
+      "community_score": 0,
+      "shared_at": "2026-10-27T00:28:48+00:00",
+      "discovered_at": "2026-11-06T10:10:07.792859+00:00",
+      "category": "Inference & Serving",
+      "subcategory": "Edge & On-Device",
+      "signals": [
+        "deployment",
+        "codebase",
+        "tool-schema"
+      ],
+      "evidence_quote": "You can flash it from the browser; the weights are on Hugging Face.",
+      "quote_verified": true,
+      "covers": [
+        "ESP32-P4 deployment",
+        "on-device speech processing",
+        "Hugging Face model integration"
+      ],
+      "confidence": 4,
+      "justification": "The video demonstrates real-time inference of a speech-to-text model on a low-resource microcontroller, with explicit details on deployment via browser flashing and model weights hosted on Hugging Face, indicating hands-on implementation of edge inference.",
+      "published_at": "2026-10-25T23:41:53-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50253150",
+          "score": 0,
+          "shared_at": "2026-10-27T00:28:48+00:00",
+          "author": "boumedinebillal",
+          "kind": "comment",
+          "author_karma": 3
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "Atdy6D15iuM",
+      "title": "Moldable LLM Chats in Glamorous Toolkit - Andrei Chis",
+      "channel": "esugboard",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50241925",
+      "community_score": 0,
+      "shared_at": "2026-10-26T23:12:59+00:00",
+      "discovered_at": "2026-11-06T10:10:10.595510+00:00",
+      "category": "Dev Workflow & Tooling",
+      "subcategory": "AI-Native Tools",
+      "signals": [
+        "codebase",
+        "architecture",
+        "routing"
+      ],
+      "evidence_quote": "Moldable LLM Chats in Glamorous Toolkit",
+      "quote_verified": true,
+      "covers": [
+        "LLM chat architecture",
+        "dynamic UI integration",
+        "orchestration patterns"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate hands-on implementation of moldable LLM interactions within a live coding environment, with explicit focus on dynamic, interactive UIs and agent-assisted development in a tooling context.",
+      "published_at": "2026-08-19T23:36:16-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50241925",
+          "score": 0,
+          "shared_at": "2026-10-26T23:12:59+00:00",
+          "author": "slim",
+          "kind": "comment",
+          "author_karma": 3195
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "MccJdr61xnc",
+      "title": "Geoffrey Litt: Dynamic Documents as Personal Software",
+      "channel": "Recurse Center",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50241925",
+      "community_score": 0,
+      "shared_at": "2026-10-26T15:46:05+00:00",
+      "discovered_at": "2026-11-06T10:10:24.306009+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Memory & State",
+      "signals": [
+        "codebase",
+        "routing",
+        "state"
+      ],
+      "evidence_quote": "Dynamic Documents as Personal Software",
+      "quote_verified": true,
+      "covers": [
+        "Dynamic document architecture",
+        "Agent-driven state management",
+        "Routing logic in live coding environments"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a deep dive into live, interactive document systems with agent integration, supported by references to codebase-level manipulation and agent routing in Smalltalk/Pharo environments.",
+      "published_at": "2026-09-04T11:32:45-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50241925",
+          "score": 0,
+          "shared_at": "2026-10-26T15:46:05+00:00",
+          "author": "whacked_new",
+          "kind": "comment",
+          "author_karma": 1729
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "VhrtlfTyqp4",
+      "title": "100% Open Image Model Lets You Place Text With JSON",
+      "channel": "Sam Witteveen",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+          "score": 0,
+          "shared_at": "2026-10-26T13:30:16+00:00"
+        }
+      ],
+      "shared_at": "2026-10-26T13:30:16+00:00",
+      "discovered_at": "2026-11-06T10:28:15.285453+00:00",
+      "category": "Models & Foundations",
+      "subcategory": "Model Architectures",
+      "signals": [
+        "architecture",
+        "codebase"
+      ],
+      "evidence_quote": "A 5B diffusion transformer, which has an Apache 2 license, allowing you to create images and do whatever you want with it",
+      "quote_verified": true,
+      "covers": [
+        "Model architecture",
+        "JSON-based image layout",
+        "Hugging Face deployment"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a hands-on exploration of a specific open diffusion model with JSON input handling, suggesting implementation-level discussion of model use and integration.",
+      "published_at": "2026-10-26T06:30:16-07:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "vDyxCHl-p8s",
+      "title": "DevRel @ Fireworks Webinar: Fine-Tuning 101",
+      "channel": "Fireworks",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50224463",
+      "community_score": 0,
+      "shared_at": "2026-10-24T21:32:09+00:00",
+      "discovered_at": "2026-11-06T10:10:13.533303+00:00",
+      "category": "Training & Fine-tuning",
+      "subcategory": "Fine-Tuning",
+      "signals": [
+        "codebase",
+        "tool-schema",
+        "deployment"
+      ],
+      "evidence_quote": "Fine-Tuning 101",
+      "quote_verified": true,
+      "covers": [
+        "Fine-tuning LLMs for receipt transcription",
+        "Tool schema for OCR tasks",
+        "Deployment of fine-tuned models"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a hands-on tutorial on fine-tuning an LLM for a specific real-world OCR task, with explicit mention of code and deployment, suggesting implementation depth.",
+      "published_at": "2026-08-03T11:42:46-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50224463",
+          "score": 0,
+          "shared_at": "2026-10-24T21:32:09+00:00",
+          "author": "verdverm",
+          "kind": "comment",
+          "author_karma": 11124
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "ZVyGvo7krhk",
+      "title": "How To Build Agents That Don't Hack Foreign Governments (Or Leak Company Secrets!) (Part 1 of 2)",
+      "channel": "Emaline Gayhart",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50208792",
+      "community_score": 1,
+      "shared_at": "2026-10-23T13:38:05+00:00",
+      "discovered_at": "2026-11-06T10:09:45.299411+00:00",
+      "category": "Security & Sandboxing",
+      "subcategory": "Guardrails & Validation",
+      "signals": [
+        "architecture",
+        "state",
+        "routing"
+      ],
+      "evidence_quote": "How To Build Agents That Don't Hack Foreign Governments (Or Leak Company Secrets!)",
+      "quote_verified": true,
+      "covers": [
+        "Agent safety design",
+        "State management for bounded behavior",
+        "Routing to prevent unauthorized actions"
+      ],
+      "confidence": 4,
+      "justification": "The title implies a deep dive into architectural patterns for constraining agent behavior, with explicit focus on state and routing as mechanisms to prevent malicious or unintended actions, indicating hands-on implementation of safety-critical agent systems.",
+      "published_at": "2026-10-22T10:45:11-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50208792",
+          "score": 1,
+          "shared_at": "2026-10-23T13:38:05+00:00",
+          "author": "emzra",
+          "kind": "story",
+          "author_karma": 1
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "BsfjQDSeTwI",
+      "title": "Flint - The First RSI Coding Model?",
+      "channel": "Sam Witteveen",
+      "source": "Watchlist",
+      "source_url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+      "community_score": 0,
+      "found_on": [
+        {
+          "source": "Watchlist",
+          "url": "https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ",
+          "score": 0,
+          "shared_at": "2026-10-23T13:00:20+00:00"
+        }
+      ],
+      "shared_at": "2026-10-23T13:00:20+00:00",
+      "discovered_at": "2026-11-06T10:28:17.510086+00:00",
+      "category": "Models & Foundations",
+      "subcategory": "Model Architectures",
+      "signals": [
+        "architecture",
+        "codebase"
+      ],
+      "evidence_quote": "first public attempt at building a very fast mixture-of-experts model specifically for taking on the Qwen3.8 and similar coding models",
+      "quote_verified": true,
+      "covers": [
+        "MoE model design",
+        "RSI system integration",
+        "coding-focused model training"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a deep technical focus on a novel Mixture-of-Experts architecture built for coding, with explicit mention of implementation details like RSI and model variants, signaling hands-on engineering insight.",
+      "published_at": "2026-10-23T06:00:20-07:00",
+      "embeddable": true,
+      "trusted_channel": true
+    },
+    {
+      "video_id": "_AANsj5Jz1M",
+      "title": "AntFabric by GeekyAnts at TC Disrupt 2026 SF: Sanket Sahu on AI Workspaces",
+      "channel": "GeekyAnts",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50207473",
+      "community_score": 2,
+      "shared_at": "2026-10-23T11:47:31+00:00",
+      "discovered_at": "2026-11-06T10:09:37.010579+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Products",
+      "signals": [
+        "architecture",
+        "routing",
+        "codebase"
+      ],
+      "evidence_quote": "AntFabric: Connecting Business Systems, Knowledge, and AI Agents",
+      "quote_verified": true,
+      "covers": [
+        "AI agent orchestration",
+        "system integration",
+        "workspace architecture"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a deep dive into a system that connects agents, business systems, and knowledge, implying architectural design and routing patterns in a real codebase.",
+      "published_at": "2026-10-15T07:17:35-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50207473",
+          "score": 2,
+          "shared_at": "2026-10-23T11:47:31+00:00",
+          "author": "Harish_0089",
+          "kind": "story",
+          "author_karma": 7
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "WAkic4Z1ERs",
+      "title": "Context Nest for Governed Agent Collaboration Demo",
+      "channel": "PromptOwl Playhouse",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50198106",
+      "community_score": 1,
+      "shared_at": "2026-10-22T17:01:54+00:00",
+      "discovered_at": "2026-11-06T10:09:48.753320+00:00",
+      "category": "Agents & Orchestration",
+      "subcategory": "Agent Memory & State",
+      "signals": [
+        "architecture",
+        "state",
+        "routing"
+      ],
+      "evidence_quote": "Context Nest for Governed Agent Collaboration Demo",
+      "quote_verified": true,
+      "covers": [
+        "Agent state management",
+        "Shared memory coordination",
+        "Collaborative routing"
+      ],
+      "confidence": 4,
+      "justification": "The title and context suggest a live demonstration of structured agent collaboration with governed state and context sharing, indicating hands-on implementation of orchestration patterns.",
+      "published_at": "2026-10-21T16:46:38-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50198106",
+          "score": 1,
+          "shared_at": "2026-10-22T17:01:54+00:00",
+          "author": "sparkystacey",
+          "kind": "story",
+          "author_karma": 32
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "cNm4zyUtWj0",
+      "title": "RuneScape Bench: MMOs for Agents | Max Bittker",
+      "channel": "Recurse Center",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50136126",
+      "community_score": 250,
+      "shared_at": "2026-10-17T23:24:05+00:00",
+      "discovered_at": "2026-11-06T10:09:31.849178+00:00",
+      "category": "Evals & Observability",
+      "subcategory": "Evals & Benchmarks",
+      "signals": [
+        "codebase",
+        "routing",
+        "state"
+      ],
+      "evidence_quote": "RuneScape Bench: MMOs for Agents",
+      "quote_verified": true,
+      "covers": [
+        "agent performance evaluation",
+        "state management in MMOs",
+        "routing in multi-agent systems"
+      ],
+      "confidence": 4,
+      "justification": "The title and context suggest a technical benchmarking effort focused on agent behavior in a complex, persistent environment, implying hands-on implementation of agent state and routing patterns.",
+      "published_at": "2026-10-17T09:40:31-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50136126",
+          "score": 250,
+          "shared_at": "2026-10-17T23:24:05+00:00",
+          "author": "evakhoury",
+          "kind": "story",
+          "author_karma": 3440
+        }
+      ],
+      "trusted_channel": false
+    },
+    {
+      "video_id": "4nQGiRCUlDg",
+      "title": "Yes, AI Edits Your Video Now BUT... | DaVinci Resolve MCP VS Cloud Based invideo Editor Workflows",
+      "channel": "Joris Hermans",
+      "source": "Hacker News",
+      "source_url": "https://news.ycombinator.com/item?id=50135051",
+      "community_score": 2,
+      "shared_at": "2026-10-17T20:56:19+00:00",
+      "discovered_at": "2026-11-06T10:09:39.013492+00:00",
+      "category": "Protocols & Tool Use",
+      "subcategory": "MCP & Tool Calling",
+      "signals": [
+        "routing",
+        "codebase",
+        "tool-schema"
+      ],
+      "evidence_quote": "DaVinci Resolve MCP VS Cloud Based invideo Editor Workflows",
+      "quote_verified": true,
+      "covers": [
+        "MCP connector integration",
+        "AI editing workflows",
+        "cloud vs local processing"
+      ],
+      "confidence": 4,
+      "justification": "The title and context indicate a hands-on comparison of AI-driven video editing using the MCP protocol in DaVinci Resolve, implying implementation-level exploration of tool routing and schema design.",
+      "published_at": "2026-10-17T08:59:06-07:00",
+      "embeddable": true,
+      "found_on": [
+        {
+          "source": "Hacker News",
+          "url": "https://news.ycombinator.com/item?id=50135051",
+          "score": 2,
+          "shared_at": "2026-10-17T20:56:19+00:00",
+          "author": "fallinditch",
+          "kind": "story",
+          "author_karma": 1040
+        }
+      ],
+      "trusted_channel": false
+    }
+  ]
+}
