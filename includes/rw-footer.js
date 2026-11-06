@@ -124,7 +124,7 @@
           { label: 'Unslop',           url: '/unslop.html' },
           { label: 'Portfolio',        url: '/portfolio/index.html' },
           { label: 'Search',           url: '/search/' },
-          { label: 'GitHub',           url: 'https://github.com/Schikkeg', external: true },
+          { label: 'GitHub',           url: 'https://github.com/researchsite', external: true },
           { label: 'Disclaimer',       url: '/disclaimer.html' }
         ]
       }
@@ -132,7 +132,7 @@
     social: [
       { label: 'LinkedIn', url: 'https://www.linkedin.com/in/shamhc/', icon: 'linkedin' },
       { label: 'X / Twitter', url: 'https://x.com/intent/user?screen_name=shamhcs', icon: 'twitter' },
-      { label: 'GitHub', url: 'https://github.com/Schikkeg', icon: 'github' }
+      { label: 'GitHub', url: 'https://github.com/researchsite', icon: 'github' }
     ],
     copyright: `© ${new Date().getFullYear()} RawWeights. All rights reserved.`
   };
