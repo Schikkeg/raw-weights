@@ -121,6 +121,7 @@
         heading: 'Connect',
         links: [
           { label: 'Blog',             url: '/blog.html' },
+          { label: 'Unslop',           url: '/unslop.html' },
           { label: 'Portfolio',        url: '/portfolio/index.html' },
           { label: 'Search',           url: '/search/' },
           { label: 'GitHub',           url: 'https://github.com/Schikkeg', external: true },

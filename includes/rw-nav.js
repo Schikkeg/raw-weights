@@ -109,6 +109,7 @@
           {
             heading: 'Recent Builds',
             items: [
+              { label: 'Unslop',          url: '/usecase/unslop.html',                desc: 'Daily AI video feed that shows its evidence', badge: 'New' },
               { label: 'Debrief',          url: '/usecase/debrief.html',               desc: 'Conference memory & networking intelligence', badge: 'New' },
               { label: 'ClaimLens',        url: '/usecase/claimlens.html',             desc: '3-agent fact-checker pipeline' },
               { label: 'TrustLens',        url: '/usecase/trustlens.html',             desc: 'AI vendor trust scorer' },
@@ -138,6 +139,7 @@
           }
         ]
       },
+      { id: 'unslop', label: 'Unslop', url: '/unslop.html', badge: 'New' },
       { id: 'blog', label: 'Blog', url: '/blog.html' }
     ],
     cta: { label: 'How It Started', url: '/how-it-started.html' }
@@ -253,7 +255,8 @@
         </div>`;
       }
       const active = isActive(item.url) ? ' active' : '';
-      return `<a class="rw-nav-link${active}" href="${u(item.url)}">${item.label}</a>`;
+      const topBadge = item.badge ? `<span class="rw-nav-badge">${item.badge}</span>` : '';
+      return `<a class="rw-nav-link${active}" href="${u(item.url)}">${item.label}${topBadge}</a>`;
     }).join('');
   }
 
@@ -277,7 +280,7 @@
           html += `<a class="rw-mobile-link" href="${u(sub.url)}">${sub.label}</a>`;
         });
       } else {
-        html += `<a class="rw-mobile-link" href="${u(item.url)}">${item.label}</a>`;
+        html += `<a class="rw-mobile-link" href="${u(item.url)}">${item.label}${item.badge ? ` <span class="rw-nav-badge">${item.badge}</span>` : ''}</a>`;
       }
       html += `<div class="rw-mobile-divider"></div>`;
     });

@@ -16,13 +16,22 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: "Unslop: I Got Tired of AI Video Slop, So I Built a Daily Feed",
+        excerpt: "A rolling 20-day feed of hands-on AI engineering videos that shows its evidence for every pick. Why I built it, how it differs from Karpathy's HackerTube, a playground to run the four-gate filter yourself, and what broke.",
+        date: "Nov 6, 2026",
+        image: "./images/unslop/og.jpg",
+        type: "Usecase",
+        link: "https://rawweights.com/usecase/unslop.html",
+        linkedin: null
+      },
+      {
         title: "Your Website Can Now Talk Back to AI: A Beginner's Guide to WebMCP",
         excerpt: "WebMCP lets your website register tools an AI agent can call — search, navigation, deep-links. What it is, how it differs from MCP and Claude, and everything we learned wiring it into a static site.",
         date: "Oct 30, 2026",
         image: "./images/webmcp-launch-og.jpg",
         type: "Blog",
         link: "https://rawweights.com/blog/webmcp-ai-native-site.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_adalagent-ugcPost-7522201045612306432-fk-J/"
       },
       {
         title: "Debrief — Conference Memory & Networking Intelligence ",
