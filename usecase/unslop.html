@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unslop: I Got Tired of AI Video Slop, So I Built a Daily Feed | RawWeights</title>
+  <meta name="description" content="AI moves weekly and most AI video is noise. Why I built Unslop, a daily feed of hands-on AI engineering videos that shows its evidence, how it differs from Karpathy's HackerTube, and what broke along the way.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/usecase/unslop.html">
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/usecase/unslop.html">
+  <meta property="og:title" content="Unslop: I Got Tired of AI Video Slop, So I Built a Daily Feed">
+  <meta property="og:description" content="A video feed that shows its evidence. The idea, the four-gate filter, an interactive playground, and the bugs.">
+  <meta property="og:image" content="https://rawweights.com/images/unslop/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://rawweights.com/images/unslop/og.jpg">
+
+  <!-- Theme: runs before render to prevent flash -->
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('rw-no-transition');setTimeout(function(){document.documentElement.classList.remove('rw-no-transition');},50);})();</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+  <script type="text/javascript" async src="../includes/analytics.js"></script>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BlogPosting","headline":"Unslop: I Got Tired of AI Video Slop, So I Built a Daily Feed",
+   "description":"Why I built Unslop, a feed of hands-on AI engineering videos that shows its evidence for every pick.",
+   "image":"https://rawweights.com/images/unslop/og.jpg","datePublished":"2026-11-06","author":{"@type":"Person","name":"Sham Sundar HC"},
+   "publisher":{"@type":"Organization","name":"RawWeights","url":"https://rawweights.com/"},
+   "mainEntityOfPage":"https://rawweights.com/usecase/unslop.html"}
+  </script>
+
+  <style>
+    html,body{max-width:100%;overflow-x:clip}*{overflow-wrap:anywhere}
+
+    /* ── Hero (dark in both themes) ───────────────── */
+    .ub-hero{background:linear-gradient(160deg,#0a0e1a 0%,#160e28 45%,#0a1530 100%);padding:4rem 1.5rem 3.5rem;position:relative;overflow:hidden}
+    .ub-hero::before{content:'';position:absolute;top:-30%;right:-8%;width:520px;height:520px;background:radial-gradient(circle,rgba(249,115,22,.2),transparent 65%);pointer-events:none}
+    .ub-hero::after{content:'';position:absolute;bottom:-25%;left:0;width:420px;height:420px;background:radial-gradient(circle,rgba(99,102,241,.16),transparent 65%);pointer-events:none}
+    .ub-hero-inner{max-width:1100px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center;position:relative}
+    .ub-label{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;font-family:var(--rw-font-mono);text-transform:uppercase;letter-spacing:.1em;color:#fb923c;background:rgba(249,115,22,.14);border:1px solid rgba(249,115,22,.32);border-radius:99px;padding:.28rem .85rem;margin-bottom:1.1rem}
+    .ub-pulse{width:7px;height:7px;background:#fb923c;border-radius:50%;box-shadow:0 0 10px #fb923c;animation:ub-pulse 2s infinite}
+    @keyframes ub-pulse{50%{opacity:.35;transform:scale(.7)}}
+    .ub-hero h1{font-family:var(--rw-font-display);font-size:clamp(1.8rem,3.6vw,3.05rem);font-weight:800;letter-spacing:-.03em;line-height:1.08;text-wrap:balance;margin-bottom:.8rem;color:#f0f4ff}
+    .ub-hero h1 em{font-style:normal;color:#fb923c}
+    .ub-hero p{font-size:.98rem;color:rgba(240,244,255,.74);line-height:1.65;margin-bottom:.5rem}
+    .ub-hero-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem}
+    .ub-btn{font-family:var(--rw-font-display);font-weight:700;font-size:.85rem;padding:.6rem 1.15rem;border-radius:99px;text-decoration:none;transition:all .15s}
+    .ub-btn.pri{background:#f97316;color:#fff}.ub-btn.pri:hover{background:#ea580c}
+    .ub-btn.ghost{border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85)}.ub-btn.ghost:hover{border-color:#fb923c;color:#fb923c}
+    .ub-hero-meta{font-size:.75rem;color:rgba(240,244,255,.45);margin-top:1rem}
+    .ub-vid-wrap{border-radius:14px;overflow:hidden;border:1.5px solid rgba(249,115,22,.3);box-shadow:0 0 40px rgba(249,115,22,.16),0 8px 32px rgba(0,0,0,.5);background:#08071a;aspect-ratio:16/9}
+    .ub-vid{width:100%;height:100%;display:block;object-fit:cover}
+
+    /* ── Layout ───────────────────────────────────── */
+    .ub-layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:2.5rem;max-width:1100px;margin:3rem auto;padding:0 1.5rem;align-items:start}
+    .ub-layout>*{min-width:0}
+    .ub-sidebar{position:sticky;top:calc(var(--rw-nav-height,64px) + 1.5rem);align-self:start}
+    .ub-toc-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--rw-text-subtle);margin-bottom:.7rem}
+    .ub-toc{list-style:none;padding:0;display:flex;flex-direction:column;gap:.1rem}
+    .ub-toc a{font-size:.81rem;color:var(--rw-text-muted);text-decoration:none;padding:.28rem .6rem;border-left:2px solid transparent;display:block;border-radius:0 4px 4px 0;transition:color .15s,border-color .15s,background .15s}
+    .ub-toc a:hover,.ub-toc a.active{color:#f97316;border-left-color:#f97316;background:rgba(249,115,22,.08)}
+    .ub-sec{margin-bottom:3.6rem;scroll-margin-top:calc(var(--rw-nav-height,64px) + 1rem)}
+    .ub-tag{font-size:.64rem;font-family:var(--rw-font-mono);text-transform:uppercase;letter-spacing:.14em;color:#f97316;margin-bottom:.4rem}
+    .ub-sec h2{font-family:var(--rw-font-display);font-size:clamp(1.3rem,3vw,1.85rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;text-wrap:balance;margin-bottom:.5rem;color:var(--rw-text)}
+    .ub-sub{font-size:.95rem;color:var(--rw-text-muted);max-width:640px;margin-bottom:1.3rem;line-height:1.65}
+    .ub-sec p{font-size:.93rem;color:var(--rw-text-muted);line-height:1.75;margin-bottom:.9rem;max-width:720px}
+    .ub-sec p strong,.ub-sec li strong{color:var(--rw-text)}
+    .ub-sec code{font-family:var(--rw-font-mono);font-size:.8rem;color:#f97316;background:rgba(249,115,22,.09);border-radius:4px;padding:.05em .35em}
+    .ub-sec a{color:#f97316}
+
+    /* ── Story: before / after ───────────────────── */
+    .ub-vs{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
+    .ub-box{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:12px;padding:1rem 1.1rem}
+    .ub-box.bad{border-color:rgba(248,113,113,.3)}.ub-box.good{border-color:rgba(52,211,153,.3)}
+    .ub-box h4{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem}
+    .ub-box.bad h4{color:#f87171}.ub-box.good h4{color:#34d399}
+    .ub-box ul{margin:0;padding-left:1.1rem;font-size:.85rem;color:var(--rw-text-muted);line-height:1.7}
+    .ub-quote{border-left:3px solid #f97316;background:rgba(249,115,22,.06);padding:.7rem 1rem;border-radius:0 8px 8px 0;font-style:italic;color:var(--rw-text-muted);font-size:.92rem;line-height:1.65;max-width:720px;margin:1rem 0}
+
+    /* ── Compare + daily ────────────────────────── */
+    .ub-cmp{width:100%;border-collapse:separate;border-spacing:0;margin:1.2rem 0;font-size:.82rem;background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:12px;overflow:hidden}
+    .ub-cmp th,.ub-cmp td{padding:.65rem .85rem;text-align:left;vertical-align:top;line-height:1.5;border-bottom:1px solid var(--rw-border);color:var(--rw-text-muted)}
+    .ub-cmp tr:last-child td{border-bottom:0}
+    .ub-cmp thead th{font-family:var(--rw-font-display);font-size:.78rem;font-weight:800;color:var(--rw-text);background:var(--rw-bg-subtle)}
+    .ub-cmp thead th:last-child{color:#f97316}
+    .ub-cmp td:first-child{font-weight:700;color:var(--rw-text);width:20%}
+    .ub-cmp td:last-child{background:rgba(249,115,22,.05);color:var(--rw-text)}
+    .ub-common{display:flex;flex-wrap:wrap;gap:.45rem;margin:.6rem 0 1.2rem}
+    .ub-common span{font-size:.78rem;font-weight:600;padding:.3rem .75rem;border-radius:99px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--rw-text)}
+    .ub-note2{font-size:.8rem;color:var(--rw-text-subtle);line-height:1.6;max-width:720px}
+    .ub-note2 a{color:#f97316}
+    .ub-days{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin:1.2rem 0}
+    .ub-day{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:12px;padding:.95rem 1rem;position:relative}
+    .ub-day b{display:flex;width:26px;height:26px;border-radius:50%;background:#f97316;color:#fff;align-items:center;justify-content:center;font-size:.75rem;margin-bottom:.5rem;font-family:var(--rw-font-display)}
+    .ub-day h4{font-family:var(--rw-font-display);font-size:.9rem;font-weight:700;color:var(--rw-text);margin-bottom:.25rem}
+    .ub-day p{font-size:.78rem;line-height:1.55;margin:0;color:var(--rw-text-muted)}
+
+    /* ── Funnel ──────────────────────────────────── */
+    .ub-funnel{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:14px;padding:1.2rem 1.3rem;margin:1.2rem 0}
+    .ub-funnel-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+    .ub-funnel-head b{font-family:var(--rw-font-display);font-size:1.6rem;font-weight:800;color:#f97316}
+    .ub-funnel-head span{font-size:.78rem;color:var(--rw-text-subtle)}
+    .ub-frow{display:grid;grid-template-columns:130px 1fr 44px;gap:.7rem;align-items:center;font-size:.8rem;color:var(--rw-text-muted);margin-bottom:.45rem}
+    .ub-fbar{height:10px;border-radius:99px;background:var(--rw-border);overflow:hidden}
+    .ub-fbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#f97316,#6366f1);width:0;transition:width .9s ease}
+    .ub-frow.drop .ub-fbar i{background:var(--rw-border-strong)}
+    .ub-frow b{text-align:right;color:var(--rw-text);font-variant-numeric:tabular-nums}
+
+    /* ── Screenshots ─────────────────────────────── */
+    .ub-fig{margin:1.2rem 0}
+    .ub-fig img{width:100%;height:auto;display:block;border-radius:12px;border:1.5px solid var(--rw-border);box-shadow:0 8px 28px rgba(0,0,0,.14)}
+    .ub-fig figcaption{font-size:.78rem;color:var(--rw-text-subtle);margin-top:.5rem;line-height:1.5}
+    .ub-figs{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
+    .ub-feats{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.2rem 0}
+    .ub-feat{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:12px;padding:.95rem 1.05rem}
+    .ub-feat h4{font-family:var(--rw-font-display);font-size:.92rem;font-weight:700;color:var(--rw-text);margin-bottom:.25rem}
+    .ub-feat p{font-size:.8rem;line-height:1.55;margin:0;color:var(--rw-text-muted)}
+
+    /* ── Pipeline ────────────────────────────────── */
+    .ub-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin:1.2rem 0}
+    .ub-node{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:12px;padding:.8rem .85rem;position:relative}
+    .ub-node.a{border-color:rgba(249,115,22,.4)}.ub-node.b{border-color:rgba(99,102,241,.4)}.ub-node.c{border-color:rgba(52,211,153,.4)}
+    .ub-node small{display:block;font-family:var(--rw-font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--rw-text-subtle);margin-bottom:.25rem}
+    .ub-node h4{font-size:.85rem;font-weight:700;margin-bottom:.25rem;color:var(--rw-text)}
+    .ub-node p{font-size:.74rem;line-height:1.5;margin:0;color:var(--rw-text-muted)}
+    .ub-split{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
+    .ub-files{list-style:none;margin:0;padding:0;font-size:.8rem;line-height:1.55;color:var(--rw-text-muted)}
+    .ub-files li{padding:.3rem 0;border-bottom:1px dashed var(--rw-border)}
+    .ub-files li:last-child{border:0}
+    .ub-files code{font-size:.74rem}
+
+    /* ── Playground ──────────────────────────────── */
+    .ub-pg{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:14px;overflow:hidden}
+    .ub-pg-head{padding:.7rem 1rem;border-bottom:1px solid var(--rw-border);display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap}
+    .ub-pg-head h4{font-family:var(--rw-font-display);font-size:.9rem;font-weight:700;color:var(--rw-text)}
+    .ub-pg-head span{font-size:.72rem;color:var(--rw-text-subtle)}
+    .ub-pg-grid{display:grid;grid-template-columns:260px 1fr}
+    .ub-picks{padding:.8rem;border-right:1px solid var(--rw-border);display:flex;flex-direction:column;gap:.35rem;background:var(--rw-bg-alt)}
+    .ub-picks h5{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--rw-text-subtle);margin:.5rem 0 .15rem}
+    .ub-picks h5:first-child{margin-top:0}
+    .ub-pick{text-align:left;font-family:inherit;font-size:.78rem;line-height:1.35;padding:.5rem .65rem;border-radius:8px;border:1.5px solid var(--rw-border);background:var(--rw-card);color:var(--rw-text-muted);cursor:pointer;transition:all .15s}
+    .ub-pick:hover,.ub-pick.on{border-color:#f97316;color:var(--rw-text);background:rgba(249,115,22,.07)}
+    .ub-stage{padding:1rem 1.1rem;min-height:420px}
+    .ub-saw{background:var(--rw-bg-subtle);border:1px solid var(--rw-border);border-radius:10px;padding:.7rem .85rem;margin-bottom:.9rem;font-size:.78rem;line-height:1.55;color:var(--rw-text-muted)}
+    .ub-saw b{color:var(--rw-text)}
+    .ub-saw-t{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--rw-text-subtle);margin-bottom:.35rem}
+    .ub-gates{display:flex;flex-direction:column;gap:.4rem}
+    .ub-gate{display:grid;grid-template-columns:28px 1fr;gap:.65rem;align-items:start;padding:.55rem .7rem;border:1.5px solid var(--rw-border);border-radius:10px;opacity:.35;transition:opacity .3s,border-color .3s,background .3s}
+    .ub-gate.show{opacity:1}
+    .ub-gate.pass{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.05)}
+    .ub-gate.fail{border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.07)}
+    .ub-gate.skip{opacity:.4;border-style:dashed}
+    .ub-ico{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;background:var(--rw-bg-subtle);color:var(--rw-text-subtle)}
+    .ub-gate.pass .ub-ico{background:rgba(52,211,153,.18);color:#34d399}
+    .ub-gate.fail .ub-ico{background:rgba(248,113,113,.2);color:#f87171}
+    .ub-gate h6{font-size:.8rem;font-weight:700;color:var(--rw-text);margin:0 0 .1rem;font-family:var(--rw-font-display)}
+    .ub-gate p{font-size:.75rem;line-height:1.5;margin:0;color:var(--rw-text-muted)}
+    .ub-verdict{margin-top:.9rem;border-radius:10px;padding:.8rem .95rem;font-size:.82rem;line-height:1.55;display:none}
+    .ub-verdict.show{display:block}
+    .ub-verdict.no{background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.35);color:var(--rw-text)}
+    .ub-verdict.yes{background:rgba(52,211,153,.08);border:1.5px solid rgba(52,211,153,.35);color:var(--rw-text)}
+    .ub-verdict strong{display:block;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;margin-bottom:.25rem}
+    .ub-verdict.no strong{color:#f87171}.ub-verdict.yes strong{color:#34d399}
+    .ub-chipline{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.35rem}
+    .ub-chip{font-size:.68rem;font-weight:700;border-radius:99px;padding:.12rem .55rem;background:rgba(34,197,94,.13);color:#15803d}
+    [data-theme="dark"] .ub-chip{color:#4ade80}
+    .ub-dots{letter-spacing:2px;color:#f97316}.ub-dots .off{color:var(--rw-border-strong)}
+    .ub-replay{font-family:inherit;font-size:.74rem;font-weight:700;color:#f97316;background:none;border:0;cursor:pointer;padding:0}
+    .ub-note{font-size:.72rem;color:var(--rw-text-subtle);margin-top:.7rem;line-height:1.5}
+
+    /* filter lens */
+    .ub-lens{display:grid;grid-template-columns:260px 1fr}
+    .ub-ctrl{padding:.8rem;border-right:1px solid var(--rw-border);background:var(--rw-bg-alt);display:flex;flex-direction:column;gap:.25rem}
+    .ub-ctrl h5{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--rw-text-subtle);margin:.6rem 0 .2rem}
+    .ub-ctrl h5:first-child{margin-top:0}
+    .ub-opt{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--rw-text-muted);cursor:pointer;padding:.12rem 0}
+    .ub-opt input{accent-color:#f97316}
+    .ub-rule{font-size:.74rem;line-height:1.55;color:var(--rw-text-muted);background:var(--rw-card);border:1px dashed var(--rw-border-strong);border-radius:8px;padding:.5rem .6rem;margin-top:.6rem}
+    .ub-list{padding:.8rem 1rem;max-height:430px;overflow-y:auto}
+    .ub-count{font-size:.78rem;color:var(--rw-text-subtle);margin-bottom:.6rem}
+    .ub-count b{color:#f97316}
+    .ub-row{display:grid;grid-template-columns:1fr auto;gap:.6rem;padding:.4rem .5rem;border-radius:8px;border:1px solid transparent;font-size:.78rem;color:var(--rw-text-muted);line-height:1.35;transition:opacity .2s}
+    .ub-row small{display:block;font-size:.68rem;color:var(--rw-text-subtle)}
+    .ub-row.out{opacity:.22}
+    .ub-row.in{background:rgba(249,115,22,.06);border-color:rgba(249,115,22,.25);color:var(--rw-text)}
+    .ub-row .badge{font-size:.62rem;font-weight:700;color:var(--rw-text-subtle);white-space:nowrap}
+
+    /* learnings */
+    .ub-learns{display:flex;flex-direction:column;gap:.85rem}
+    .ub-lcard{background:var(--rw-card);border:1.5px solid var(--rw-border);border-radius:10px;padding:1rem 1.15rem 1rem 1.4rem;position:relative;overflow:hidden}
+    .ub-lcard::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:#f97316}
+    .ub-lcard h4{font-family:var(--rw-font-display);font-size:.95rem;font-weight:700;margin-bottom:.25rem;color:var(--rw-text)}
+    .ub-lcard p{font-size:.84rem;line-height:1.6;margin:0;color:var(--rw-text-muted);max-width:none}
+    .ub-ta{text-align:center;padding:2.5rem 1rem 3.5rem;border-top:1px solid var(--rw-border)}
+    .ub-ta p{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:600;max-width:600px;margin:0 auto .6rem;line-height:1.55;color:var(--rw-text)}
+    .ub-ta small{font-size:.8rem;color:var(--rw-text-subtle)}
+    .ub-ta .ub-hero-cta{justify-content:center}
+
+    @media(max-width:900px){
+      .ub-hero-inner{grid-template-columns:1fr;gap:1.5rem}.ub-hero-vid{order:-1}.ub-vid-wrap{max-width:520px;margin:auto}
+      .ub-layout{grid-template-columns:1fr;gap:.5rem}
+      .ub-sidebar{position:sticky;top:calc(var(--rw-nav-height,64px) + .25rem);z-index:5;width:100%;padding:.3rem 0;background:var(--rw-bg);border-bottom:1px solid var(--rw-border)}
+      .ub-toc-label{display:none}.ub-toc{flex-direction:row;overflow-x:auto;gap:.2rem;scrollbar-width:none}.ub-toc a{white-space:nowrap;border-left:0;border-bottom:2px solid transparent;border-radius:0}
+      .ub-toc a:hover,.ub-toc a.active{border-bottom-color:#f97316}
+      .ub-flow,.ub-days{grid-template-columns:1fr 1fr}.ub-pg-grid,.ub-lens{grid-template-columns:1fr}.ub-picks,.ub-ctrl{border-right:0;border-bottom:1px solid var(--rw-border)}
+    }
+    @media(max-width:640px){
+      .ub-hero{padding:2.5rem 1rem 2rem}.ub-layout{padding:0 1rem;margin:1.5rem auto}
+      .ub-vs,.ub-figs,.ub-feats,.ub-split,.ub-flow,.ub-days{grid-template-columns:1fr}
+      .ub-cmp thead{display:none}.ub-cmp tr{display:block;border-bottom:1px solid var(--rw-border)}.ub-cmp td{display:block;border:0;width:100%!important}.ub-cmp td:first-child{padding-bottom:0}
+      .ub-frow{grid-template-columns:96px 1fr 38px}
+    }
+  </style>
+</head>
+<body style="background:var(--rw-bg,#fff); color:var(--rw-text,#0f172a); min-height:100vh;">
+
+<!-- ── Centralized Navigation ──────────────────────────────── -->
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20261106"></script>
+
+<!-- ── Hero: text left, video right ────────────────────────── -->
+<header class="ub-hero">
+  <div class="ub-hero-inner">
+    <div class="ub-hero-text">
+      <div class="ub-label"><span class="ub-pulse"></span> Build log &middot; Nov 2026</div>
+      <h1>AI moves weekly. I couldn&rsquo;t keep up, so I built a feed that rejects <em>93%</em> of the noise</h1>
+      <p>I wanted one short list of what&rsquo;s actually new in AI and worth an hour of my time. Unslop is that list: hands-on videos from the last 20 days, each with the evidence it passed on. I use it daily. You can too.</p>
+      <div class="ub-hero-cta">
+        <a class="ub-btn pri" href="../unslop.html">Open Unslop &rarr;</a>
+        <a class="ub-btn ghost" href="#vs">Karpathy vs Unslop</a>
+      </div>
+      <div class="ub-hero-meta">Sham Sundar HC &nbsp;&middot;&nbsp; Nov 6, 2026 &nbsp;&middot;&nbsp; 9 min read</div>
+    </div>
+    <div class="ub-hero-vid">
+      <div class="ub-vid-wrap">
+        <video class="ub-vid" controls muted autoplay loop playsinline preload="metadata" poster="../images/unslop/poster.jpg" aria-label="Captioned walkthrough of the Unslop page">
+          <source src="../images/videos/unslop-walkthrough.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="ub-layout">
+  <aside class="ub-sidebar">
+    <div class="ub-toc-label">Contents</div>
+    <ul class="ub-toc" id="ub-toc">
+      <li><a href="#story">My problem</a></li>
+      <li><a href="#vs">Karpathy vs Unslop</a></li>
+      <li><a href="#problem">The numbers</a></li>
+      <li><a href="#value">What it adds</a></li>
+      <li><a href="#daily">Use it daily</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#playground">Run the gates</a></li>
+      <li><a href="#filters">Filter logic</a></li>
+      <li><a href="#learnings">What broke</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- STORY -->
+    <section class="ub-sec" id="story">
+      <div class="ub-tag">My problem</div>
+      <h2>Every week there is something new I am supposed to know</h2>
+      <p>A new protocol. A new agent framework. A new way to serve models. The best explanations are usually on YouTube, buried between sponsor reads, reaction videos and &ldquo;AI will change everything&rdquo; talks. I kept losing evenings to the wrong ones.</p>
+      <p>I did not want a bigger list. I wanted a <strong>short daily list of what is new in AI and worth an hour</strong>, with a reason attached to each item. Nothing I could find did that for the part of AI I work on: the application layer, meaning agents, retrieval, tool protocols and serving.</p>
+      <p>So I built it for myself first. Then it occurred to me that anyone who builds with AI has the same problem, and that a feed you check every day is more useful when other people can check it too. That is why it is a public page and not a private script.</p>
+      <div class="ub-quote">The rule I set myself: if a video makes the list, I should be able to point at the exact sentence that earned it a place.</div>
+      <div class="ub-vs">
+        <div class="ub-box bad"><h4>How I used to find videos</h4>
+          <ul><li>Scroll YouTube, judge by thumbnail</li><li>Trust a title that promises &ldquo;full course&rdquo;</li><li>Lose an hour to a sponsor read</li><li>Never learn why something was recommended</li></ul></div>
+        <div class="ub-box good"><h4>What Unslop does instead</h4>
+          <ul><li>Collects what practitioners actually share</li><li>Reads the captions, not just the title</li><li>Drops hype, jokes and off-topic content</li><li>Shows the evidence behind every pick</li></ul></div>
+      </div>
+    </section>
+
+    <!-- COMPARE -->
+    <section class="ub-sec" id="vs">
+      <div class="ub-tag">Inspiration</div>
+      <h2>Yes, I copied Andrej Karpathy. Here is what I changed.</h2>
+      <p>On Oct 31, 2026 Andrej Karpathy published <strong>HackerTube</strong>, a YouTube-style site built from videos people recommend in Hacker News comments. As reported, it holds <strong>6,454 videos from 2007 to 2026 across about 150 topics</strong>, put together with Claude in around two hours. I loved it, and I copied the idea on purpose.</p>
+      <p>Where we differ is time. His is a <em>historic</em> collection: the best of what people have recommended over almost two decades. I care about the opposite end. AI moves so fast that what happened <em>this week</em> matters more to me than what was good in 2014. So Unslop keeps the idea and flips the clock.</p>
+      <div class="ub-tag" style="margin-top:1.4rem">What we have in common</div>
+      <div class="ub-common"><span>Start from what practitioners recommend, not what an algorithm pushes</span><span>Use an LLM to filter at a scale a person can&rsquo;t</span><span>Small, static, no login</span><span>Signal over view counts</span></div>
+      <div class="ub-tag">Where they differ</div>
+      <table class="ub-cmp">
+        <thead><tr><th></th><th>HackerTube (Karpathy)</th><th>Unslop (this site)</th></tr></thead>
+        <tbody>
+          <tr><td>Question it answers</td><td>What is worth watching, across everything people have recommended?</td><td>What is new in AI this week that is worth an hour?</td></tr>
+          <tr><td>Time span</td><td>2007 to 2026, about 6,454 videos (as reported)</td><td>Rolling last 20 days; older picks roll off</td></tr>
+          <tr><td>Topics</td><td>About 150 topics</td><td>One: the AI application layer</td></tr>
+          <tr><td>Where videos come from</td><td>Recommendations in Hacker News comments</td><td>Hacker News, Lobsters, trusted YouTube channels and YouTube search</td></tr>
+          <tr><td>Freshness</td><td>A snapshot collection, published Oct 31 (as reported)</td><td>Refreshed daily; dead links are removed</td></tr>
+          <tr><td>Selection</td><td>LLM-assisted filtering (as reported)</td><td>Four gates with a published rubric, plus a sample of the captions</td></tr>
+          <tr><td>Showing the work</td><td>A site to browse</td><td>Every card shows its evidence quote, confidence and where it was first seen</td></tr>
+          <tr><td>Staying in touch</td><td>Visit when you want to browse</td><td>RSS feed and a &ldquo;New&rdquo; badge, built for a daily habit</td></tr>
+        </tbody>
+      </table>
+      <p class="ub-note2">I know HackerTube from his post and press coverage, not from his code, so the left column is my reading of it, not his description. Reports: <a href="https://aiweekly.co/alerts/karpathy-ships-hackertube-in-2-hours-with-claude-opus-55" target="_blank" rel="noopener noreferrer">AI Weekly</a>, <a href="https://fourweekmba.com/ai-karpathy-has-claude-build-hackertube-from-6454-hn-videos/" target="_blank" rel="noopener noreferrer">FourWeekMBA</a>. Unslop is an independent project and is not affiliated with him.</p>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="ub-sec" id="problem">
+      <div class="ub-tag">The problem</div>
+      <h2>Why a filter: most AI video is not for people who build things</h2>
+      <p class="ub-sub">These numbers come live from the data behind the Unslop page, for the last 20 days.</p>
+      <div class="ub-funnel" id="ub-funnel" aria-live="polite">
+        <div class="ub-funnel-head"><div><b id="ub-fp">&ndash;</b> <span id="ub-fpl">of videos considered made it through</span></div><span id="ub-fu">loading&hellip;</span></div>
+        <div id="ub-frows"></div>
+      </div>
+      <p>The biggest bucket is not hype. It is <strong>off-topic</strong>: if you search a discussion site for YouTube links, most of them are music, politics and cooking. The second surprise was <strong>depth</strong>. Plenty of on-topic videos talk <em>about</em> agents without ever showing one working.</p>
+      <p>Filtering by view count would not help, because popular and useful are different things. I needed something that could read.</p>
+    </section>
+
+    <!-- VALUE -->
+    <section class="ub-sec" id="value">
+      <div class="ub-tag">What it adds</div>
+      <h2>A feed that shows its work</h2>
+      <figure class="ub-fig">
+        <img src="../images/unslop/facets.jpg" alt="Unslop page with topic facets on the left and filtered results on the right" loading="lazy" width="1440" height="900">
+        <figcaption>Topic, source and confidence facets on the left. Choices inside a group mean &ldquo;or&rdquo;, choices across groups mean &ldquo;and&rdquo;.</figcaption>
+      </figure>
+      <div class="ub-feats">
+        <div class="ub-feat"><h4>Evidence, not vibes</h4><p>Each card opens a &ldquo;How it got selected&rdquo; panel: where the link was found, each gate, the quote that justified it, and a confidence score.</p></div>
+        <div class="ub-feat"><h4>Reads the captions</h4><p>When captions exist, the model sees a sample from the opening, middle and end. A technical title over a sponsor-read transcript fails.</p></div>
+        <div class="ub-feat"><h4>Honest about origin</h4><p>You see where a link was first seen, who shared it, and whether the channel is on my short trusted list.</p></div>
+        <div class="ub-feat"><h4>Stays on the site</h4><p>Videos play in a privacy-friendly player. If a video blocks embedding, the card says so and opens YouTube instead.</p></div>
+      </div>
+      <div class="ub-figs">
+        <figure class="ub-fig"><img src="../images/unslop/card.jpg" alt="A video card with the How it got selected panel open, listing each gate and the evidence quote" loading="lazy"><figcaption>One card, fully opened. Every step is the model&rsquo;s recorded reasoning.</figcaption></figure>
+        <figure class="ub-fig"><img src="../images/unslop/modal.jpg" alt="Video playing in a modal on the Unslop page" loading="lazy" width="1440" height="900"><figcaption>Playing in the modal, with a link out if you want YouTube itself.</figcaption></figure>
+      </div>
+      <figure class="ub-fig">
+        <img src="../images/unslop/dark.jpg" alt="Unslop in dark mode" loading="lazy" width="1440" height="900">
+        <figcaption>Light and dark follow the rest of RawWeights. There is also an RSS feed and a &ldquo;New&rdquo; badge on anything added in the last 48 hours.</figcaption>
+      </figure>
+    </section>
+
+    <!-- DAILY -->
+    <section class="ub-sec" id="daily">
+      <div class="ub-tag">For you</div>
+      <h2>Five minutes a day, and you are caught up</h2>
+      <p class="ub-sub">The window is 20 days, so anything you miss slowly rolls off. That is on purpose: it keeps the list short and current.</p>
+      <div class="ub-days">
+        <div class="ub-day"><b>1</b><h4>Glance at what is new</h4><p>Cards added in the last 48 hours carry a NEW badge. That is your daily list, usually a handful of videos.</p></div>
+        <div class="ub-day"><b>2</b><h4>Narrow to your corner</h4><p>Pick the topics you care about. Add &ldquo;Trusted channel&rdquo; or &ldquo;High confidence&rdquo; when you only have time for the strongest picks.</p></div>
+        <div class="ub-day"><b>3</b><h4>Check the receipts</h4><p>Open &ldquo;How it got selected&rdquo; before you press play. If the evidence quote does not convince you, skip it.</p></div>
+        <div class="ub-day"><b>4</b><h4>Let it come to you</h4><p>Subscribe to the <a href="../unslop-feed.xml">RSS feed</a> in any reader, and you will not need to remember to visit.</p></div>
+      </div>
+    </section>
+
+    <!-- HOW -->
+    <section class="ub-sec" id="how">
+      <div class="ub-tag">Implementation</div>
+      <h2>A script on my laptop, a static page on the web</h2>
+      <p class="ub-sub">No server, no database. A Python script writes one JSON file. The page reads it.</p>
+      <div class="ub-flow">
+        <div class="ub-node a"><small>1 &middot; Find</small><h4>Four sources</h4><p>Hacker News, Lobsters, a short list of trusted YouTube channels, and YouTube search.</p></div>
+        <div class="ub-node a"><small>2 &middot; Free checks</small><h4>Drop the obvious</h4><p>Private, live, or under 8 minutes? Gone, before any model is paid for.</p></div>
+        <div class="ub-node b"><small>3 &middot; Read</small><h4>Captions + context</h4><p>Transcript sample, description, and the lines around the link.</p></div>
+        <div class="ub-node b"><small>4 &middot; Judge</small><h4>Four gates</h4><p>Topic, hype, joke, depth, in that order. First failure stops.</p></div>
+        <div class="ub-node c"><small>5 &middot; Check</small><h4>Grounding</h4><p>The model&rsquo;s quote must exist in what it was given, or confidence is capped.</p></div>
+        <div class="ub-node c"><small>6 &middot; Write</small><h4>One JSON file</h4><p>Plus an RSS feed and search-engine markup, all regenerated each run.</p></div>
+        <div class="ub-node c"><small>7 &middot; Verify</small><h4>Link check</h4><p>A second script removes videos that were deleted since.</p></div>
+        <div class="ub-node"><small>8 &middot; Show</small><h4>Static page</h4><p>Filters and cards render in the browser from the JSON.</p></div>
+      </div>
+      <div class="ub-split">
+        <div class="ub-box good"><h4>Public (what visitors get)</h4>
+          <ul class="ub-files"><li><code>unslop.html</code> the page</li><li><code>data/unslop.json</code> the picks</li><li><code>unslop-feed.xml</code> RSS</li></ul></div>
+        <div class="ub-box"><h4>Private (stays on my machine)</h4>
+          <ul class="ub-files"><li><code>ingest.py</code> fetch, judge, write</li><li><code>verify_links.py</code> clean-up</li><li><code>channels.json</code>, <code>queries.json</code>, <code>seen.json</code>, keys, caches</li></ul></div>
+      </div>
+      <p>Why local? I wanted to run it by hand for two weeks and read every pick before trusting it to a schedule. Keeping the scripts out of the public repo also means no API keys can leak into it.</p>
+    </section>
+
+    <!-- PLAYGROUND -->
+    <section class="ub-sec" id="playground">
+      <div class="ub-tag">Playground</div>
+      <h2>Run the four gates on real videos</h2>
+      <p class="ub-sub">Pick a video. Watch it go through the same checks the script uses. These are real decisions from my runs, with the model&rsquo;s own reasons.</p>
+      <div class="ub-pg">
+        <div class="ub-pg-head"><h4>Gate runner</h4><button class="ub-replay" id="ub-replay" type="button">&#8635; Replay</button></div>
+        <div class="ub-pg-grid">
+          <div class="ub-picks" id="ub-picks"></div>
+          <div class="ub-stage" id="ub-stage"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTERS -->
+    <section class="ub-sec" id="filters">
+      <div class="ub-tag">Playground</div>
+      <h2>How the filters combine</h2>
+      <p class="ub-sub">The same facet logic as the Unslop page, running on today&rsquo;s real picks. Tick a few boxes and watch the list.</p>
+      <div class="ub-pg">
+        <div class="ub-pg-head"><h4>Filter lens</h4><span id="ub-lens-n"></span></div>
+        <div class="ub-lens">
+          <div class="ub-ctrl" id="ub-ctrl"></div>
+          <div class="ub-list" id="ub-list"></div>
+        </div>
+      </div>
+      <p style="margin-top:1rem">Trusted channel is a property of the video&rsquo;s <strong>channel</strong>, not of how I found it. I got that wrong at first (see below).</p>
+    </section>
+
+    <!-- LEARNINGS -->
+    <section class="ub-sec" id="learnings">
+      <div class="ub-tag">Field notes</div>
+      <h2>What broke, and what I changed</h2>
+      <div class="ub-learns">
+        <div class="ub-lcard"><h4>A joke made the list</h4><p>A video was picked because a comment mocked an AI product&rsquo;s tagline by linking a famous 1980 jeans ad. The title sounded relevant; the model only saw the link. The fix was to feed it the text just before and after the link, plus the comment being replied to, and add a <strong>joke gate</strong>.</p></div>
+        <div class="ub-lcard"><h4>My first version approved everything technical</h4><p>A Nintendo 64 port, a Lisp compiler talk and an Electron memory essay all passed, because the original rubric said &ldquo;deep&rdquo; but never said &ldquo;about AI&rdquo;. A topic gate, placed first, fixed it.</p></div>
+        <div class="ub-lcard"><h4>The model invented function names</h4><p>An early card listed tools like <code>libdragon_init()</code> that nobody ever said. I deleted that feature and replaced it with a short &ldquo;covers&rdquo; list, plus a check that every quote really appears in the text the model was given.</p></div>
+        <div class="ub-lcard"><h4>Reddit said no</h4><p>Reddit now requires approval for new API apps. I applied, and was turned down with a generic message. I switched to the YouTube Data API for discovery, and gained transcripts in the process, which made the quality noticeably better.</p></div>
+        <div class="ub-lcard"><h4>Every date said Nov 6</h4><p>I was showing the day <em>I</em> found a video, not the day it was shared. Share dates now drive the 20-day window.</p></div>
+        <div class="ub-lcard"><h4>&ldquo;Trusted channel&rdquo; filtered the wrong thing</h4><p>Karpathy&rsquo;s &ldquo;Let&rsquo;s build GPT&rdquo; vanished from the trusted filter because I had found it on Hacker News. The filter meant &ldquo;found via my channel list&rdquo; when it should mean &ldquo;from a channel on my list&rdquo;.</p></div>
+        <div class="ub-lcard"><h4>Embed-blocked is not broken</h4><p>Three of the first six &ldquo;unavailable&rdquo; videos were fine; their owners had just disabled embedding. Those now stay in the feed and open on YouTube.</p></div>
+        <div class="ub-lcard"><h4>I show who shared it, but do not filter by it</h4><p>The sharer&rsquo;s name and Hacker News karma appear on the card. I did not make it a filter, because that would reward established accounts and bury newcomers.</p></div>
+      </div>
+      <p style="margin-top:1.2rem">Limits worth knowing: the model never watches the video, it reads a sample of the captions. It can still be wrong, which is why every card carries its confidence and its quote.</p>
+    </section>
+
+    <div class="ub-ta">
+      <p>The goal is not more AI video. It is fewer videos, from this week, with receipts.</p>
+      <small>Rolling 20 days. Updated by hand while I tune it, so expect it to get better.</small>
+      <div class="ub-hero-cta">
+        <a class="ub-btn pri" href="../unslop.html">Open Unslop &rarr;</a>
+        <a class="ub-btn ghost" style="color:var(--rw-text);border-color:var(--rw-border-strong)" href="../unslop-feed.xml">Subscribe (RSS)</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="rw-footer"
+     data-linkedin=""
+     data-linkedin-label="Read the discussion on LinkedIn"
+     data-related='[
+       {"label":"Unslop: the feed","url":"/unslop.html"},
+       {"label":"WebMCP: making a site agent-ready","url":"/blog/webmcp-ai-native-site.html"}
+     ]'
+></div>
+<script src="../includes/rw-footer.js?v=20261106"></script>
+
+<script>
+(function () {
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function $(id){return document.getElementById(id);}
+
+  /* ---------- TOC scrollspy ---------- */
+  var links=[].slice.call(document.querySelectorAll('#ub-toc a'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id);});}});},{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.ub-sec').forEach(function(s){io.observe(s);});
+  }
+
+  /* ---------- Live funnel + filter lens share the real data ---------- */
+  var FALLBACK={considered:504,unavailable:6,failed_topic:281,failed_hype:35,failed_joke:3,failed_depth:140,approved:39};
+  function renderFunnel(f){
+    var rows=[['Considered',f.considered,0],['Unavailable',f.unavailable,1],['Off-topic',f.failed_topic,1],['Hype',f.failed_hype,1],['Joke / meme',f.failed_joke||0,1],['Too shallow',f.failed_depth,1],['Picked',f.approved,0]];
+    $('ub-frows').innerHTML=rows.map(function(r){return '<div class="ub-frow'+(r[2]?' drop':'')+'"><span>'+(r[2]?'&minus; ':'')+r[0]+'</span><div class="ub-fbar"><i data-w="'+Math.max(r[1]?2:0,Math.round(r[1]/f.considered*100))+'"></i></div><b>'+r[1]+'</b></div>';}).join('');
+    var pct=Math.round(f.approved/f.considered*100);
+    $('ub-fp').textContent=pct+'%';
+    $('ub-fu').textContent=f.approved+' picked from '+f.considered+' considered';
+    setTimeout(function(){document.querySelectorAll('.ub-fbar i').forEach(function(i){i.style.width=i.getAttribute('data-w')+'%';});},60);
+  }
+  renderFunnel(FALLBACK);
+
+  var picks=[];
+  fetch('../data/unslop.json',{cache:'no-cache'}).then(function(r){return r.json();}).then(function(j){
+    if(j.funnel&&j.funnel.considered) renderFunnel(j.funnel);
+    picks=j.entries||[]; buildLens();
+  }).catch(function(){ $('ub-list').innerHTML='<div class="ub-count">Could not load the live picks.</div>'; });
+
+  /* ---------- Gate runner (real decisions from my runs) ---------- */
+  var EX=[
+    {g:'Rejected',id:'calvins',t:'A joke about a product tagline',saw:[['Title','‘You want to know what comes between me and my Calvins’ ?'],['Channel','EFM by Salima Chaieb C.'],['Context (summarized)','A Hacker News comment quotes an AI app’s tagline, compares it to a famous 1980 jeans ad slogan to mock it, then links the ad.']],stop:'joke',reason:'posted as meme/parody of Calvin Klein ad'},
+    {g:'Rejected',id:'jank',t:'Would you believe it’s jank? (Clojure talk)',saw:[['Title','Would you believe it’s jank? - Jeaye Wilkerson (Clojure/Conj 2026)'],['Context','Shared in a technical thread; the talk itself is about a programming language.']],stop:'topic',reason:'Not about AI/LLM systems'},
+    {g:'Rejected',id:'plugin',t:'I Think AI Just Killed The Plugin Industry',saw:[['Title','I Think AI Just Killed The Plugin Industry'],['Context','On topic (AI), but a commentary video.']],stop:'hype',reason:'Marketing hyperbole, no technical depth'},
+    {g:'Rejected',id:'interview',t:'Most Imp For Any AI Engineer Interview',saw:[['Title','Most Imp For Any AI Engineer Interview'],['Captions','Available. A sample of the opening, middle and end was read.']],stop:'depth',reason:'No code, config, or implementation details provided'},
+    {g:'Free checks',id:'short',t:'LGTM, a Claude Opus music video',saw:[['Title','LGTM (Looks Good to Me) - Claude Opus 5.5 music video'],['Duration','5 min']],stop:'free',reason:'too short (5 min). Clips under 8 minutes cannot carry an implementation walkthrough.'},
+    {g:'Free checks',id:'live',t:'AI Engineer Code Summit, Day 1 (upcoming)',saw:[['Title','AI Engineer Code Summit 2026 — Day 1 | November 11'],['Status','Live / upcoming stream']],stop:'free',reason:'live/upcoming stream. Nothing to judge yet.'},
+    {g:'Picked',id:'gpt',t:'Let’s build GPT (Karpathy)',saw:[['Title','Let’s build GPT: from scratch, in code, spelled out.'],['Channel','Andrej Karpathy'],['Found via','A Hacker News comment']],pass:true,cat:'Models & Foundations › Transformer architecture',signals:['Architecture walk-through','Codebase exploration / live coding'],quote:'Let’s build GPT: from scratch, in code, spelled out',conf:5,why:'Hands-on, code-level implementation of GPT. Judged from the title and the discussion (no captions were read for this older pick).'},
+    {g:'Picked',id:'brain',t:'41% to 97% accurate (AI Engineer)',saw:[['Title','How We Took an AI Agent From 41% to 97% Accurate - Milind Sunil Shah, Brainbase Labs'],['Channel','AI Engineer (a trusted channel)']],pass:true,cat:'Agents & Orchestration › Accuracy improvement',signals:['Codebase exploration / live coding','Routing / orchestration patterns','State handling'],quote:'From version 1 to version 11, accuracy went from 41% to 97%, cost per source halved from $2 to $1, and run time fell from 129 to 71 minutes, all through instructions, skills and playbooks',conf:5,why:'A real, iterative engineering process with measured results across accuracy, cost and run time.'}
+  ];
+  var GATES=[['free','Free checks','Public, not live, at least 8 minutes. No model needed.'],['topic','1 · Topic','Is it mainly about building or understanding AI systems?'],['hype','2 · Hype','Not marketing, a tier list, or a news recap?'],['joke','3 · Joke','Is the link shared as a serious resource, or as a punchline?'],['depth','4 · Depth','Any real implementation signal: code, schemas, state, routing, deployment?']];
+  var cur=null,timer=null;
+  function dots(n){var s='';for(var i=1;i<=5;i++)s+=i<=n?'●':'<span class="off">●</span>';return '<span class="ub-dots">'+s+'</span>';}
+  function renderPicks(){
+    var out='',last='';
+    EX.forEach(function(e,i){if(e.g!==last){out+='<h5>'+e.g+'</h5>';last=e.g;}out+='<button class="ub-pick'+(cur===i?' on':'')+'" data-i="'+i+'" type="button">'+esc(e.t)+'</button>';});
+    $('ub-picks').innerHTML=out;
+  }
+  function run(i){
+    cur=i;clearTimeout(timer);renderPicks();
+    var e=EX[i];
+    var saw='<div class="ub-saw"><div class="ub-saw-t">What the model saw</div>'+e.saw.map(function(r){return '<div><b>'+esc(r[0])+':</b> '+esc(r[1])+'</div>';}).join('')+'</div>';
+    var rows=GATES.map(function(g){return '<div class="ub-gate" data-g="'+g[0]+'"><div class="ub-ico">•</div><div><h6>'+g[1]+'</h6><p>'+g[2]+'</p></div></div>';}).join('');
+    $('ub-stage').innerHTML=saw+'<div class="ub-gates" id="ub-gates">'+rows+'</div><div class="ub-verdict" id="ub-verdict"></div>'+
+      '<div class="ub-note">The model reports the first gate that stopped a video; gates before it are inferred as cleared. Gates after it are never run.</div>';
+    var els=[].slice.call(document.querySelectorAll('#ub-gates .ub-gate'));
+    var stopIdx=e.pass?-1:GATES.findIndex(function(g){return g[0]===e.stop;});
+    var k=0;
+    function step(){
+      if(k>=els.length){verdict();return;}
+      var el=els[k],g=GATES[k][0];el.classList.add('show');
+      if(stopIdx>=0&&k>stopIdx){el.classList.add('skip');el.querySelector('.ub-ico').textContent='–';}
+      else if(k===stopIdx){el.classList.add('fail');el.querySelector('.ub-ico').textContent='✕';el.querySelector('p').textContent='Stopped here: '+e.reason;}
+      else{el.classList.add('pass');el.querySelector('.ub-ico').textContent='✓';
+        if(e.pass&&g==='topic')el.querySelector('p').textContent='About AI systems: '+e.cat;
+        if(e.pass&&g==='depth')el.querySelector('p').innerHTML='Signals found: '+e.signals.map(function(s){return '<span class="ub-chip">'+esc(s)+'</span>';}).join(' ');}
+      k++;timer=setTimeout(step,e.pass||k<=1?330:300);
+    }
+    function verdict(){
+      var v=$('ub-verdict');v.classList.add('show');
+      if(e.pass){v.className='ub-verdict show yes';v.innerHTML='<strong>Picked</strong>'+esc(e.why)+'<div class="ub-note" style="margin-top:.5rem">Evidence quote: <em>“'+esc(e.quote)+'”</em></div><div style="margin-top:.4rem">Confidence '+e.conf+'/5 '+dots(e.conf)+'</div>';}
+      else{v.className='ub-verdict show no';v.innerHTML='<strong>Rejected at '+(e.stop==='free'?'the free checks':'the '+e.stop+' gate')+'</strong>'+esc(e.reason);}
+    }
+    step();
+  }
+  $('ub-picks').addEventListener('click',function(ev){var b=ev.target.closest('.ub-pick');if(b)run(+b.getAttribute('data-i'));});
+  $('ub-replay').addEventListener('click',function(){if(cur!=null)run(cur);});
+  renderPicks();run(0);
+
+  /* ---------- Filter lens ---------- */
+  var sel={cat:[],src:[],conf:[]};
+  function bucket(c){c=c||3;return c>=4?'High':c===3?'Medium':'Low';}
+  function srcs(e){var o={};(e.found_on||[{source:e.source}]).forEach(function(f){o[f.source]=1;});if(e.trusted_channel)o['Watchlist']=1;return Object.keys(o);}
+  function lab(s){return s==='Watchlist'?'Trusted channel':s;}
+  function buildLens(){
+    var cats={},sc={};
+    picks.forEach(function(e){cats[e.category]=(cats[e.category]||0)+1;srcs(e).forEach(function(s){sc[s]=(sc[s]||0)+1;});});
+    function grp(title,key,rows){return '<h5>'+title+'</h5>'+rows.map(function(r){return '<label class="ub-opt"><input type="checkbox" data-k="'+key+'" data-v="'+esc(r[0])+'"> '+esc(r[1])+' <span style="margin-left:auto;font-size:.7rem;color:var(--rw-text-subtle)">'+r[2]+'</span></label>';}).join('');}
+    var catRows=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a];}).slice(0,4).map(function(c){return [c,c,cats[c]];});
+    var srcRows=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];}).map(function(s){return [s,lab(s),sc[s]];});
+    var cn={High:0,Medium:0,Low:0};picks.forEach(function(e){cn[bucket(e.confidence)]++;});
+    var cfRows=['High','Medium','Low'].filter(function(k){return cn[k];}).map(function(k){return [k,k,cn[k]];});
+    $('ub-ctrl').innerHTML=grp('Topic (top 4)','cat',catRows)+grp('Source','src',srcRows)+grp('Confidence','conf',cfRows)+'<div class="ub-rule" id="ub-rule"></div>';
+    $('ub-ctrl').addEventListener('change',function(ev){
+      var t=ev.target;if(!t.matches('input'))return;
+      var a=sel[t.getAttribute('data-k')],v=t.getAttribute('data-v'),i=a.indexOf(v);
+      if(t.checked&&i<0)a.push(v);if(!t.checked&&i>-1)a.splice(i,1);paint();
+    });
+    paint();
+  }
+  function ok(e){
+    return (!sel.cat.length||sel.cat.indexOf(e.category)>-1)&&
+           (!sel.src.length||sel.src.some(function(s){return srcs(e).indexOf(s)>-1;}))&&
+           (!sel.conf.length||sel.conf.indexOf(bucket(e.confidence))>-1);
+  }
+  function paint(){
+    var any=sel.cat.length||sel.src.length||sel.conf.length,n=0;
+    $('ub-list').innerHTML='<div class="ub-count" id="ub-c"></div>'+picks.map(function(e){
+      var m=ok(e);if(m)n++;
+      return '<div class="ub-row '+(any?(m?'in':'out'):'')+'"><div>'+esc(e.title)+'<small>'+esc(e.category)+' · '+srcs(e).map(lab).join(', ')+'</small></div><span class="badge">'+esc(bucket(e.confidence))+'</span></div>';
+    }).join('');
+    $('ub-c').innerHTML='<b>'+n+'</b> of '+picks.length+' picks match';
+    $('ub-lens-n').textContent=any?n+' match':'';
+    var parts=[];
+    if(sel.cat.length)parts.push('Topic ('+sel.cat.length+' selected: <b>OR</b>)');
+    if(sel.src.length)parts.push('Source ('+sel.src.length+': <b>OR</b>)');
+    if(sel.conf.length)parts.push('Confidence ('+sel.conf.length+': <b>OR</b>)');
+    $('ub-rule').innerHTML=parts.length?(parts.length>1?parts.join(' <b>AND</b> '):parts[0]+' only'):'Nothing selected, so everything shows.';
+  }
+})();
+</script>
+</body>
+</html>
