@@ -25,11 +25,11 @@
   /* ─── Baked slides (auto-updated by update-announcement.js) ─────
      Run:  node _private/scripts/update-announcement.js
      ──────────────────────────────────────────────────────────────── */
-    /* @@BAKED_SLIDES_START@@ */
+        /* @@BAKED_SLIDES_START@@ */
   var BAKED_SLIDES = [
-    { label: "Usecase", text: "Debrief — Conference Memory & Networking Intelligence", url: "https://rawweights.com/usecase/debrief.html" },
-    { label: "Blog", text: "Debrief — 9 Hours, 1 Graph, 14 People Remembered", url: "https://rawweights.com/usecase/debrief-film.html" },
-    { label: "Guide", text: "AI Agent Observability — Why 200 OK Lies", url: "https://rawweights.com/usecase/observability.html" }
+    { label: "Usecase", text: "Unslop: I Got Tired of AI Video Slop, So I Built a Daily Feed", url: "https://rawweights.com/usecase/unslop.html" },
+    { label: "Blog", text: "Your Website Can Now Talk Back to AI: A Beginner's Guide to WebMCP", url: "https://rawweights.com/blog/webmcp-ai-native-site.html" },
+    { label: "Usecase", text: "Debrief — Conference Memory & Networking Intelligence", url: "https://rawweights.com/usecase/debrief.html" }
   ];
   /* @@BAKED_SLIDES_END@@ */
 
