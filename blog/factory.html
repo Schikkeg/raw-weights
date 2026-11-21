@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<!--
+  DRAFT for Day 15. Local preview only: nothing is published.
+  Paths point at ../../site/includes so it opens from _private/day15/.
+  To publish: copy to site/careers/factory.html and change "../../site/includes/" to "../includes/".
+  Drop the noindex line when you are ready for it to be found.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Show your factory | HN Radar | RawWeights</title>
+  <meta name="description" content="Watch the same change go through a software factory with and without a gate. Real numbers from the HN Radar build, Qodo hackathon Day 15.">
+  <meta name="author" content="RawWeights">
+  <link rel="canonical" href="https://rawweights.com/blog/factory.html">
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rawweights.com/blog/factory.html">
+  <meta property="og:title" content="Same change. With a gate, and without. | HN Radar">
+  <meta property="og:description" content="Watch one change go through a software factory with no gate, with a gate, and with a guard. Real numbers from the build.">
+  <meta property="og:image" content="https://rawweights.com/images/factory-og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="628">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script>(function(){var t=localStorage.getItem('rw-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+
+  <link rel="stylesheet" href="../includes/brand.css">
+
+  <style>
+    :root { --fx-red: #ef4444; --fx-red-bg: rgba(239,68,68,.10); --fx-amber: #f59e0b; --fx-amber-bg: rgba(245,158,11,.12); --fx-green-bg: rgba(16,185,129,.12); }
+    .fx { max-width: 1040px; margin: 0 auto; padding: 0 1rem; }
+    .fx h1, .fx h2, .fx h3, .fx h4 { font-family: var(--rw-font-display); color: var(--rw-text); }
+
+    /* Hero */
+    .fx-hero { padding: 3.5rem 0 1.5rem; text-align: center; }
+    .fx-eyebrow { display: inline-block; font-family: var(--rw-font-display); font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--rw-orange); background: var(--rw-orange-light); padding: .3rem .8rem; border-radius: 999px; margin-bottom: 1rem; }
+    .fx-hero h1 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; margin: 0 0 1rem; }
+    .fx-hero h1 em { font-style: normal; color: var(--rw-orange); }
+    .fx-hero p { font-size: 1.15rem; color: var(--rw-text-muted); max-width: 560px; margin: 0 auto; line-height: 1.6; }
+
+    /* Player */
+    .fx-player { background: var(--rw-bg-alt); border: 1px solid var(--rw-border); border-radius: var(--rw-r-lg); padding: 1.25rem; margin: 1.5rem 0 .75rem; }
+    .fx-tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .fx-tab { font: inherit; font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; padding: .55rem 1rem; border-radius: 999px; border: 1px solid var(--rw-border); background: var(--rw-bg); color: var(--rw-text-muted); cursor: pointer; }
+    .fx-tab[aria-selected="true"] { background: var(--rw-orange); border-color: var(--rw-orange); color: #fff; }
+    .fx-tab:focus-visible, .fx-btn:focus-visible { outline: 3px solid var(--rw-indigo); outline-offset: 2px; }
+
+    .fx-pipe { position: relative; display: grid; grid-template-columns: repeat(7, 1fr); gap: .7rem; padding: 1.75rem 0 1rem; }
+    .fx-key { font-size: .82rem; color: var(--rw-text-muted); margin: 0 0 1rem; line-height: 1.5; }
+    .fx-key b { color: var(--rw-text); }
+    .fx-node { position: relative; text-align: center; padding: .8rem .35rem .7rem; border: 2px solid var(--rw-border); border-radius: var(--rw-r-md); background: var(--rw-bg); transition: border-color .3s, background .3s, opacity .3s, transform .3s; min-height: 108px; }
+    .fx-node:not(:last-child)::after { content: "→"; position: absolute; right: -.78rem; top: 50%; transform: translateY(-50%); color: var(--rw-text-subtle); font-weight: 800; font-size: .9rem; z-index: 0; }
+    .fx-ico { font-size: 1.6rem; line-height: 1; display: block; margin-bottom: .3rem; }
+    .fx-name { font-family: var(--rw-font-display); font-weight: 700; font-size: .88rem; color: var(--rw-text); display: block; }
+    .fx-st { display: block; font-size: .72rem; font-weight: 700; margin-top: .25rem; min-height: 1em; text-transform: uppercase; letter-spacing: .04em; color: var(--rw-text-subtle); }
+    .fx-node.active { border-color: var(--rw-orange); background: var(--rw-orange-light); transform: translateY(-3px); }
+    .fx-node.pass { border-color: var(--rw-emerald); }
+    .fx-node.pass .fx-st { color: var(--rw-emerald); }
+    .fx-node.warn { border-color: var(--fx-amber); }
+    .fx-node.warn .fx-st { color: var(--fx-amber); }
+    .fx-node.hold { border-color: var(--fx-amber); background: var(--fx-amber-bg); }
+    .fx-node.hold .fx-st { color: var(--fx-amber); }
+    .fx-node.block { border-color: var(--fx-red); background: var(--fx-red-bg); animation: fx-shake .45s; }
+    .fx-node.block .fx-st { color: var(--fx-red); }
+    .fx-node.reading { border-color: var(--rw-indigo); background: var(--rw-indigo-light); transform: translateY(-3px); }
+    .fx-node.reading .fx-st { color: var(--rw-indigo); }
+    .fx-node.skipped { border-style: dashed; opacity: .45; }
+    .fx-node.good { border-color: var(--rw-emerald); background: var(--fx-green-bg); }
+    .fx-node.good .fx-st { color: var(--rw-emerald); }
+    .fx-node.bad { border-color: var(--fx-red); background: var(--fx-red-bg); }
+    .fx-node.bad .fx-st { color: var(--fx-red); }
+    @keyframes fx-shake { 0%,100% { translate: 0 } 20% { translate: -5px 0 } 40% { translate: 5px 0 } 60% { translate: -4px 0 } 80% { translate: 3px 0 } }
+
+    .fx-token { position: absolute; left: 0; top: 0; z-index: 3; padding: .2rem .6rem; border-radius: 999px; background: var(--rw-indigo); color: #fff; font-family: var(--rw-font-display); font-weight: 800; font-size: .78rem; box-shadow: 0 4px 14px rgba(0,0,0,.25); transition: transform .8s cubic-bezier(.5,.1,.2,1), background .3s; white-space: nowrap; pointer-events: none; }
+    .fx-token.dirty { background: var(--fx-red); }
+    .fx-token.clean { background: var(--rw-emerald); }
+
+    .fx-panel { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; background: var(--rw-bg); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1rem 1.25rem; }
+    .fx-cap { font-family: var(--rw-font-display); font-size: 1.15rem; font-weight: 700; color: var(--rw-text); line-height: 1.35; min-height: 3.1rem; display: flex; align-items: center; }
+    .fx-open { text-align: center; min-width: 96px; }
+    .fx-open b { display: block; font-family: var(--rw-font-display); font-size: 2.4rem; line-height: 1; color: var(--rw-text-subtle); transition: color .3s; }
+    .fx-open b.bad { color: var(--fx-red); }
+    .fx-open b.ok { color: var(--rw-emerald); }
+    .fx-open span { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--rw-text-muted); font-weight: 700; }
+
+    .fx-outcome { margin-top: .75rem; padding: .9rem 1.25rem; border-radius: var(--rw-r-md); font-family: var(--rw-font-display); font-weight: 800; font-size: 1.05rem; display: none; }
+    .fx-outcome.show { display: block; animation: fx-pop .4s; }
+    .fx-outcome.bad { background: var(--fx-red-bg); color: var(--fx-red); border: 1px solid var(--fx-red); }
+    .fx-outcome.good { background: var(--fx-green-bg); color: var(--rw-emerald); border: 1px solid var(--rw-emerald); }
+    @keyframes fx-pop { from { transform: scale(.96); opacity: 0 } to { transform: none; opacity: 1 } }
+
+    .fx-ctrl { display: flex; gap: .5rem; align-items: center; margin-top: 1rem; flex-wrap: wrap; }
+    .fx-btn { font: inherit; font-family: var(--rw-font-display); font-weight: 700; font-size: .9rem; padding: .5rem 1rem; border-radius: var(--rw-r); border: 1px solid var(--rw-border); background: var(--rw-bg); color: var(--rw-text); cursor: pointer; }
+    .fx-btn:hover { border-color: var(--rw-orange); color: var(--rw-orange); }
+    .fx-dots { display: flex; gap: .35rem; margin-left: auto; }
+    .fx-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--rw-border); transition: background .3s; }
+    .fx-dots i.on { background: var(--rw-orange); }
+    .fx-note { font-size: .82rem; color: var(--rw-text-subtle); margin: .5rem 0 0; }
+
+    /* Cards */
+    .fx-sec { margin: 3.5rem 0 0; }
+    .fx-sec > h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800; letter-spacing: -.02em; margin: 0 0 1.25rem; }
+    .fx-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .fx-card { background: var(--rw-bg-alt); border: 1px solid var(--rw-border); border-radius: var(--rw-r-md); padding: 1.25rem; }
+    .fx-card .fx-ico { font-size: 1.8rem; margin-bottom: .5rem; }
+    .fx-card h3 { font-size: 1.05rem; margin: 0 0 .4rem; }
+    .fx-card p { margin: 0; font-size: .95rem; color: var(--rw-text-muted); line-height: 1.6; }
+    .fx-card a { color: var(--rw-orange); font-weight: 600; }
+
+    .fx-proof { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .fx-proof .fx-card h3 { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
+    .fx-proof .fx-card h3 a { font-size: .85rem; }
+    .fx-pr { display: flex; gap: .6rem; font-size: .92rem; padding: .4rem 0; border-top: 1px solid var(--rw-border); color: var(--rw-text-muted); }
+    .fx-pr:first-of-type { border-top: 0; }
+    .fx-pr b { color: var(--rw-text); min-width: 5.2rem; font-family: var(--rw-font-display); }
+    .fx-lesson { margin-top: 1rem; background: var(--rw-indigo-light); border: 1px solid rgba(99,102,241,.3); border-radius: var(--rw-r-md); padding: 1.1rem 1.4rem; font-family: var(--rw-font-display); font-weight: 700; font-size: 1.15rem; color: var(--rw-text); line-height: 1.4; }
+    .fx-lesson small { display: block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--rw-indigo); margin-bottom: .35rem; }
+
+    .fx-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .fx-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+    .fx-chips li { font-size: .85rem; padding: .3rem .7rem; border-radius: 999px; background: var(--fx-green-bg); color: var(--rw-text); border: 1px solid var(--rw-emerald); }
+    .fx-plan .fx-chips li { background: transparent; border: 1px dashed var(--rw-text-subtle); color: var(--rw-text-muted); }
+
+    .fx-days { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; }
+    .fx-day { display: block; background: var(--rw-bg-alt); border: 1px solid var(--rw-border); border-radius: var(--rw-r); padding: .7rem .8rem; text-decoration: none; transition: border-color .2s, transform .2s; }
+    .fx-day:hover { border-color: var(--rw-orange); transform: translateY(-2px); }
+    .fx-day b { display: block; font-family: var(--rw-font-display); font-size: .75rem; color: var(--rw-orange); text-transform: uppercase; letter-spacing: .06em; }
+    .fx-day span { font-size: .85rem; color: var(--rw-text); line-height: 1.35; display: block; margin-top: .15rem; }
+
+    .fx-foot { margin: 3rem 0; padding: 1.25rem; border-radius: var(--rw-r-md); background: var(--rw-bg-alt); border: 1px solid var(--rw-border); text-align: center; color: var(--rw-text-muted); font-size: .95rem; line-height: 1.7; }
+    .fx-foot strong { color: var(--rw-text); }
+    .fx-foot a { color: var(--rw-orange); font-weight: 600; }
+
+    @media (max-width: 780px) {
+      .fx-pipe { grid-template-columns: repeat(2, 1fr); gap: 1.1rem .9rem; }
+      .fx-node:not(:last-child)::after { display: none; }
+      .fx-3, .fx-proof, .fx-2 { grid-template-columns: 1fr; }
+      .fx-panel { grid-template-columns: 1fr; }
+      .fx-open { text-align: left; display: flex; align-items: baseline; gap: .6rem; }
+      .fx-open b { font-size: 1.8rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fx-token, .fx-node { transition: none; }
+      .fx-node.block, .fx-outcome.show { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="rw-nav"></div>
+<script src="../includes/rw-nav.js?v=20261106"></script>
+
+<div class="fx">
+
+  <header class="fx-hero">
+    <span class="fx-eyebrow">HN Radar &middot; Qodo hackathon Day 15</span>
+    <h1>Same change.<br><em>With a gate, and without.</em></h1>
+    <p>Watch one pull request go through my software factory. Real numbers from the build.</p>
+  </header>
+
+  <!-- ===== Animated player ===== -->
+  <section class="fx-player" aria-label="Animated pipeline">
+    <div class="fx-tabs" role="tablist" id="fx-tabs"></div>
+    <div class="fx-pipe" id="fx-pipe">
+      <div class="fx-token" id="fx-token" aria-hidden="true">PR</div>
+    </div>
+    <p class="fx-key"><b>🚧 Gate</b> checks the review's findings. <b>🛡️ Guard</b> protects chosen files: a change there always goes to a person, even when clean.</p>
+    <div class="fx-panel">
+      <div class="fx-cap" id="fx-cap" aria-live="polite"></div>
+      <div class="fx-open"><b id="fx-n">0</b><span>open problems</span></div>
+    </div>
+    <div class="fx-outcome" id="fx-out"></div>
+    <div class="fx-ctrl">
+      <button class="fx-btn" id="fx-replay" type="button">&#8634; Replay</button>
+      <button class="fx-btn" id="fx-next" type="button">Next step &#9656;</button>
+      <div class="fx-dots" id="fx-dots" aria-hidden="true"></div>
+    </div>
+    <p class="fx-note" id="fx-note"></p>
+  </section>
+
+  <!-- ===== Why ===== -->
+  <section class="fx-sec">
+    <h2>Why a gate at all</h2>
+    <div class="fx-3">
+      <div class="fx-card">
+        <span class="fx-ico">🏠</span>
+        <h3>A rule is a pause</h3>
+        <p>Our parents were strict, and it worked because someone kept the rule. A gate is the same: not distrust, a moment to check before you act.</p>
+      </div>
+      <div class="fx-card">
+        <span class="fx-ico">🖥️</span>
+        <h3>Check your own setup</h3>
+        <p>This month's Java flaw, <a href="https://www.helpnetsecurity.com/?p=391635">CVE-2026-114938</a>, only bites on processors with a specific feature (AVX-512 VBMI). It is easy to rush an upgrade without checking whether your servers even have it. Know your environment first.</p>
+      </div>
+      <div class="fx-card">
+        <span class="fx-ico">🔒</span>
+        <h3>Enforced beats written</h3>
+        <p>A rule in a document depends on who reads it. A gate that is configured and tested keeps holding on a busy day.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Proof ===== -->
+  <section class="fx-sec">
+    <h2>I predicted it, then tested it</h2>
+    <div class="fx-proof">
+      <div class="fx-card">
+        <h3>Outside the guard <a href="https://github.com/researchsite/hn-radar/pull/51">PR #51</a></h3>
+        <div class="fx-pr"><b>Predicted</b><span>Label appears once nothing Medium or higher is open.</span></div>
+        <div class="fx-pr"><b>Observed</b><span>10 findings (2 High), all fixed. "Qodo approved" label added 19 Nov, 19:27 UTC.</span></div>
+      </div>
+      <div class="fx-card">
+        <h3>Inside the guard <a href="https://github.com/researchsite/hn-radar/pull/53">PR #53</a></h3>
+        <div class="fx-pr"><b>Predicted</b><span>Clean review, still no label and no auto-approval.</span></div>
+        <div class="fx-pr"><b>Observed</b><span>3 Medium fixed, review clean, no label. A second account approved.</span></div>
+      </div>
+    </div>
+    <div class="fx-lesson"><small>One lesson</small>A gate in text depends on whoever reads it. Configure it, then test it with a change that should fail.</div>
+    <p class="fx-note">Honest caveats: #51's label came after I dismissed one Medium finding by hand, and the repo has no CI, so the label does not mean tests passed.</p>
+  </section>
+
+  <!-- ===== Status ===== -->
+  <section class="fx-sec">
+    <h2>What runs, what is planned</h2>
+    <div class="fx-2">
+      <div class="fx-card">
+        <h3>Works now</h3>
+        <ul class="fx-chips">
+          <li>Ticket → PR → Qodo review</li>
+          <li>Gate + guard</li>
+          <li>Human merge</li>
+          <li>fetch-hiring</li>
+          <li>fingerprint</li>
+          <li>match</li>
+          <li>showhn</li>
+          <li>pulse</li>
+          <li>draft</li>
+        </ul>
+      </div>
+      <div class="fx-card fx-plan">
+        <h3>Planned</h3>
+        <ul class="fx-chips">
+          <li>radar USERNAME (building)</li>
+          <li>Agent works tickets alone</li>
+          <li>CI</li>
+          <li>MCP server</li>
+          <li>Scheduled refresh</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fx-note">The agent lane ran on one ticket (three runs, two failed safely). Every ticket since was built by hand with Claude Code. Not autonomous yet.</p>
+  </section>
+
+  <!-- ===== 14 days ===== -->
+  <section class="fx-sec">
+    <h2>Fourteen days</h2>
+    <div class="fx-days">
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/2#discussioncomment-19478646"><b>Day 1</b><span>First review: 3 Medium findings</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/4#discussioncomment-19559512"><b>Day 2</b><span>Rules in AGENTS.md</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/5#discussioncomment-19578294"><b>Day 3</b><span>Agents work from tickets</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/6#discussioncomment-19681230"><b>Day 4</b><span>Small model wiped a test file</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/7#discussioncomment-19617335"><b>Day 5</b><span>Qodo found holes in my rule</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/8#discussioncomment-19626548"><b>Day 6</b><span>Asked the code before building</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/9#discussioncomment-19637849"><b>Day 7</b><span>Dismissing needs a person</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/10#discussioncomment-19637310"><b>Day 8</b><span>Review before the PR</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/11#discussioncomment-19642558"><b>Day 9</b><span>A real quality gate</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/12#discussioncomment-19642716"><b>Day 10</b><span>Drew the whole flow</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/13#discussioncomment-19669035"><b>Day 11</b><span>Tested the reviewer with planted bugs</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/14#discussioncomment-19705155"><b>Day 12</b><span>Ticket as a checkable requirement</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/15#discussioncomment-19721889"><b>Day 13</b><span>Checking the checker</span></a>
+      <a class="fx-day" href="https://github.com/orgs/qodo-hackathon/discussions/16#discussioncomment-19759442"><b>Day 14</b><span>Workflow + approval guard</span></a>
+    </div>
+  </section>
+
+  <div class="fx-foot">
+    <strong>24</strong> PRs merged &middot; <strong>10</strong> written rules &middot; <strong>669</strong> tests<br>
+    Thank you to Qodo and the organizers, <strong>Filip Hric</strong> and <strong>Nnenna Ndukwe</strong>.<br>
+    Built with Qodo, Goose, Ollama and Claude &middot; <a href="https://github.com/researchsite/hn-radar">github.com/researchsite/hn-radar</a>
+  </div>
+
+</div>
+
+<div id="rw-footer" data-linkedin="" data-related='[]'></div>
+<script src="../includes/rw-footer.js?v=20261107"></script>
+
+<script>
+(function () {
+  var NODES = [
+    { id: 'ticket', ico: '📝', name: 'Ticket' },
+    { id: 'code',   ico: '⌨️', name: 'Code + tests' },
+    { id: 'review', ico: '🔍', name: 'Qodo review' },
+    { id: 'gate',   ico: '🚧', name: 'Gate' },
+    { id: 'guard',  ico: '🛡️', name: 'Guard' },
+    { id: 'person', ico: '🧑', name: 'A person' },
+    { id: 'main',   ico: '🚀', name: 'main' }
+  ];
+  var STATUS = { pass: 'Passed', block: 'Blocked', skipped: 'Not there', warn: 'Ignored', hold: 'Protected', good: 'Merged', bad: 'Shipped', reading: 'Reading', active: '' };
+
+  var SCENES = [
+    {
+      key: 'none', tab: 'No gate', pr: 'PR #51', note: 'Numbers are from PR #51 (10 findings, 2 High). This lane shows what would have shipped if I had ignored them.',
+      steps: [
+        { at: 'ticket', cap: 'A change is requested.', set: { ticket: 'active' }, open: 0 },
+        { at: 'code',   cap: 'Code written. Tests pass.', set: { ticket: 'pass', code: 'active' } },
+        { at: 'review', cap: 'The review finds 10 problems, 2 of them High.', set: { code: 'pass', review: 'active' }, open: 10 },
+        { at: 'gate',   cap: 'No gate. Nothing is asked to stop.', set: { review: 'warn', gate: 'skipped', guard: 'skipped' } },
+        { at: 'person', cap: 'Nobody has to look.', set: { person: 'skipped' } },
+        { at: 'main',   cap: 'Merged.', set: { main: 'bad' }, out: ['bad', 'Merged with 10 problems still open.'] }
+      ]
+    },
+    {
+      key: 'gate', tab: 'With the gate', pr: 'PR #51', note: 'Real run: PR #51. Review 1 found 10 findings (2 High); all fixed, re-reviewed, then the bot added the label.',
+      steps: [
+        { at: 'ticket', cap: 'A change is requested.', set: { ticket: 'active' }, open: 0 },
+        { at: 'code',   cap: 'Code written. Tests pass.', set: { ticket: 'pass', code: 'active' } },
+        { at: 'review', cap: 'The review finds 10 problems, 2 of them High.', set: { code: 'pass', review: 'active' }, open: 10 },
+        { at: 'gate',   cap: 'Gate: High and Medium findings are open. Stop.', set: { review: 'warn', gate: 'block' } },
+        { at: 'code',   cap: 'Fix each one, with a test that fails without the fix.', set: { gate: 'idle', review: 'idle', code: 'active' }, open: 0, tween: 2200 },
+        { at: 'review', cap: 'Re-review on the new commit: nothing open.', set: { code: 'pass', review: 'active' } },
+        { at: 'gate',   cap: 'Nothing Medium or higher is open. Label added.', set: { review: 'pass', gate: 'pass' } },
+        { at: 'guard',  cap: 'Guard: this change is not in a protected path. The label stands.', set: { guard: ['pass', 'Not protected'] } },
+        { at: 'person', cap: 'I open the PR and read every change.', set: { person: ['reading', 'Reading', '👀'] } },
+        { at: 'person', cap: 'Low findings are my call. I approve and merge.', set: { person: ['pass', 'Approved', '✅'] } },
+        { at: 'main',   cap: 'Merged.', set: { main: 'good' }, out: ['good', 'Merged after 10 fixes. A person approved.'] }
+      ]
+    },
+    {
+      key: 'guard', tab: 'Gate + guard', pr: 'PR #53', note: 'Real run: PR #53 changes src/hnradar/sources/**, the code that fetches data. The guard withholds the label even when the review is clean.',
+      steps: [
+        { at: 'ticket', cap: 'A change touching the data-fetching code.', set: { ticket: 'active' }, open: 0 },
+        { at: 'code',   cap: 'Code written. Tests pass.', set: { ticket: 'pass', code: 'active' } },
+        { at: 'review', cap: 'The review finds 3 Medium problems.', set: { code: 'pass', review: 'active' }, open: 3 },
+        { at: 'gate',   cap: 'Gate: Medium findings are open. Stop.', set: { review: 'warn', gate: 'block' } },
+        { at: 'code',   cap: 'All three fixed, each with a test.', set: { gate: 'idle', review: 'idle', code: 'active' }, open: 0, tween: 1500 },
+        { at: 'review', cap: 'Re-review on the new commit: clean.', set: { code: 'pass', review: 'active' } },
+        { at: 'gate',   cap: 'Gate: nothing Medium or higher is open. The gate is satisfied.', set: { review: 'pass', gate: 'pass' } },
+        { at: 'guard',  cap: 'Guard: this path is protected. No label, no auto-approval, even when clean.', set: { guard: ['hold', 'Protected'] } },
+        { at: 'person', cap: 'A second person must read it. They open the PR.', set: { person: ['reading', 'Reading', '👀'] } },
+        { at: 'person', cap: 'A second account reviews and approves.', set: { person: ['pass', 'Approved', '✅'] } },
+        { at: 'main',   cap: 'Merged.', set: { main: 'good' }, out: ['good', 'Clean review, still routed to a person.'] }
+      ]
+    }
+  ];
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (id) { return document.getElementById(id); };
+  var pipe = $('fx-pipe'), token = $('fx-token'), cap = $('fx-cap'), nEl = $('fx-n'), out = $('fx-out'), dots = $('fx-dots'), note = $('fx-note'), tabs = $('fx-tabs');
+  var nodeEl = {};
+  NODES.forEach(function (n) {
+    var d = document.createElement('div');
+    d.className = 'fx-node';
+    d.setAttribute('data-ico', n.ico);
+    d.innerHTML = '<span class="fx-ico">' + n.ico + '</span><span class="fx-name">' + n.name + '</span><span class="fx-st"></span>';
+    pipe.appendChild(d);
+    nodeEl[n.id] = d;
+  });
+
+  var scene = 0, idx = -1, run = 0, timer = null, tweenTimer = null, shown = 0, started = false, everDirty = false, auto = true;
+
+  function sleep(ms) { return new Promise(function (r) { timer = setTimeout(r, ms); }); }
+
+  function setState(id, spec) {
+    var el = nodeEl[id], arr = Array.isArray(spec), state = arr ? spec[0] : spec;
+    el.className = 'fx-node' + (state && state !== 'idle' ? ' ' + state : '');
+    el.querySelector('.fx-st').textContent = (arr && spec[1]) || STATUS[state] || '';
+    el.querySelector('.fx-ico').textContent = (arr && spec[2]) || el.getAttribute('data-ico');
+  }
+
+  function setOpen(v) {
+    shown = v;
+    if (v > 0) everDirty = true;
+    nEl.textContent = v;
+    nEl.className = v > 0 ? 'bad' : (everDirty ? 'ok' : '');
+    token.className = 'fx-token' + (v > 0 ? ' dirty' : (nEl.className === 'ok' ? ' clean' : ''));
+  }
+
+  function tweenOpen(to, ms) {
+    clearInterval(tweenTimer);
+    if (reduce || !ms) { setOpen(to); return; }
+    var from = shown, t0 = Date.now();
+    tweenTimer = setInterval(function () {
+      var p = Math.min(1, (Date.now() - t0) / ms);
+      setOpen(Math.round(from + (to - from) * p));
+      if (p >= 1) clearInterval(tweenTimer);
+    }, 60);
+  }
+
+  function place(id) {
+    var p = pipe.getBoundingClientRect(), r = nodeEl[id].getBoundingClientRect();
+    var x = r.left - p.left + r.width / 2 - token.offsetWidth / 2;
+    var y = r.top - p.top - token.offsetHeight / 2 - 4;
+    token.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+  }
+
+  function reset() {
+    clearTimeout(timer); clearInterval(tweenTimer);
+    idx = -1; started = false; everDirty = false;
+    NODES.forEach(function (n) { setState(n.id, 'idle'); });
+    out.className = 'fx-outcome'; out.textContent = '';
+    token.textContent = SCENES[scene].pr;
+    note.textContent = SCENES[scene].note;
+    cap.textContent = 'Press play, or step through.';
+    setOpen(0);
+    token.style.transition = 'none'; place('ticket');
+    void token.offsetWidth; token.style.transition = '';
+    dots.innerHTML = SCENES[scene].steps.map(function () { return '<i></i>'; }).join('');
+  }
+
+  function apply(i) {
+    var s = SCENES[scene].steps[i];
+    idx = i; started = true;
+    Object.keys(s.set || {}).forEach(function (k) { setState(k, s.set[k]); });
+    place(s.at);
+    cap.textContent = s.cap;
+    if (s.open !== undefined) tweenOpen(s.open, s.tween || 0);
+    Array.prototype.forEach.call(dots.children, function (d, k) { d.className = k <= i ? 'on' : ''; });
+    if (s.out) { out.className = 'fx-outcome show ' + s.out[0]; out.textContent = s.out[1]; }
+    if (s.at === 'review' && s.open === undefined) { setOpen(shown); }
+  }
+
+  function play() {
+    var my = ++run;
+    reset();
+    (async function () {
+      var steps = SCENES[scene].steps;
+      for (var i = 0; i < steps.length; i++) {
+        if (my !== run) return;
+        apply(i);
+        await sleep(steps[i].tween ? steps[i].tween + 900 : 1900);
+      }
+      if (my !== run || !auto || reduce) return;
+      await sleep(3200);
+      if (my === run) pick((scene + 1) % SCENES.length);
+    })();
+  }
+
+  function next() {
+    auto = false; run++; clearTimeout(timer);
+    var steps = SCENES[scene].steps;
+    if (idx + 1 >= steps.length) { reset(); return; }
+    apply(idx + 1);
+  }
+
+  function pick(i, manual) {
+    if (manual) auto = true;
+    scene = i; run++;
+    Array.prototype.forEach.call(tabs.children, function (b, k) { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); });
+    if (reduce) { reset(); } else { play(); }
+  }
+
+  SCENES.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'fx-tab'; b.setAttribute('role', 'tab'); b.textContent = s.tab;
+    b.addEventListener('click', function () { pick(i, true); });
+    tabs.appendChild(b);
+  });
+  $('fx-replay').addEventListener('click', function () { auto = true; if (reduce) { reset(); } else { play(); } });
+  $('fx-next').addEventListener('click', next);
+  window.addEventListener('resize', function () { if (idx >= 0) { token.style.transition = 'none'; place(SCENES[scene].steps[idx].at); void token.offsetWidth; token.style.transition = ''; } });
+
+  pick(0);
+})();
+</script>
+
+</body>
+</html>

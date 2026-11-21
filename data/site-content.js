@@ -16,13 +16,76 @@
   window.SITE_CONTENT = {
     articles: [
       {
+        title: ">Show your factory | HN Radar ",
+        excerpt: "Watch the same change go through a software factory with and without a gate. Real numbers from the HN Radar build, Qodo hackathon Day 15.",
+        date: "Nov 20, 2026",
+        image: "./images/factory-og.png",
+        type: "Blog",
+        link: "https://rawweights.com/blog/factory.html",
+        linkedin: null
+      },
+      {
+        title: "Agents for Impact: Scope Beats Ambition",
+        excerpt: "Joined a team building AI agents that do useful work for real people. Two takeaways: scope beats ambition, and a captain's real job is deciding what not to build.",
+        date: "Nov 17, 2026",
+        image: "./images/linkedin/agentforimpact.png",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/posts/shamhc_agentsforimpact-buildwithgemini-learningwithgooglecloud-share-7528572100555677696-n4Hd/",
+        linkedin: "https://www.linkedin.com/posts/shamhc_agentsforimpact-buildwithgemini-learningwithgooglecloud-share-7528572100555677696-n4Hd/"
+      },
+      {
+        title: "HN Radar: Keeping a Promise with an Agent That Does the Typing",
+        excerpt: "A month-long Qodo hackathon build: type your GitHub name, get three Hacker News hiring companies that fit, and a note citing a real user-reported problem. Week 1 lessons on small vs cloud models and reviewing your own rules.",
+        date: "Nov 14, 2026",
+        image: "./images/linkedin/hnrador.png",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/posts/shamhc_adalagent-ugcPost-7527490803129167872-SGwn/",
+        linkedin: "https://www.linkedin.com/posts/shamhc_adalagent-ugcPost-7527490803129167872-SGwn/"
+      },
+      {
+        title: "Becoming AI Native: Model, Agent, Harness, Governance",
+        excerpt: "A memory-error log pasted into a chatbot shows why context matters. Four layers from The Gen Academy masterclass (model, agent, harness, governance), plus a short video at three depths.",
+        date: "Nov 12, 2026",
+        image: "./images/linkedin/nativecert.png",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/posts/shamhc_adalagent-ainative-agenticai-ugcPost-7526710428526231552-4LGn/",
+        linkedin: "https://www.linkedin.com/posts/shamhc_adalagent-ainative-agenticai-ugcPost-7526710428526231552-4LGn/"
+      },
+      {
+        title: "Going Back for the Things I Skipped",
+        excerpt: "Attending The Gen Academy's Become an AI Native Professional workshop on Diwali morning, with the goal of hands-on depth with OpenAI Codex after mostly working with Claude.",
+        date: "Nov 8, 2026",
+        image: "./images/linkedin/attend.jpg",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/posts/shamhc_the-more-i-build-the-more-i-find-the-things-share-7525127970538172417-P1r9/",
+        linkedin: "https://www.linkedin.com/posts/shamhc_the-more-i-build-the-more-i-find-the-things-share-7525127970538172417-P1r9/"
+      },
+      {
         title: "Unslop: I Got Tired of AI Video Slop, So I Built a Daily Feed",
         excerpt: "A rolling 20-day feed of hands-on AI engineering videos that shows its evidence for every pick. Why I built it, how it differs from Karpathy's HackerTube, a playground to run the four-gate filter yourself, and what broke.",
         date: "Nov 6, 2026",
         image: "./images/unslop/og.jpg",
         type: "Usecase",
         link: "https://rawweights.com/usecase/unslop.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_adalagent-aiengineering-agenticai-ugcPost-7524619160346361856-mYHb/"
+      },
+      {
+        title: "Resume Reviews with CodePath: Problem, Action, Result",
+        excerpt: "An hour of resume reviews and mock interviews with two students finishing a four-year degree in three. The structure that helps, and how to start in open source.",
+        date: "Nov 4, 2026",
+        image: "./images/linkedin/cp.png",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/posts/shamhc_two-students-i-met-last-week-are-finishing-share-7523948510459613184-_cH9/",
+        linkedin: "https://www.linkedin.com/posts/shamhc_two-students-i-met-last-week-are-finishing-share-7523948510459613184-_cH9/"
+      },
+      {
+        title: "Ghost Charges: An App That Warns You Before a Free Trial Bills You",
+        excerpt: "Built at the Stranger Builds hackathon with Base44. Three rounds of stranger feedback from Trick or Feedback, all acted on, and the lesson that multiple accounts matter most.",
+        date: "Oct 31, 2026",
+        image: "./images/linkedin/gc.png",
+        type: "LinkedIn Article",
+        link: "https://www.linkedin.com/posts/shamhc_i-built-an-app-that-warns-you-before-a-free-ugcPost-7522479807322972161-irwZ/",
+        linkedin: "https://www.linkedin.com/posts/shamhc_i-built-an-app-that-warns-you-before-a-free-ugcPost-7522479807322972161-irwZ/"
       },
       {
         title: "Your Website Can Now Talk Back to AI: A Beginner's Guide to WebMCP",
