@@ -33,11 +33,12 @@
     .fx h1, .fx h2, .fx h3, .fx h4 { font-family: var(--rw-font-display); color: var(--rw-text); }
 
     /* Hero */
-    .fx-hero { padding: 3.5rem 0 1.5rem; text-align: center; }
+    .fx-hero { padding: 3.5rem 0 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    .fx-hero-video { width: 100%; aspect-ratio: 16 / 9; border-radius: var(--rw-r-lg); border: 1px solid var(--rw-border); background: #000; display: block; }
     .fx-eyebrow { display: inline-block; font-family: var(--rw-font-display); font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--rw-orange); background: var(--rw-orange-light); padding: .3rem .8rem; border-radius: 999px; margin-bottom: 1rem; }
     .fx-hero h1 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; margin: 0 0 1rem; }
     .fx-hero h1 em { font-style: normal; color: var(--rw-orange); }
-    .fx-hero p { font-size: 1.15rem; color: var(--rw-text-muted); max-width: 560px; margin: 0 auto; line-height: 1.6; }
+    .fx-hero p { font-size: 1.15rem; color: var(--rw-text-muted); max-width: 560px; margin: 0; line-height: 1.6; }
 
     /* Player */
     .fx-player { background: var(--rw-bg-alt); border: 1px solid var(--rw-border); border-radius: var(--rw-r-lg); padding: 1.25rem; margin: 1.5rem 0 .75rem; }
@@ -133,6 +134,7 @@
     .fx-foot a { color: var(--rw-orange); font-weight: 600; }
 
     @media (max-width: 780px) {
+      .fx-hero { grid-template-columns: 1fr; }
       .fx-pipe { grid-template-columns: repeat(2, 1fr); gap: 1.1rem .9rem; }
       .fx-node:not(:last-child)::after { display: none; }
       .fx-3, .fx-proof, .fx-2 { grid-template-columns: 1fr; }
@@ -154,9 +156,12 @@
 <div class="fx">
 
   <header class="fx-hero">
-    <span class="fx-eyebrow">HN Radar &middot; Qodo hackathon Day 15</span>
-    <h1>Same change.<br><em>With a gate, and without.</em></h1>
-    <p>Watch one pull request go through my software factory. Real numbers from the build.</p>
+    <div class="fx-hero-text">
+      <span class="fx-eyebrow">HN Radar &middot; Qodo hackathon Day 15</span>
+      <h1>Same change.<br><em>With a gate, and without.</em></h1>
+      <p>Watch one pull request go through my software factory. Real numbers from the build.</p>
+    </div>
+    <video class="fx-hero-video" controls playsinline preload="metadata" src="../images/videos/qodo.mp4" aria-label="Qodo software factory walkthrough"></video>
   </header>
 
   <!-- ===== Animated player ===== -->

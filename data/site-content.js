@@ -22,7 +22,7 @@
         image: "./images/factory-og.png",
         type: "Blog",
         link: "https://rawweights.com/blog/factory.html",
-        linkedin: null
+        linkedin: "https://www.linkedin.com/posts/shamhc_qodo-goose-ollama-ugcPost-7529728386081157120-dQwX/"
       },
       {
         title: "Agents for Impact: Scope Beats Ambition",
